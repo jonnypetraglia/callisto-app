@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vert"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/rowTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Show"
+        android:textSize="25sp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/rowSubTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>

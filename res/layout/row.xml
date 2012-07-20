@@ -1,0 +1,80 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/things"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <CheckBox
+        android:id="@+id/img"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="right|center_vertical"
+        android:button="@drawable/is_new"
+        android:clickable="true"
+        android:focusable="false" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1337"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1.0" >
+
+        <TextView
+            android:id="@+id/hiddenId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/rowTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:paddingBottom="1dp"
+            android:paddingTop="10dp"
+            android:text="Row"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/rowSubTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:paddingBottom="10dp"
+            android:paddingTop="1dp"
+            android:text="Subrow"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/rightTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:text="00:00"
+        android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/moveUp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="2dp"
+        android:src="@drawable/_up" />
+
+    <ImageButton
+        android:id="@+id/moveDown"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="2dp"
+        android:src="@drawable/_down" />
+    
+    <ImageButton
+        android:id="@+id/remove"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="2dp"
+        android:src="@drawable/x" />
+
+</LinearLayout>
