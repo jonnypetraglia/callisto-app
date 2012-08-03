@@ -220,12 +220,10 @@ public final class R {
         public static final int ic_menu_today=0x7f020018;
         public static final int ic_menu_view=0x7f020019;
         public static final int ic_menu_zoom=0x7f02001a;
-        public static final int ic_mp_move=0x7f02001b;
-        public static final int is_new=0x7f02001c;
-        public static final int jb_disabled=0x7f02001d;
-        public static final int jb_planet=0x7f02001e;
-        public static final int mrqweex=0x7f02001f;
-        public static final int titlebar=0x7f020020;
+        public static final int is_new=0x7f02001b;
+        public static final int jb_disabled=0x7f02001c;
+        public static final int jb_planet=0x7f02001d;
+        public static final int titlebar=0x7f02001e;
     }
     public static final class id {
         public static final int Bnext=0x7f0b0010;
