@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is the menu for the main activity -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 
+    <item android:id="@+id/menu_bookmark"
+          android:title="Bookmark" />
+
+
+    <item android:id="@+id/menu_search"
+          android:title="Search" />
+ -->
+    <item android:id="@+id/menu_quit"
+          android:title="Quit"
+          android:icon="@drawable/ic_menu_close_clear_cancel"/>
+
+</menu>

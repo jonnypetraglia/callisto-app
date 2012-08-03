@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This is the layout for the Contact activity  -->
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroller"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/backClr" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/txtClr" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email"
+            android:textColor="@color/txtClr"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
@@ -62,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Topic or Show"
+            android:textColor="@color/txtClr"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -74,6 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Message"
+            android:textColor="@color/txtClr"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
@@ -90,6 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Permission"
+            android:textColor="@color/txtClr"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <RadioGroup
@@ -105,6 +113,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:checked="true"
+                android:textColor="@color/txtClr"
                 android:text="Public" />
 
             <RadioButton
@@ -112,6 +121,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
+                android:textColor="@color/txtClr"
                 android:text="Private" />
         </RadioGroup>
 

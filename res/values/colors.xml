@@ -25,8 +25,20 @@
     <color name="dkgray">#ff444444</color>
     <color name="ltgray">#ffcccccc</color>
     <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
     <color name="yellow">#ffffff00</color>
     <color name="green">#ff00ff00</color>
     <color name="gray">#ff888888</color>
     <color name="qweex">#9c0</color>
+    
+    <color name="splashBg">#ff343434</color>
+    <color name="calHdrClr">@color/white</color>
+    <color name="calWeekClr">@color/black</color>
+    <color name="calDayClr">@color/white</color>
+    <color name="calTodayClr">@color/red</color>
+    <color name="backClr">@color/white</color>
+    <color name="txtClr">@color/black</color>
+    <color name="ctrlClr">@color/dkgray</color>
+    <color name="liveClr">#ee63DA89</color>
+    <color name="releaseClr">#ee5B9FF4</color>
 </resources>

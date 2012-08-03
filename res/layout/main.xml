@@ -1,115 +1,150 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainMenu"
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is the layout for the main Callisto activity-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/naub"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp" >
+    android:orientation="vertical"
+    android:background="@color/backClr" >
 
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1.0"
-        android:padding="10dp" >
-
-        <Button
-            android:id="@+id/listen"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1.0"
-            android:drawablePadding="-30dp"
-            android:drawableTop="@drawable/ic_menu_play_clip"
-            android:paddingTop="30dp"
-            android:text="Listen"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp" />
-
-        <Button
-            android:id="@+id/watch"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1.0"
-            android:drawableTop="@drawable/ic_menu_view"
-            android:paddingTop="30dp"
-            android:drawablePadding="-30dp"
-            android:text="Watch"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp"
-            android:visibility="visible" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1.0"
+    <TableLayout
+        android:id="@+id/mainMenu"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
         android:padding="10dp"
-        android:visibility="visible" >
+        android:layout_weight="1.0" >
 
-        <Button
-            android:id="@+id/plan"
-            style="@drawable/btn_default"
+        <TableRow
+            android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1.0"
-            android:drawableTop="@drawable/ic_menu_today"
-            android:paddingTop="30dp"
-            android:drawablePadding="-30dp"
-            android:text="Plan"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp"
-            android:visibility="visible" />
+            android:padding="0dp" >
 
-        <Button
-            android:id="@+id/chat"
+            <Button
+                android:id="@+id/listen"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_play_clip"
+                android:paddingTop="10dp"
+                android:text="@string/listen"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp" />
+<!-- 
+            <Button
+                android:id="@+id/watch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_view"
+                android:paddingTop="10dp"
+                android:text="@string/watch"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp"
+                android:visibility="gone" />
+             -->
+            <Button
+                android:id="@+id/live"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_star"
+                android:paddingTop="10dp"
+                android:text="Live"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1.0"
-            android:drawableTop="@drawable/ic_menu_allfriends"
-            android:paddingTop="30dp"
-            android:drawablePadding="-30dp"
-            android:text="Chat"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp"
-            android:visibility="visible" />
+            android:visibility="visible" >
 
-    </TableRow>
+            <Button
+                android:id="@+id/plan"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_today"
+                android:paddingTop="10dp"
+                android:text="@string/plan"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp"
+                android:visibility="visible" />
 
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1.0"
-        android:padding="10dp"
-        android:visibility="visible" >
+            <Button
+                android:id="@+id/chat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_allfriends"
+                android:paddingTop="10dp"
+                android:text="@string/chat"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp"
+                android:visibility="visible" />
 
-        <Button
-            android:id="@+id/contact"
-            style="@drawable/btn_default"
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1.0"
-            android:drawablePadding="-30dp"
-            android:drawableTop="@drawable/ic_menu_send"
-            android:paddingTop="30dp"
-            android:text="Contact"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp"
-            android:visibility="visible" />
+            android:visibility="visible" >
 
-        <Button
-            android:id="@+id/donate"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1.0"
-            android:drawablePadding="-30dp"
-            android:drawableTop="@drawable/ic_menu_emoticons"
-            android:paddingTop="30dp"
-            android:text="Donate"
-            android:textColor="@android:color/primary_text_light"
-            android:textSize="30sp"
-            android:visibility="visible" />
+            <Button
+                android:id="@+id/contact"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_send"
+                android:paddingTop="10dp"
+                android:text="@string/contact"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp"
+                android:visibility="visible" />
 
-    </TableRow>
+            <Button
+                android:id="@+id/donate"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1.0"
+                android:drawablePadding="-10dp"
+                android:drawableTop="@drawable/ic_menu_emoticons"
+                android:paddingTop="10dp"
+                android:text="@string/donate"
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="20sp"
+                android:visibility="visible" />
 
-</TableLayout>
+        </TableRow>
+        <!--  -->
+        <!--  -->
+    </TableLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/controls"
+        android:stretchColumns="*" />
+
+</LinearLayout>

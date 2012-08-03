@@ -1,9 +1,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:drawable="@drawable/btn_rating_star_on_normal" 
+<item android:drawable="@drawable/jb_planet" 
     android:state_pressed="true"/>  
-<item android:drawable="@drawable/btn_rating_star_on_normal" 
+<item android:drawable="@drawable/jb_planet" 
     android:state_checked="true"/>  
-<item android:drawable="@drawable/btn_rating_star_on_normal"
+<item android:drawable="@drawable/jb_planet"
     android:state_focused="true" />
-<item android:drawable="@drawable/btn_rating_star_off_normal" />  
+<item android:drawable="@drawable/jb_disabled" />  
 </selector> 

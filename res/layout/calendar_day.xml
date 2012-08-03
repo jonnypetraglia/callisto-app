@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is 1 day for the calendar form of CalendarActivity  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fillViewport="true" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/button"
+        android:orientation="vertical"
+        android:tag="day" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="-33dp"
+            android:gravity="top|left"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:tag="dayText"
+            android:text="1"
+            android:textColor="@color/calDayClr" />
+
+        <TextView
+            android:id="@+id/event1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/event10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="5dp"
+            android:text="TextView"
+            android:textColor="#ddffffff"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</ScrollView>

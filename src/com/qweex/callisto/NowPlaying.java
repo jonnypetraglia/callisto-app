@@ -1,189 +1,142 @@
 package com.qweex.callisto;
 
-import android.app.ListActivity;
-import android.content.Context;
-import android.database.Cursor;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.preference.PreferenceManager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
+//FEATURE: All of it
 
-
-public class NowPlaying extends ListActivity
+public class NowPlaying extends Activity
 {
-	private ListView mainListView;
-	NowPlayingAdapter listAdapter;
-	Cursor queue;
+	private final String infoURL = "http://jbradio.airtime.pro/api/live-info";
+	Matcher m = null;
+    String currentShow = "Unknown", nextShow = "Unknown";
+    TextView current, next;
+    ImageButton playPause;
+    String live_url;
 	
 	@Override
-    public void onCreate(Bundle savedInstanceState)
+	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		mainListView = getListView();
-		TextView noResults = new TextView(this);
-		noResults.setText("Playlist is empty");
-		noResults.setTypeface(null, 2);
-		noResults.setGravity(Gravity.CENTER_HORIZONTAL);
-		noResults.setPadding(10,20,10,20);
-		setTitle("Now Playing");
-		((ViewGroup)mainListView.getParent()).addView(noResults);
-		mainListView.setEmptyView(noResults);
-
-
+		setContentView(R.layout.nowplaying);
+		Callisto.live_player = new MediaPlayer();
 		
-		Callisto.databaseConnector.open();
-		queue = Callisto.databaseConnector.getQueue();
-		
-		String[] from = new String[] {"_id", "identity"};
-		int[] to = new int[] { R.id.hiddenId, R.id.rowTextView, R.id.rowSubTextView };
-		int[] hide = new int[] { R.id.img, R.id.rightTextView };
-		listAdapter = new NowPlayingAdapter(this, R.layout.row, queue, from, to, hide); 
-		mainListView.setAdapter(listAdapter);
+		current = (TextView) findViewById(R.id.current);
+		next = (TextView) findViewById(R.id.next);
+		playPause = (ImageButton) findViewById(R.id.playPause);
+		playPause.setOnClickListener(play);
+	}
+	
+	public void update()
+    {
+	    HttpClient httpClient = new DefaultHttpClient();
+	    HttpContext localContext = new BasicHttpContext();
+	    HttpGet httpGet = new HttpGet(infoURL);
+	    HttpResponse response;
+	    try
+		{
+			response = httpClient.execute(httpGet, localContext);
+		    BufferedReader reader = new BufferedReader(
+			        new InputStreamReader(
+			          response.getEntity().getContent()
+			        )
+			      );
+		    
+		    String line = null, result = "";
+		    while ((line = reader.readLine()) != null){
+		      result += line + "\n";
+		    }
+		    
+		    m = (Pattern.compile(".*?\"currentShow\".*?"
+		    					+ "\"name\":\"(.*?)\""
+		    					+ ".*"
+								+ "\"name\":\"(.*?)\""
+		    					+ ".*?")
+		    					).matcher(result);
+		    if(m.find())
+		    	currentShow = m.group(1);
+		    if(m.groupCount()>1)
+		    	nextShow = m.group(2);
+	    	
+		    current.setText(currentShow);
+		    next.setText(nextShow);
+		    
+		} catch (ClientProtocolException e) {
+			// TODO EXCEPTION
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO EXCEPTION
+			e.printStackTrace();
+		}
+	}
+	
+	OnClickListener play = new OnClickListener()
+	{
+		@Override
+		public void onClick(View v)
+		{
+			System.out.println("BUTTS play");
+			Callisto.live_player.setOnPreparedListener(new OnPreparedListener()
+			{
+				@Override
+				public void onPrepared(MediaPlayer arg0) {
+					System.out.println("BUTTS prepared");
+					update();
+					System.out.println("BUTTS updated");
+					//playPause.setOnClickListener(pause);
+					Callisto.live_player.start();
+					Callisto.playerInfo.isPaused = false;
+				}
+			});
+			try {
+				live_url = "http://www.jblive.am";
+				Callisto.live_player.setDataSource(live_url);
+				//Show waiting dialog
+				Callisto.live_player.prepareAsync();
+			} catch (IllegalArgumentException e) {
+				// TODO EXCEPTION
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		live_url = PreferenceManager.getDefaultSharedPreferences(NowPlaying.this).getString("live_url", "jblive.am");
 	}
 
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        menu.add(0, Menu.FIRST, 0, "Clear");
-
-
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-    	Callisto.databaseConnector.open();
-    	Callisto.databaseConnector.clearQueue();
-		listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-		Callisto.databaseConnector.close();
-    	return true;
-    }    
-	
-	OnClickListener moveUp = new OnClickListener() 
-    {
-		 @Override
-		  public void onClick(View v) 
-		  {
-			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 if(id==1)
-				 return;
-			 Callisto.databaseConnector.swap(id, id-1);
-			 
-			 Callisto.databaseConnector.open();
-			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-			 Callisto.databaseConnector.close();
-			 //NowPlaying.this.listAdapter.notifyDataSetChanged();
-		  }
-    };
-    
-    OnClickListener moveDown = new OnClickListener() 
-    {
-		 @Override
-		  public void onClick(View v) 
-		  {
-			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 if(id==1 || id==Callisto.databaseConnector.queueCount())
-				 return;
-			 Callisto.databaseConnector.swap(id, id+1);
-			 
-			 Callisto.databaseConnector.open();
-			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-			 Callisto.databaseConnector.close();
-			 //NowPlaying.this.listAdapter.notifyDataSetChanged();
-		  }
-    };
-
-    OnClickListener removeItem = new OnClickListener() 
-    {
-		 @Override
-		  public void onClick(View v) 
-		  {
-			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 
-			 Callisto.databaseConnector.deleteQueueItem(id);
-			 Callisto.databaseConnector.open();
-			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-			 Callisto.databaseConnector.close();
-		  }
-    };
-	
-	public class NowPlayingAdapter extends SimpleCursorAdapter
+	public void onDestroy()
 	{
-	
-	    private Cursor c;
-	    private Context context;
-	    String[] From;
-	    int[] To;
-	    int[] Hide;
-	
-		public NowPlayingAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int[] hide) {
-			super(context, layout, c, from, to);
-			this.c = c;
-			this.context = context;
-			From = from;
-			To = to;
-			Hide = hide;
-		}
-	
-		public View getView(int pos, View inView, ViewGroup parent) {
-	       View v = inView;
-	       if (v == null) {
-	            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	            v = inflater.inflate(R.layout.row, null);
-	       }
-    	   this.c = getCursor();
-	       this.c.moveToPosition(pos);
-	       
-	       Long _id = this.c.getLong(c.getColumnIndex("_id"));
-	       Long identity = this.c.getLong(c.getColumnIndex("identity"));
-	       
-	       Callisto.databaseConnector.open();
-	       Cursor c2 = Callisto.databaseConnector.getOneEpisode(identity);
-	       c2.moveToFirst();
-	       
-	       String title = c2.getString(c2.getColumnIndex("title"));
-		   String show = c2.getString(c2.getColumnIndex("show"));
-		   String length = c2.getString(c2.getColumnIndex("mp3size"));
-		   
-		   ((TextView)v.findViewById(R.id.rowTextView)).setText(title);
-		   ((TextView)v.findViewById(R.id.rowSubTextView)).setText(show);
-		   //((TextView)v.findViewById(R.id.rightTextView)).setText(length);
-		   ((TextView)v.findViewById(R.id.hiddenId)).setText(_id.toString());
-		   
-		   ImageButton up = ((ImageButton)v.findViewById(R.id.moveUp));
-		   up.setOnClickListener(moveUp);
-		   ImageButton down = ((ImageButton)v.findViewById(R.id.moveDown));
-		   down.setOnClickListener(moveDown);
-		   ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
-		   remove.setOnClickListener(removeItem);
-		   
-		   for(int i=0; i<Hide.length; i++)
-        	   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);
-	       /*
-	       int is_new = this.c.getInt(this.c.getColumnIndex("new"));
-	       if(is_new>0)
-	    	   ((ImageView)v.findViewById(R.id.newImg)).setImageDrawable(this.context.getResources().getDrawable(R.drawable.btn_rating_star_on_normal));
-	       */
-		   Callisto.databaseConnector.close();
-	       return(v);
-	     
-	}
-	
+		super.onDestroy();
+		Callisto.live_player.reset();
+		Callisto.live_player = null;
 	}
 }

@@ -1,14 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Jupiter Broadcasting presents this splash in mega stereo sound.  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" android:background="#343434">
-
+    android:background="@color/splashBg"
+    android:orientation="vertical" >
+    
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_marginTop="60dp"
+        android:layout_weight="5"
+        android:background="#FFFFFF"
+        android:padding="10dp"
+        android:src="@raw/jb_logo"
+        android:contentDescription="Jupiter Broadcasting!" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:padding="20dp"
+        android:text="Thank you so much for your support!"
+        android:textColor="@color/black"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" android:padding="25dp">
+        android:layout_marginBottom="10dp"
+        android:background="#00000000"
+        android:orientation="vertical"
+        android:paddingBottom="5dp" >
+
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-5dp"
+            android:gravity="center"
+            android:paddingTop="5dp"
+            android:text="@string/powered_by"
+            android:textColor="@color/ltgray"
+            android:textSize="10sp" />
 
         <LinearLayout
             android:id="@+id/linearLayout1"
@@ -19,34 +58,23 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="50"
+                android:gravity="right"
                 android:text="Qwe"
                 android:textColor="#6cb700"
-                android:gravity="right"
-                android:layout_weight="50" android:textSize="75dp"/>
+                android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="50"
+                android:gravity="left"
                 android:text="ex"
                 android:textColor="#FFFFFF"
-                android:gravity="left"
-                android:layout_weight="50" android:textSize="75dp"/>
+                android:textSize="30dp" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="software" android:gravity="center" android:textSize="25dp"/>
-
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/mrqweex" android:background="#FFFFFF" android:padding="10dp"/>
 
 </LinearLayout>

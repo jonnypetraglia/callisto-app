@@ -1,22 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a row for AllShows -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/vert"
+    android:id="@+id/row"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp" >
+    android:padding="10dp"
+	android:background="@android:color/transparent"
+	android:cacheColorHint="@android:color/transparent" >
 
     <TextView
         android:id="@+id/rowTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Show"
-        android:textSize="25sp" >
+        android:textSize="25sp"
+        android:textColor="@color/txtClr" >
     </TextView>
 
     <TextView
         android:id="@+id/rowSubTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/txtClr" />
 
 </LinearLayout>

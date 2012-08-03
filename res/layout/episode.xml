@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This is the layout for EpisodeDesc -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLin"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backClr"
     android:orientation="vertical" >
-
+
     <LinearLayout
-        android:id="@+id/LinearLayout1"
+        android:id="@+id/headLin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp" >
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1.0"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:paddingLeft="10dp"
             android:text="Title"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <CheckBox 
-            android:button="@drawable/is_new"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/txtClr" />
+
+        <CheckBox
             android:id="@+id/newImg"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="right"
-            />
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:button="@drawable/is_new"
+            android:gravity="right|center_vertical" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -42,59 +48,69 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/txtClr" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" - "
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/txtClr" />
 
         <TextView
             android:id="@+id/size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Size"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/txtClr" />
 
+    </LinearLayout>
+
     <LinearLayout
-        android:id="@+id/butts"
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp" >
-
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" >
+
         <Button
             android:id="@+id/stream"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1.0"
-            android:text="Stream" />
+            android:text="@string/stream" />
+
         <Button
             android:id="@+id/download"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1.0"
-            android:text="Download" />
-    </LinearLayout>
+            android:text="@string/download" />
 
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
-        android:paddingBottom="20dp" >
+        android:layout_margin="3dp" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Description"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/txtClr" />
         </LinearLayout>
     </ScrollView>
 

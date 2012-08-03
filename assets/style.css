@@ -1,0 +1,55 @@
+.embed .wufoo .info, p, h1, .hide {
+  display:none;
+}
+
+.embed #container, html.embed {
+  background-color: transparent;
+}
+
+.embed form.wufoo, .embed .wufoo h1, .embed .wufoo h2, .embed .wufoo h3, .embed ul, .embed li, .embed ol, .embed .wufoo .section div {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0; 
+}
+
+
+.desc {
+	font-size: 1.5em;
+	display:inline-block;
+}
+
+span {
+	width:;
+	font-style:italic;
+	text-align:right;
+}
+
+.field, .submit {
+	width:;
+	font-size: 1.5em;
+}
+
+.field .radio {
+	display:block;
+	float:left;
+	text-align:left;
+}
+
+.choice {
+	margin-bottom:1.5em;
+	display:block;
+}
+
+
+textarea {
+	height:;
+}
+
+li {
+	margin-bottom:1.5em;
+}
+
+.req {
+	color:red;
+}

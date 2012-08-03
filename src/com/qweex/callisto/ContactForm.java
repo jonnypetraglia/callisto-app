@@ -2,39 +2,29 @@ package com.qweex.callisto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
 import android.app.Activity;
-import android.os.AsyncTask;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.webkit.WebView;
+
+//This activity is for displaying a form through which the user can contact Jupiter Broadcasting.
+
+//NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
+//	    But it took forever and it required figuring out how to do a POST, plus, if the 
+//FEATURE: Someone to make this look pretty/native. Maybe chzbacon?
 
 public class ContactForm extends Activity
 {
-	private EditText nameFirst, nameLast, email, message;
-	private Spinner topicSpinner;
-	private ArrayAdapter spinnerArrayAdapter;
-	private ArrayList<String> spinnerArray;
 	private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -42,93 +32,55 @@ public class ContactForm extends Activity
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
-		View contactForm = ((LayoutInflater)this.getSystemService(this.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.contact, null, false);
-		Callisto.build_layout(this, contactForm);
+		setContentView(R.layout.contact2);
 		
-		nameFirst = (EditText) findViewById(R.id.nameFirst);
-		nameLast = (EditText) findViewById(R.id.nameLast);
-		email = (EditText) findViewById(R.id.email);
-		message = (EditText) findViewById(R.id.message);
-		
-		
-		topicSpinner = (Spinner) findViewById(R.id.topic);
-		spinnerArray = new ArrayList<String>();
-		spinnerArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, spinnerArray);
-		topicSpinner.setAdapter(spinnerArrayAdapter);
-		
-		/*
-		new GetTopics().execute(formURL, null);
-	}
-	   // performs database query outside GUI thread
-	   private class GetTopics extends AsyncTask<String, Object, Object> 
-	   {
-	      @Override
-	      protected Object doInBackground(String... params)
-	      {
-	      */
-		    HttpClient httpClient = new DefaultHttpClient();
-		    HttpContext localContext = new BasicHttpContext();
-		    HttpGet httpGet = new HttpGet(formURL);
-		    HttpResponse response;
-			try {
-				response = httpClient.execute(httpGet, localContext);
-			    String result = "";
-		
-			    BufferedReader reader = new BufferedReader(
-			        new InputStreamReader(
-			          response.getEntity().getContent()
-			        )
-			      );
-		
-			    String line = null;
-			    while ((line = reader.readLine()) != null){
-			      result += line + "\n";
-			    }
-			    int x = result.indexOf("Topic or Show") + "Topic or Show".length();
-			    result = result.substring(x,result.indexOf("</li>",x));
-			    result = result.replace("</option>", "~</option>");
-			    result=android.text.Html.fromHtml(result).toString();
-			    String[] tokens = result.split("~");
-		
-			    for (String t : tokens)
-			    	if(!t.trim().equals(""))
-			    		spinnerArray.add(t.trim());
-			    spinnerArrayAdapter.notifyDataSetChanged();
-			    topicSpinner.setSelection(0);
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	/*		return null;
-	      }*/
-	}
-
-	public void postData() {
-	    // Create a new HttpClient and Post Header
-	    HttpClient httpclient = new DefaultHttpClient();
-	    HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");
-
-	    try {
-	        // Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	        nameValuePairs.add(new BasicNameValuePair("Field4", nameFirst.getText().toString()));
-	        nameValuePairs.add(new BasicNameValuePair("Field5", nameLast.getText().toString()));
-	        nameValuePairs.add(new BasicNameValuePair("Field6", email.getText().toString()));
-	        nameValuePairs.add(new BasicNameValuePair("Field7", topicSpinner.getSelectedItem().toString()));
-	        nameValuePairs.add(new BasicNameValuePair("Field1", message.getText().toString()));
-	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-	        // Execute HTTP Post Request
-	        HttpResponse response = httpclient.execute(httppost);
-	        
-	    } catch (ClientProtocolException e) {
-	        // TODO Auto-generated catch block
-	    } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	    }
-	} 
+		WebView wv = (WebView) findViewById(R.id.form);
+	    HttpClient httpClient = new DefaultHttpClient();
+	    HttpContext localContext = new BasicHttpContext();
+	    HttpGet httpGet = new HttpGet(formURL);
+	    HttpResponse response;
+	    String result = "";
+		try
+		{
+			
+			 // Read in the css
+	        InputStream input;  
+            input = getAssets().open("style.css");  
+              
+             int size = input.available();  
+             byte[] buffer = new byte[size];  
+             input.read(buffer);  
+             input.close();  
+  
+             // byte buffer into a string  
+             result = new String(buffer);
+             result = "<style type='text/css'>\n" + result + "\n</style>\n"; 
+	              
+			response = httpClient.execute(httpGet, localContext);
 	
+		    BufferedReader reader = new BufferedReader(
+		        new InputStreamReader(
+		          response.getEntity().getContent()
+		        )
+		      );
+	
+		    String line = null;
+		    while ((line = reader.readLine()) != null){
+		      result += line + "\n";
+		    }
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println(getWindowManager().getDefaultDisplay().getWidth());
+		result = result.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";");
+		result = result.replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";");
+		wv.loadData(result, "text/html", "utf-8");
+	}
+	
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+    }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    android:title="Preferences"
+    <EditTextPreference
+        android:title="Storage path" 
+        android:dialogMessage="Input the path you want files to be stored in" 
+        android:positiveButtonText="Confirm" 
+        android:negativeButtonText="Cancel" 
+        android:dialogTitle="Storage Path" 
+        android:key="storage_path"
+        android:defaultValue="callisto" />
+	    <ListPreference 
+	        android:title="Live quality"
+	        android:key="live_url"
+            android:entries="@array/live_quality"
+            android:entryValues="@array/live_sources"
+            android:defaultValue="http://www.jblive.am"
+	        />
+	    <PreferenceCategory
+	        android:title="Super special settings"
+	        android:key="secret" >
+	        <CheckBoxPreference
+	            android:key="splash_show"
+	            android:summary="The wonderful feature that you got for donating to JB!"
+	            android:title="@string/show_splash" 
+	            android:defaultValue="true" />
+	        <CheckBoxPreference
+	            android:key="splash_quote"
+	            android:summary="Toggle the quote when starting the all"
+	            android:title="@string/splash_quote" 
+	            android:defaultValue="true"
+	            android:dependency="splash_show"
+	             />
+	    </PreferenceCategory>
+	    
+    
+</PreferenceScreen>

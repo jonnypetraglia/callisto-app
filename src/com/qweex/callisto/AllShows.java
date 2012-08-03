@@ -17,158 +17,217 @@
 package com.qweex.callisto;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
+//This activity lists all the shows on JupiterBroadcasting
+// It was designed to work with both audio and video, but the video needs some definite tweaking
+//FEATURE: a way to update the list without updating the app?
+//FEATURE: maybe an icon next to each show?
+//FEATURE: "has new episodes" icon
+//FEATURE: Search
+//IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 
 public class AllShows extends Activity {
 	
 	public static boolean IS_VIDEO = false;
-	public static View current_view = null;
 	
-	public static final String[] SHOW_LIST = new String[]
-			{
-			" Active Shows",
-				"Coder Radio",
-				"Linux Action Show",
-				"SciByte",
-				"TechSnap",
-				"Unfilter",
-				"FauxShow",
-			" Inactive Shows ",
-				"STOked",
-				"TORKed",
-				"Jupiter@Nite",
-				"In Depth Look",
-				"MMOrgue",
-				"Jupiter Files",
-				"Beer is Tasty",
-			" Live",
-				"Jupiter Radio"
-			};
-	public static final String[] SHOW_LIST_AUDIO = new String[]
-			{
-				null,
-				"http://feeds.feedburner.com/coderradiomp3",
-				"http://feeds2.feedburner.com/TheLinuxActionShow",
-				"http://feeds.feedburner.com/scibyteaudio",
-				"http://feeds.feedburner.com/techsnapmp3",
-				"http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml",
-				"http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml",
-				null,
-				"http://feeds.feedburner.com/TorkedMp3",
-				"http://feeds.feedburner.com/stoked",
-				"http://feeds.feedburner.com/jupiternitemp3",
-				"http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml",
-				"http://feeds.feedburner.com/MMOrgueMP3",
-				"http://feeds.feedburner.com/ldf-mp3",
-				"",
-				null,
-				"http://jblive.am"
-			};
-	public static final String[] SHOW_LIST_VIDEO = new String[]
-			{
-				null,
-				"http://feeds.feedburner.com/coderradiovideo",
-				"http://feeds.feedburner.com/linuxactionshowipodvid",
-				"http://feeds.feedburner.com/scibytemobile",
-				"http://feeds.feedburner.com/techsnapmobile",
-				"http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml",
-				"http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml",
-				null,
-				"http://feeds.feedburner.com/TorkedMobile",
-				"http://feeds.feedburner.com/stokedipod",
-				"http://feeds.feedburner.com/jupiterniteivid",
-				"http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml",
-				"http://feeds.feedburner.com/MMOrgueMobile",
-				"http://feeds.feedburner.com/ldf-video",
-				"http://feeds2.feedburner.com/BeerIsTasty",
-				null,
-				"http://jblive.fm"
-			};
+	//These are static arrays containing the show names and corresponding feed URLS
+	// A sub-heading will start with a space in the name list and have a value of null in the feeds
 	
-	private ListView mainListView;
-	private AllShowsAdapter listAdapter ;
+	public static final String[] SHOW_LIST = Callisto.RESOURCES.getStringArray(R.array.shows);
+	public static final String[] SHOW_LIST_AUDIO = Callisto.RESOURCES.getStringArray(R.array.shows_audio);
+	public static final String[] SHOW_LIST_VIDEO = Callisto.RESOURCES.getStringArray(R.array.shows_video);
+	
+	//-----Local Variables-----
+	private static final int DOWNLOADS_ID = Menu.FIRST+1;
+	private static final int UPDATE_ID = DOWNLOADS_ID+1;
+	private static ListView mainListView;
+	private static AllShowsAdapter listAdapter ;
+	private static View current_view = null;		//This is for adjusting the date on a show in OnResume
+	private static SharedPreferences current_showSettings;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		IS_VIDEO=getIntent().getExtras().getBoolean("screen");
-		if(IS_VIDEO)
-			this.setTitle("All Video");
-		else
-			this.setTitle("All Audio");
+		Log.v("AllShows:OnCreate", "Launching Activity");
 		
 		mainListView = new ListView(this);
 		Callisto.build_layout(this, mainListView);
-		
-		
+		TextView loading = (TextView) findViewById(android.R.id.empty);
+	    loading.setText(getResources().getString(R.string.loading));
+	    loading.setGravity(Gravity.CENTER_HORIZONTAL);
+	    mainListView.setEmptyView(loading);
 		mainListView.setOnItemClickListener(selectShow);
 		listAdapter = new AllShowsAdapter(this, R.layout.main_row, SHOW_LIST); 
 		mainListView.setAdapter(listAdapter);
+		mainListView.setBackgroundColor(getResources().getColor(R.color.backClr));
+		mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
+		
+		//IS_VIDEO=getIntent().getExtras().getBoolean("is_video");
+		IS_VIDEO = false; //IDEA: add watch
+		if(IS_VIDEO)
+			this.setTitle(getResources().getString(R.string.watch));
+		else
+			this.setTitle(getResources().getString(R.string.listen));
 	}
+	
 	@Override
 	public void onResume()
 	{
 		super.onResume();
 		setProgressBarIndeterminateVisibility(false);
+		Callisto.playerInfo.update(AllShows.this);
 		
 		if(current_view==null)
 			return;
-		String the_current = (String)((TextView)current_view.findViewById(R.id.rowTextView)).getText(); 
-	    SharedPreferences showSettings = getSharedPreferences(the_current, 0);
-		String lastChecked = showSettings.getString("last_checked", null);
-		try {
-			lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
+		TextView current_textview = (TextView)current_view.findViewById(R.id.rowTextView);
+		if(current_textview==null)
+			return;
+		String the_current = (String)(current_textview).getText();
+		SharedPreferences showSettings = getSharedPreferences(the_current, 0);
+	   	
+	   	String lastChecked = showSettings.getString("last_checked", null);
+		Log.v("AllShows:onResume", "Resuming after:" + the_current + "| " + lastChecked);
+		if(lastChecked!=null)
+			try {
+				lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
+				((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
+			} catch (ParseException e) {
+				Log.e("AllShows:OnResume:ParseException", "Error parsing a date from the SharedPreferences..");
+				Log.e("AllShows:OnResume:ParseException", lastChecked);
+				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
+			}
 		current_view=null;
 	}
+	
 	@Override
 	public void onStop()
 	{
+		//TODO: OnStop
 		super.onStop();
 	}
 	
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+    	menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(R.drawable.ic_menu_forward);
+    	menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_menu_refresh);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+ 
+        switch (item.getItemId())
+        {
+        case DOWNLOADS_ID:
+        	Intent newIntent = new Intent(AllShows.this, DownloadList.class);
+        	startActivity(newIntent);
+            return true;
+        case UPDATE_ID:
+        	updateAllHandler.sendMessage(new Message());
+        	return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    
+    Handler updateAllHandler = new Handler()
+	{
+        @Override
+        public void handleMessage(Message msg)
+        {
+        	new UpdateAllShowsTask().execute((Object[]) null);
+        }
+	};
+	
+	
+
+	
+	
+
+	
+    
+    // Updates the show outside of the UI thread
+    private class UpdateAllShowsTask extends AsyncTask<Object, Object, Object> 
+    {
+    	@Override
+    	protected void onPreExecute()
+    	{
+    		Toast.makeText(AllShows.this, Callisto.RESOURCES.getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
+    		setProgressBarIndeterminateVisibility(true);
+    	}
+    	
+       @Override
+       protected Object doInBackground(Object... params)
+       {
+       	for(int i=0; i<SHOW_LIST_AUDIO.length; i++)
+       	{
+       		current_view = mainListView.getChildAt(i);
+       		if(SHOW_LIST_AUDIO[i]==null)
+       			continue;
+       		current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
+			Callisto.updateShow(i, current_showSettings, false);
+			updateTextHandler.sendEmptyMessage(0);
+       	}
+       	
+       	return null;
+        }
+        
+       @Override
+       protected void onPostExecute(Object result)
+       {
+    	   Toast.makeText(AllShows.this, Callisto.RESOURCES.getString(R.string.finished_update), Toast.LENGTH_SHORT).show();
+    	   setProgressBarIndeterminateVisibility(false);
+       }
+    }
+    
+	public static Handler updateTextHandler = new Handler()
+	{
+		@Override 
+		public void handleMessage(Message msg)
+		{ 
+			mainListView.setAdapter(listAdapter);
+		}
+	};
+    
+    
+    
+	
+	//Listener for when a show is selected
 	OnItemClickListener selectShow = new OnItemClickListener() 
     {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
       {
-    	  if(position==SHOW_LIST.length-1)
-    	  {
-    		  setProgressBarIndeterminateVisibility(true);
-    		  if(Callisto.player!=null && Callisto.player.isPlaying())
-    			  Callisto.player.stop();
-    		  Callisto.player = MediaPlayer.create(AllShows.this, Uri.parse(SHOW_LIST_AUDIO[SHOW_LIST_AUDIO.length-1]));
-    		  Callisto.player.start();
-    	  }
-    	  else if(SHOW_LIST[position].charAt(0)==' ')
+    	  Log.d("AllShows:selectShow", "Selected show at position: " + position);
+    	  if(SHOW_LIST[position].charAt(0)==' ')
     		  return;
     	  else
     	  {
@@ -181,34 +240,36 @@ public class AllShows extends Activity {
       }
     };
     
+    //Adapter for this view; extended because we need to format the date
     public class AllShowsAdapter extends ArrayAdapter<String>
     {
-    	String[] thingy;
     	public AllShowsAdapter(Context context, int textViewResourceId, String[] objects)
     	{
 			super(context, textViewResourceId, objects);
-			thingy = objects;
-			// TODO Auto-generated constructor stub
 		}
     	
     	@Override
     	public View getView(int position, View convertView, ViewGroup parent)
     	{
-	    	// TODO Auto-generated method stub
-	    	//return super.getView(position, convertView, parent);
-    		
-    		LayoutInflater inflater=getLayoutInflater();
-    		View row = null;
+    		View row = convertView;
     		if(AllShows.SHOW_LIST_AUDIO[position]==null)
     		{
-    			row=inflater.inflate(R.layout.main_row_head, parent, false);
+    			//if(row==null)
+    			//{	
+    				LayoutInflater inflater=getLayoutInflater();
+    				row=inflater.inflate(R.layout.main_row_head, parent, false);
+    			//}
     			TextView x = ((TextView)row.findViewById(R.id.heading));
     			x.setText(AllShows.SHOW_LIST[position]);
     			x.setFocusable(false);
     			x.setEnabled(false);
     		} else
     		{
-		    	row=inflater.inflate(R.layout.main_row, parent, false);
+    			//if(row==null)
+    			//{	
+    				LayoutInflater inflater=getLayoutInflater();
+    				row=inflater.inflate(R.layout.main_row, parent, false);
+    			//}
 		    	
 				((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
 		    	SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
@@ -218,25 +279,13 @@ public class AllShows extends Activity {
 					try {
 						lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						Log.e("AllShows:AllShowsAdapter:ParseException", "Error parsing a date from the SharedPreferences..");
+						Log.e("AllShows:AllShowsAdapter:ParseException", lastChecked);
+						Log.e("AllShows:AllShowsAdapter:ParseException", "(This should never happen).");
 						e.printStackTrace();
 					}
 					((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
 				}
-	
-				
-				
-		    	/*
-		    	ImageView icon=(ImageView)row.findViewById(R.id.icon);
-		
-		    	
-		    	if (DayOfWeek[position]=="Sunday"){
-		    	icon.setImageResource(R.drawable.icon);
-		    	}
-		    	else{
-		    	icon.setImageResource(R.drawable.icongray);
-		    	}
-		    	*/
 	
     		}
     		return row;

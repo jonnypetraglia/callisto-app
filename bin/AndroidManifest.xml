@@ -24,7 +24,7 @@
      own application, the package name must be changed from "com.example.*"
      to come from a domain that you own or have control over. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qweex.callisto">
+    package="com.qweex.callisto" android:versionName='@string/version_name' android:versionCode="1">
 
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15" />
     
@@ -34,13 +34,14 @@
          reference to one of our string resources.-->
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TODO -->
     <application android:label="Callisto" android:icon="@drawable/callisto"> 
 
         <!-- An Activity in the application - this is something the user
              can launch and interact with.  The "name" attribute is the
              name of the class within your package that implements this
              activity. -->
-        <activity android:name="SplashScreen">
+        <activity android:name="SplashScreen" android:screenOrientation="portrait">
 
             <!-- An IntentFilter tells the system when it should use your
                  activity.  This allows the user to get to your activity
@@ -60,9 +61,16 @@
         </activity>
         <activity android:name="EpisodeDesc"></activity>
         
-        <activity android:name="ContactForm"></activity>
+        <activity android:name="ContactForm" android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name="Queue" android:launchMode="singleTop"></activity>
+        <activity android:name="Callisto" android:launchMode="singleTop"></activity>
+        <activity android:name="CalendarActivity"></activity>
+        <activity android:name="IRCChat"
+            android:configChanges="keyboardHidden|orientation"
+            ></activity>
+        <activity android:name="DownloadList" android:launchMode="singleTop"></activity>
+        <activity android:name="QuickPrefsActivity"></activity>
         <activity android:name="NowPlaying"></activity>
-        <activity android:name="Callisto"></activity>
 
     </application>
 

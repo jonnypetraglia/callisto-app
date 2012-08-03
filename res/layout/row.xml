@@ -1,24 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a row that is used for various ListViews  -->
+<!-- It contains many extra views that can be hidden.  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/things"
+    android:id="@+id/row"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-
-    <CheckBox
-        android:id="@+id/img"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_gravity="right|center_vertical"
-        android:button="@drawable/is_new"
-        android:clickable="true"
-        android:focusable="false" />
+    android:orientation="horizontal"
+	android:background="@android:color/transparent"
+	android:cacheColorHint="@android:color/transparent" >
 
     <LinearLayout
         android:id="@+id/linearLayout1337"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1.0" >
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/hiddenId"
@@ -34,7 +31,8 @@
             android:paddingBottom="1dp"
             android:paddingTop="10dp"
             android:text="Row"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/txtClr" />
 
         <TextView
             android:id="@+id/rowSubTextView"
@@ -44,7 +42,8 @@
             android:paddingBottom="10dp"
             android:paddingTop="1dp"
             android:text="Subrow"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:textColor="@color/txtClr" />
 
     </LinearLayout>
 
@@ -54,7 +53,20 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
         android:text="00:00"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textColor="@color/txtClr" />
+
+    <CheckBox
+        android:id="@+id/img"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="7dp"
+        android:button="@drawable/is_new"
+        android:checked="true"
+        android:clickable="true"
+        android:focusable="false" />
 
     <ImageButton
         android:id="@+id/moveUp"
@@ -75,6 +87,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:padding="2dp"
-        android:src="@drawable/x" />
+        android:src="@drawable/ic_delete" />
 
 </LinearLayout>

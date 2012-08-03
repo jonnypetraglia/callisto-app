@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is the layout for IRCChat -->
+<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewanimator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/lin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backClr"
+        android:orientation="vertical" >
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/chat"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="50dp"
+                android:gravity="bottom"
+                android:paddingBottom="50dp" />
+        </ScrollView>
+
+        <EditText
+            android:id="@+id/inputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:textColor="@color/txtClr" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/syslog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:paddingBottom="20dp"
+            android:visibility="visible" />
+
+    </ScrollView>
+
+</ViewAnimator>
