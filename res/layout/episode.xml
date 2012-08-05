@@ -36,12 +36,19 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
             android:paddingLeft="10dp"
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/txtClr" />
+            android:textColor="@color/txtClr"
+            
+            android:singleLine="true"
+			android:ellipsize="marquee"
+			android:marqueeRepeatLimit="marquee_forever"
+			android:scrollHorizontally="true"
+			android:focusable="true"
+			android:focusableInTouchMode="true"
+			android:freezesText="true"
+             />
 
         <CheckBox
             android:id="@+id/newImg"

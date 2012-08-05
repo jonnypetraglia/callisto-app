@@ -18,8 +18,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 package com.qweex.callisto;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -80,7 +82,6 @@ import android.widget.Toast;
 //CLEAN: Rename IDs in layout XML
 //FEATURE: Widget
 //IDEA: In-app Donate
-//IDEA: Separate section for radio
 //IDEA: player real estate with landscape
 //IDEA: Maybe switch to DownloadManager.class? Requires API 9
 
@@ -617,8 +618,31 @@ public class Callisto extends Activity {
     
     
     
-    
-    
+    public static void downloadImage(String img_url, String show) throws IOException
+    {
+    	File f = new File(Environment.getExternalStorageDirectory() + File.separator + 
+    				      storage_path + File.separator +
+    				      show + EpisodeDesc.getExtension(img_url));
+    	if(f.exists())
+    		return;
+	    URL url = new URL (img_url);
+	    InputStream input = url.openStream();
+	    try {
+	        OutputStream output = new FileOutputStream (f.getPath());
+	        try {
+	            byte[] buffer = new byte[5 * 1024];
+	            int bytesRead = 0;
+	            while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+	                output.write(buffer, 0, bytesRead);
+	            }
+	        } finally {
+	            output.close();
+	        }
+	    } finally {
+	        input.close();
+	    }
+    }
+
     
     
     
@@ -641,16 +665,30 @@ public class Callisto extends Activity {
   		  xpp.setInput(input, null);
   		  
   		  Log.v("*:updateShow", "Parser is prepared");
-  		  //Skip the first heading (info about the show)
   		  int eventType = xpp.getEventType();
-  		  while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  		
+  		  //Download the image URL
+  		
+  		  while(!("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
   		  {
 				  eventType = xpp.next();
 				  if(eventType==XmlPullParser.END_DOCUMENT)
-					  throw(new UnfinishedParseException("Item"));
+					  throw(new UnfinishedParseException("Thumbnail"));
+		  }
+  		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
+  		  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+  		  Log.v("*:updateShow", "Parser has downloaded image"); //*/
+  		  /*
+  		  //Skip the first <title> tag
+ 		  while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+ 		  {
+				  eventType = xpp.next();
+				  if(eventType==XmlPullParser.END_DOCUMENT)
+					  throw(new UnfinishedParseException("item"));
 			  }
-  		  eventType = xpp.next();
-  		  Log.v("*:updateShow", "Parser has skipped heading");
+ 		  eventType = xpp.next();
+  		  
+  		  Log.v("*:updateShow", "Parser has skipped heading");//*/
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)

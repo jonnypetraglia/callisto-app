@@ -20,7 +20,6 @@ package com.qweex.callisto;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -92,7 +91,7 @@ public class DatabaseConnector
 	public Cursor getShow(String show, boolean filter)
 	{
 		   return database.query(DATABASE_TABLE /* table */,
-				    new String[] {"_id", "title", "date", "new"} /* columns */,
+				    new String[] {"_id", "title", "date", "new", "mp3link"} /* columns */,
 				    "show = '" + show + "'" + (filter ? " and new='1'" : "") /* where or selection */,
 		        	null /* selectionArgs i.e. value to replace ? */,
 		        	null /* groupBy */,

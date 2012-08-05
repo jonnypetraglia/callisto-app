@@ -17,6 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -27,8 +28,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -62,9 +65,6 @@ public class ShowList extends Activity
     private String feedURL;
     private ListView mainListView = null;
     private CursorAdapter showAdapter;
-	private final String[] from = new String[] {"_id", "title", "date", "new"};
-	private final int[] to = new int[] { R.id.hiddenId, R.id.rowTextView, R.id.rowSubTextView, R.id.rightTextView };
-	private final int[] hide = new int[] { R.id.rightTextView, R.id.moveUp, R.id.moveDown, R.id.remove };
 	private static final int RELOAD_ID=Menu.FIRST+1;
 	private static final int CLEAR_ID=RELOAD_ID+1;
 	private static final int FILTER_ID=CLEAR_ID+1;
@@ -107,7 +107,8 @@ public class ShowList extends Activity
 	    	feedURL = AllShows.SHOW_LIST_AUDIO[currentShow];	    
 	    
 	    new GetShowTask().execute((Object[]) null);
-	    showAdapter = new ShowListCursorAdapter(ShowList.this, R.layout.row, null, from, to, hide);
+	    Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+	    showAdapter = new ShowListCursorAdapter(ShowList.this, R.layout.row, r);
 	    mainListView.setAdapter(showAdapter);
 		return;
 	}
@@ -122,6 +123,8 @@ public class ShowList extends Activity
 		if(current_episode==null)
 			return;
 		
+		
+		//showAdapter.notifyDataSetChanged();	//FIXME: This ruins the icon update
 		long id = Long.parseLong(
 				(String) ((TextView)((View) current_episode.getParent()).findViewById(R.id.hiddenId)).getText()
 				);
@@ -308,17 +311,11 @@ public class ShowList extends Activity
     {
         private Cursor c;
         private Context context;
-        private String[] From;
-        private int[] To;
-        private int[] Hide;
 
-    	public ShowListCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int[] hide) {
-    		super(context, layout, c, from, to);
+    	public ShowListCursorAdapter(Context context, int layout, Cursor c) {
+    		super(context, layout, c, new String[] {}, new int[] {});
     		this.c = c;
     		this.context = context;
-    		Hide = hide;
-    		From = from;
-    		To = to;
     	}
 
     	public View getView(int pos, View inView, ViewGroup parent) {
@@ -333,37 +330,65 @@ public class ShowList extends Activity
            Date tempDate = new Date();
            int thisYear = tempDate.getYear();
            //Set the data From->To
-           for(int i=0; i<From.length; i++)
-           {
-        	   if(From[i].equals("date"))
-        	   {
-    			  String d = this.c.getString(this.c.getColumnIndex(From[i]));
-    			  try {
-    				  	tempDate = Callisto.sdfRaw.parse(d);
-    				  	if(tempDate.getYear()==thisYear)
-    				  		d = Callisto.sdfHuman.format(tempDate);
-				  		else
-				  			d = Callisto.sdfHumanLong.format(tempDate);
-						//d = Callisto.sdfDestination.format();
-					} catch (ParseException e) {
-						Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
-						Log.e("ShowList:ShowListAdapter:ParseException", d);
-						Log.e("ShowList:ShowListAdapter:ParseException", "(This should never happen).");
-						e.printStackTrace();
-					}
-    			  ((TextView) v.findViewById(To[i])).setText(d);
-        	   }
-        	   else
-        		   ((TextView) v.findViewById(To[i])).setText(this.c.getString(this.c.getColumnIndex(From[i])));
-           }
-           //Hide the specific views
-           for(int i=0; i<Hide.length; i++)
-        	   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);
            
+    	   
+           //Get info
+    	   String id = this.c.getString(this.c.getColumnIndex("_id"));
+           String date = this.c.getString(this.c.getColumnIndex("date"));
+           String title = this.c.getString(this.c.getColumnIndex("title"));
+           String media_link = this.c.getString(this.c.getColumnIndex("mp3link"));
+           
+    	   
+    	   //_id
+    	   ((TextView) v.findViewById(R.id.hiddenId)).setText(id);
+    	   //title
+    	   ((TextView) v.findViewById(R.id.rowTextView)).setText(title);
+    	   //date
+		   String d = date;
+		   try {
+			  	tempDate = Callisto.sdfRaw.parse(d);
+			  	if(tempDate.getYear()==thisYear)
+			  		d = Callisto.sdfHuman.format(tempDate);
+		  		else
+		  			d = Callisto.sdfHumanLong.format(tempDate);
+				//d = Callisto.sdfDestination.format();
+			} catch (ParseException e) {
+				Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
+				Log.e("ShowList:ShowListAdapter:ParseException", d);
+				Log.e("ShowList:ShowListAdapter:ParseException", "(This should never happen).");
+				e.printStackTrace();
+			}
+		    ((TextView) v.findViewById(R.id.rowSubTextView)).setText(d);
+		    //new
+		    ((TextView) v.findViewById(R.id.rightTextView)).setText(this.c.getString(this.c.getColumnIndex("new")));
+           
+		    
+		    
+			File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+	   		file_location = new File(file_location, Callisto.sdfFile.format(tempDate) + "__" + title + EpisodeDesc.getExtension(media_link));
+		    
+		    if(file_location.exists())
+            {
+        	   ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
+        	   ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+            }
+		    else
+		    {
+		    	((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
+        	    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
+		    }
+		    
+           //Hide the specific views
+	       int[] hide = new int[] { R.id.rightTextView, R.id.moveUp, R.id.moveDown, R.id.remove };
+           for(int i=0; i<hide.length; i++)
+        	   ((View) v.findViewById(hide[i])).setVisibility(View.GONE);
+           
+           //Check the Jupiter icon if it is new
            boolean is_new = this.c.getInt(this.c.getColumnIndex("new"))>0;
            CheckBox rb = ((CheckBox)v.findViewById(R.id.img));
            rb.setChecked(is_new);
            rb.setOnCheckedChangeListener(toggleNew);
+           
            return(v);
     	}
     }

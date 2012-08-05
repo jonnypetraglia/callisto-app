@@ -58,7 +58,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 //FIXME: Player controls sometimes get bumped offscreen
 //FEATURE: Resume Download
-//FEATURE: Ellipsize TItle
 
 public class EpisodeDesc extends Activity
 {
@@ -170,7 +169,7 @@ public class EpisodeDesc extends Activity
         rb.setOnCheckedChangeListener(toggleNew);
     }
 	
-	private String getExtension(String filename)
+	public static String getExtension(String filename)
 	{
 		return filename.substring(filename.lastIndexOf("."));
 	}

@@ -17,14 +17,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+import java.io.File;
 import java.text.ParseException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -38,6 +42,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +51,6 @@ import android.widget.Toast;
 // It was designed to work with both audio and video, but the video needs some definite tweaking
 //FEATURE: a way to update the list without updating the app?
 //FEATURE: maybe an icon next to each show?
-//FEATURE: "has new episodes" icon
 //FEATURE: Search
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 
@@ -108,6 +112,8 @@ public class AllShows extends Activity {
 		TextView current_textview = (TextView)current_view.findViewById(R.id.rowTextView);
 		if(current_textview==null)
 			return;
+		
+		
 		String the_current = (String)(current_textview).getText();
 		SharedPreferences showSettings = getSharedPreferences(the_current, 0);
 	   	
@@ -122,6 +128,11 @@ public class AllShows extends Activity {
 				Log.e("AllShows:OnResume:ParseException", lastChecked);
 				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
 			}
+		current_view.setBackgroundColor(getResources().getColor(
+				Callisto.databaseConnector.getShowNew(the_current).getCount()>0 ?				
+				R.color.SandyBrown : android.R.color.transparent));
+			
+		
 		current_view=null;
 	}
 	
@@ -271,6 +282,25 @@ public class AllShows extends Activity {
     				LayoutInflater inflater=getLayoutInflater();
     				row=inflater.inflate(R.layout.main_row, parent, false);
     			//}
+    				
+    			//Get the show icon
+				String[] exts = {".jpg", ".gif", ".png"}; 
+		    	File f;
+		    	
+		    	for(String ext : exts)
+		    	{
+	    			f = new File(Environment.getExternalStorageDirectory() + File.separator + 
+	    							  Callisto.storage_path + File.separator +
+	    							  AllShows.SHOW_LIST[position] + ext);
+	    			if(f.exists())
+	    			{
+	    				Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+	    				ImageView img = (ImageView) row.findViewById(R.id.img);
+	    		        img.setImageBitmap(bitmap);
+	    		        break;
+	    			}
+		    	}
+    				
 		    	
 				((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
 		    	SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
@@ -287,6 +317,9 @@ public class AllShows extends Activity {
 					}
 					((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
 				}
+				
+				if( Callisto.databaseConnector.getShowNew(AllShows.SHOW_LIST[position]).getCount()>0 )
+					row.setBackgroundColor(getResources().getColor(R.color.SandyBrown));
 	
     		}
     		return row;
