@@ -28,8 +28,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
     <ImageView
         android:id="@+id/img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical|center_horizontal"
         android:layout_marginLeft="10dp"
         android:background="@drawable/panel_picture_frame_bg_normal" />

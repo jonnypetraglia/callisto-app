@@ -116,6 +116,7 @@ public class Callisto extends Activity {
 	public static Drawable playDrawable, pauseDrawable;
 	public static PlayerInfo playerInfo = null;
 	public static Resources RESOURCES;
+	public static float DP;
 	
 	//------Local variables-----
 	static TextView timeView;
@@ -141,6 +142,7 @@ public class Callisto extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		RESOURCES = getResources();
+		DP = getResources().getDisplayMetrics().density;
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
 		
@@ -161,7 +163,6 @@ public class Callisto extends Activity {
 		int [] graphics = {R.drawable.ic_menu_play_clip, R.drawable.ic_menu_view, R.drawable.ic_menu_today, R.drawable.ic_menu_allfriends, R.drawable.ic_menu_send, R.drawable.ic_menu_emoticons};
 		
 		Button temp;
-		float dp = getResources().getDisplayMetrics().density;
 		for(int i=0; i<buttons.length; i++)
 		{
 			temp = (Button)findViewById(buttons[i]);
@@ -172,7 +173,7 @@ public class Callisto extends Activity {
 			{
 				ViewGroup.LayoutParams tr = temp.getLayoutParams();
 				((MarginLayoutParams) tr).setMargins(0, 0, 0, 0);
-				temp.setPadding((int) (10*dp), 0, 0, 0);
+				temp.setPadding((int) (10*DP), 0, 0, 0);
 				temp.setLayoutParams(tr);
 				temp.setCompoundDrawablesWithIntrinsicBounds(graphics[i], 0, 0, 0);
 			}
@@ -644,11 +645,10 @@ public class Callisto extends Activity {
 	        input.close();
 	    }
 	    //Resize the image
-	    OutputStream fOut = new FileOutputStream(f);
 	    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-	    /*bitmap = Bitmap.createScaledBitmap(bitmap, 10, 10, false);
-	    
-	    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
+	    Bitmap scale  = Bitmap.createScaledBitmap(bitmap, (int)(60*DP), (int)(60*DP), true);
+	    OutputStream fOut = new FileOutputStream(f);
+    	scale.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
     }
 
     

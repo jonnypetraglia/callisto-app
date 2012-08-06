@@ -285,7 +285,7 @@ public class AllShows extends Activity {
     			//}
     				
     			//Get the show icon
-				String[] exts = {".jpg", ".gif", ".png"}; 
+				String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded 
 		    	File f;
 		    	
 		    	for(String ext : exts)
