@@ -47,6 +47,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -641,6 +643,12 @@ public class Callisto extends Activity {
 	    } finally {
 	        input.close();
 	    }
+	    //Resize the image
+	    OutputStream fOut = new FileOutputStream(f);
+	    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+	    /*bitmap = Bitmap.createScaledBitmap(bitmap, 10, 10, false);
+	    
+	    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
     }
 
     
@@ -678,17 +686,6 @@ public class Callisto extends Activity {
   		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
   		  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
   		  Log.v("*:updateShow", "Parser has downloaded image"); //*/
-  		  /*
-  		  //Skip the first <title> tag
- 		  while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
- 		  {
-				  eventType = xpp.next();
-				  if(eventType==XmlPullParser.END_DOCUMENT)
-					  throw(new UnfinishedParseException("item"));
-			  }
- 		  eventType = xpp.next();
-  		  
-  		  Log.v("*:updateShow", "Parser has skipped heading");//*/
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)

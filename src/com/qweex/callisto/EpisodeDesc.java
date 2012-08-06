@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +35,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,7 +56,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 //This activity is for displaying specific information about an episode
 
 //FIXME: Player controls sometimes get bumped offscreen
-//FEATURE: Resume Download
 
 public class EpisodeDesc extends Activity
 {
@@ -318,17 +316,9 @@ public class EpisodeDesc extends Activity
 					Date = current.getString(current.getColumnIndex("date"));
 					Show = current.getString(current.getColumnIndex("show"));
 					Log.i("EpisodeDesc:DownloadTask", "Starting download: " + Link);
-					
-					URL url = new URL(Link);
-					URLConnection ucon = url.openConnection();
-					ucon.setReadTimeout(TIMEOUT_CONNECTION);
-					ucon.setConnectTimeout(TIMEOUT_SOCKET);
-					
 					Date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(Date));
-		           
-		
-					is = ucon.getInputStream();
-					BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
+			           
+					
 					Target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Show);
 					Target.mkdirs();
 					if(title.indexOf("|")>0)
@@ -336,8 +326,21 @@ public class EpisodeDesc extends Activity
 					Title=Title.trim();
 					Target = new File(Target, Date + "__" + Title + getExtension(Link));
 					
+					URL url = new URL(Link);
+					HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+					ucon.setReadTimeout(TIMEOUT_CONNECTION);
+					ucon.setConnectTimeout(TIMEOUT_SOCKET);
 					
-					outStream = new FileOutputStream(Target);
+					
+					is = ucon.getInputStream();
+					BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
+					if(Target.exists())
+					{
+						inStream.skip(Target.length());
+						outStream = new FileOutputStream(Target, true);
+					}
+					else
+						outStream = new FileOutputStream(Target);
 					buff = new byte[5 * 1024];
 					TotalSize = ucon.getContentLength();
 					int len;
@@ -351,7 +354,6 @@ public class EpisodeDesc extends Activity
 			            downloadedSize += len;
 				       	perc = downloadedSize*100;
 				       	perc /= TotalSize;
-				       	System.out.println(perc + "%");
 				       	Callisto.notification_download.setLatestEventInfo(getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " + Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": " + perc + "%", Show + ": " + Title, contentIntent);
 				       	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
 					}
@@ -423,7 +425,7 @@ public class EpisodeDesc extends Activity
     		if(file_location.length()!=media_size)
     		{
         		streamButton.setText(Callisto.RESOURCES.getString(R.string.resume));
-        		downloadButton.setOnClickListener(launchDownload);
+        		streamButton.setOnClickListener(launchDownload);
     		} else if(Callisto.databaseConnector.isInQueue(id))
         	{
         		streamButton.setText(Callisto.RESOURCES.getString(R.string.enqueued));
