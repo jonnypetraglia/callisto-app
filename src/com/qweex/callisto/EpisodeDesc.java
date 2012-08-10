@@ -38,6 +38,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,7 +56,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 //This activity is for displaying specific information about an episode
 
-//FIXME: Player controls sometimes get bumped offscreen
+//FIXME: The scrollview pushes the player controls offscreen. What the crap.
+//FIXME: Doesn't update if the track finishes
+
 
 public class EpisodeDesc extends Activity
 {
@@ -364,6 +367,10 @@ public class EpisodeDesc extends Activity
 					outStream.close();
 					inStream.close();
 					Log.i("EpisodeDesc:DownloadTask", "Successfully downloaded to : " + Target.getPath());
+					boolean queue = PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getBoolean("download_to_queue", false);
+					if(queue)
+						Callisto.databaseConnector.appendToQueue(id, false);
+					
 					Callisto.download_queue.remove(0);
 		       } catch (IOException e) {
 		    	   Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");

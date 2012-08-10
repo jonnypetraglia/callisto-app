@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -142,7 +143,7 @@ public class Callisto extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		RESOURCES = getResources();
-		DP = getResources().getDisplayMetrics().density;
+		DP = RESOURCES.getDisplayMetrics().density;
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
 		
@@ -181,8 +182,8 @@ public class Callisto extends Activity {
 		}
 		
 		//Initialization of (some of the) staticvariables
-		Callisto.playDrawable = getResources().getDrawable(R.drawable.ic_media_play);
-		Callisto.pauseDrawable = getResources().getDrawable(R.drawable.ic_media_pause);
+		Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_media_play);
+		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_media_pause);
 		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
 		Callisto.databaseConnector.open();
 		Callisto.playerInfo = new PlayerInfo(Callisto.this);
@@ -220,12 +221,22 @@ public class Callisto extends Activity {
 		empty.setBackgroundColor(c.getResources().getColor(R.color.backClr));
 		empty.setTextColor(c.getResources().getColor(R.color.txtClr));
 		
+		
 		LinearLayout layout = new LinearLayout(c);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams
 				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
 		LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams
 				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0f);
+				//*/
+		/*
+		RelativeLayout layout = new RelativeLayout(c);
+		RelativeLayout.LayoutParams mParams = new RelativeLayout.LayoutParams
+				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams cParams = new RelativeLayout.LayoutParams
+				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		cParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		//*/
 		layout.addView(mainView, mParams);
 		layout.addView(empty, mParams);
 		layout.addView(controls, cParams);
@@ -235,6 +246,7 @@ public class Callisto extends Activity {
 		((Activity)c).findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
 		((Activity)c).findViewById(R.id.next).setOnClickListener(Callisto.next);
 		((Activity)c).findViewById(R.id.previous).setOnClickListener(Callisto.previous);
+		Log.v("*:build_layout", "Finished building the layout");
     }
     
     public static OnClickListener next = new OnClickListener()
@@ -307,7 +319,7 @@ public class Callisto extends Activity {
 			}
 		    
 	        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
-	        target = new File(target,playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
+	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
 	        if(!target.exists())
 	        {
 	        	Log.e("*:playTrack", "File not found: " + target.getPath());
@@ -579,6 +591,9 @@ public class Callisto extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
+			if(Callisto.mplayer==null)
+				return; 
+			
 	    	SeekBar sb = new SeekBar(v.getContext());
 	    	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()).setView(sb);
 	    	final AlertDialog alertDialog = builder.create();
@@ -610,14 +625,6 @@ public class Callisto extends Activity {
 	        });
 		  }
     };
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -684,8 +691,11 @@ public class Callisto extends Activity {
 					  throw(new UnfinishedParseException("Thumbnail"));
 		  }
   		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
-  		  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-  		  Log.v("*:updateShow", "Parser has downloaded image"); //*/
+  		  try {
+  			  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+  		  } catch(IOException e)
+  		  {}
+  		  Log.v("*:updateShow", "Parser has downloaded image");
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)
@@ -771,7 +781,10 @@ public class Callisto extends Activity {
 	   } catch (MalformedURLException e) {
 		   Log.e("*:update:MalformedURLException", "Malformed URL? That should never happen.");
 		   e.printStackTrace();
-	   } catch (IOException e) {
+	   } catch (UnknownHostException e)
+	   {
+		   Log.e("*:update:UnknownHostException", "Unable to initiate a connection");
+	   }  catch (IOException e) {
 		   //FIXME: EXCEPTION: IOException
 		   Log.e("*:update:IOException", "IO is a moon");
 			e.printStackTrace();
@@ -884,6 +897,13 @@ public class Callisto extends Activity {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
 			Log.i("*:player:onCompletion", "Playing next track");
+			boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
+			if(del)
+			{
+		        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
+		        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
+		        target.delete();
+			}
 			Callisto.playTrack(this.c, 1, true);
 		}
     	

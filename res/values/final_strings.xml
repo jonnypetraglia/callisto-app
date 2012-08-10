@@ -52,7 +52,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 		<item>http://feeds.feedburner.com/MMOrgueMP3</item>
 		<item>http://feeds.feedburner.com/ldf-mp3</item>
 		<item>http://feeds.feedburner.com/lotsomp3</item>
-		<item>http://feeds.feedburner.com/portforwardpodcast</item> <!-- CLEAN: This isn't even JB lol  -->
+		<item>http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml</item>
 	</string-array>
 	
     <string-array name="shows_video">

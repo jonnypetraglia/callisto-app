@@ -50,10 +50,9 @@ import android.widget.Toast;
 
 //This activity lists all the shows on JupiterBroadcasting
 // It was designed to work with both audio and video, but the video needs some definite tweaking
-//FEATURE: a way to update the list without updating the app?
-//FEATURE: maybe an icon next to each show?
 //FEATURE: Search
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
+//IDEA: a way to update the list without updating the app?
 
 public class AllShows extends Activity {
 	
@@ -88,13 +87,13 @@ public class AllShows extends Activity {
 	    loading.setGravity(Gravity.CENTER_HORIZONTAL);
 	    mainListView.setEmptyView(loading);
 		mainListView.setOnItemClickListener(selectShow);
-		listAdapter = new AllShowsAdapter(this, R.layout.main_row, SHOW_LIST); 
+		listAdapter = new AllShowsAdapter(this, R.layout.main_row, SHOW_LIST);
 		mainListView.setAdapter(listAdapter);
 		mainListView.setBackgroundColor(getResources().getColor(R.color.backClr));
 		mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
+
 		
-		//IS_VIDEO=getIntent().getExtras().getBoolean("is_video");
-		IS_VIDEO = false; //IDEA: add watch
+		IS_VIDEO = false; //IS_VIDEO=getIntent().getExtras().getBoolean("is_video");  IDEA: add watch
 		if(IS_VIDEO)
 			this.setTitle(getResources().getString(R.string.watch));
 		else
@@ -105,6 +104,7 @@ public class AllShows extends Activity {
 	public void onResume()
 	{
 		super.onResume();
+		Log.v("AllShows:onResume", "Resuming AllShows");
 		setProgressBarIndeterminateVisibility(false);
 		Callisto.playerInfo.update(AllShows.this);
 		
@@ -129,9 +129,8 @@ public class AllShows extends Activity {
 				Log.e("AllShows:OnResume:ParseException", lastChecked);
 				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
 			}
-		current_view.setBackgroundColor(getResources().getColor(
-				Callisto.databaseConnector.getShowNew(the_current).getCount()>0 ?				
-				R.color.SandyBrown : android.R.color.transparent));
+		if(Callisto.databaseConnector.getShowNew(the_current).getCount()>0)
+		current_view.setBackgroundResource(R.drawable.main_colored);
 			
 		
 		current_view=null;
@@ -288,6 +287,7 @@ public class AllShows extends Activity {
 				String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded 
 		    	File f;
 		    	
+		    	
 		    	for(String ext : exts)
 		    	{
 	    			f = new File(Environment.getExternalStorageDirectory() + File.separator + 
@@ -301,7 +301,8 @@ public class AllShows extends Activity {
 	    		        break;
 	    			}
 		    	}
-    				
+		    	
+    			
 		    	
 				((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
 		    	SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
@@ -319,8 +320,10 @@ public class AllShows extends Activity {
 					((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
 				}
 				
+				
 				if( Callisto.databaseConnector.getShowNew(AllShows.SHOW_LIST[position]).getCount()>0 )
-					row.setBackgroundColor(getResources().getColor(R.color.SandyBrown));
+					row.setBackgroundResource(R.drawable.main_colored);
+					
 	
     		}
     		return row;

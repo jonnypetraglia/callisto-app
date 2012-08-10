@@ -82,7 +82,8 @@ public class SplashScreen extends Activity {
     	super.onDestroy();
     	if(dudeJustQuit)
     	{
-	    	player.reset();
+    		if(player!=null)
+    			player.reset();
 	    	t.interrupt();
     	}
     	finish();

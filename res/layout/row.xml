@@ -45,11 +45,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
+            android:ellipsize="end"
             android:paddingBottom="1dp"
             android:paddingTop="10dp"
+            android:singleLine="true"
             android:text="Row"
-            android:textSize="16sp"
-            android:textColor="@color/txtClr" />
+            android:textColor="@color/txtClr"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/rowSubTextView"

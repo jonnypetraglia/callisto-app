@@ -50,6 +50,7 @@ public class ContactForm extends Activity
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
 		setContentView(R.layout.contact2);
+		setTitle(R.string.contact);
 		
 		WebView wv = (WebView) findViewById(R.id.form);
 	    HttpClient httpClient = new DefaultHttpClient();

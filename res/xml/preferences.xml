@@ -33,6 +33,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:entryValues="@array/live_sources"
             android:defaultValue="http://www.jblive.am"
 	        />
+	    <CheckBoxPreference 
+	        android:key="completion_delete"
+	        android:title="Delete upon completion"
+	        />
+	    <CheckBoxPreference 
+	        android:key="download_to_queue"
+	        android:title="Append downloads to queue"
+	        />
 	    <PreferenceCategory
 	        android:title="Super special settings"
 	        android:key="secret" >
@@ -49,6 +57,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:dependency="splash_show"
 	             />
 	    </PreferenceCategory>
+	    
 	    
     
 </PreferenceScreen>

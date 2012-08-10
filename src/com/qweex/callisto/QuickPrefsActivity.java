@@ -17,9 +17,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+import java.io.File;
+
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -47,7 +52,34 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-    	Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
+    	String new_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
+    	if(new_path==Callisto.storage_path)
+    		return;
+    	ProgressDialog pd = ProgressDialog.show(QuickPrefsActivity.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false); //TODO: Different loading message
+    	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
+    	newfile.mkdirs();
+    	boolean wasError = false;
+    	
+    	File dir = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path);
+    	newfile = newfile = new File(Environment.getExternalStorageDirectory(), new_path);
+    	wasError = dir.renameTo(newfile);
+    	/*
+    	for (File child : dir.listFiles())
+    	{
+    		if (".".equals(child.getName()) || "..".equals(child.getName()))
+    			continue;
+    		newfile = new File(Environment.getExternalStorageDirectory(), new_path + File.separator + child.getName());
+    		System.out.println(child.getAbsolutePath());
+    		System.out.println(newfile.getAbsolutePath());
+    		System.out.println("");
+    		wasError = wasError || child.renameTo(newfile);
+    	}
+    	*/
+    	if(wasError)
+    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");
+    	 
+	    Callisto.storage_path = new_path;
+	    pd.cancel();
     }
     
     //http://stackoverflow.com/questions/6758841/how-to-know-perticular-package-application-exist-in-the-device

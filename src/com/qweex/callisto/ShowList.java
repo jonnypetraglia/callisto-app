@@ -54,7 +54,6 @@ import android.widget.TextView;
 
 //This activity is for displaying the episodes of a show
 
-//FEATURE: Ellipsisize list
 
 public class ShowList extends Activity
 {
