@@ -44,17 +44,26 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 //FEATURE: Calendar event notifications
 //IDEA: Storing the date information in the "PDT" format so it will be correct when you move between timezones without having to refresh
+//CLEAN: popup is incorrect margins for on top
 
 public class CalendarActivity extends Activity {
 	static long timeBetween;
@@ -78,6 +87,11 @@ public class CalendarActivity extends Activity {
 	boolean isLandscape = false;
 	final long MILLISECONDS_IN_A_DAY=1000*60*60*24;
 	private final static String CALENDAR_FEED_URL = "https://www.google.com/calendar/feeds/jalb5frk4cunnaedbfemuqbhv4@group.calendar.google.com/public/basic?singleevents=false&futureevents=true&&orderby=starttime&sortorder=a";
+	PopupWindow popUp;
+	int TheHeightOfTheFreakingPopup = 0;
+	TextView popUp_title, popUp_type, popUp_date, popUp_time; 
+	
+	
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +103,16 @@ public class CalendarActivity extends Activity {
         months = Callisto.RESOURCES.getStringArray(R.array.months);
         days = Callisto.RESOURCES.getStringArray(R.array.days);
         
+    	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    	View popupV = inflater.inflate(R.layout.event_info, null, false);
+		popUp = new PopupWindow(popupV);
+		popUp.setWindowLayoutMode(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		popUp_title = (TextView) popupV.findViewById(R.id.title);
+		popUp_type = (TextView) popupV.findViewById(R.id.type);
+		popUp_date = (TextView) popupV.findViewById(R.id.date);
+		popUp_time = (TextView) popupV.findViewById(R.id.time);
+        
+        
         if(!isLandscape)
         {
         	
@@ -97,6 +121,38 @@ public class CalendarActivity extends Activity {
         	
         	agenda = (LinearLayout) findViewById(R.id.agenda);
         	Log.i("CalendarActivity:OnCreate", "Loading the first week on the agenda");
+        	
+        	
+			(findViewById(R.id.scrollView1)).setOnTouchListener(new OnTouchListener() {
+
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+			        popUp.dismiss();
+			        return false;
+				}
+			});
+
+
+			
+			Button edit = (Button) popupV.findViewById(R.id.editEvent);
+			edit.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					//TODO: Edit/Add event here
+					/*
+					 * 1. Time Before
+					 * 2. Type (quick, must shut off
+					 * 3. Tone
+					 */
+					
+				}
+        		
+        	});
+			
+		
+			
+			
+			
         	Button BloadMore = (Button) findViewById(R.id.loadmore);
         	loadMoreAgenda(true);
         	BloadMore.setOnClickListener(new OnClickListener() {
@@ -142,7 +198,36 @@ public class CalendarActivity extends Activity {
 	    		Tmonth.performClick();
         }
     }
-    
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+	    // Override back button
+	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	        if (popUp.isShowing()) {
+	        	popUp.dismiss();
+	            return false;
+	        }
+	    }
+	    return super.onKeyDown(keyCode, event);
+	} 
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		
+		if(!isLandscape)
+			 findViewById(R.id.mainAgenda).post(new Runnable() {
+				   public void run() {
+					   popUp.showAsDropDown(agenda);
+					   popUp.dismiss();
+				   }
+				});
+
+	}
+	
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -357,7 +442,6 @@ public class CalendarActivity extends Activity {
         Tyear.setText(Integer.toString(current_cal.get(Calendar.YEAR)));
         Bprev.setEnabled(true);
         Bprev.setTextColor(Callisto.RESOURCES.getColor(R.color.calHdrClr));
-        SimpleDateFormat sdfRawSimple = new SimpleDateFormat("yyyyMMdd");
         
         int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK)-1;
         
@@ -366,6 +450,7 @@ public class CalendarActivity extends Activity {
         
         for(int i=0; i<7; i++)
         {
+        	
         	int day = current_cal.get(Calendar.DAY_OF_MONTH);
         	if(day==1)
         	{
@@ -384,41 +469,114 @@ public class CalendarActivity extends Activity {
         	} else
     			((TextView)dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + Callisto.RESOURCES.getColor(R.color.calDayClr));
         	
-        	String s = sdfRawSimple.format(new Date());;
+        	String s = Callisto.sdfRawSimple1.format(new Date());;
         	Cursor events = Callisto.databaseConnector.dayEvents(s, current_cal.get(Calendar.DAY_OF_WEEK)-1);
         	events.moveToFirst();
         	int j = 1;
+        	
         	while (events.isAfterLast() == false) 
         	{
+        		
         		String type = events.getString(events.getColumnIndex("type"));
         		String show = events.getString(events.getColumnIndex("show"));
         		String time = events.getString(events.getColumnIndex("time"));
+        		String _id  = events.getString(events.getColumnIndex("_id")); 
         		
         		TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+        		TextView id = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
+        		id.setText(_id);
+        		
         		event.setText(show);
         		event.setBackgroundColor(Callisto.RESOURCES.getColor(type.equals("RELEASE") ? R.color.releaseClr : R.color.liveClr));
         		event.setVisibility(View.VISIBLE);
+        		event.setOnClickListener(clickEvent);
+        		
         		events.moveToNext();
         		j++;
         	}
-        	
         	for(; j<=10; j++)
         	{
         		TextView event = (TextView) findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+        		if(event==null)
+        			continue;
         		event.setVisibility(View.GONE);
         	}
         	current_cal.add(Calendar.DATE,1);
-        	//*/
+        	
         }
         current_cal.add(Calendar.DATE, -7 + dayOfWeek);
     }
+    
+    //Listener for play/pause button
+	public OnClickListener clickEvent = new OnClickListener() 
+    {
+		@Override
+		  public void onClick(View v) 
+		  {
+			
+			if(popUp.isShowing())
+				popUp.dismiss();
+			int[] pos = new int[2];
+			//TODO: The method of getting the height of the popup is sketchy
+			v.getLocationOnScreen(pos);
+			if(TheHeightOfTheFreakingPopup==0)
+			{
+				TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
+			}
+			
+			//TODO: The first time a popup is shown, it's shown in a bad place. Weird.
+			if(isLandscape)
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
+				System.out.println(y);
+				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
+				//popUp.showAtLocation(findViewById(R.id.linearLayout1), Gravity.NO_GRAVITY, 10, 10);
+			}
+			else if(pos[1]>getWindowManager().getDefaultDisplay().getHeight()/2)
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				popUp.showAsDropDown(v, 0, -1*v.getHeight() - TheHeightOfTheFreakingPopup - 40);
+			}
+			else
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error));
+				popUp.showAsDropDown(v, 0, -5);
+			}
+			
+			View w = (View) v.getParent();
+			String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
+			long _id = 0;
+			try {
+				_id = Long.parseLong(id);
+			} catch(NumberFormatException e)
+			{
+			}
+			
+			Cursor c = Callisto.databaseConnector.getOneEvent(_id);
+			if(!c.moveToFirst())
+				return;
+			String s = c.getString(c.getColumnIndex("show"));
+			popUp_title.setText(s);
+			s = c.getString(c.getColumnIndex("type"));
+			popUp_type.setText(s);
+			try {
+				s = c.getString(c.getColumnIndex("date"));
+				s = Callisto.sdfDestination.format(Callisto.sdfRawSimple1.parse(s));
+				popUp_date.setText(s);
+				s = c.getString(c.getColumnIndex("time"));
+				s = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(s));
+				popUp_time.setText(s);
+			} catch (ParseException e) {}
+			//*/
+		  }
+    };
     
     
     
     public void loadMoreAgenda(boolean thisWeek)
     {
     	
-    	SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
     	int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK)-1;
     	TextView loading = (TextView) findViewById(R.id.empty);
     	
@@ -464,6 +622,7 @@ public class CalendarActivity extends Activity {
     			foundEvents = true;
 	        	LayoutInflater inflater = (LayoutInflater) CalendarActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        	View v = inflater.inflate(R.layout.agenda_row, null);
+	        	v.setOnClickListener(clickEvent);
 	        	
 	        	Date eventDate = null;
 		        try
@@ -513,11 +672,13 @@ public class CalendarActivity extends Activity {
 		        	((TextView) v.findViewById(R.id.soon)).setText("SOON");
 		        }
 		        else
-		        	((TextView) v.findViewById(R.id.time)).setText(sdfTime.format(eventDate));
+		        	((TextView) v.findViewById(R.id.time)).setText(Callisto.sdfTime.format(eventDate));
 		        //Show
 		        ((TextView) v.findViewById(R.id.show)).setText(c.getString(c.getColumnIndex("show")));
 		        //Type
 		        ((TextView) v.findViewById(R.id.type)).setText(c.getString(c.getColumnIndex("type")));
+		        //_id
+		        ((TextView) v.findViewById(R.id.id)).setText(c.getString(c.getColumnIndex("_id")));
 		        agenda.addView(v);
 		        
 		         //*/

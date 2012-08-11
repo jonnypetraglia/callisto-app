@@ -17,16 +17,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
  
 <!-- This is a row item for the agenda Activity  -->
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backClr"
+        android:duplicateParentState="true"
         android:orientation="horizontal"
         android:paddingBottom="10dp"
         android:paddingTop="10dp" >
@@ -35,6 +37,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
+            android:duplicateParentState="true"
             android:orientation="vertical" >
 
             <TextView
@@ -42,6 +45,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:duplicateParentState="true"
                 android:gravity="center_horizontal"
                 android:text="Date"
                 android:textColor="@color/txtClr"
@@ -52,6 +56,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:duplicateParentState="true"
                 android:gravity="center_horizontal"
                 android:text="Time"
                 android:textColor="@color/txtClr"
@@ -66,6 +71,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:layout_weight="1"
+            android:duplicateParentState="true"
             android:text="Show"
             android:textColor="@color/txtClr"
             android:textSize="18sp" />
@@ -77,6 +83,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
+            android:duplicateParentState="true"
             android:textColor="@color/red"
             android:textSize="12sp" />
         
@@ -85,6 +92,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:duplicateParentState="true"
             android:paddingRight="7dp"
             android:text="Type"
             android:textColor="@color/txtClr"
@@ -97,6 +105,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/black"
+        android:duplicateParentState="true"
         android:textSize="0sp" />
+
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="gone" />
 
 </LinearLayout>

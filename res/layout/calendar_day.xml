@@ -1,4 +1,4 @@
-<!-- 
+<!--
 Copyright (C) 2012 Qweex
 This file is a part of Callisto.
 
@@ -14,9 +14,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
- -->
- 
-<!-- This is 1 day for the calendar form of CalendarActivity  -->
+-->
+
+<!-- This is 1 day for the calendar form of CalendarActivity -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroll"
@@ -42,125 +42,266 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:text="1"
             android:textColor="@color/calDayClr" />
 
-        <TextView
-            android:id="@+id/event1"
+        <LinearLayout
+            android:id="@+id/zszdfjiozsfjiogzsbopzs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/event2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/event1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/event3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/event4"
+        <LinearLayout
+            android:id="@+id/awerawersfeuhfw3r"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/event5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/event2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/event6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/event7"
+        <LinearLayout
+            android:id="@+id/wy9pzsefsefawerw3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/event8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/event3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/event9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/event10"
+        <LinearLayout
+            android:id="@+id/deadeadfweafewa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:text="TextView"
-            android:textColor="#ddffffff"
-            android:visibility="gone" />
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/five"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/six"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/seven"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/eight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ten"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:text="TextView"
+                android:textColor="#ddffffff"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
