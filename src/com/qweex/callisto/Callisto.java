@@ -109,6 +109,9 @@ public class Callisto extends Activity {
 	public static int current_download = 1;
 	public static ArrayList<Long> download_queue = new ArrayList<Long>();
 	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
+	public static final SimpleDateFormat sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd");
+	public static final SimpleDateFormat sdfRawSimple2 = new SimpleDateFormat("HHmmss");
+	public static final SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
 	public static final SimpleDateFormat sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
 	public static final SimpleDateFormat sdfDestination = new SimpleDateFormat("MM/dd/yyyy");
 	public static final SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd");

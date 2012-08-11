@@ -283,6 +283,14 @@ public class DatabaseConnector
 		database.insert(DATABASE_CALENDAR, null, newEvent);
 	}
 	
+	public Cursor getOneEvent(long id) 
+	{
+		Cursor c = database.query(DATABASE_CALENDAR, new String[] {"_id", "show", "type", "date", "time", "recurring"},
+					"_id=" + id, null, null, null, null);
+		return c; 
+	}
+	
+	
 	public Cursor dayEvents(String specificDay, int dayOfWeek) 
 	{
 		String query = "recurring=" + dayOfWeek + " or date like '" + specificDay + "'";
