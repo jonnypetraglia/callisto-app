@@ -7,6 +7,13 @@
     android:focusable="true"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="gone" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -69,13 +76,13 @@
         android:layout_marginLeft="30dp" >
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/hasAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btn_check_buttonless_on" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/alarmInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

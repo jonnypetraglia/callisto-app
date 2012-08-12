@@ -53,6 +53,7 @@ import android.widget.Toast;
 //FEATURE: Search
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 //IDEA: a way to update the list without updating the app?
+//FIXME: Scrolling in the AllShows view while something is playing is jerky
 
 public class AllShows extends Activity {
 	

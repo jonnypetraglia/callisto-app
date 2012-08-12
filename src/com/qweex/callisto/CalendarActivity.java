@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,13 +39,15 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,13 +55,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ScrollView;
+import android.widget.RadioButton;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 //FEATURE: Calendar event notifications
@@ -82,6 +86,8 @@ public class CalendarActivity extends Activity {
 	LinearLayout[] dayViews = new LinearLayout[7];
 	long agendaLastDay = Long.parseLong(Callisto.sdfRaw.format((new Date())));
 	LinearLayout agenda;
+	private SharedPreferences alarmPrefs;
+	private Dialog dg;
 	
 	boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
 	boolean isLandscape = false;
@@ -111,6 +117,7 @@ public class CalendarActivity extends Activity {
 		popUp_type = (TextView) popupV.findViewById(R.id.type);
 		popUp_date = (TextView) popupV.findViewById(R.id.date);
 		popUp_time = (TextView) popupV.findViewById(R.id.time);
+		alarmPrefs = getSharedPreferences("alarms", MODE_PRIVATE);
         
         
         if(!isLandscape)
@@ -138,18 +145,59 @@ public class CalendarActivity extends Activity {
 			edit.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					//TODO: Edit/Add event here
-					/*
-					 * 1. Time Before
-					 * 2. Type (quick, must shut off
-					 * 3. Tone
-					 */
+					LayoutInflater inflater = (LayoutInflater) CalendarActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		        	View vi = inflater.inflate(R.layout.edit_alarm, null);
+					dg = new Dialog(CalendarActivity.this);
+					dg.setContentView(vi);
+					dg.setTitle("Set Alarm/Notification");
+					dg.show();
+					
+					NumberPicker NumP = (NumberPicker) vi.findViewById(R.id.minutesBefore);
+					NumP.setSuffix(" min before");
+					NumP.setIncrement(15);
+					NumP.setRange(0, 90);
+					
+					RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this); //adds ringtonemanager
+				    mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE); //sets the type to ringtones
+				    mRingtoneManager2.setIncludeDrm(true); //get list of ringtones to include DRM
+
+				    Cursor mCursor2 = mRingtoneManager2.getCursor(); //appends my cursor to the ringtonemanager
+
+				    startManagingCursor(mCursor2); //starts the cursor query
+
+				    //RingtoneManager.ID_COLUMN_INDEX
+				    String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX)};
+				    int[] to = {R.id.text1, R.id.id1};
+				    SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to );
+				    adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+				    Spinner s = (Spinner) vi.findViewById( R.id.spinner1);
+				    s.setAdapter(adapter);
+				    
+				    ((Button)vi.findViewById(R.id.save)).setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							View x = (View) v.getParent();
+							
+							//LEFT HERE: FIXME: ClassCastException
+							View xyz = (View) ((Spinner) x.findViewById( R.id.spinner1)).getSelectedItem();
+							String tone = (String) ((TextView)xyz.findViewById(R.id.id1)).getText();
+							System.out.println("butts" + tone);
+							String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
+							int min = 0;
+							boolean isAlarm = ((RadioButton) x.findViewById(R.id.isAlarm)).isChecked();
+							
+							SharedPreferences.Editor edit = alarmPrefs.edit();
+							edit.putString(key, Integer.toString(min) + "_" + isAlarm + "_" + tone);
+							edit.commit();
+							dg.dismiss();
+						}
+				    });
 					
 				}
         		
         	});
 			
-		
+
 			
 			
 			
@@ -413,7 +461,7 @@ public class CalendarActivity extends Activity {
     	     }catch (MalformedURLException e2) {
 			e2.printStackTrace();
 			}catch (IOException e2) {
-       			// EXCEPTION
+       			//TODO: EXCEPTION
 			e2.printStackTrace();	
 			}
     	   catch(NullPointerException e)
@@ -523,6 +571,8 @@ public class CalendarActivity extends Activity {
 			{
 				TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
 			}
+
+			
 			
 			//TODO: The first time a popup is shown, it's shown in a bad place. Weird.
 			if(isLandscape)
@@ -531,7 +581,6 @@ public class CalendarActivity extends Activity {
 				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
 				System.out.println(y);
 				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
-				//popUp.showAtLocation(findViewById(R.id.linearLayout1), Gravity.NO_GRAVITY, 10, 10);
 			}
 			else if(pos[1]>getWindowManager().getDefaultDisplay().getHeight()/2)
 			{
@@ -557,18 +606,39 @@ public class CalendarActivity extends Activity {
 			if(!c.moveToFirst())
 				return;
 			String s = c.getString(c.getColumnIndex("show"));
+			String d = "", t = "";
 			popUp_title.setText(s);
 			s = c.getString(c.getColumnIndex("type"));
 			popUp_type.setText(s);
 			try {
-				s = c.getString(c.getColumnIndex("date"));
-				s = Callisto.sdfDestination.format(Callisto.sdfRawSimple1.parse(s));
+				d = c.getString(c.getColumnIndex("date"));
+				s = Callisto.sdfDestination.format(Callisto.sdfRawSimple1.parse(d));
 				popUp_date.setText(s);
-				s = c.getString(c.getColumnIndex("time"));
-				s = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(s));
+				t = c.getString(c.getColumnIndex("time"));
+				s = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(t));
 				popUp_time.setText(s);
 			} catch (ParseException e) {}
 			//*/
+			
+			
+			Map<String,?> alarms = alarmPrefs.getAll();
+			String key = popUp_title + d + t;
+			((TextView) popUp.getContentView().findViewById(R.id.key)).setText(key);
+			if(alarms.containsKey(popUp_title))
+			{
+				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.VISIBLE);
+				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("Alarm set for this show");
+			}
+			else if(alarms.containsKey(key))
+			{
+				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.VISIBLE);
+				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("Alarm set for just this episode");
+			}
+			else
+			{
+				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.INVISIBLE);
+				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("No alarm set");
+			}
 		  }
     };
     

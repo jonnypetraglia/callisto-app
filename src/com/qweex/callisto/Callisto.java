@@ -89,7 +89,6 @@ import android.widget.Toast;
 //IDEA: Maybe switch to DownloadManager.class? Requires API 9
 
 
-
 /* This is the main activity/class for the app.
  * It contains the main screen, and also some static elements
  * that are globally used across multiple activities
@@ -481,12 +480,17 @@ public class Callisto extends Activity {
 			timeView.setText(formatTimeFromSeconds(current));
 			if(i==Callisto.SAVE_POSITION_EVERY)
 			{
+				try {
 				Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
 		    	Cursor queue = Callisto.databaseConnector.currentQueue();
 		    	queue.moveToFirst();
 		    	Long identity = queue.getLong(queue.getColumnIndex("identity"));
 				Callisto.databaseConnector.updatePosition(identity, Callisto.mplayer.getCurrentPosition());
 				i=0;
+				} catch(NullPointerException e)
+				{
+					Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
+				}
 			}
 		}
 	};
@@ -687,18 +691,22 @@ public class Callisto extends Activity {
   		
   		  //Download the image URL
   		
-  		  while(!("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  		  while(!("title".equals(xpp.getName())) && !("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
   		  {
 				  eventType = xpp.next();
 				  if(eventType==XmlPullParser.END_DOCUMENT)
 					  throw(new UnfinishedParseException("Thumbnail"));
 		  }
-  		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
-  		  try {
-  			  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-  		  } catch(IOException e)
-  		  {}
-  		  Log.v("*:updateShow", "Parser has downloaded image");
+  		  if(!("title".equals(xpp.getName())))
+		  {
+	  		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
+	  		  try {
+	  			  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+	  		  } catch(IOException e)
+	  		  {}
+	  		  Log.v("*:updateShow", "Parser has downloaded image");
+		  }
+  		  xpp.next();
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)
