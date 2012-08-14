@@ -34,7 +34,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" >
-
+
             <TextView
                 android:id="@+id/chat"
                 android:layout_width="match_parent"
@@ -42,6 +42,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:layout_marginBottom="50dp"
                 android:gravity="bottom"
                 android:paddingBottom="50dp" />
+
         </ScrollView>
 
         <EditText
@@ -52,11 +53,12 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:textColor="@color/txtClr" />
 
     </LinearLayout>
-
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="@color/backClr" >
 
         <TextView
             android:id="@+id/syslog"

@@ -47,6 +47,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <activity android:name="CalendarActivity"></activity>
         <activity android:name="IRCChat"
             android:configChanges="keyboardHidden|orientation"
+            android:launchMode="singleTop"
             ></activity>
         <activity android:name="DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity"></activity>

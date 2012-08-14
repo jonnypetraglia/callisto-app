@@ -42,6 +42,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -174,6 +175,15 @@ public class EpisodeDesc extends Activity
 	{
 		return filename.substring(filename.lastIndexOf("."));
 	}
+	
+	/*  //TODO: "Share" option in episode description
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+    	menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
+        return true;
+    }
+    */
 
 	@Override
 	public void onResume()
