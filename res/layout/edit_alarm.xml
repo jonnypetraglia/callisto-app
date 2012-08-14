@@ -1,48 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backClr"
     android:orientation="vertical" >
 
-    <com.qweex.callisto.NumberPicker
-        android:id="@+id/minutesBefore"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <RadioGroup
-        android:id="@+id/radioGroup1"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/landscapeRotate"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" >
 
-        <RadioButton
-            android:id="@+id/radio0"
+        <com.qweex.callisto.NumberPicker
+            android:id="@+id/minutesBefore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Notification"
-            android:textColor="@color/txtClr" />
+            android:layout_gravity="center_vertical|center_horizontal" >
 
-        <RadioButton
-            android:id="@+id/isAlarm"
+        </com.qweex.callisto.NumberPicker>
+
+        <LinearLayout
+            android:id="@+id/fasfefgea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Alarm"
-            android:textColor="@color/txtClr" />
-    </RadioGroup>
+            android:orientation="vertical" >
 
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Vibrate"
-        android:textColor="@color/txtClr" />
+            <RadioGroup
+                android:id="@+id/radioGroup1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+                <RadioButton
+                    android:id="@+id/radio0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Notification"
+                    android:textColor="@color/txtClr" />
+
+                <RadioButton
+                    android:id="@+id/isAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alarm"
+                    android:textColor="@color/txtClr" />
+            </RadioGroup>
+
+            <CheckBox
+                android:id="@+id/vibrate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Vibrate"
+                android:textColor="@color/txtClr" />
+
+            <Spinner
+                android:id="@+id/spinner1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/save"

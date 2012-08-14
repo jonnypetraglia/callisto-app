@@ -30,59 +30,17 @@ public class NumberPicker extends LinearLayout
         init();
     }
     
-    private void init()
+    public int getValue()
     {
-    	this.setOrientation(LinearLayout.VERTICAL);
-	    Button up = new Button(getContext());
-	    up.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_up));
-	    up.setOnClickListener(increase);
-	    edit = new EditText(getContext());
-	    edit.setGravity(Gravity.CENTER_HORIZONTAL);
-	    edit.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-	    edit.setFilters(new InputFilter[] {new InputFilter() {
-
-			@Override
-			public CharSequence filter(CharSequence source, int start, int end,
-					Spanned dest, int dstart, int dend)
-			//FIXME: Does not allow for keyboard input.
-			{
-				try {
-					if(source.length()==0)
-						return null;
-					String result = dest.toString();
-					String s = (String) source.subSequence(prefix.length(), source.length()-suffix.length());
-					System.out.println("SOURCE: " + s);
-					System.out.println("RESULT: " + result);
-					result = result.substring(0,dstart) + s.subSequence(start-prefix.length(), end-suffix.length()) + result.substring(dend);
-					int i = Integer.parseInt(result);
-					if(i<min || i>max)
-						return "";
-					//Integer.parseInt((String)source);
-					current = i;
-					//I would do a refresh() here, but it causes this filter to be called, creating an endless loop
-					return null;
-				} catch(Exception e)
-				{
-					e.printStackTrace();
-					System.out.println("Unable to Parse");
-					return "";
-				}
-			}
-	    	
-	    }});
-	    Button down = new Button(getContext());
-    	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_down));
-    	down.setOnClickListener(decrease);
-	    addView(up);
-	    addView(edit);
-	    addView(down);
-	    refresh();
+    	return current;
     }
     
     public void setValue(int i) throws Exception
     {
     	if(i<min || i>max)
     		throw(new Exception()); //TODO: Create Exception for NumberPicker
+    	current = i;
+    	refresh();
     }
     
     public void setPrefix(String p)
@@ -108,9 +66,56 @@ public class NumberPicker extends LinearLayout
     	this.max = _max;
     }
     
+    /**************************************************************/
+    
+    private void init()
+    {
+    	this.setOrientation(LinearLayout.VERTICAL);
+	    Button up = new Button(getContext());
+	    up.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_up));
+	    up.setOnClickListener(increase);
+	    edit = new EditText(getContext());
+	    edit.setGravity(Gravity.CENTER_HORIZONTAL);
+	    edit.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+	    edit.setFilters(new InputFilter[] {new InputFilter() {
+
+			@Override
+			public CharSequence filter(CharSequence source, int start, int end,
+					Spanned dest, int dstart, int dend)
+			//FIXME: Does not allow for keyboard input.
+			{
+				try {
+					if(source.length()==0)
+						return null;
+					String result = dest.toString();
+					String s = (String) source.subSequence(prefix.length(), source.length()-suffix.length());
+					result = result.substring(0,dstart) + s.subSequence(start-prefix.length(), end-suffix.length()) + result.substring(dend);
+					int i = Integer.parseInt(result);
+					if(i<min || i>max)
+						return "";
+					//Integer.parseInt((String)source);
+					current = i;
+					//I would do a refresh() here, but it causes this filter to be called, creating an endless loop
+					return null;
+				} catch(Exception e)
+				{
+					e.printStackTrace();
+					return "";
+				}
+			}
+	    	
+	    }});
+	    Button down = new Button(getContext());
+    	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_down));
+    	down.setOnClickListener(decrease);
+	    addView(up);
+	    addView(edit);
+	    addView(down);
+	    refresh();
+    }
+    
     private void refresh()
     {
-    	System.out.println(prefix + Integer.toString(current) + suffix);
     	edit.setText(prefix + Integer.toString(current) + suffix);
     }
     

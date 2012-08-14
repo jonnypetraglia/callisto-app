@@ -1,8 +1,11 @@
 crash
-	-Do not auto log out IRC
 	-Link to jblive.info
 	-Settings - Switch to Video
 	-IRC: gray on black
 	-Plan screen in landscape is janky
 	-refresh on main screen
-	-
+
+IRC
+	-Nick list?
+	-Different colors for nicks
+	-notification upon mention

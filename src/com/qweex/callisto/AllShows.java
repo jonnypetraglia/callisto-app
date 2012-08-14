@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -57,7 +58,7 @@ import android.widget.Toast;
 
 public class AllShows extends Activity {
 	
-	public static boolean IS_VIDEO = false;
+	public static boolean IS_VIDEO;
 	
 	//These are static arrays containing the show names and corresponding feed URLS
 	// A sub-heading will start with a space in the name list and have a value of null in the feeds
@@ -94,7 +95,7 @@ public class AllShows extends Activity {
 		mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
 
 		
-		IS_VIDEO = false; //IS_VIDEO=getIntent().getExtras().getBoolean("is_video");  IDEA: add watch
+		IS_VIDEO = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("is_video", false);
 		if(IS_VIDEO)
 			this.setTitle(getResources().getString(R.string.watch));
 		else

@@ -134,9 +134,10 @@ public class Callisto extends Activity {
 	public static oOnCompletionListener nextTrack;
 	public static oOnErrorListener nextTrackBug;
 	public static oOnPreparedListener okNowPlay;
-	private static final int NOTIFICATION_ID = 1337;
+	public static final int NOTIFICATION_ID = 1337;
 	private static NotificationManager mNotificationManager;
-
+	public static SharedPreferences alarmPrefs;
+	public final static String PREF_FILE = "alarms";
 
 	
 	@Override
@@ -151,7 +152,7 @@ public class Callisto extends Activity {
 		
 		//This is the most reliable way I've found to determine if it is landscape
 		boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
-		
+		alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
 		
 		setContentView(R.layout.main);
 		findViewById(R.id.playPause).setOnClickListener(Callisto.playPause);

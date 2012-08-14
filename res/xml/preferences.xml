@@ -41,7 +41,29 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:key="download_to_queue"
 	        android:title="Append downloads to queue"
 	        />
-	    <PreferenceCategory
+	    
+	    
+	    <PreferenceScreen android:title="IRC Settings">
+	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
+	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
+	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
+	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps"/>
+	        <!-- 
+	        <PreferenceCategory android:title="Colors">
+	            
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_text" android:title="Text Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_topic" android:title="Topic Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_me" android:title="My Nick Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_join" android:title="Join Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_nick" android:title="Nick Change Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_part" android:title="part Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_quit" android:title="Quit Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_kick" android:title="Kick Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_mention" android:title="Mention Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_error" android:title="Error Color" android:entryValues="@array/colors"/>
+	        </PreferenceCategory>
+	        -->
+	    </PreferenceScreen><PreferenceCategory
 	        android:title="Super special settings"
 	        android:key="secret" >
 	        <CheckBoxPreference
@@ -57,6 +79,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:dependency="splash_show"
 	             />
 	    </PreferenceCategory>
+	    
 	    
 	    
     
