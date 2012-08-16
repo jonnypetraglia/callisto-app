@@ -35,6 +35,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.qweex.callisto.irc.IRCChat;
+import com.qweex.callisto.podcast.AllShows;
+import com.qweex.callisto.podcast.EpisodeDesc;
+import com.qweex.callisto.podcast.Queue;
+import com.qweex.utils.UnfinishedParseException;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.AlertDialog;
@@ -86,7 +92,6 @@ import android.widget.Toast;
 //FEATURE: Widget
 //IDEA: In-app Donate
 //IDEA: player real estate with landscape
-//IDEA: Maybe switch to DownloadManager.class? Requires API 9
 
 
 /* This is the main activity/class for the app.
@@ -127,7 +132,7 @@ public class Callisto extends Activity {
 	static ProgressBar timeProgress;
 	private static final int QUIT_ID=Menu.FIRST+1;
 	private static final int SETTINGS_ID=QUIT_ID+1;
-	private static final int SAVE_POSITION_EVERY = 4;	//Cycles, not necessarily seconds
+	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
 	public final String DONATION_APP_ID = "com.qweex.donation";
@@ -163,7 +168,7 @@ public class Callisto extends Activity {
 		
 		
 		//This loop sets the onClickListeners and adjusts the button settings if the view is landscape
-		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate}; //IDEA: add watch
+		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
 		int [] graphics = {R.drawable.ic_menu_play_clip, R.drawable.ic_menu_view, R.drawable.ic_menu_today, R.drawable.ic_menu_allfriends, R.drawable.ic_menu_send, R.drawable.ic_menu_emoticons};
 		
 		Button temp;
@@ -503,6 +508,8 @@ public class Callisto extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
+			if(databaseConnector.queueCount()==0)
+				return;
 			if(Callisto.mplayer==null)
 			{
 				Log.d("*:playPause","PlayPause initiated");
@@ -567,10 +574,15 @@ public class Callisto extends Activity {
 			Intent newIntent;
 			if(v.getId()==R.id.donate)
 			{
+				/*
 				Toast.makeText(getApplicationContext(), "This will open a link to a donation 'app' in Google Play.", Toast.LENGTH_LONG).show();
 				if(v.getId()==R.id.donate)
 					return;
-				//TODO: Change this when you launch
+					//*/
+				newIntent = new Intent(Callisto.this, Donate.class);
+				startActivity(newIntent);
+				//TODO: Change this to a good donation thingy
+				/*
 				newIntent = new Intent(Intent.ACTION_VIEW);
 				try {
 					newIntent.setData(Uri.parse("market://details?id=" + DONATION_APP_ID));
@@ -580,6 +592,7 @@ public class Callisto extends Activity {
 					newIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + DONATION_APP_ID));
 					startActivity(newIntent);
 				}
+				//*/
 			}
 			else {
 				   newIntent = new Intent(Callisto.this,
@@ -588,7 +601,6 @@ public class Callisto extends Activity {
 					v.getId()==R.id.chat ? IRCChat.class : (
 					v.getId()==R.id.contact ? ContactForm.class : (
 							  AllShows.class)))));
-				   //newIntent.putExtra("is_video", (v.getId()==R.id.watch?true:false));	//IDEA: add watch
 				   startActivity(newIntent);
 			}
 		  }
@@ -849,7 +861,7 @@ public class Callisto extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
-    	menu.add(SETTINGS_ID, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
+    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
         return true;
     }
     

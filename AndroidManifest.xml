@@ -37,22 +37,33 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
 
         </activity>
-        <activity android:name="AllShows"></activity><activity android:name="ShowList">
+        <activity android:name=".podcast.AllShows"></activity><activity android:name=".podcast.ShowList">
         </activity>
-        <activity android:name="EpisodeDesc"></activity>
+        <activity android:name=".podcast.EpisodeDesc"></activity>
         
         <activity android:name="ContactForm" android:configChanges="keyboardHidden|orientation"></activity>
-        <activity android:name="Queue" android:launchMode="singleTop"></activity>
+        <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
         <activity android:name="Callisto" android:launchMode="singleTop"></activity>
         <activity android:name="CalendarActivity"></activity>
-        <activity android:name="IRCChat"
+        <activity android:name=".irc.IRCChat"
             android:configChanges="keyboardHidden|orientation"
             android:launchMode="singleTop"
             ></activity>
-        <activity android:name="DownloadList" android:launchMode="singleTop"></activity>
+        <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity"></activity>
         <activity android:name="NowPlaying"></activity>
+        <activity android:name="Donate"></activity>
 
+    <service android:name="com.android.vending.billing.BillingService" />
+
+    <receiver android:name="com.android.vending.billing.BillingReceiver">
+      <intent-filter>
+        <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
+        <action android:name="com.android.vending.billing.RESPONSE_CODE" />
+        <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
+      </intent-filter>
+    </receiver>
+        
     </application>
 
 </manifest>

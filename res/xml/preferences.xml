@@ -79,6 +79,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:dependency="splash_show"
 	             />
 	    </PreferenceCategory>
+	    <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/>
 	    
 	    
 	    

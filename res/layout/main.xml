@@ -48,7 +48,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:drawablePadding="-10dp"
                 android:drawableTop="@drawable/ic_menu_play_clip"
                 android:paddingTop="10dp"
-                android:text="@string/listen"
+                android:text="@string/play"
                 android:textColor="@android:color/primary_text_light"
                 android:textSize="20sp" />
 <!-- 

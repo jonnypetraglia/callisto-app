@@ -38,6 +38,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.qweex.utils.NumberPicker;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
