@@ -67,6 +67,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -80,6 +81,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -125,6 +127,8 @@ public class Callisto extends Activity {
 	public static PlayerInfo playerInfo = null;
 	public static Resources RESOURCES;
 	public static float DP;
+	public static TextView chatView;
+	//public static android.text.Spanned chatLog = new android.text.SpannableString("");
 	
 	//------Local variables-----
 	static TextView timeView;
@@ -189,7 +193,7 @@ public class Callisto extends Activity {
 			//*/
 		}
 		
-		//Initialization of (some of the) staticvariables
+		//Initialization of (some of the) static variables
 		Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_media_play);
 		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_media_pause);
 		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
@@ -200,6 +204,16 @@ public class Callisto extends Activity {
 		nextTrack = new oOnCompletionListener();
 		nextTrackBug = new oOnErrorListener();
 	    okNowPlay = new oOnPreparedListener();
+	    
+	    	//Create the view for the the IRC
+	    chatView = new TextView(this);
+	    chatView.setGravity(Gravity.BOTTOM);
+	    /*
+	    ScrollView.LayoutParams ll = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
+	    ll.setMargins(0, 0, 0, (int)(50*Callisto.DP));
+	    chatView.setPadding(0, 0, 0, (int)(50*Callisto.DP));
+	    chatView.setLayoutParams(ll);
+	    //*/
 	}
 	
 	
@@ -794,7 +808,9 @@ public class Callisto extends Activity {
 				  
 				  
 				  epDate = Callisto.sdfRaw.format(Callisto.sdfSource.parse(epDate));
-		    	  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epMediaLink, epMediaSize, isVideo);
+				  if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
+						  								isVideo, epMediaLink, epMediaSize))
+					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epMediaLink, epMediaSize, isVideo);
 		    	  Log.v("*:updateShow", "Inserting episode: " + epTitle);
   		  }
   		  
@@ -837,18 +853,7 @@ public class Callisto extends Activity {
  	   Log.i("*:updateShow", "Finished update");
  	   return m;
 	}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     //Everything below this line is either vastly incomplete or for debugging

@@ -83,6 +83,22 @@ public class DatabaseConnector
 			   (id!=0 ? (" WHERE _id='" + id + "'") : ""));
 	}
 	
+	//True = an episode was found and updated, False = no episode found
+	public boolean updateMedia(String show, String title,
+							boolean isVideo, String newLink, long newSize)
+	{
+		Cursor c = database.query(DATABASE_TABLE, new String[] {"_id"},
+				"title='" + title + "' AND show='" + show + "'", null, null, null, null);
+		if(c.getCount()==0)
+			return false;
+		c.moveToFirst();
+		String newType = (isVideo ? "vid" : "mp3");
+		long id = c.getLong(c.getColumnIndex("_id"));
+		database.execSQL("UPDATE " + DATABASE_TABLE  + " SET " + newType + "link='" + newLink + "' WHERE _id='" + id + "'");
+		database.execSQL("UPDATE " + DATABASE_TABLE  + " SET " + newType + "size='" + newLink + "' WHERE _id='" + id + "'");
+		return true;
+	}
+	
 	public void updatePosition(long id, long position)
 	{
 		database.execSQL("UPDATE " + DATABASE_TABLE  + " SET position='" + position + "' WHERE _id='" + id + "'");

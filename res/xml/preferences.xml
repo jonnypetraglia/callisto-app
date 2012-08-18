@@ -42,7 +42,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:title="Append downloads to queue"
 	        />
 	    
-	    
+	    <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/>
 	    <PreferenceScreen android:title="IRC Settings">
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
@@ -53,7 +53,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            
 	            <ListPreference android:entries="@array/colors" android:key="irc_color_text" android:title="Text Color" android:entryValues="@array/colors"/>
 	            <ListPreference android:entries="@array/colors" android:key="irc_color_topic" android:title="Topic Color" android:entryValues="@array/colors"/>
-	            <ListPreference android:entries="@array/colors" android:key="irc_color_me" android:title="My Nick Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_mynick" android:title="Your Nick Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_me" android:title="/me Color" android:entryValues="@array/colors"/>
+	            <ListPreference android:entries="@array/colors" android:key="irc_color_pm" android:title="PM Color" android:entryValues="@array/colors"/>
 	            <ListPreference android:entries="@array/colors" android:key="irc_color_join" android:title="Join Color" android:entryValues="@array/colors"/>
 	            <ListPreference android:entries="@array/colors" android:key="irc_color_nick" android:title="Nick Change Color" android:entryValues="@array/colors"/>
 	            <ListPreference android:entries="@array/colors" android:key="irc_color_part" android:title="part Color" android:entryValues="@array/colors"/>
@@ -79,7 +81,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:dependency="splash_show"
 	             />
 	    </PreferenceCategory>
-	    <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/>
 	    
 	    
 	    

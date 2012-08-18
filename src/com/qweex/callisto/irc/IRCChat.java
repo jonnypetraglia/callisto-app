@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
@@ -32,6 +33,7 @@ import com.qweex.callisto.R;
 
 import jerklib.ConnectionManager;
 import jerklib.Profile;
+import jerklib.ServerInformation;
 import jerklib.Session;
 import jerklib.events.*;
 import jerklib.events.IRCEvent.Type;
@@ -48,6 +50,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
@@ -56,6 +60,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -75,15 +80,17 @@ import android.widget.ViewAnimator;
 
 
 //TODO: URL detection
-//FIXME: /me support (does not support sending, does not even get event for receiving)
-//FIXME: TextView is not exactly lined up right;
+//FIXME: Glow from scrollview covers up bottom line
 //IDEA: Nicklist
+//FIXME: fix syslog like chatView
+//FIXME: Quit message doesn't work :\
+//FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
+//FIXME: If NickServ logs you out because you don't identify, the app will crash. I blame jerklib
 
 public class IRCChat extends Activity implements IRCEventListener
 {
-	
-	private String SERVER_NAME = "irc.freenode.net"; //"irc.geekshed.net";
-	private String CHANNEL_NAME = "#jerklib"; //"#jupiterbroadcasting";
+	private String SERVER_NAME = "irc.geekshed.net";
+	private String CHANNEL_NAME = "#jbgossip"; //"#jupiterbroadcasting";
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
@@ -91,14 +98,16 @@ public class IRCChat extends Activity implements IRCEventListener
 	
 	private String CLR_TEXT = "Black",
 				   CLR_TOPIC = "DarkGoldenRod",
-				   CLR_ME = "SeaGreen",
+				   CLR_ME = "DarkViolet",
 				   CLR_JOIN = "Blue",
+				   CLR_MYNICK = "SeaGreen",
 				   CLR_NICK = "Blue",
 				   CLR_PART = CLR_JOIN,
 				   CLR_QUIT = CLR_JOIN,
 				   CLR_KICK = CLR_JOIN,
 				   CLR_ERROR = "Maroon",
-				   CLR_MENTION = "LightCoral";
+				   CLR_MENTION = "LightCoral",
+				   CLR_PM = "DarkCyan";
 	
 	
 	private static final int LOG_ID=Menu.FIRST+1;
@@ -106,13 +115,12 @@ public class IRCChat extends Activity implements IRCEventListener
 	
 	private static ConnectionManager manager;
 	private static Session session;
-	private static CharSequence chatLog = "";
 	private static NotificationManager mNotificationManager;
 	private static int mentionCount = 0;
 	private static PendingIntent contentIntent;
 	private static boolean isFocused = false;
 	ScrollView sv, sv2;
-	TextView chat, syslog;
+	TextView syslog; //chat;
 	EditText input;
 	Spanned received;
 	SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
@@ -122,11 +130,35 @@ public class IRCChat extends Activity implements IRCEventListener
 	public static ArrayList<CharSequence> COLOR_LIST;
 	List<String> nickList;
 	
+	static Handler chatHandler = null;
+	Runnable chatUpdater;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		if(chatHandler==null)
+		{
+			chatHandler = new Handler();
+			chatUpdater = new Runnable()
+			{
+		        @Override
+		        public void run()
+		        {
+		        	if(received.equals(new SpannableString("")))
+		        		return;
+		            Callisto.chatView.append(received);
+		            //if(isFocused)
+		            	//Callisto.chatLog = (Spanned) TextUtils.concat(Callisto.chatLog, received);
+		            received = new SpannableString("");
+		            Callisto.chatView.invalidate();
+		            sv.fullScroll(ScrollView.FOCUS_DOWN);
+		            input.requestFocus();
+		        }
+			};
+		}
+		
 		isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		COLOR_LIST = new ArrayList<CharSequence>(Arrays.asList(Callisto.RESOURCES.getTextArray(R.array.colors)));
@@ -137,7 +169,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		if(session!=null)
 		{
 			resume();
-			chat.setText(chatLog);
+			//Callisto.chatView.setText(Callisto.chatLog);
+			Callisto.chatView.append("\n");
 			return;
 		}
 		
@@ -149,7 +182,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		ll.setLayoutParams(params);
 		ll.setId(1337);
 		ll.setPadding(getWindowManager().getDefaultDisplay().getHeight()/10,
-				  getWindowManager().getDefaultDisplay().getHeight()/(isLandscape?1000:4),
+				  getWindowManager().getDefaultDisplay().getHeight()/(isLandscape?6:4),
 				  getWindowManager().getDefaultDisplay().getHeight()/10,
 				  0);
 		final EditText user = new EditText(this);
@@ -207,7 +240,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		if (keyCode == KeyEvent.KEYCODE_BACK)
 		{	
-			if(session==null)
+			if(session==null || true)
 			{
 				finish();
 				return true;
@@ -260,7 +293,6 @@ public class IRCChat extends Activity implements IRCEventListener
 	    		try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					System.out.println("BUTTS");
 				}
 	    		input.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.editbox_background));
 	    		//*/
@@ -300,7 +332,7 @@ public class IRCChat extends Activity implements IRCEventListener
       LinearLayout ll = (LinearLayout) findViewById(1337);
       if(ll!=null)
 		ll.setPadding(getWindowManager().getDefaultDisplay().getHeight()/10,
-				  getWindowManager().getDefaultDisplay().getHeight()/(isLandscape?1000:4),
+				  getWindowManager().getDefaultDisplay().getHeight()/(isLandscape?6:4),
 				  getWindowManager().getDefaultDisplay().getHeight()/10,
 				  0);
     }
@@ -309,12 +341,15 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	isFocused = true;
     	mentionCount = 0;
-    	nickColors.put(profileNick, CLR_ME);
-		COLOR_LIST.remove(CLR_ME);
+    	nickColors.put(profileNick, CLR_MYNICK);
+		COLOR_LIST.remove(CLR_MYNICK);
 		setContentView(R.layout.irc);
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv2 = (ScrollView) findViewById(R.id.scrollView2);
-		chat = (TextView) findViewById(R.id.chat);
+		ScrollView test = ((ScrollView)Callisto.chatView.getParent());
+		if(test!=null)
+			test.removeView(Callisto.chatView);
+		sv.addView(Callisto.chatView);
 		syslog = (TextView) findViewById(R.id.syslog);
 		input = (EditText) findViewById(R.id.inputField);
 		input.setOnEditorActionListener(new OnEditorActionListener(){
@@ -340,33 +375,63 @@ public class IRCChat extends Activity implements IRCEventListener
     	//Read colors
     	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_text", "Black");
 	    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_topic", "DarkGoldenRod");
-	    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_me", "SeaGreen");
+	    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_mynick", "SeaGreen");
+	    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_me", "DarkViolet");
 		CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_join", "Blue");
-	    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_text", "Blue");
+	    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_nick", "Blue");
 	    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_part", CLR_JOIN);
 	    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_quit", CLR_JOIN);
 	    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_kick", CLR_JOIN);
 		CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_error", "Maroon");
 		CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_mention", "LightCoral");
+		CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_pm", "DarkCyan");
     	
-        final NickServAuthPlugin auth = new NickServAuthPlugin(profilePass, 'e', session, Arrays.asList(CHANNEL_NAME));
 		
-		manager = new ConnectionManager(new Profile(profileNick));
-		session = manager.requestConnection(SERVER_NAME);
-		session.onEvent(auth, Type.CONNECT_COMPLETE , Type.MODE_EVENT);
-		session.addIRCEventListener(this);
 		Intent notificationIntent = new Intent(this, IRCChat.class);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     	Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
 		Callisto.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
        	Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
-       	
        	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+       	
+       	
+		manager = new ConnectionManager(new Profile(profileNick));
+		session = manager.requestConnection(SERVER_NAME);
+		if(profilePass!=null && profilePass!="")
+		{
+			final NickServAuthPlugin auth = new NickServAuthPlugin(profilePass, 'e', session, Arrays.asList(CHANNEL_NAME));
+			session.onEvent(auth, Type.CONNECT_COMPLETE , Type.MODE_EVENT);
+		}
+		session.addIRCEventListener(this);
+		
+		session.setInternalParser(new jerklib.parsers.DefaultInternalEventParser()
+		{
+			@Override
+			public IRCEvent receiveEvent(IRCEvent e)
+			{
+				
+				try
+				{
+				String action = e.getRawEventData();
+				action = action.substring(action.lastIndexOf(":")+1);
+					try {
+						if(action.startsWith("ACTION"))
+						{
+							action = action.substring("ACTION".length(), action.length()-1);
+							String person = e.getRawEventData().substring(1, action.indexOf("!"));
+						}
+					}catch(Exception ex){}
+				}
+				catch(Exception ex){}
+				return super.receiveEvent(e);
+			}
+		});
+		//*/
     }
     
     public void logout()
     {
-    	String q = profilePass = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
+    	String q = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
     	if(q==null)
     		manager.quit();
     	else
@@ -375,215 +440,323 @@ public class IRCChat extends Activity implements IRCEventListener
 		session = null;
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
 		isFocused = false;
+		Callisto.chatView.setText("");
 		finish();
     }
     
+  //INVITE_EVENT
+  //NUMERIC_ERROR_EVENT
+  //UnresolvedHostnameErrorEvent
     
-    
+	/*
+	 *what
+	 * WATCH???
+	 * HELPOP???
+	 * SETNAME???
+	 * VHOST???
+	 * MODE???
+	 * 
+	 *mod
+	 * INVITE
+	 * KICK
+	 * http://www.geekshed.net/commands/ircop/
+	 */
 	public void receiveEvent(IRCEvent e)
 	{
-		System.out.println("|" + e.getRawEventData() + "|");
-		System.out.println("---" + e.getType());
+		Log.d("IRCCHat:receiveEvent", e.getRawEventData());
+		Log.d("IRCCHat:receiveEvent", "---" + e.getType());
 		switch(e.getType())
 		{
-		//Syslog events
-			case CONNECT_COMPLETE:
-				ConnectionCompleteEvent c = (ConnectionCompleteEvent) e;
-				received =  Html.fromHtml(c.getRawEventData());
-				e.getSession().join(CHANNEL_NAME);
-				syslog.post(receiveLog);
-				break;
-			case JOIN_COMPLETE:
-				JoinCompleteEvent jce = (JoinCompleteEvent) e;
-				received =  Html.fromHtml(jce.getRawEventData());
-				syslog.post(receiveLog);
-				break;
-			case MOTD:
-				MotdEvent mo = (MotdEvent) e;
-				received =  Html.fromHtml(mo.getMotdLine() + "<br/>");
-				syslog.post(receiveLog);
-				break;
-			case NOTICE:
-				NoticeEvent ne = (NoticeEvent) e;
-				System.out.println("|" + ne.byWho() + "|");
-				if(ne.byWho().equals("NickServ"))
-				{
-					received =  Html.fromHtml(ne.getNoticeMessage() + "<br/>");
-					received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-							"<font color='" + CLR_TOPIC + "'>" + ne.getNoticeMessage() + "</font><br/>");
-					chat.post(receiveMessage);
-				}
-				break;
-				
+		//Misc events
 			case NICK_LIST_EVENT:
 				nickList = ((NickListEvent) e).getNicks();
 				Collections.sort(nickList, String.CASE_INSENSITIVE_ORDER);
 				break;
+				//TODO: This might not work. I dunno.
+			case CTCP_EVENT:
+				CtcpEvent ce = (CtcpEvent) e;
+				String realEvent = ce.getCtcpString().substring(0, ce.getCtcpString().indexOf(" "));
+				if(realEvent.equals("ACTION"))
+				{
+					String realAction = ce.getCtcpString().substring(realEvent.length()).trim();
+					String realPerson = ce.getRawEventData().substring(1, ce.getRawEventData().indexOf("!"));
+					received = getReceived("* " + realPerson + " " + realAction, null, CLR_ME);
+					chatHandler.post(chatUpdater);
+				}
+				break;
+			case AWAY_EVENT://This isn't even effing used! (for other people's away
+				AwayEvent a = (AwayEvent) e;
+				if(a.isYou())
+				{
+					received = getReceived("You are " + (a.isAway() ? " now " : " no longer ") + "away (" + a.getAwayMessage() + ")", null, CLR_TOPIC);					
+				}
+				received = getReceived("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), CLR_TOPIC);
+				chatHandler.post(chatUpdater);
+				break;
 				
-//AWAY_EVENT = someone aways
-//CHANNEL_LIST_EVENT
-//CTCP_EVENT
-//INVITE_EVENT
-//NICK_LIST_EVENT
-//NOTICE_EVENT
-//NUMERIC_ERROR_EVENT
-//SERVER_INFORMATION_EVENT
-//SERVER_VERSION_EVENT
-//UnresolvedHostnameErrorEvent
-//WhoEvent, WhoisEvent, WhowasEvent
+		//Syslog events
+			case SERVER_INFORMATION:
+				//FORMAT
+				ServerInformationEvent s = (ServerInformationEvent) e;
+				ServerInformation S = s.getServerInformation();
+				received = getReceived("[INFO]", S.getServerName(), CLR_TOPIC);
+				chatHandler.post(logUpdater);
+				break;
+			case SERVER_VERSION_EVENT:
+				ServerVersionEvent sv = (ServerVersionEvent) e;
+				received = getReceived("[VERSION]", sv.getVersion(), CLR_TOPIC);
+				chatHandler.post(logUpdater);
+				break;
+			case CONNECT_COMPLETE:
+				ConnectionCompleteEvent c = (ConnectionCompleteEvent) e;
+				received = getReceived(null, c.getActualHostName() + "\nConnection complete", CLR_TOPIC);
+				e.getSession().join(CHANNEL_NAME);
+				chatHandler.post(logUpdater);
+				break;
+			case JOIN_COMPLETE:
+				JoinCompleteEvent jce = (JoinCompleteEvent) e;
+				received = getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC);
+				chatHandler.post(chatUpdater);
+				break;
+			case MOTD:
+				MotdEvent mo = (MotdEvent) e;
+				received = getReceived("[MOTD]", mo.getMotdLine(), CLR_TOPIC);
+				chatHandler.post(logUpdater);
+				break;
+			case NOTICE:
+				NoticeEvent ne = (NoticeEvent) e;
+				if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
+				{
+					received = getReceived("[NICKSERV]", ne.getNoticeMessage(), CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				else
+				{
+					received = getReceived("[NOTICE]", ne.getNoticeMessage(), CLR_TOPIC);
+					chatHandler.post(logUpdater);
+				}
+				break;
 			
 		//Chat events
 			case TOPIC:
 				TopicEvent t = (TopicEvent) e;
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") + 
-						"<font color='" + CLR_TOPIC + "'>" + t.getTopic() + 
-						"<br/>(set by " + t.getSetBy() + " on " + t.getSetWhen() + " )</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived(t.getTopic() +  " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, CLR_TOPIC);
+				chatHandler.post(chatUpdater);
 				break;
+			
+			case PRIVATE_MESSAGE:
 			case CHANNEL_MESSAGE:
 				MessageEvent m = (MessageEvent) e;
-				int colorBro = 0xFF000000 +  
-						Callisto.RESOURCES.getColor(
-						Callisto.RESOURCES.getIdentifier(getNickColor(m.getNick()), "color", "com.qweex.callisto"));
-				int colorBro2 = 0xFF000000 +  
-						Callisto.RESOURCES.getColor(
-						Callisto.RESOURCES.getIdentifier(m.getMessage().contains(session.getNick()) ? CLR_MENTION : CLR_TEXT, "color", "com.qweex.callisto"));
-				System.out.println("BUTTS1: " + m.getMessage().contains(session.getNick()));
-				System.out.println("BUTTS2: " + !isFocused);
-				if(m.getMessage().contains(session.getNick()) && !isFocused)
-				{
-					Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
-					mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
-					System.out.println("BUTTS3: " + mentionCount);
-					if(mentionCount==1)//TODO: Fix the notification to be sent for the first mentionE
-					{
-						mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
-						mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
-					}
-				}
-				
-				
-				SpannableString st = new SpannableString(m.getNick());
-				SpannableString st2 = new SpannableString(m.getMessage());
-				try {
-				st.setSpan(new ForegroundColorSpan(colorBro), 0, m.getNick().length(), 0);
-				st.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, m.getNick().length(), 0);
-				st2.setSpan(new ForegroundColorSpan(colorBro2), 0, m.getMessage().length(), 0);
-				} catch(Exception ieieieie) {}
-				
-				
-				received = (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-											 , st, ": ", st2, "\n");
-				chat.post(receiveMessage);
+				if((e.getType()).equals(jerklib.events.IRCEvent.Type.PRIVATE_MESSAGE))
+					received = getReceived("->" + m.getNick(), m.getMessage(), CLR_PM);
+				else
+					received = getReceived(m.getNick(), m.getMessage(), null);
+				chatHandler.post(chatUpdater);
 				break;
 			case JOIN:
 				JoinEvent j = (JoinEvent) e;
 				nickList.add(j.getNick());
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_JOIN + "'>" + j.getNick() + " entered the room.</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived(j.getNick() + " entered the room.", null, CLR_JOIN);
+				chatHandler.post(chatUpdater);
 				break;
 			case NICK_CHANGE:
 				NickChangeEvent ni = (NickChangeEvent) e;
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_NICK + "'>" + ni.getOldNick() + " changed their nick to " + ni.getNewNick() + ".</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, CLR_NICK);
+				chatHandler.post(chatUpdater);
 				break;
 			case PART:
 				PartEvent p = (PartEvent) e;
 				COLOR_LIST.add(nickColors.get(p.getWho()));
 				nickColors.remove(p.getWho());
 				nickList.remove(p.getWho());
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_PART + "'>PART: " + p.getWho() + " (" + p.getPartMessage() + ")</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived("PART: " + p.getWho() + " (" + p.getPartMessage() + ")", null, CLR_PART);
+				chatHandler.post(chatUpdater);
 				break;
 			case QUIT:
 				QuitEvent q = (QuitEvent) e;
 				COLOR_LIST.add(nickColors.get(q.getNick()));
 				nickColors.remove(q.getNick());
 				nickList.remove(q.getNick());
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_QUIT + "'>QUIT: " + q.getNick() + " (" + q.getQuitMessage() + ")</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, CLR_QUIT);
+				chatHandler.post(chatUpdater);
 				break;
 			case KICK_EVENT:
 				KickEvent k = (KickEvent) e;
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_KICK + "'>" + k.getWho() + " was kicked. (" + k.getMessage() + ")</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived("KICK:  " + k.getWho() + " was kicked by " + k.byWho()  + ". (" + k.getMessage() + ")", null, CLR_KICK);
+				chatHandler.post(chatUpdater);
 				break;
 			case NICK_IN_USE:
 				NickInUseEvent n = (NickInUseEvent) e;
-				received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") +
-						"<font color='" + CLR_ERROR + "'>" + n.getInUseNick() + " is in use.</font><br/>");
-				chat.post(receiveMessage);
+				received = getReceived("NICKINUSE:  " + n.getInUseNick() + " is in use.", null, CLR_ERROR);
+				chatHandler.post(chatUpdater);
+				break;
+			case WHO_EVENT:
+				WhoEvent we = (WhoEvent) e;
+				received = getReceived("[WHO]", we.getNick() + " is " + we.getUserName() + "@" + we.getServerName() + " (" + we.getRealName() + ")", CLR_TOPIC);
+				chatHandler.post(chatUpdater);
+				break;
+			case WHOIS_EVENT:
+				WhoisEvent wie = (WhoisEvent) e;
+				String var = "";
+				for(String event : wie.getChannelNames())
+					var = var + " " + event;
+				received = (Spanned) TextUtils.concat(getReceived("[WHOIS]", wie.getUser() + " is " + wie.getHost() + "@" + wie.whoisServer() + " (" + wie.getRealName() + ")", CLR_TOPIC)
+						, getReceived("[WHOIS]", wie.getUser() + " is a user on channels: " + var, CLR_TOPIC)
+						, getReceived("[WHOIS]", wie.getUser() + " has been idle for " + wie.secondsIdle() + " seconds", CLR_TOPIC)
+						, getReceived("[WHOIS]", wie.getUser() + " has been online since " + wie.signOnTime(), CLR_TOPIC));
+				chatHandler.post(chatUpdater);
+				break;
+			case WHOWAS_EVENT: //TODO: Fix?
+				WhowasEvent wwe = (WhowasEvent) e;
+				received = getReceived("[WHO]", wwe.getNick() + " is " + wwe.getUserName() + "@" + wwe.getHostName() + " (" + wwe.getRealName() + ")", CLR_TOPIC);
 				break;
 			
 			//Errors that display in both
 			case CONNECTION_LOST:
 				ConnectionLostEvent co = (ConnectionLostEvent) e;
-				received =  Html.fromHtml(SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "" +
-						"<font color='" + CLR_ERROR + "'>CONNECTION WAS LOST</font><br/>");
-				chat.post(receiveMessage);
-				syslog.post(receiveMessage);
+				received = getReceived("CONNECTION WAS LOST", null, CLR_ERROR);
+				chatHandler.post(chatUpdater);
+				chatHandler.post(logUpdater);
 				break;
 			case ERROR:
 				ErrorEvent ev = (ErrorEvent) e;
-				received =  Html.fromHtml(SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "" +
-						"<font color='" + CLR_ERROR + "'>AN ERROR OCCURRED</font><br/>");
-				chat.post(receiveMessage);
-				syslog.post(receiveMessage);
+				String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+				received = getReceived("[ERROR OCCURRED]", rrealmsg, CLR_ERROR);
+				chatHandler.post(chatUpdater);
+				chatHandler.post(logUpdater);
 				break;
 				
 			//Events not handled by jerklib
 			case DEFAULT:		//ping
 				String realType = e.getRawEventData();
-				realType = realType.substring(realType.indexOf(" ")+1, realType.indexOf(" ", realType.indexOf(" ")+1));
+				String realmsg = "";
+				if(realType.startsWith("PING"))
+					realType = "PING";
+				else
+					realType = realType.substring(realType.indexOf(" ")+1, realType.indexOf(" ", realType.indexOf(" ")+1));
 				int i=0;
 				try {
 					i = Integer.parseInt(realType);
 				} catch(Exception asdf) {}
 				
-				System.out.println("!!!" + realType + "!!!");
+				Log.d("IRCChat:receiveEvent:DEFAULT", realType);
+				//PING     //TEST
+				if(realType.equals("PING"))
+				{
+					return;
+				}
 				//ISON
 				if(realType.equals("303"))
 				{
 					String name = e.getRawEventData().substring(e.getRawEventData().lastIndexOf(":")+1);
-					System.out.println(name);
 					if(name.trim().equals(""))
 						return;
-					received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") + 
-							"<font color='" + CLR_TOPIC + "'>[ISON] " + name + " is online</font><br/>");
-					chat.post(receiveMessage);
+					received = getReceived("[ISON]", name + " is online", CLR_TOPIC);
+					chatHandler.post(chatUpdater);
 					return;
 				}
 				//MAP
-				if((i>=375 && i<=379))
+				if(realType.equals("006"))
 				{
-					String realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-					received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") + 
-							"<font color='" + CLR_TOPIC + "'>[MAP] " + realmsg + "</font><br/>");
-					chat.post(receiveMessage);
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[MAP] " + realmsg, null, CLR_TOPIC);
+					chatHandler.post(logUpdater);
 					return;
 				}
 				//LUSERS
 				if((i>=250 && i<=255) || i==265 || i==266)
 				{
-					String realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-					received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") + 
-							"<font color='" + CLR_TOPIC + "'>[LUSERS] " + realmsg + "</font><br/>");
-					chat.post(receiveMessage);
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[LUSERS]", realmsg, CLR_TOPIC);
+					chatHandler.post(logUpdater);
 					return;
 				}
-				//VERSION
+				/*
+				//VERSION //CLEAN: Is this even needed?
 				if(realType.equals("351"))
 				{
 					String realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-					received =  Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "") + 
-							"<font color='" + CLR_TOPIC + "'>[VERSION] " + realmsg + "</font><br/>");
-					chat.post(receiveMessage);
+					received = getReceived("[VERSION] " + realmsg, null, CLR_TOPIC);
+					chatHandler.post(logUpdater);
 					return;
+				}
+				*/
+				//RULES
+				if(realType.equals("232") || realType.equals("309"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[RULES]", realmsg, CLR_TOPIC);
+					chatHandler.post(logUpdater);
+					return;
+				}
+				//LINKS
+				else if(realType.equals("364") || realType.equals("365"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[LINKS]", realmsg, CLR_TOPIC);
+					chatHandler.post(logUpdater);
+					return;
+				}
+				//ADMIN
+				else if(i>=256 && i<=259)
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[ADMIN]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+					return;
+				}
+				//WHO part 2
+				else if(realType.equals("315"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[WHO]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				//WHOIS part 2
+				else if(realType.equals("307"))
+				{
+					int ijk = e.getRawEventData().lastIndexOf(" ", e.getRawEventData().indexOf(":",2)-2)+1;
+					realmsg = e.getRawEventData().substring(ijk, e.getRawEventData().indexOf(":", 2)-1)
+							+ " " + e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[WHOIS]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				//USERHOST
+				else if(realType.equals("302"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
+					received = getReceived("[USERHOST]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				//CREDITS
+				else if(realType.equals("371"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
+					received = getReceived("[CREDITS]", realmsg, CLR_TOPIC);
+					chatHandler.post(logUpdater);
+				}
+				//TIME
+				else if(realType.equals("391"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[TIME]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				//USERIP
+				else if(realType.equals("340"))
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[TIME]", realmsg, CLR_TOPIC);
+					chatHandler.post(chatUpdater);
+				}
+				//etc
+				else
+				{
+					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+					received = getReceived("[" + realType + "]", realmsg, CLR_TOPIC);
+					chatHandler.post(logUpdater);
 				}
 				break;
 				
@@ -593,6 +766,55 @@ public class IRCChat extends Activity implements IRCEventListener
 			
 		}
 	}
+	
+
+	
+	private Spanned getReceived (String theTitle, String theMessage, String specialColor)
+	{
+		int titleColor = 0xFF000000;
+		int msgColor = 0xFF000000;
+		try {
+		 titleColor+= Callisto.RESOURCES.getColor(
+				Callisto.RESOURCES.getIdentifier(
+				specialColor!=null ? specialColor :	getNickColor(theTitle), "color", "com.qweex.callisto"));
+		 if(theMessage!=null)
+			 msgColor+= Callisto.RESOURCES.getColor(
+				Callisto.RESOURCES.getIdentifier(theMessage.contains(session.getNick()) ? CLR_MENTION : CLR_TEXT, "color", "com.qweex.callisto"));
+		} catch(NullPointerException e) {
+		}
+		if(theMessage!=null && theMessage.contains(session.getNick()) && !isFocused)
+		{
+			if(Callisto.notification_chat==null)
+				Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
+			Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
+			mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+			if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
+			{
+				mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
+				mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
+			}
+		}
+		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
+		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
+		try {
+			if(theTitle!=null)
+			{
+				if(theMessage!=null)
+					tit = new SpannableString(tit + ": ");
+				tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
+				tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
+			}
+			if(theMessage!=null)
+			{
+				mes.setSpan(new ForegroundColorSpan(msgColor), 0, mes.length(), 0);
+			}
+		} catch(Exception ieieieie) {
+		}
+		
+		return (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+									 , tit, mes, "\n");
+	}
+	
 	
 	public String getNickColor(String nickInQ)
 	{
@@ -631,18 +853,15 @@ public class IRCChat extends Activity implements IRCEventListener
 			
 			if(parseOutgoing(newMessage))
 			{
-				chat.append(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")));
-				chat.append(st);
-				chat.append(": ");
-				chat.append(st2);
-				chat.append("\n");
-				chatLog = TextUtils.concat(chatLog, 
+				Spanned x = (Spanned) TextUtils.concat(
 						Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
 						st,
 						": ",
-						st2,
-						"\n"
+						st2
+						//,"\n" //FIXME: needed?
 						);
+				Callisto.chatView.append(x);
+				//Callisto.chatLog = (Spanned) TextUtils.concat(Callisto.chatLog, x);
 			}
 			input.requestFocus();
 			input.setText("");
@@ -653,137 +872,127 @@ public class IRCChat extends Activity implements IRCEventListener
 	//Boolean return value tells if the output should be appended to the chat log
 	private boolean parseOutgoing(String msg)
 	{
-		if(!msg.trim().startsWith("/"))
+		msg = msg.replace("\n", "");
+		if(!msg.startsWith("/"))
 		{
 			session.getChannel(CHANNEL_NAME).say(msg);
 			return true;
 		}
-		if(msg.trim().toUpperCase().startsWith("/NICK "))
+		if(msg.toUpperCase().startsWith("/NICK "))
 		{
-			msg =  msg.trim().substring("/NICK ".length());
+			msg =  msg.substring("/NICK ".length());
 			session.changeNick(msg);
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/QUIT ") || msg.trim().toUpperCase().startsWith("/PART"))
+		if(msg.toUpperCase().startsWith("/QUIT ") || msg.trim().toUpperCase().startsWith("/PART"))
 		{
 			logout();
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/WHO ")) //TEST
+		if(msg.toUpperCase().startsWith("/WHO "))
 		{
-			session.who(msg.trim().substring("/WHO ".length()));
+			session.who(msg.substring("/WHO ".length()));
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/WHOIS ")) //TEST
+		if(msg.toUpperCase().startsWith("/WHOIS "))
 		{
-			session.whois(msg.trim().substring("/WHOIS ".length()));
+			session.whois(msg.substring("/WHOIS ".length()));
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/WHOWAS ")) //TEST
+		if(msg.toUpperCase().startsWith("/WHOWAS "))
 		{
-			session.whoWas(msg.trim().substring("/WHOWAS ".length()));
+			session.whoWas(msg.substring("/WHOWAS ".length()));
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/ISON ")
-		|| msg.trim().toUpperCase().equals("/MOTD")
-		|| msg.trim().toUpperCase().equals("/RULES")	//TEST
-		|| msg.trim().toUpperCase().equals("/LUSERS")	//TEST
-		|| msg.trim().toUpperCase().startsWith("/MAP")	//TEST
-		|| msg.trim().toUpperCase().startsWith("/VERSION"))
+		if(msg.toUpperCase().startsWith("/MSG "))
 		{
-			session.sayRaw(msg.trim().substring(1));
+			String targetNick = msg.substring("/MSG ".length(), msg.indexOf(" ", "/MSG ".length()+1));
+			String targetMsg = msg.substring("/MSG ".length() + targetNick.length()); 
+			session.sayPrivate(targetNick, targetMsg);
+			received = getReceived("<-" + targetNick, targetMsg, CLR_PM);
+			chatHandler.post(chatUpdater);
+			return false;
+		}
+		if(msg.toUpperCase().startsWith("/ISON ")
+		|| msg.toUpperCase().equals("/MOTD")
+		|| msg.toUpperCase().equals("/RULES")
+		|| msg.toUpperCase().equals("/LUSERS")
+		|| msg.toUpperCase().startsWith("/MAP")
+		|| msg.toUpperCase().startsWith("/VERSION")
+		|| msg.toUpperCase().startsWith("/LINKS")
+		|| msg.toUpperCase().startsWith("/IDENTIFY ")
+		|| msg.toUpperCase().startsWith("/ADMIN")
+		|| msg.toUpperCase().startsWith("/USERHOST")
+		|| msg.toUpperCase().startsWith("/TOPIC ")
+		|| msg.toUpperCase().startsWith("/CREDITS")
+		|| msg.toUpperCase().startsWith("/TIME")
+		|| msg.toUpperCase().startsWith("/DNS")		//Denied
+		|| msg.toUpperCase().startsWith("/USERIP ")
+		|| msg.toUpperCase().startsWith("/STATS ")	//Denied
+		|| msg.toUpperCase().startsWith("/MODULE")	//Posts as "Notice", not "Module". I am ok with this.
+		)
+		{
+			session.sayRaw(msg.substring(1));
+			return false;
+		}
+		if(msg.toUpperCase().startsWith("/ME "))
+		{
+			session.action(CHANNEL_NAME, "ACTION" + msg.substring(3));
+			received = getReceived("* " + session.getNick() + msg.substring(3), null, CLR_ME);
+			chatHandler.post(chatUpdater);
 			return false;
 		}
 		
-		
-		if(msg.trim().toUpperCase().startsWith("/IDENTIFY "))	//TEST
+		if(msg.toUpperCase().startsWith("/PING ")) //TODO: I have no clue if this works right.
 		{
-			new NickServAuthPlugin(msg.trim().substring("/IDENTIFY ".length()), 'e', session, Arrays.asList(CHANNEL_NAME));
+			session.action(CHANNEL_NAME, "PING" + msg.substring("/PING".length()));
+			//session.ctcp(msg.substring("/PING ".length()), "ping");
+			return true;
+		}
+		if(msg.toUpperCase().startsWith("/AWAY "))
+		{
+			session.setAway(msg.toUpperCase().substring("/AWAY ".length()));
+			return false;	//TODO: CHECK
+		}
+		if(msg.toUpperCase().equals("/AWAY"))
+		{
+			if(session.isAway())
+				session.unsetAway();
+			else
+				session.setAway("Gone away for now");
 			return false;
 		}
-		if(msg.trim().toUpperCase().startsWith("/PING ")) //TODO: /PING
-		{
-			System.out.println("BUTTS |" + msg.trim().substring(6) + "|");
-			session.ctcp(msg.trim().substring("/PING ".length()), "ping");
-			return false;
-		}
 		
-		
-		if(msg.trim().toUpperCase().startsWith("/JOIN ")
-	    || msg.trim().toUpperCase().startsWith("/CYCLE ")
-	    || msg.trim().toUpperCase().startsWith("/LIST ")
-	    || msg.trim().toUpperCase().startsWith("/KNOCK "))
+		if(msg.toUpperCase().startsWith("/JOIN ")
+	    || msg.toUpperCase().startsWith("/CYCLE ")
+	    || msg.toUpperCase().startsWith("/LIST ")
+	    || msg.toUpperCase().startsWith("/KNOCK "))
 		{
 			Toast.makeText(IRCChat.this, "What, is the JB chat not enough for you?!", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		/*
-		if(msg.trim().toUpperCase().startsWith("/MOTD ")
-		|| msg.trim().toUpperCase().startsWith("/LUSERS "))
+		if(msg.toUpperCase().startsWith("/MOTD ")
+		|| msg.toUpperCase().startsWith("/LUSERS "))
 		{
 			Toast.makeText(IRCChat.this, "Stop that, you're trying to break stuff", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		*/
-		session.getChannel(CHANNEL_NAME).say(msg);
-		return true;
+		received = getReceived("[CALLISTO]", "Command not recognized!", CLR_TOPIC);
+		chatHandler.post(chatUpdater);
+		return false;
 	}
 	
-	
-	/*
-	 *local
-	 * PING
-	 * AWAY
-	 * MSG
-	 * 
-	 * 
-	 *what
-	 * WATCH???
-	 * HELPOP???
-	 * SETNAME???
-	 * VHOST???
-	 * MODE???
-	 *
-	 * 
-	 *mod
-	 * INVITE
-	 * KICK
-	 * http://www.geekshed.net/commands/ircop/
-	 * 
-	 * 
-	 *naw
-	 * VERSION
-	 * LINK
-	 * ADMIN
-	 * USERHOST
-	 * TOPIC
-	 * CREDITS
-	 * TIME
-	 * DNS
-	 * USERIP
-	 * STATS
-	 * MODULE
-	 */
-	
-    Runnable receiveMessage = new Runnable(){
+  
+	Runnable logUpdater = new Runnable()
+	{
         @Override
-        public void run() {
-            chat.append(received);
-            chatLog = TextUtils.concat(chatLog, received);
-            chat.invalidate();
-            sv.fullScroll(ScrollView.FOCUS_DOWN);
-            input.requestFocus();
-        };	
-
-    };
-
-   
-    Runnable receiveLog = new Runnable(){
-        @Override
-        public void run() {
+        public void run()
+        {
             syslog.append(received);
             syslog.invalidate();
-            sv2.smoothScrollTo(0, syslog.getBottom());
+            sv2.fullScroll(ScrollView.FOCUS_DOWN);
         };	
 
     };
