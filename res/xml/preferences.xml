@@ -42,12 +42,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:title="Append downloads to queue"
 	        />
 	    
-	    <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/>
+	    <!-- <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/> -->
 	    <PreferenceScreen android:title="IRC Settings">
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
 	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
 	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps"/>
+	        <EditTextPreference android:key="irc_max_scrollback" android:title="Max scrollback" android:summary="Maximum number of lines to display"/>
 	        <!-- 
 	        <PreferenceCategory android:title="Colors">
 	            

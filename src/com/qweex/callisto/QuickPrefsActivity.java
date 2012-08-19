@@ -21,6 +21,8 @@ import java.io.File;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -46,6 +48,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     public void onCreate(Bundle savedInstanceState) {        
         super.onCreate(savedInstanceState);        
         addPreferencesFromResource(R.xml.preferences);
+        findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);
         findPreference("secret").setEnabled(packageExists(DONATION_APP, this));
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -59,7 +62,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
     	newfile.mkdirs();
     	boolean wasError = false;
-    	
+    	/*
     	File dir = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path);
     	newfile = newfile = new File(Environment.getExternalStorageDirectory(), new_path);
     	wasError = dir.renameTo(newfile);
@@ -80,6 +83,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	 
 	    Callisto.storage_path = new_path;
 	    pd.cancel();
+	    Callisto.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
     }
     
     //http://stackoverflow.com/questions/6758841/how-to-know-perticular-package-application-exist-in-the-device
@@ -93,4 +97,26 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	    }  
 	    return true;
    }
+    
+    //http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android
+    //@Override
+    Preference.OnPreferenceChangeListener numberCheckListener = new OnPreferenceChangeListener() {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            //Check that the string is an integer.
+            return numberCheck(newValue);
+        }
+    };
+
+
+    private boolean numberCheck(Object newValue) {
+	    if( !newValue.toString().equals("")  &&  newValue.toString().matches("\\d*") ) {
+	        return true;
+	    }
+	    else {
+	        return false;
+    }
+}
+
 }

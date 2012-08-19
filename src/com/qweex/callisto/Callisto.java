@@ -47,7 +47,6 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,7 +60,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
@@ -81,7 +79,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -207,7 +204,9 @@ public class Callisto extends Activity {
 	    
 	    	//Create the view for the the IRC
 	    chatView = new TextView(this);
-	    chatView.setGravity(Gravity.BOTTOM);
+	    chatView.setGravity(Gravity.BOTTOM);;
+	    String i=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
+	    chatView.setMaxLines(Integer.parseInt(i));
 	    /*
 	    ScrollView.LayoutParams ll = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
 	    ll.setMargins(0, 0, 0, (int)(50*Callisto.DP));
@@ -808,8 +807,8 @@ public class Callisto extends Activity {
 				  
 				  
 				  epDate = Callisto.sdfRaw.format(Callisto.sdfSource.parse(epDate));
-				  if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
-						  								isVideo, epMediaLink, epMediaSize))
+				  //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
+						  								//isVideo, epMediaLink, epMediaSize))
 					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epMediaLink, epMediaSize, isVideo);
 		    	  Log.v("*:updateShow", "Inserting episode: " + epTitle);
   		  }

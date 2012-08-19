@@ -22,7 +22,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     android:id="@+id/scroll"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:fillViewport="true" >
+    android:fillViewport="true"
+    android:scrollbars="none"
+     >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,6 +34,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:tag="day" >
 
         <TextView
+            android:id="@+id/theDay"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="-33dp"
@@ -65,7 +68,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:id="@+id/id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="id"
                 android:visibility="gone" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -91,7 +96,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:id="@+id/id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:tag="id"
                 android:visibility="gone" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -153,7 +160,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/event"
+                android:id="@+id/event5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"

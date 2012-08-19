@@ -527,12 +527,12 @@ public class CalendarActivity extends Activity {
         
         int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK)-1;
         
-
+        Calendar today = Calendar.getInstance();
+        
         current_cal.add(Calendar.DATE,-1*dayOfWeek);
         
         for(int i=0; i<7; i++)
         {
-        	
         	int day = current_cal.get(Calendar.DAY_OF_MONTH);
         	if(day==1)
         	{
@@ -549,23 +549,38 @@ public class CalendarActivity extends Activity {
         		Bprev.setEnabled(false);
         		Bprev.setTextColor(Callisto.RESOURCES.getColor(R.color.calHdrClr) - 0x88000000);
         	} else
+        	{
     			((TextView)dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + Callisto.RESOURCES.getColor(R.color.calDayClr));
         	
-        	String s = Callisto.sdfRawSimple1.format(new Date());;
+	        	if(current_cal.before(today))
+	        	{
+	        		current_cal.add(Calendar.DATE,1);
+	            	for(int j=1; j<=10; j++)
+	            	{
+	            		TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+	            		if(event==null)
+	            			continue;
+	            		event.setVisibility(View.GONE);
+	            	}
+	        		continue;
+	        	}
+        	}
+        	
+        	String s = Callisto.sdfRawSimple1.format(current_cal.getTime());
         	Cursor events = Callisto.databaseConnector.dayEvents(s, current_cal.get(Calendar.DAY_OF_WEEK)-1);
         	events.moveToFirst();
         	int j = 1;
         	
         	while (events.isAfterLast() == false) 
         	{
-        		
         		String type = events.getString(events.getColumnIndex("type"));
         		String show = events.getString(events.getColumnIndex("show"));
-        		String time = events.getString(events.getColumnIndex("time"));
         		String _id  = events.getString(events.getColumnIndex("_id")); 
         		
+        		
         		TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
-        		TextView id = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
+        		View w = (View) event.getParent();
+        		TextView id = (TextView) w.findViewById(Callisto.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
         		id.setText(_id);
         		
         		event.setText(show);
@@ -578,7 +593,7 @@ public class CalendarActivity extends Activity {
         	}
         	for(; j<=10; j++)
         	{
-        		TextView event = (TextView) findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+        		TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
         		if(event==null)
         			continue;
         		event.setVisibility(View.GONE);
@@ -595,7 +610,6 @@ public class CalendarActivity extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
-			
 			if(popUp.isShowing())
 				popUp.dismiss();
 			int[] pos = new int[2];
@@ -606,8 +620,6 @@ public class CalendarActivity extends Activity {
 				TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
 			}
 
-			
-			
 			//TODO: The first time a popup is shown, it's shown in a bad place. Weird.
 			if(isLandscape)
 			{
@@ -626,13 +638,18 @@ public class CalendarActivity extends Activity {
 				popUp.showAsDropDown(v, 0, -5);
 			}
 			
-			View w = (View) v.getParent();
-			String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
+			View w = (View) (isLandscape? v.getParent() : v);
+			//String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
+			String id = (String) ((TextView)w.findViewWithTag("id")).getText();
+			System.out.println("BUTTS " + id);
+			if(id.equals(""))
+				return;
 			long _id = 0;
 			try {
 				_id = Long.parseLong(id);
 			} catch(NumberFormatException e)
 			{
+				return;
 			}
 			
 			Cursor c = Callisto.databaseConnector.getOneEvent(_id);
@@ -645,34 +662,81 @@ public class CalendarActivity extends Activity {
 			s = c.getString(c.getColumnIndex("type"));
 			popUp_type.setText(s);
 			try {
-				d = c.getString(c.getColumnIndex("date"));
+				if(isLandscape)
+				{
+					w = (View) w.getParent();
+					String day = (String) ((TextView)w.findViewById(R.id.theDay)).getText();
+					String month = (String) ((TextView)findViewById(R.id.Tmonth)).getText();
+					int i;
+					for(i=0; i<months.length; i++)
+						if(month.equals(months[i]))
+							break;
+					month = Integer.toString(i+1); 
+					String year = (String) ((TextView)findViewById(R.id.Tyear)).getText();
+					d = Callisto.sdfRawSimple1.format(Callisto.sdfDestination.parse(month + "/" + day + "/" + year));
+				}
+				else
+				{
+					//Agenda view
+					d = (String) ((TextView)v.findViewById(R.id.date)).getText();
+					// MM/dd format
+					if(d.contains("/"))
+					{
+						SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+						if(d.indexOf("/", d.indexOf("/"))>0)
+							sdf = Callisto.sdfDestination;
+						Date dt = sdf.parse(d);
+						dt.setYear((new Date()).getYear());
+						d = Callisto.sdfRawSimple1.format(dt);
+					}
+					//Today
+					else if(d.equals(Callisto.RESOURCES.getString(R.string.today)))
+						d = Callisto.sdfRawSimple1.format(new Date());
+					else
+						//Mon Tue Wed
+						for(int i=1; i<=days.length; i++)
+							if(d.equals(days[i-1]))
+							{
+								i=(i-1+7)%7;
+								Calendar cl = Calendar.getInstance();
+								int j = (cl.get(Calendar.DAY_OF_WEEK)-1) % 7;
+								if(j<i)
+									cl.add(Calendar.DAY_OF_WEEK, j-i);
+								else
+									cl.add(Calendar.DAY_OF_WEEK, 7-j+i);
+								d = Callisto.sdfRawSimple1.format(cl.getTime());
+								break;
+							}
+				}
+				
 				s = Callisto.sdfDestination.format(Callisto.sdfRawSimple1.parse(d));
 				popUp_date.setText(s);
+				//Might just want to read this from the UI
 				t = c.getString(c.getColumnIndex("time"));
 				s = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(t));
 				popUp_time.setText(s);
 			} catch (ParseException e) {}
 			
-			
 			Map<String,?> alarms = Callisto.alarmPrefs.getAll();
 			String key = title + d + t;
-			System.out.println("key=!" + key);
 			((TextView) popUp.getContentView().findViewById(R.id.key)).setText(key);
-			System.out.println(alarms);
 			if(alarms.containsKey(popUp_title))
 			{
 				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.VISIBLE);
 				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("Alarm set for this show");
+				((Button)popUp.getContentView().findViewById(R.id.editEvent)).setText("Edit");
 			}
 			else if(alarms.containsKey(key))
 			{
 				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.VISIBLE);
 				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("Alarm set for just this episode");
+				((Button)popUp.getContentView().findViewById(R.id.editEvent)).setText("Edit");
 			}
 			else
 			{
 				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.INVISIBLE);
 				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("No alarm set");
+				((Button)popUp.getContentView().findViewById(R.id.editEvent)).setText("Add");
 			}
 		  }
     };
@@ -768,6 +832,10 @@ public class CalendarActivity extends Activity {
 		        		((TextView) v.findViewById(R.id.date)).setText(days[(i+dayOfWeek)%7]);
 		        }
 		        else
+		        	//Next Year
+	        	if(current_cal.get(Calendar.YEAR)==today.getYear())
+	        		((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE) + "/" + current_cal.get(Calendar.YEAR));
+		        else //Else
 		        	((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE));
 		        
 		        //Time

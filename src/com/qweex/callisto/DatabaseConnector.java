@@ -309,7 +309,7 @@ public class DatabaseConnector
 	
 	public Cursor dayEvents(String specificDay, int dayOfWeek) 
 	{
-		String query = "recurring=" + dayOfWeek + " or date like '" + specificDay + "'";
+		String query = "recurring='" + dayOfWeek + "' or date like '" + specificDay + "'";
 		String sortby = "time";
 		Cursor c = database.query(DATABASE_CALENDAR, new String[] {"_id", "show", "type", "date", "time"},
 			   					query, null, null, null,

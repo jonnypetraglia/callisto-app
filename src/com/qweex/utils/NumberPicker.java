@@ -1,8 +1,6 @@
 package com.qweex.utils;
 
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.drawable;
-
 import android.content.Context;
 import android.text.InputFilter;
 import android.text.InputType;

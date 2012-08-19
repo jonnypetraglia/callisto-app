@@ -17,6 +17,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.irc;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +53,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.InputType;
@@ -60,6 +61,8 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -94,7 +97,6 @@ public class IRCChat extends Activity implements IRCEventListener
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
-	private final int MAX_SCROLLBACK = 100;
 	
 	private String CLR_TEXT = "Black",
 				   CLR_TOPIC = "DarkGoldenRod",
@@ -149,8 +151,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		        	if(received.equals(new SpannableString("")))
 		        		return;
 		            Callisto.chatView.append(received);
-		            //if(isFocused)
-		            	//Callisto.chatLog = (Spanned) TextUtils.concat(Callisto.chatLog, received);
+		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
+		            Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
 		            sv.fullScroll(ScrollView.FOCUS_DOWN);
@@ -169,8 +171,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		if(session!=null)
 		{
 			resume();
-			//Callisto.chatView.setText(Callisto.chatLog);
-			Callisto.chatView.append("\n");
 			return;
 		}
 		
@@ -243,12 +243,14 @@ public class IRCChat extends Activity implements IRCEventListener
 			if(session==null || true)
 			{
 				finish();
+				isFocused = false;
 				return true;
 			}
-			isFocused = false;
+			/*
 			Intent i = new Intent(IRCChat.this, Callisto.class);
             startActivity(i);
 	        return true;
+	        */
 		}
 	    if (keyCode == KeyEvent.KEYCODE_SEARCH)
 	    {
@@ -409,7 +411,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			@Override
 			public IRCEvent receiveEvent(IRCEvent e)
 			{
-				
+				//This part isn't needed but I am keeping it in because my tiki doll told me to
 				try
 				{
 				String action = e.getRawEventData();
@@ -514,7 +516,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatHandler.post(logUpdater);
 				break;
 			case JOIN_COMPLETE:
-				JoinCompleteEvent jce = (JoinCompleteEvent) e;
+				//JoinCompleteEvent jce = (JoinCompleteEvent) e;
 				received = getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC);
 				chatHandler.post(chatUpdater);
 				break;
@@ -613,13 +615,13 @@ public class IRCChat extends Activity implements IRCEventListener
 			
 			//Errors that display in both
 			case CONNECTION_LOST:
-				ConnectionLostEvent co = (ConnectionLostEvent) e;
+				//ConnectionLostEvent co = (ConnectionLostEvent) e;
 				received = getReceived("CONNECTION WAS LOST", null, CLR_ERROR);
 				chatHandler.post(chatUpdater);
 				chatHandler.post(logUpdater);
 				break;
 			case ERROR:
-				ErrorEvent ev = (ErrorEvent) e;
+				//ErrorEvent ev = (ErrorEvent) e;
 				String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 				received = getReceived("[ERROR OCCURRED]", rrealmsg, CLR_ERROR);
 				chatHandler.post(chatUpdater);
@@ -797,6 +799,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
 		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
 		try {
+			//mes = (SpannableString) URLInString(theMessage);
 			if(theTitle!=null)
 			{
 				if(theMessage!=null)
@@ -860,8 +863,7 @@ public class IRCChat extends Activity implements IRCEventListener
 						st2
 						//,"\n" //FIXME: needed?
 						);
-				Callisto.chatView.append(x);
-				//Callisto.chatLog = (Spanned) TextUtils.concat(Callisto.chatLog, x);
+				Callisto.chatView.append(x); //HERE
 			}
 			input.requestFocus();
 			input.setText("");
@@ -997,5 +999,27 @@ public class IRCChat extends Activity implements IRCEventListener
 
     };
 
-	
+    // Replaces URLs with html hrefs codes
+    public SpannableString URLInString(String input)
+    {
+    	SpannableString output = new SpannableString("");
+    	if(input==null)
+    		return output;
+    	output = new SpannableString(input);
+    	String [] parts = input.split("\\s");
+    	int lastIndex = 0;
+    	for( String item : parts )
+    	{
+			try {
+	            URL url = new URL(item);
+	            
+	            System.out.println("URL: " + item);
+	            output.setSpan(new URLSpan(item), lastIndex, item.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+	        } catch (MalformedURLException e) {
+	        }
+			lastIndex+=item.length();
+    	}
+    	return output;
+    }
+
 }
