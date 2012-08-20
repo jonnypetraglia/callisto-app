@@ -169,7 +169,7 @@ System.out.println("butts 3");
 			LinearLayout bb = (LinearLayout) this.findViewById(R.id.buttons);
 			ll.removeView(bb);
 			LinearLayout hh = (LinearLayout) this.findViewById(R.id.headLin);
-			bb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, Gravity.CENTER_VERTICAL));
+			bb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, Gravity.CENTER_VERTICAL));
 			hh.addView(bb);
 		}
 	    

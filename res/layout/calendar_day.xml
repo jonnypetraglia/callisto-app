@@ -27,8 +27,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
      >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@drawable/button"
         android:orientation="vertical"
         android:tag="day" >
@@ -47,13 +47,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/zszdfjiozsfjiogzsbopzs"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event1"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -75,13 +75,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/awerawersfeuhfw3r"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event2"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -103,13 +103,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/wy9pzsefsefawerw3"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event3"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -129,13 +129,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/deadeadfweafewa"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event4"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -155,13 +155,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/five"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event5"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -181,13 +181,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/six"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event6"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -207,13 +207,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/seven"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event7"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -233,13 +233,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/eight"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event8"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -259,13 +259,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/nine"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event9"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"
@@ -285,13 +285,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/ten"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/event10"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:paddingBottom="5dp"

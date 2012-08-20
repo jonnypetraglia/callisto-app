@@ -114,7 +114,7 @@ public class CalendarActivity extends Activity {
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	View popupV = inflater.inflate(R.layout.event_info, null, false);
 		popUp = new PopupWindow(popupV);
-		popUp.setWindowLayoutMode(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		popUp.setWindowLayoutMode(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 		popUp_title = (TextView) popupV.findViewById(R.id.title);
 		popUp_type = (TextView) popupV.findViewById(R.id.type);
 		popUp_date = (TextView) popupV.findViewById(R.id.date);
@@ -610,6 +610,7 @@ public class CalendarActivity extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
+			Log.v("CalendarActivity:clickEvent", "Event has been clicked");
 			if(popUp.isShowing())
 				popUp.dismiss();
 			int[] pos = new int[2];
@@ -620,6 +621,7 @@ public class CalendarActivity extends Activity {
 				TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
 			}
 
+			Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
 			//TODO: The first time a popup is shown, it's shown in a bad place. Weird.
 			if(isLandscape)
 			{
@@ -639,9 +641,7 @@ public class CalendarActivity extends Activity {
 			}
 			
 			View w = (View) (isLandscape? v.getParent() : v);
-			//String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
-			String id = (String) ((TextView)w.findViewWithTag("id")).getText();
-			System.out.println("BUTTS " + id);
+			String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
 			if(id.equals(""))
 				return;
 			long _id = 0;

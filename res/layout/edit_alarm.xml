@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainEdit"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/backClr"
     android:orientation="vertical" >
 
@@ -29,7 +29,7 @@
 
             <RadioGroup
                 android:id="@+id/radioGroup1"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
 
@@ -51,7 +51,7 @@
 
             <CheckBox
                 android:id="@+id/vibrate"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="Vibrate"
@@ -59,7 +59,7 @@
 
             <Spinner
                 android:id="@+id/spinner1"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
@@ -67,7 +67,7 @@
 
     <Button
         android:id="@+id/save"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Save"
         android:textColor="@color/txtClr" />

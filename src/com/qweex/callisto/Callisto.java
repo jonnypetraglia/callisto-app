@@ -42,6 +42,7 @@ import com.qweex.callisto.podcast.Queue;
 import com.qweex.utils.UnfinishedParseException;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
@@ -51,6 +52,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -125,7 +127,6 @@ public class Callisto extends Activity {
 	public static Resources RESOURCES;
 	public static float DP;
 	public static TextView chatView;
-	//public static android.text.Spanned chatLog = new android.text.SpannableString("");
 	
 	//------Local variables-----
 	static TextView timeView;
@@ -144,7 +145,9 @@ public class Callisto extends Activity {
 	private static NotificationManager mNotificationManager;
 	public static SharedPreferences alarmPrefs;
 	public final static String PREF_FILE = "alarms";
-
+	
+	public static boolean live_isPlaying = false;
+	public static int appVersion = -1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -155,6 +158,8 @@ public class Callisto extends Activity {
 		DP = RESOURCES.getDisplayMetrics().density;
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
+		try {
+			Callisto.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (NameNotFoundException e) {}
 		
 		//This is the most reliable way I've found to determine if it is landscape
 		boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
@@ -246,18 +251,9 @@ public class Callisto extends Activity {
 		LinearLayout layout = new LinearLayout(c);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams
-				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
+				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f);
 		LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams
-				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0f);
-				//*/
-		/*
-		RelativeLayout layout = new RelativeLayout(c);
-		RelativeLayout.LayoutParams mParams = new RelativeLayout.LayoutParams
-				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		RelativeLayout.LayoutParams cParams = new RelativeLayout.LayoutParams
-				(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		cParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		//*/
+				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f);
 		layout.addView(mainView, mParams);
 		layout.addView(empty, mParams);
 		layout.addView(controls, cParams);
@@ -410,6 +406,7 @@ public class Callisto extends Activity {
     	
     	public void update(Context c)
     	{
+    		System.out.println("BUTTS: " + Callisto.live_player!=null);
     		Callisto.nextTrack.setContext(c);
     		if(Callisto.mplayer!=null)
     		{
@@ -433,37 +430,70 @@ public class Callisto extends Activity {
 	    	Callisto.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
 	    	if(Callisto.timeView==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "TimeView");
+    	    else if(Callisto.live_player!=null)
+    	    {
+    	    	timeView.setText("--");
+    	    	timeView.setEnabled(false);
+    	    }
     	    else
+    	    {
 	    		timeView.setText(formatTimeFromSeconds(position));
+	    		timeView.setEnabled(true);
+    	    }
     	    
 	    	//lengthView
     	    TextView lengthView = (TextView) ((Activity)c).findViewById(R.id.length);
     	    if(lengthView==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "lengthView");
+    	    else if(Callisto.live_player!=null)
+    	    {
+    	    	lengthView.setText("--");
+    	    	lengthView.setEnabled(false);
+    	    }
     	    else
+    	    {
     	    	lengthView.setText(formatTimeFromSeconds(length));
+    	    	lengthView.setEnabled(true);
+    	    }
     	    
     	    //timeProgress
     	    Callisto.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
     	    if(Callisto.timeProgress==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "timeProgress");
+    	    else if(Callisto.live_player!=null)
+    	    {
+	    	    timeProgress.setMax(1);
+	    	    timeProgress.setProgress(0);
+	    	    timeProgress.setEnabled(false);
+    	    }
     	    else
     	    {
 	    	    timeProgress.setMax(length);
 	    	    timeProgress.setProgress(position);
+	    	    timeProgress.setEnabled(true);
     	    }
         	
         	
         	ImageButton play = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
         	if(play==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "playPause");
-    	    else
+    	    else if(Callisto.live_player!=null)
+    	    {
+				if(Callisto.live_isPlaying)
+					play.setImageDrawable(Callisto.pauseDrawable);
+				else
+					play.setImageDrawable(Callisto.playDrawable);
+    	    } else
     	    {
 				if(Callisto.playerInfo.isPaused)
 					play.setImageDrawable(Callisto.playDrawable);
 				else
 					play.setImageDrawable(Callisto.pauseDrawable);
     	    }
+        	
+    		((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
+    		((Activity)c).findViewById(R.id.previous).setEnabled(Callisto.live_player==null);
+    		((Activity)c).findViewById(R.id.next).setEnabled(Callisto.live_player==null);
         	
         	if(timeTimer==null)
         	{
@@ -521,8 +551,34 @@ public class Callisto extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
+			String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+			if(Callisto.live_player!=null)
+			{
+				if(Callisto.live_isPlaying)
+				{
+					Callisto.live_player.pause();
+					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+				}
+				else
+				{
+					//1. liveInit
+					//2. setOnPreparedListener
+					//3. setDataSource
+					//4. livePrepare
+					try {
+						NowPlaying.liveInit();
+						Callisto.live_player.setOnPreparedListener(NowPlaying.livePreparedListenerOther);
+						Callisto.live_player.setDataSource(live_url);
+						NowPlaying.livePrepare(v.getContext());
+						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
+					} catch(Exception e){}
+				}
+				Callisto.live_isPlaying = !Callisto.live_isPlaying;
+				return;
+			}
 			if(databaseConnector.queueCount()==0)
 				return;
+			
 			if(Callisto.mplayer==null)
 			{
 				Log.d("*:playPause","PlayPause initiated");
@@ -536,15 +592,14 @@ public class Callisto extends Activity {
 				if(Callisto.playerInfo.isPaused)
 				{
 					Callisto.mplayer.start();
-					Callisto.playerInfo.isPaused = false;
 					((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
 				}
 				else
 				{
 					Callisto.mplayer.pause();
-					Callisto.playerInfo.isPaused = true;
 					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
 				}
+				Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
 			}
 		  }
     };
@@ -570,11 +625,37 @@ public class Callisto extends Activity {
     //Listener for playlist button
     public static OnClickListener playlist = new OnClickListener() 
     {
+    	View psychV;
 		@Override
 		  public void onClick(View v) 
 		  {
-			Intent newIntent = new Intent(v.getContext(), Queue.class);
-			v.getContext().startActivity(newIntent);
+			if(live_player!=null)
+			{
+				psychV = v;
+				Dialog dg = new AlertDialog.Builder(v.getContext())
+				.setTitle("Switch from live back to playlist?")
+				.setPositiveButton("Yup", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						live_player.reset();
+						live_player = null;
+						playerInfo.update(psychV.getContext());
+					}
+				})
+				.setNegativeButton("Nope", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).create();
+				dg.show();
+			}
+			else {
+				Intent newIntent = new Intent(v.getContext(), Queue.class);
+				v.getContext().startActivity(newIntent);
+			}
 		  }
     };
     

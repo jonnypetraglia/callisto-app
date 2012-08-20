@@ -35,14 +35,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:padding="0dp" >
 
             <Button
                 android:id="@+id/listen"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -69,7 +69,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             <Button
                 android:id="@+id/live"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -84,14 +84,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <TableRow
             android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:visibility="visible" >
 
             <Button
                 android:id="@+id/plan"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -105,7 +105,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             <Button
                 android:id="@+id/chat"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -121,14 +121,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <TableRow
             android:id="@+id/tableRow3"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:visibility="visible" >
 
             <Button
                 android:id="@+id/contact"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -142,7 +142,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             <Button
                 android:id="@+id/donate"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1.0"
                 android:drawablePadding="-10dp"
@@ -159,7 +159,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     </TableLayout>
 
     <include
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         layout="@layout/controls"
         android:stretchColumns="*" />

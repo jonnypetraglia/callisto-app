@@ -20,13 +20,13 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroller"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/backClr" >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
         android:padding="10dp" >
 
@@ -39,7 +39,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:textColor="@color/txtClr" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
             <EditText
@@ -74,7 +74,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <EditText
             android:id="@+id/email"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textEmailAddress" />
@@ -89,7 +89,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <Spinner
             android:id="@+id/topic"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
         <TextView
@@ -102,7 +102,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <EditText
             android:id="@+id/message"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="left"
@@ -119,7 +119,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <RadioGroup
             android:id="@+id/radioGroup1"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="5dp" >
@@ -144,7 +144,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <Button
             android:id="@+id/button1"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Submit" />
     </LinearLayout>

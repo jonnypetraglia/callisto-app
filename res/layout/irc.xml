@@ -19,20 +19,20 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 <!-- This is the layout for IRCChat -->
 <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/viewanimator"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:id="@+id/lin"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@color/backClr"
         android:orientation="vertical" >
 
         <ScrollView
             android:id="@+id/scrollView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1" >
             
             <!-- 
@@ -49,7 +49,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <EditText
             android:id="@+id/inputField"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:maxLines="1"
@@ -62,14 +62,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@color/backClr" >
 
         <TextView
             android:id="@+id/syslog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:gravity="bottom"
             android:paddingBottom="20dp"
             android:textColor="@color/txtClr"

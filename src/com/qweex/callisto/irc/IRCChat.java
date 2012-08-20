@@ -178,7 +178,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		ll.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
 		ll.setOrientation(LinearLayout.VERTICAL);
 		LinearLayout.LayoutParams params 
-			= new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			= new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 		ll.setLayoutParams(params);
 		ll.setId(1337);
 		ll.setPadding(getWindowManager().getDefaultDisplay().getHeight()/10,
@@ -188,7 +188,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		final EditText user = new EditText(this);
 		final EditText pass = new EditText(this);
 		Button login = new Button(this);
-		params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 		user.setText(profileNick);
 		pass.setText(profilePass);
 		user.setLayoutParams(params);

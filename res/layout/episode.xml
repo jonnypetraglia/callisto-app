@@ -19,14 +19,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 <!-- This is the layout for EpisodeDesc -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mainLin"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@color/backClr"
         android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/headLin"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp" >
 
@@ -59,7 +59,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/LinearLayout1"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" >
@@ -91,7 +91,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <LinearLayout
             android:id="@+id/buttons"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="7dp"
             android:layout_marginLeft="10dp"
@@ -101,28 +101,28 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             <Button
                 android:id="@+id/stream"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_weight="1.0"
                 android:text="@string/stream" />
 
             <Button
                 android:id="@+id/download"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_weight="1.0"
                 android:text="@string/download" />
         </LinearLayout>
 
          <ScrollView
             android:id="@+id/scrollView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_margin="3dp" >
 
             <TextView
                 android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:text="Description"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/txtClr" />

@@ -18,8 +18,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dsadsa"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/backClr"
     android:orientation="vertical" >
 
@@ -33,18 +33,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:src="@raw/jb_planet" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/dkgray" >
 
         <ImageButton
             android:id="@+id/playPause"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:src="@drawable/ic_media_play_lg" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -52,7 +52,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
             <TextView
                 android:id="@+id/textView1"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="Current:"
@@ -60,7 +60,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
             <TextView
                 android:id="@+id/current"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
@@ -69,7 +69,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="Next:"
@@ -77,7 +77,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
             <TextView
                 android:id="@+id/next"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"

@@ -102,8 +102,8 @@
     </string-array>
     
     <string-array name="live_sources">
-        <item>http://www.jblive.am</item>
-        <item>http://www.jblive.fm</item>
+        <item>http://jbradio.out.airtime.pro:8000/jbradio_b</item>
+        <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
     </string-array>
     
 </resources>
