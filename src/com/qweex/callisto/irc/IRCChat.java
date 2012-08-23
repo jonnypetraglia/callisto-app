@@ -17,8 +17,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.irc;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +29,6 @@ import java.util.regex.Pattern;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
-
 
 import jerklib.ConnectionManager;
 import jerklib.Profile;
@@ -61,7 +58,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
@@ -82,13 +78,12 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
 
-//TODO: URL detection
 //FIXME: Glow from scrollview covers up bottom line
 //IDEA: Nicklist
-//FIXME: fix syslog like chatView
-//FIXME: Quit message doesn't work :\
+//FIXME: Quit message doesn't work :\ (just locally?)
 //FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
-//FIXME: If NickServ logs you out because you don't identify, the app will crash. I blame jerklib
+//FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
+//FEATURE: Save chat to file
 
 public class IRCChat extends Activity implements IRCEventListener
 {
@@ -122,7 +117,6 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static PendingIntent contentIntent;
 	private static boolean isFocused = false;
 	ScrollView sv, sv2;
-	TextView syslog; //chat;
 	EditText input;
 	Spanned received;
 	SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
@@ -352,7 +346,10 @@ public class IRCChat extends Activity implements IRCEventListener
 		if(test!=null)
 			test.removeView(Callisto.chatView);
 		sv.addView(Callisto.chatView);
-		syslog = (TextView) findViewById(R.id.syslog);
+		test = ((ScrollView)Callisto.logView.getParent());
+		if(test!=null)
+			test.removeView(Callisto.logView);
+		sv2.addView(Callisto.logView);
 		input = (EditText) findViewById(R.id.inputField);
 		input.setOnEditorActionListener(new OnEditorActionListener(){
 			@Override
@@ -420,7 +417,7 @@ public class IRCChat extends Activity implements IRCEventListener
 						if(action.startsWith("ACTION"))
 						{
 							action = action.substring("ACTION".length(), action.length()-1);
-							String person = e.getRawEventData().substring(1, action.indexOf("!"));
+							//String person = e.getRawEventData().substring(1, action.indexOf("!"));
 						}
 					}catch(Exception ex){}
 				}
@@ -861,9 +858,8 @@ public class IRCChat extends Activity implements IRCEventListener
 						st,
 						": ",
 						st2
-						//,"\n" //FIXME: needed?
 						);
-				Callisto.chatView.append(x); //HERE
+				Callisto.chatView.append(x);
 			}
 			input.requestFocus();
 			input.setText("");
@@ -992,34 +988,11 @@ public class IRCChat extends Activity implements IRCEventListener
         @Override
         public void run()
         {
-            syslog.append(received);
-            syslog.invalidate();
+            Callisto.logView.append(received);
+            Callisto.logView.invalidate();
             sv2.fullScroll(ScrollView.FOCUS_DOWN);
         };	
 
     };
-
-    // Replaces URLs with html hrefs codes
-    public SpannableString URLInString(String input)
-    {
-    	SpannableString output = new SpannableString("");
-    	if(input==null)
-    		return output;
-    	output = new SpannableString(input);
-    	String [] parts = input.split("\\s");
-    	int lastIndex = 0;
-    	for( String item : parts )
-    	{
-			try {
-	            URL url = new URL(item);
-	            
-	            System.out.println("URL: " + item);
-	            output.setSpan(new URLSpan(item), lastIndex, item.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-	        } catch (MalformedURLException e) {
-	        }
-			lastIndex+=item.length();
-    	}
-    	return output;
-    }
 
 }

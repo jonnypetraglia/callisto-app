@@ -90,10 +90,8 @@ import android.widget.Toast;
 //Task Tags: todo clean feature fixme wtf idea
 
 //CLEAN: Rename IDs in layout XML
+//CLEAN: Strings.xml
 //FEATURE: Widget
-//IDEA: In-app Donate
-//IDEA: player real estate with landscape
-
 
 /* This is the main activity/class for the app.
  * It contains the main screen, and also some static elements
@@ -126,7 +124,7 @@ public class Callisto extends Activity {
 	public static PlayerInfo playerInfo = null;
 	public static Resources RESOURCES;
 	public static float DP;
-	public static TextView chatView;
+	public static TextView chatView, logView;
 	
 	//------Local variables-----
 	static TextView timeView;
@@ -137,7 +135,6 @@ public class Callisto extends Activity {
 	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
-	public final String DONATION_APP_ID = "com.qweex.donation";
 	public static oOnCompletionListener nextTrack;
 	public static oOnErrorListener nextTrackBug;
 	public static oOnPreparedListener okNowPlay;
@@ -207,11 +204,14 @@ public class Callisto extends Activity {
 		nextTrackBug = new oOnErrorListener();
 	    okNowPlay = new oOnPreparedListener();
 	    
-	    	//Create the view for the the IRC
+	    	//Create the views for the the IRC
 	    chatView = new TextView(this);
-	    chatView.setGravity(Gravity.BOTTOM);;
+	    chatView.setGravity(Gravity.BOTTOM);
 	    String i=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
 	    chatView.setMaxLines(Integer.parseInt(i));
+	    logView = new TextView(this);
+	    logView.setGravity(Gravity.BOTTOM);
+	    logView.setMaxLines(Integer.parseInt(i));
 	    /*
 	    ScrollView.LayoutParams ll = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
 	    ll.setMargins(0, 0, 0, (int)(50*Callisto.DP));
@@ -668,25 +668,8 @@ public class Callisto extends Activity {
 			Intent newIntent;
 			if(v.getId()==R.id.donate)
 			{
-				/*
-				Toast.makeText(getApplicationContext(), "This will open a link to a donation 'app' in Google Play.", Toast.LENGTH_LONG).show();
-				if(v.getId()==R.id.donate)
-					return;
-					//*/
 				newIntent = new Intent(Callisto.this, Donate.class);
 				startActivity(newIntent);
-				//TODO: Change this to a good donation thingy
-				/*
-				newIntent = new Intent(Intent.ACTION_VIEW);
-				try {
-					newIntent.setData(Uri.parse("market://details?id=" + DONATION_APP_ID));
-					startActivity(newIntent);
-				} catch(ActivityNotFoundException e)
-				{
-					newIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + DONATION_APP_ID));
-					startActivity(newIntent);
-				}
-				//*/
 			}
 			else {
 				   newIntent = new Intent(Callisto.this,
@@ -742,8 +725,10 @@ public class Callisto extends Activity {
     
     
     
-    public static void downloadImage(String img_url, String show) throws IOException
+    public static void downloadImage(String img_url, String show) throws IOException, NullPointerException
     {
+    	if(img_url==null)
+    		throw(new NullPointerException());
     	File f = new File(Environment.getExternalStorageDirectory() + File.separator + 
     				      storage_path + File.separator +
     				      show + EpisodeDesc.getExtension(img_url));
@@ -796,24 +781,39 @@ public class Callisto extends Activity {
   		  Log.v("*:updateShow", "Parser is prepared");
   		  int eventType = xpp.getEventType();
   		
-  		  //Download the image URL
-  		
-  		  while(!("title".equals(xpp.getName())) && !("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  		  while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG))
   		  {
-				  eventType = xpp.next();
-				  if(eventType==XmlPullParser.END_DOCUMENT)
-					  throw(new UnfinishedParseException("Thumbnail"));
+  			  eventType = xpp.next();
+  		  }
+  		  eventType = xpp.next();
+  		  
+  		  //Download the image
+  		  while(!("title".equals(xpp.getName())) && !("image".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  		  {
+			  eventType = xpp.next();
+			  if(eventType==XmlPullParser.END_DOCUMENT)
+				  throw(new UnfinishedParseException("Thumbnail"));
 		  }
   		  if(!("title".equals(xpp.getName())))
 		  {
-	  		  String imgurl = xpp.getAttributeValue(null,xpp.getAttributeName(0));
-	  		  try {
-	  			  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-	  		  } catch(IOException e)
-	  		  {}
-	  		  Log.v("*:updateShow", "Parser has downloaded image");
+  			  eventType = xpp.next();
+  	  		  while(!(("image".equals(xpp.getName()) || ("url".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))))
+  	  		  {
+  	  			eventType = xpp.next();
+  	  		  }
+  	  		  if(!("image".equals(xpp.getName())))
+  	  		  {
+  	  	  		eventType = xpp.next();
+  	  	  		String imgurl = xpp.getText();
+	  	  		  try {
+	  	  			  if(imgurl!=null)
+	  	  				  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+	  	  		  } catch(Exception e) {}
+	  	  		  Log.v("*:updateShow", "Parser has downloaded image");
+	  	  		  while(!("image".equals(xpp.getName())))
+	  	  			eventType = xpp.next();
+  	  		  }
 		  }
-  		  xpp.next();
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)
@@ -827,6 +827,7 @@ public class Callisto extends Activity {
 				  }
 				  eventType = xpp.next();
 				  epTitle = xpp.getText();
+				  System.out.println("B: " + xpp.getText());
 				  if(epTitle==null)
 					  throw(new UnfinishedParseException("Title"));
 				  if(epTitle.indexOf("|")>0)

@@ -21,10 +21,6 @@ import java.util.ArrayList;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.color;
-import com.qweex.callisto.R.id;
-import com.qweex.callisto.R.layout;
-import com.qweex.callisto.R.string;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -40,7 +36,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-//FIXME: So much stuff needs to be fixed; Size formatting, canceling, just to name a few
+//FIXME: So much stuff needs to be fixed; Filesize formatting, canceling, just to name a few
 
 public class DownloadList extends ListActivity
 {
@@ -128,6 +124,7 @@ public class DownloadList extends ListActivity
 			{	
 				LayoutInflater inflater=getLayoutInflater();
 				row=inflater.inflate(R.layout.row, parent, false);
+				(row.findViewById(R.id.img)).setVisibility(View.GONE);
 			}
 	    	
 			Cursor c = Callisto.databaseConnector.getOneEpisode(downloadQueue.get(position));
@@ -140,7 +137,6 @@ public class DownloadList extends ListActivity
 			((TextView)row.findViewById(R.id.rowTextView)).setText(title);
 			((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
 			((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
-			(row.findViewById(R.id.img)).setVisibility(View.GONE);
 			
 			
 		    ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));

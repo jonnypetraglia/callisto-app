@@ -48,7 +48,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
 	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
 	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps"/>
-	        <EditTextPreference android:key="irc_max_scrollback" android:title="Max scrollback" android:summary="Maximum number of lines to display"/>
+	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display"/>
 	        <!-- 
 	        <PreferenceCategory android:title="Colors">
 	            
@@ -71,7 +71,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:key="secret" >
 	        <CheckBoxPreference
 	            android:key="splash_show"
-	            android:summary="The wonderful feature that you got for donating to JB!"
+	            android:summary="The wonderful feature that you got for donating to Qweex!"
 	            android:title="@string/show_splash" 
 	            android:defaultValue="true" />
 	        <CheckBoxPreference

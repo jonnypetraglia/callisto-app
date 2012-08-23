@@ -36,7 +36,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
@@ -51,7 +50,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-//FEATURE: All of it
 
 public class NowPlaying extends Activity
 {
@@ -202,6 +200,7 @@ public class NowPlaying extends Activity
 		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
+		    	pd.cancel();
 		    	dg.show();
 		    	String whatWhat="";
 		    	switch (what) {

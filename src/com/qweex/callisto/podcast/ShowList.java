@@ -23,11 +23,6 @@ import java.util.Date;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.color;
-import com.qweex.callisto.R.drawable;
-import com.qweex.callisto.R.id;
-import com.qweex.callisto.R.layout;
-import com.qweex.callisto.R.string;
 
 import android.app.Activity;
 import android.app.AlertDialog;

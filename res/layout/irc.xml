@@ -35,15 +35,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="fill_parent"
             android:layout_weight="1" >
             
-            <!-- 
-            <TextView
-                android:id="@+id/chat"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginBottom="50dp"
-                android:gravity="bottom"
-                android:paddingBottom="50dp" />
-                 -->
 
         </ScrollView>
 
@@ -66,7 +57,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_height="fill_parent"
         android:background="@color/backClr" >
 
-        <TextView
+        <!-- <TextView
             android:id="@+id/syslog"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -74,7 +65,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:paddingBottom="20dp"
             android:textColor="@color/txtClr"
             android:textColorLink="@color/txtClr"
-            android:visibility="visible" />
+            android:visibility="visible" /> -->
 
     </ScrollView>
 

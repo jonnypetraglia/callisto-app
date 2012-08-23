@@ -26,24 +26,23 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.app.ProgressDialog;
+import android.widget.ImageButton;
+import android.widget.Toast;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
-//FEATURE: move files when changing storage path
-
 //FEATURE: Configure when update will happen
-//Configure radio quality
 //FEATURE: Automatically delete songs upon completion
 //FEATURE: Automatically add songs to queue after downloading
-//FEATURE: Stop/start stream if live settings change
 
 public class QuickPrefsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {    
 	public final static String DONATION_APP = "com.qweex.donation";
-
+	private String old_radio;
+	ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it of playPause in Callisto.java
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {        
         super.onCreate(savedInstanceState);        
@@ -51,39 +50,45 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);
         findPreference("secret").setEnabled(packageExists(DONATION_APP, this));
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        
+        old_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
+        MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
+        MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPause);
     }
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-    	String new_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
-    	if(new_path==Callisto.storage_path)
-    		return;
-    	ProgressDialog pd = ProgressDialog.show(QuickPrefsActivity.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false); //TODO: Different loading message
-    	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
-    	newfile.mkdirs();
-    	boolean wasError = false;
-    	/*
-    	File dir = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path);
-    	newfile = newfile = new File(Environment.getExternalStorageDirectory(), new_path);
-    	wasError = dir.renameTo(newfile);
-    	/*
-    	for (File child : dir.listFiles())
+    	if("storage_path".equals(key))
     	{
-    		if (".".equals(child.getName()) || "..".equals(child.getName()))
-    			continue;
-    		newfile = new File(Environment.getExternalStorageDirectory(), new_path + File.separator + child.getName());
-    		System.out.println(child.getAbsolutePath());
-    		System.out.println(newfile.getAbsolutePath());
-    		System.out.println("");
-    		wasError = wasError || child.renameTo(newfile);
+    		//Move folder for storage dir
+	    	String new_path = sharedPreferences.getString("storage_path", "callisto");
+	    	if(new_path==Callisto.storage_path)
+	    		return;
+	    	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
+	    	newfile.mkdirs();
+	    	
+	    	File sd = Environment.getExternalStorageDirectory();
+	    	File olddir = new File(sd, Callisto.storage_path);
+	    	if(!olddir.renameTo(new File(sd, new_path)))
+	    	{
+	    		Toast.makeText(this, "An error occurred while trying to rename the folder. You might have to do it manually.", Toast.LENGTH_SHORT).show();
+	    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");
+	    	}
+		    Callisto.storage_path = new_path;
     	}
-    	*/
-    	if(wasError)
-    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");
-    	 
-	    Callisto.storage_path = new_path;
-	    pd.cancel();
-	    Callisto.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+    	else if("live_url".equals(key) && Callisto.live_isPlaying)
+    	{
+    		String new_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
+    		if(!new_radio.equals(old_radio))
+    		{
+				MagicButtonThatDoesAbsolutelyNothing.performClick();
+				MagicButtonThatDoesAbsolutelyNothing.performClick();
+    			old_radio=new_radio;
+    		}
+    	}
+    	else if(key=="irc_max_scrollback")
+    		Callisto.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+	    
     }
     
     //http://stackoverflow.com/questions/6758841/how-to-know-perticular-package-application-exist-in-the-device

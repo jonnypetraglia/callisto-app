@@ -1,6 +1,21 @@
+/*
+Copyright (C) 2012 Qweex
+This file is a part of Callisto.
+
+Callisto is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+Callisto is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Callisto; If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.qweex.callisto;
-
-
 
 import com.android.vending.billing.BillingService;
 import com.android.vending.billing.Consts;
@@ -18,6 +33,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,11 +59,13 @@ public class Donate extends ListActivity implements OnClickListener
 	private CatalogAdapter mCatalogAdapter;
 	private Handler mHandler;
 	private DungeonsPurchaseObserver mDungeonsPurchaseObserver;
+	public final String DONATION_APP_ID = "com.qweex.donation";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		setTitle("Donate");
 		if(Callisto.RESOURCES!=null)
 			RESOURCES = Callisto.RESOURCES;
 		else
@@ -64,19 +83,34 @@ public class Donate extends ListActivity implements OnClickListener
 		
 		//Prepare the header's appearance
 		TextView header = new TextView(this);
-		header.setText("Donate");
+		header.setText("Choose amount (USD)");
 		
-		//Prepare the button's appearance
+		
+		//Prepare the message & button's appearance
+		LinearLayout ll = new LinearLayout(this);
+		ll.setOrientation(LinearLayout.VERTICAL);
+		TextView msg = new TextView(this);
+		msg.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+		msg.setTextSize(11f);
+		msg.setText(Html.fromHtml("100% of your donation will go "
+								 + "<i>directly</i>"
+							 	 + " to Jupiter Broadcasting. Afterwards, if you want to donate to the app developer, buy the "
+							 	 + "<a href=\"market://details?id=" + DONATION_APP_ID + "\">donation app in the market</a>"
+								 + "."));
+		msg.setMovementMethod(LinkMovementMethod.getInstance());
+		msg.setPadding(30, 10, 30, 10);
 		GiveChrisSomeHardEarnedMoney = new Button(this);
 		GiveChrisSomeHardEarnedMoney.setText("Donate!");
 		GiveChrisSomeHardEarnedMoney.setOnClickListener(this);
+		ll.addView(msg);
+		ll.addView(GiveChrisSomeHardEarnedMoney);
 		
 		itemsList.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
 		itemsList.setCacheColorHint(RESOURCES.getColor(R.color.backClr));
 		header.setTextColor(RESOURCES.getColor(R.color.txtClr));
-		header.setTextSize(50f);
+		header.setTextSize(25f);
 		itemsList.addHeaderView(header);
-		itemsList.addFooterView(GiveChrisSomeHardEarnedMoney);
+		itemsList.addFooterView(ll);
 		
 		
 		mCatalogAdapter = new CatalogAdapter(this, CATALOG);
