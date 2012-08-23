@@ -24,7 +24,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- TODO -->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.VIBRATE" />
     <application android:label="Callisto" android:icon="@drawable/callisto"> 
 
 
@@ -56,6 +57,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
     <service android:name="com.android.vending.billing.BillingService" />
 
+
+    <receiver android:name=".AlarmNotificationReceiver" android:enabled="true" />
+    
+    <receiver android:enabled="true" android:name=".BootNotificationReceiver"
+    android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+        <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </receiver>
+ 
+    
     <receiver android:name="com.android.vending.billing.BillingReceiver">
       <intent-filter>
         <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />

@@ -34,14 +34,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 //FEATURE: Configure when update will happen
-//FEATURE: Automatically delete songs upon completion
-//FEATURE: Automatically add songs to queue after downloading
+
 
 public class QuickPrefsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {    
 	public final static String DONATION_APP = "com.qweex.donation";
 	private String old_radio;
-	ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it of playPause in Callisto.java
+	ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it is defined as such in Callisto.playPause
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {        

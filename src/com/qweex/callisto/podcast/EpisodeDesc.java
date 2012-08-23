@@ -30,10 +30,6 @@ import java.text.SimpleDateFormat;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.drawable;
-import com.qweex.callisto.R.id;
-import com.qweex.callisto.R.layout;
-import com.qweex.callisto.R.string;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -198,7 +194,7 @@ System.out.println("butts 3");
 		super.onResume();
 		Log.v("EpisodeDesc:onResume", "Resuming main activity");
 		Callisto.playerInfo.update(EpisodeDesc.this);
-		determineButtons();
+		determineButtons(false);
 	}
 	
 	//Listener for when the episode's "New" status is toggled
@@ -289,8 +285,26 @@ System.out.println("butts 3");
 			 	
 			 	if(Callisto.download_queue.size()==1)
 					new DownloadTask().execute(media_link);
-			 	determineButtons();
+			 	determineButtons(false);
 		}
+    };
+    
+  //Listener for when the "download" button is pressed
+    private OnClickListener launchCancel = new OnClickListener() 
+    {
+		 @Override
+		  public void onClick(View v) 
+		  {
+			 for(int i=0; i<Callisto.download_queue.size(); i++)
+			 {
+				 if(Callisto.download_queue.get(i).equals(id))
+				 {
+					 Callisto.download_queue.remove(i);
+					 break;
+				 }
+			 }
+			 determineButtons(true);
+		  }
     };
     
     // Starts downloading a file outside the UI thread
@@ -370,6 +384,11 @@ System.out.println("butts 3");
 					//Here is where the actual downloading happens
 					while ((len = inStream.read(buff)) != -1)
 					{
+						if(Callisto.download_queue.size()==0 || !Callisto.download_queue.get(0).equals(id))
+						{
+							Target.delete();
+							break;
+						}
 						outStream.write(buff,0,len);
 			            downloadedSize += len;
 				       	perc = downloadedSize*100;
@@ -377,18 +396,21 @@ System.out.println("butts 3");
 				       	Callisto.notification_download.setLatestEventInfo(getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " + Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": " + perc + "%", Show + ": " + Title, contentIntent);
 				       	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
 					}
-					Callisto.current_download++;
-		           
-		           
-					outStream.flush();
-					outStream.close();
-					inStream.close();
-					Log.i("EpisodeDesc:DownloadTask", "Successfully downloaded to : " + Target.getPath());
-					boolean queue = PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getBoolean("download_to_queue", false);
-					if(queue)
-						Callisto.databaseConnector.appendToQueue(id, false);
 					
-					Callisto.download_queue.remove(0);
+					if(Callisto.download_queue.size()!=0 && Callisto.download_queue.get(0).equals(id))
+					{
+						Callisto.current_download++;
+			           
+						outStream.flush();
+						outStream.close();
+						inStream.close();
+						Log.i("EpisodeDesc:DownloadTask", "Successfully downloaded to : " + Target.getPath());
+						boolean queue = PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getBoolean("download_to_queue", false);
+						if(queue)
+							Callisto.databaseConnector.appendToQueue(id, false);
+						
+						Callisto.download_queue.remove(0);
+					}
 		       } catch (IOException e) {
 		    	   Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");
 		    	   e.printStackTrace();
@@ -406,12 +428,21 @@ System.out.println("butts 3");
 		       
 			Log.i("EpisodeDesc:DownloadTask", "Finished Downloading");
        		mNotificationManager.cancel(NOTIFICATION_ID);
-		    Callisto.notification_download = new Notification(R.drawable.callisto, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
-		    Callisto.notification_download.setLatestEventInfo(getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", null, contentIntent);
-		    Callisto.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
-		   	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
-		    Callisto.current_download=1;
-		    Callisto.downloading_count=0;
+       		if(Callisto.downloading_count>0)
+       		{
+			    Callisto.notification_download = new Notification(R.drawable.callisto, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
+			    Callisto.notification_download.setLatestEventInfo(getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", null, contentIntent);
+			    Callisto.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
+			   	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+			    Callisto.current_download=1;
+			    Callisto.downloading_count=0;
+       		}
+       		else
+       		{
+    		    Callisto.current_download=1;
+    		    Callisto.downloading_count=0;
+    		    return false;
+       		}
 		    return true;
        }
        
@@ -434,17 +465,16 @@ System.out.println("butts 3");
        }
     }
     
-    private void determineButtons()
+    private void determineButtons(boolean forceNotThere)
     {
-    	if(Callisto.download_queue.contains(id))
+    	if(Callisto.download_queue.contains(id) && !forceNotThere)
     	{
     		streamButton.setText(Callisto.RESOURCES.getString(R.string.downloading));
     		streamButton.setEnabled(false);
 			downloadButton.setText(Callisto.RESOURCES.getString(R.string.cancel));
-			//FEATURE: Cancel Download
-			//downloadButton.setOnClickListener(launchCancel);
+			downloadButton.setOnClickListener(launchCancel);
     	}
-    	else if(file_location.exists())
+    	else if(file_location.exists() && !forceNotThere)
 		{
     		if(file_location.length()!=media_size)
     		{

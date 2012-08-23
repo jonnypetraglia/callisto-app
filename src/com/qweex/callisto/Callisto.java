@@ -107,6 +107,7 @@ public class Callisto extends Activity {
 	public static Notification notification_download;
 	public static Notification notification_playing;
 	public static Notification notification_chat;
+	public static Notification notification_alarm;
 	public static String storage_path;
 	public static int downloading_count = 0;
 	public static int current_download = 1;
@@ -421,7 +422,9 @@ public class Callisto extends Activity {
     	    if(titleView==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "titleView");
     	    else
-        	    if(title==null)
+    	    	if(Callisto.live_player!=null)
+        	    	titleView.setText(NowPlaying.liveTitle + " - JB Radio");
+    	    	else if(title==null)
         	    	titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
         	    else
         	    	titleView.setText(title + " - " + show);

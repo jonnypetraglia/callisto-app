@@ -41,9 +41,12 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import com.qweex.utils.NumberPicker;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.RingtoneManager;
@@ -67,8 +70,9 @@ import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-//FEATURE: Calendar event notifications
+//FEATURE: Add recurring alarms; i.e., an alarm for every live TechSnap
 //IDEA: Storing the date information in the "PDT" format so it will be correct when you move between timezones without having to refresh
 //CLEAN: popup is incorrect margins for on top
 
@@ -146,8 +150,8 @@ public class CalendarActivity extends Activity {
 			    mRingtoneManager2.setIncludeDrm(true);
 			    Cursor mCursor2 = mRingtoneManager2.getCursor();
 			    startManagingCursor(mCursor2);
-			    String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX)};
-			    int[] to = {R.id.text1, R.id.id1};
+			    String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.URI_COLUMN_INDEX)};
+			    int[] to = {R.id.text1, R.id.id1, R.id.uri};
 			    SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to );
 			    adapter.setDropDownViewResource( R.layout.simple_spinner_item_plus );
 			    Spinner s = (Spinner) vi.findViewById( R.id.spinner1);
@@ -158,7 +162,6 @@ public class CalendarActivity extends Activity {
 				key = Callisto.alarmPrefs.getString(key, "");
 				int min = 0, tone=0;
 				boolean vibrate=false, isAlarm=false;
-				System.out.println("key:" + key);
 				if(key!="")
 				{
 					try {
@@ -196,14 +199,34 @@ public class CalendarActivity extends Activity {
 						
 						Spinner s = (Spinner) x.findViewById( R.id.spinner1);
 						String tone = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.id1)).getText();
+						String uri = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.uri)).getText();
 						String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
 						int min = ((NumberPicker) x.findViewById(R.id.minutesBefore)).getValue();
 						int isAlarm = ((RadioButton) x.findViewById(R.id.isAlarm)).isChecked()?1:0;
 						int vibrate = ((CheckBox) x.findViewById(R.id.vibrate)).isChecked()?1:0;
 						
-						System.out.println("key==" + key);
+						Calendar time = Calendar.getInstance();
+						try {
+							time.setTime(Callisto.sdfRaw.parse(key.substring(key.length()-14)));
+							time.add(Calendar.MINUTE, -1*min);
+						} catch (ParseException e) {}
+						
+						
+						Intent i = new Intent(CalendarActivity.this, AlarmNotificationReceiver.class);
+					    i.putExtra("tone", uri + "/" + tone);
+					    i.putExtra("min", min);
+					    i.putExtra("isAlarm", isAlarm);
+					    i.putExtra("vibrate", vibrate);
+					    i.putExtra("show", key.substring(0, 14));
+					    Toast.makeText(CalendarActivity.this, "Creating event...", Toast.LENGTH_SHORT).show();
+					    PendingIntent pi = PendingIntent.getBroadcast(CalendarActivity.this.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
+					    AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+					    mAlarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3*1000, pi); //DEBUG
+					    
+						
+						
 						SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
-						edit.putString(key, Integer.toString(min) + "_" + tone + "_" + isAlarm + "" + vibrate);
+						edit.putString(key, Integer.toString(min) + "_" + uri + "/" + tone + "_" + isAlarm + "" + vibrate);
 						edit.commit();
 						dg.dismiss();
 						popUp.dismiss();

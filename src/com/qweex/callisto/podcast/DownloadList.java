@@ -18,6 +18,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 package com.qweex.callisto.podcast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
@@ -36,7 +37,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-//FIXME: So much stuff needs to be fixed; Filesize formatting, canceling, just to name a few
+//FIXME: So much stuff needs to be fixed; Filesize formatting, just to name a few
 
 public class DownloadList extends ListActivity
 {
@@ -74,10 +75,11 @@ public class DownloadList extends ListActivity
 		  public void onClick(View v) 
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 if(id==1 || id==2)
+			 int num = Integer.parseInt((String) tv.getText());
+			 if(num==0 || num==1)
 				 return;
-			 
+			 Collections.swap(Callisto.download_queue,num,num-1);
+			 listAdapter.notifyDataSetChanged();
 		  }
     };
     
@@ -87,9 +89,11 @@ public class DownloadList extends ListActivity
 		  public void onClick(View v) 
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 if(id==1 || id==Callisto.databaseConnector.queueCount())
+			 int num = Integer.parseInt((String) tv.getText());
+			 if(num==0 || num==Callisto.download_queue.size()-1)
 				 return;
+			 Collections.swap(Callisto.download_queue,num,num+1);
+			 listAdapter.notifyDataSetChanged();
 		  }
     };
 
@@ -99,8 +103,10 @@ public class DownloadList extends ListActivity
 		  public void onClick(View v) 
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 long id = Long.parseLong((String) tv.getText());
-			 
+			 int num = Integer.parseInt((String) tv.getText());
+			 Callisto.download_queue.remove(num);
+			 listAdapter.notifyDataSetChanged();
+			 Callisto.downloading_count--;
 		  }
     };
 
@@ -132,8 +138,8 @@ public class DownloadList extends ListActivity
 			
 			String title = c.getString(c.getColumnIndex("title"));
 			String show = c.getString(c.getColumnIndex("show"));
-			String media_size = c.getString(c.getColumnIndex("mp3size"));	//IDEA: adjust for watch if needed
-			((TextView)row.findViewById(R.id.hiddenId)).setText(Long.toString(downloadQueue.get(position)));
+			String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex("mp3size")));	//IDEA: adjust for watch if needed
+			((TextView)row.findViewById(R.id.hiddenId)).setText(Integer.toString(position));
 			((TextView)row.findViewById(R.id.rowTextView)).setText(title);
 			((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
 			((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
@@ -145,11 +151,8 @@ public class DownloadList extends ListActivity
 		    down.setOnClickListener(moveDown);
 		    ImageButton remove = ((ImageButton)row.findViewById(R.id.remove));
 		    remove.setOnClickListener(removeItem);
-			if(position==0)
-			{
-				up.setEnabled(false);
-				down.setEnabled(false);
-			}
+			up.setEnabled(position>0);
+			down.setEnabled(position>0);
 			
     		return row;
     	}

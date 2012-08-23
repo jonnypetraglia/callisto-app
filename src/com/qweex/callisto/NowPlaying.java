@@ -31,8 +31,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import com.qweex.callisto.podcast.EpisodeDesc;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -62,6 +67,8 @@ public class NowPlaying extends Activity
     String live_url;
     static ProgressDialog pd;
     static Dialog dg;
+    static String liveTitle;
+    
     ImageButton bigButton;
     
     private final int JBLIVE_MENU_ID = Menu.FIRST;
@@ -139,8 +146,7 @@ public class NowPlaying extends Activity
 		    	nextShow = m.group(2);
 	    	
 		    current.setText(currentShow);
-		    Callisto.playerInfo.title = currentShow;
-		    Callisto.playerInfo.show = "JB Radio";
+		    liveTitle = currentShow;
 		    next.setText(nextShow);
 		    
 		} catch (ClientProtocolException e) {
@@ -164,8 +170,8 @@ public class NowPlaying extends Activity
 			
 			if(Callisto.live_player == null || !Callisto.live_isPlaying)
 			{
-				
-				
+				Callisto.mplayer.reset();
+				Callisto.mplayer=null;
 				liveInit();
 				Callisto.live_player.setOnPreparedListener(livePreparedListener);
 					try {
@@ -240,6 +246,14 @@ public class NowPlaying extends Activity
 				update();
 				Callisto.live_isPlaying = true;
 				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+				Intent notificationIntent = new Intent(NowPlaying.this, NowPlaying.class);
+				PendingIntent contentIntent = PendingIntent.getActivity(NowPlaying.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+				Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+		       	Callisto.notification_playing.setLatestEventInfo(NowPlaying.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
+			       	
+		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
 			}
 			catch(Exception e)
 			{

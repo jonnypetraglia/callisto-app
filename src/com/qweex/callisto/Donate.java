@@ -116,7 +116,6 @@ public class Donate extends ListActivity implements OnClickListener
 		mCatalogAdapter = new CatalogAdapter(this, CATALOG);
 		itemsList.setAdapter(mCatalogAdapter);
 		itemsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		
 	}
 	
 	@Override
