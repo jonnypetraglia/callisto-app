@@ -88,7 +88,7 @@ import android.widget.ViewAnimator;
 public class IRCChat extends Activity implements IRCEventListener
 {
 	private String SERVER_NAME = "irc.geekshed.net";
-	private String CHANNEL_NAME = "#jbgossip"; //"#jupiterbroadcasting";
+	private String CHANNEL_NAME = "#jupiterbroadcasting";
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;

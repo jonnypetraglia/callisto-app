@@ -31,8 +31,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import com.qweex.callisto.podcast.EpisodeDesc;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Notification;

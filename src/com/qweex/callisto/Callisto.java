@@ -93,38 +93,47 @@ import android.widget.Toast;
 //CLEAN: Strings.xml
 //FEATURE: Widget
 
-/* This is the main activity/class for the app.
- * It contains the main screen, and also some static elements
- * that are globally used across multiple activities
+/** This is the main activity/class for the app.
+    It contains the main screen, and also some static elements
+    that are globally used across multiple activities
  */
-
 public class Callisto extends Activity {
 
 	//-----Static members-----
 	// These are used across the multiple activities
+		/** The media players are used across the app to control playing either live or podcast'ed episodes. */
 	public static MediaPlayer mplayer = null, live_player;
+		/** Used to connect to the SQLlite database. For more information, see the DatabaseConnector class.*/
 	public static DatabaseConnector databaseConnector;
-	public static Notification notification_download;
-	public static Notification notification_playing;
-	public static Notification notification_chat;
-	public static Notification notification_alarm;
+		/** Notifications are used in various activities */
+	public static Notification notification_download, notification_playing, notification_chat, notification_alarm;
+		/** The path on the SD card to store downloaded episodes. Customizable via the settings dialog. */
 	public static String storage_path;
+		/** The number of downloads that has been queued up. */
 	public static int downloading_count = 0;
+		/** The current download number. */
 	public static int current_download = 1;
+		/** An ArrayList containing a list of IDs of what to download. Note that this is NOT saved when the app is shut down. */
 	public static ArrayList<Long> download_queue = new ArrayList<Long>();
-	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
-	public static final SimpleDateFormat sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd");
-	public static final SimpleDateFormat sdfRawSimple2 = new SimpleDateFormat("HHmmss");
-	public static final SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa");
-	public static final SimpleDateFormat sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
-	public static final SimpleDateFormat sdfDestination = new SimpleDateFormat("MM/dd/yyyy");
-	public static final SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd");
-	public static final SimpleDateFormat sdfHuman = new SimpleDateFormat("MMM d");
-	public static final SimpleDateFormat sdfHumanLong = new SimpleDateFormat("MMM d, yyyy");
-	public static Drawable playDrawable, pauseDrawable;
+		/** One of the various date formats used across various Activities. The usage for most should be self-documenting from the name. */
+	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss"),
+										 sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd"),
+								 		 sdfRawSimple2 = new SimpleDateFormat("HHmmss"),
+								 		 sdfTime = new SimpleDateFormat("hh:mm aa"),
+								 		 sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
+								 		 sdfDestination = new SimpleDateFormat("MM/dd/yyyy"),
+								 		 sdfFile = new SimpleDateFormat("yyyy-MM-dd"),
+								 		 sdfHuman = new SimpleDateFormat("MMM d"),
+								 		 sdfHumanLong = new SimpleDateFormat("MMM d, yyyy");
+		/** Shared Drawable resources for updating the player control graphics. */
+    public static Drawable playDrawable, pauseDrawable;
+    	/** An instance of the PlayerInfo class, to keep track of the info of a track when updating the player controls across the activities. */
 	public static PlayerInfo playerInfo = null;
+		/** Simply the shared resources of the project, for things like strings, colors, drawables, etc. */
 	public static Resources RESOURCES;
+		/** The value of a dip, to be used programatically when updating a view. */
 	public static float DP;
+		/** One of the Views for the IRC client. Having them static lets them be updated at any time, and not be destroyed when you leave the IRC screen. */
 	public static TextView chatView, logView;
 	
 	//------Local variables-----
@@ -144,9 +153,14 @@ public class Callisto extends Activity {
 	public static SharedPreferences alarmPrefs;
 	public final static String PREF_FILE = "alarms";
 	
+		/** The status of the live player; true if it is playing, false if it is paused or not in use. */
 	public static boolean live_isPlaying = false;
+		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
 	
+	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 *  */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -221,13 +235,14 @@ public class Callisto extends Activity {
 	    //*/
 	}
 	
-	
+	/** Called when the activity is going to be destroyed. Currently unused. */
 	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();
 	}
 	
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override
 	public void onResume()
 	{
@@ -236,8 +251,10 @@ public class Callisto extends Activity {
 		Callisto.playerInfo.update(Callisto.this);
 	}
 	
-	/* This method creates the layout for various activities, adding the Player Controls.
-	 *  It essentially takes whatever "mainView" is and wraps it and the Controls in a vertical LinearLayout
+	/** Creates the layout for various activities, adding the Player Controls.
+	 *  It essentially takes whatever "mainView" is and wraps it and the Controls in a vertical LinearLayout.
+	 *  @param c The current context in which to build.
+	 *  @param mainView The main view of the Activity to be wrapped above the player controls
 	 */
     public static void build_layout(Context c, View mainView)
     {
@@ -267,6 +284,7 @@ public class Callisto extends Activity {
 		Log.v("*:build_layout", "Finished building the layout");
     }
     
+    /** Listener for the Next (">") button. Proceeds to the next track, if there is one. */
     public static OnClickListener next = new OnClickListener()
     {
     	@Override public void onClick(View v)
@@ -274,6 +292,7 @@ public class Callisto extends Activity {
     		playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 		}
 	};
+	/** Listener for the Previous ("<") button. Goes back to the previosu track, if there is one. */
     public static OnClickListener previous = new OnClickListener()
     {
     	@Override public void onClick(View v)
@@ -282,8 +301,10 @@ public class Callisto extends Activity {
 		}
 	};
     
-	/* This method plays the next song in the queue, if there is one. 
-	 * previousOrNext = + if it should play the next track, - for the previous, and 0 for the current
+	/** This method plays the next song in the queue, if there is one.
+	 * @param c The context of the current activity.
+	 * @param previousOrNext >0 if it should play the next track, <0 for the previous, and 0 for the current
+	 * @param startPlaying true if the player should start playing when it changes tracks, false otherwise
 	 */
     public static void playTrack(Context c, int previousOrNext, boolean startPlaying)
     {    	
@@ -388,9 +409,7 @@ public class Callisto extends Activity {
     }
     
     
-	/* This class is essentially a struct with a few functions
-	 * to handle the player, particularly updating it when switching activities.
-	 */ 
+	/** Essentially a struct with a few functions to handle the player, particularly updating it when switching activities. */ 
     public class PlayerInfo
     {
     	public MediaPlayer player;
@@ -398,6 +417,9 @@ public class Callisto extends Activity {
     	public int position = 0, length = 0;
     	public boolean isPaused = true;
     	
+    	/** Constructor for the PlayerInfo class. Good to call when first creating the player controls, to set then to something.
+    	 *  @param c The context for the current Activity. 
+    	 */
     	public PlayerInfo(Context c)
     	{
     		TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
@@ -405,9 +427,11 @@ public class Callisto extends Activity {
 			titleView.setText(RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
     	}
     	
+    	/** Updates the player controls, like the title and times. Used excessively when changing Activities.
+    	 * @param c The context for the current Activity.
+    	 */
     	public void update(Context c)
     	{
-    		System.out.println("BUTTS: " + Callisto.live_player!=null);
     		Callisto.nextTrack.setContext(c);
     		if(Callisto.mplayer!=null)
     		{
@@ -513,11 +537,13 @@ public class Callisto extends Activity {
     	
     }
     
+    /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
 	private void TimerMethod()
 	{
 		Callisto.this.runOnUiThread(TimerRunnable);
 	}
 	
+	/** A runnable to be used in conjunction with the update() function. Updates the player time every set amount of time. */
 	Runnable TimerRunnable = new Runnable()
 	{
 		int i=0;
@@ -548,7 +574,7 @@ public class Callisto extends Activity {
 	};
 	
     
-    //Listener for play/pause button
+    /** Listener for play/pause button */
 	public static OnClickListener playPause = new OnClickListener() 
     {
 		@Override
@@ -607,7 +633,10 @@ public class Callisto extends Activity {
 		  }
     };
     
-	//Converts a time from seconds to mm:ss or HH:mm:ss 
+	/** Converts a time in seconds to a human readable format.
+	 *  @param seconds The raw number of seconds to format.
+	 *  @return A string formatted in either HH:mm:ss or mm:ss, depending on how many hours are calculated.
+	 */ 
     public static String formatTimeFromSeconds(int seconds)
     {
   	  int minutes = seconds / 60;
@@ -625,7 +654,7 @@ public class Callisto extends Activity {
   				 (seconds<10?"0":"") + Integer.toString(seconds)));
     }
     
-    //Listener for playlist button
+    /** Listener for the playlist button; displays the queue. */
     public static OnClickListener playlist = new OnClickListener() 
     {
     	View psychV;
@@ -662,30 +691,39 @@ public class Callisto extends Activity {
 		  }
     };
     
-    //Listener to start the different activities
+    /** Listener to start the different activities for the main buttons on the home screen.*/
     OnClickListener startAct = new OnClickListener()
     {
 		@Override
 		  public void onClick(View v) 
 		  {
 			Intent newIntent;
-			if(v.getId()==R.id.donate)
+			switch(v.getId())
 			{
+			case R.id.live:
+				newIntent = new Intent(Callisto.this, NowPlaying.class);
+				break;
+			case R.id.plan:
+				newIntent = new Intent(Callisto.this, CalendarActivity.class);
+				break;
+			case R.id.chat:
+				newIntent = new Intent(Callisto.this, IRCChat.class);
+				break;
+			case R.id.contact:
+				newIntent = new Intent(Callisto.this, ContactForm.class);
+				break;
+			case R.id.donate:
 				newIntent = new Intent(Callisto.this, Donate.class);
-				startActivity(newIntent);
+				break;
+			default:
+				newIntent = new Intent(Callisto.this, AllShows.class);
+				break;
 			}
-			else {
-				   newIntent = new Intent(Callisto.this,
-					v.getId()==R.id.live ? NowPlaying.class : (
-					v.getId()==R.id.plan ? CalendarActivity.class : (
-					v.getId()==R.id.chat ? IRCChat.class : (
-					v.getId()==R.id.contact ? ContactForm.class : (
-							  AllShows.class)))));
-				   startActivity(newIntent);
-			}
+		   startActivity(newIntent);
 		  }
     };
     
+    /** Listener for the seek button; displays a dialog that allows the user to seek to a point in the episode. */
     public static OnClickListener seekDialog = new OnClickListener()
     {
 		@Override
@@ -712,7 +750,6 @@ public class Callisto extends Activity {
 	        alertDialog.show();
 	        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 	            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-	                //Do something here with new value
 	            	alertDialog.setMessage(formatTimeFromSeconds(progress) + "/" + formatTimeFromSeconds(Callisto.playerInfo.length));
 	            }
 				@Override
@@ -727,7 +764,12 @@ public class Callisto extends Activity {
     };
     
     
-    
+    /** Downloads and resizes a show's logo image.
+     * @param img_url The URL for the image to download.
+     * @param show The name of the show. (The path is calculated from this.)
+     * @throws IOException
+     * @throws NullPointerException
+     */
     public static void downloadImage(String img_url, String show) throws IOException, NullPointerException
     {
     	if(img_url==null)
@@ -762,8 +804,13 @@ public class Callisto extends Activity {
 
     
     
-    
-	//Updates a show
+	/** Updates a show by checking to see if there are any new episodes available.
+	 * 
+	 * @param currentShow The number of the current show in relation to the AllShows.SHOW_LIST array
+	 * @param showSettings The associated SharedPreferences with that show
+	 * @param isVideo true to check the video feed, false to check the audio.
+	 * @return A Message object with arg1 being 1 if the show found new episodes, 0 otherwise.
+	 */
 	public static Message updateShow(int currentShow, SharedPreferences showSettings, boolean isVideo)
 	{
 		  Log.i("*:updateShow", "Beginning update");

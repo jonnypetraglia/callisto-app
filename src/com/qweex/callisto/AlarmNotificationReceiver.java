@@ -28,8 +28,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+/** Receives and creates any alarms set in the "Plan" feature. */
 public class AlarmNotificationReceiver extends BroadcastReceiver
 {
+	/** Called when an alarm is received. Creates the alarm and sounds it. */
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
