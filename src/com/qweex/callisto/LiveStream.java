@@ -53,6 +53,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+/** An activity for playing the Jupiter Broadcasting live stream.
+ * @author MrQweex */
 
 public class LiveStream extends Activity
 {
@@ -62,15 +64,15 @@ public class LiveStream extends Activity
 	private Matcher m = null;
     private String currentShow = "Unknown", nextShow = "Unknown";
     private TextView current, next;
-    private ImageButton playPause;
+    private ImageButton bigButton;
     private String live_url;
     private static ProgressDialog pd;
     private static Dialog dg;
-    
-    private ImageButton bigButton;
-    
     private final int JBLIVE_MENU_ID = Menu.FIRST;
 	
+	/** Called when the activity is first created. Sets up the view and whatnot.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -87,10 +89,26 @@ public class LiveStream extends Activity
 		
 		current = (TextView) findViewById(R.id.current);
 		next = (TextView) findViewById(R.id.next);
-		playPause = (ImageButton) findViewById(R.id.playPause);
-		playPause.setOnClickListener(playButton);
+		bigButton = (ImageButton) findViewById(R.id.playPause);
+		bigButton.setOnClickListener(playButton);
 	}
 	
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		live_url = PreferenceManager.getDefaultSharedPreferences(LiveStream.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+		
+		if(Callisto.live_player!=null)
+			update();
+		if(Callisto.live_isPlaying)
+			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+	}
+	
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -99,6 +117,9 @@ public class LiveStream extends Activity
     	return true;
     }
     
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -112,6 +133,7 @@ public class LiveStream extends Activity
     	return super.onOptionsItemSelected(item);
     }
 	
+    /** Updates the current and next track information. */
 	public void update()
     {
 	    HttpClient httpClient = new DefaultHttpClient();
@@ -155,7 +177,90 @@ public class LiveStream extends Activity
 		}
 	}
 	
-	OnClickListener playButton = new OnClickListener()
+	/** Initiates the live player. Can be called across activities. */
+	static public void liveInit()
+	{
+		Callisto.live_player = new MediaPlayer();
+		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
+		    public boolean onError(MediaPlayer mp, int what, int extra) {
+		    	pd.cancel();
+		    	dg.show();
+		    	String whatWhat="";
+		    	switch (what) {
+		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+		            whatWhat = "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK";
+		            break;
+		        case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+		        	whatWhat = "MEDIA_ERROR_SERVER_DIED";
+		            break;
+		        case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+		        	whatWhat = "MEDIA_ERROR_UNKNOWN";
+		            break;
+		        default:
+		        	whatWhat = "???";
+		        }
+
+		    	LiveStream.sendErrorReport(whatWhat);
+		        return true;
+		    }
+		});
+	}
+	
+	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
+	static public void livePrepare(Context c)
+	{
+		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		Callisto.live_player.prepareAsync();
+	}
+	
+	/** Listener for the live player in any activity other than LiveStream. Starts it playing or displays an error message. */
+	static OnPreparedListener livePreparedListenerOther = new OnPreparedListener()
+	{
+		@Override
+		public void onPrepared(MediaPlayer arg0) {
+			pd.cancel();
+			try {
+				Callisto.live_player.start();
+				Callisto.live_isPlaying = true;
+			}
+			catch(Exception e)
+			{
+				LiveStream.dg.show();
+			}
+		}
+	};
+	
+	/** Listener for the live player in only the LiveStream activity. Starts it playing or displays an error message. */
+	private OnPreparedListener livePreparedListener = new OnPreparedListener()
+	{
+		@Override
+		public void onPrepared(MediaPlayer arg0) {
+			pd.cancel();
+			try {
+				Callisto.live_player.start();
+				update();
+				Callisto.live_isPlaying = true;
+				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
+				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+				Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+		       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
+			       	
+		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+			}
+			catch(Exception e)
+			{
+				dg.show();
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	/** Listener for the play button. Duh! */
+	private OnClickListener playButton = new OnClickListener()
 	{
 		@Override
 		public void onClick(View v)
@@ -198,103 +303,7 @@ public class LiveStream extends Activity
 		}
 	};
 	
-	static public void liveInit()
-	{
-		Callisto.live_player = new MediaPlayer();
-		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
-		    public boolean onError(MediaPlayer mp, int what, int extra) {
-		    	pd.cancel();
-		    	dg.show();
-		    	String whatWhat="";
-		    	switch (what) {
-		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-		            whatWhat = "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK";
-		            break;
-		        case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-		        	whatWhat = "MEDIA_ERROR_SERVER_DIED";
-		            break;
-		        case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-		        	whatWhat = "MEDIA_ERROR_UNKNOWN";
-		            break;
-		        default:
-		        	whatWhat = "???";
-		        }
-
-		    	LiveStream.sendErrorReport(whatWhat);
-		        return true;
-		    }
-		});
-	}
-	
-	static public void livePrepare(Context c)
-	{
-		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-		Callisto.live_player.prepareAsync();
-	}
-	
-	
-	OnPreparedListener livePreparedListener = new OnPreparedListener()
-	{
-		@Override
-		public void onPrepared(MediaPlayer arg0) {
-			pd.cancel();
-			try {
-				Callisto.live_player.start();
-				update();
-				Callisto.live_isPlaying = true;
-				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
-				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
-				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
-				Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-		       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
-			       	
-		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-			}
-			catch(Exception e)
-			{
-				dg.show();
-				e.printStackTrace();
-			}
-		}
-	};
-	
-	static OnPreparedListener livePreparedListenerOther = new OnPreparedListener()
-	{
-		@Override
-		public void onPrepared(MediaPlayer arg0) {
-			pd.cancel();
-			try {
-				Callisto.live_player.start();
-				Callisto.live_isPlaying = true;
-			}
-			catch(Exception e)
-			{
-				LiveStream.dg.show();
-			}
-		}
-	};
-	
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		live_url = PreferenceManager.getDefaultSharedPreferences(LiveStream.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
-		
-		if(Callisto.live_player!=null)
-			update();
-		if(Callisto.live_isPlaying)
-			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-	}
-	
+	/** Sends an error report to the folks at Qweex. COMPLETELY anonymous. The only information that is sent is the version of Callisto and the version of Android. */
 	public static void sendErrorReport(String msg)
 	{
 		String errorReport = LiveStream.errorReportURL + "?id=Callisto&v=" + Callisto.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;

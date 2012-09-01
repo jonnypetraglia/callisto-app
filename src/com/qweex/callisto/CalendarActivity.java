@@ -195,7 +195,7 @@ public class CalendarActivity extends Activity {
 	
 	/** Called when any key is pressed. Used do dismiss the event info popup when you press back.
 	 * @param keyCode I dunno
-	 * @param keyCode I dunno
+	 * @param event I dunno
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

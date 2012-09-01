@@ -59,7 +59,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-//This activity is for displaying the episodes of a show
+/** An activity for displaying the episodes of a show.
+ * @author MrQweex */
 
 
 public class ShowList extends Activity
@@ -81,8 +82,9 @@ public class ShowList extends Activity
 	private boolean filter;
 	public SharedPreferences showSettings;
 	
-	//This constructor can be used to update a show without creating it as an activity.
-	
+	/** Called when the activity is first created. Sets up the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 *  */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -142,6 +144,7 @@ public class ShowList extends Activity
 		return;
 	}
 	
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override
 	public void onResume()
 	{
@@ -164,6 +167,7 @@ public class ShowList extends Activity
 		current_episode=null;
 	}
 	
+	/** Not Current Used */
 	@Override
 	public void onStop()
 	{
@@ -171,6 +175,9 @@ public class ShowList extends Activity
 		super.onStop();
 	}
 	
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -181,18 +188,9 @@ public class ShowList extends Activity
         return true;
     }
     
-    private void reload()
-    {
-    	if(refresh!=null)
-    		refresh.setVisibility(View.GONE);
-    	loading.setVisibility(View.VISIBLE);
-		mainListView.setEmptyView(loading);
-    	loading.setText(Callisto.RESOURCES.getString(R.string.loading));
-    	setProgressBarIndeterminateVisibility(true);
-    	new UpdateShowTask().execute((Object[]) null);
-	    new GetShowTask().execute((Object[]) null);
-    }
-    
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -256,8 +254,20 @@ public class ShowList extends Activity
         }
     }
 	
+    /** Reloads the current show and adds any new episodes to the list. */
+    private void reload()
+    {
+    	if(refresh!=null)
+    		refresh.setVisibility(View.GONE);
+    	loading.setVisibility(View.VISIBLE);
+		mainListView.setEmptyView(loading);
+    	loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+    	setProgressBarIndeterminateVisibility(true);
+    	new UpdateShowTask().execute((Object[]) null);
+	    new GetShowTask().execute((Object[]) null);
+    }
 
-	//This handler is for changing the cursor after an update; need this to perform tasks on UI elements outside of UI thread
+	/** A handler for changing the cursor after an update; need this to perform tasks on UI elements outside of UI thread. */
 	private Handler updateHandler = new Handler()
 	{
         @Override
@@ -280,8 +290,7 @@ public class ShowList extends Activity
 	};
 
 	
-	
-   // Updates the show outside of the UI thread
+   /** Updates the show outside of the UI thread. */
    private class UpdateShowTask extends AsyncTask<Object, Object, Object> 
    {
       @Override
@@ -298,7 +307,7 @@ public class ShowList extends Activity
       }
    }
    
-   // Gets episode of a show outside of the UI thread
+   /** Gets episode of a show outside of the UI thread. */
    private class GetShowTask extends AsyncTask<Object, Object, Cursor> 
    {
       @Override
@@ -314,7 +323,7 @@ public class ShowList extends Activity
       }
    }
 	
-   //Listener for when an item is selected
+   /** Listener for when an item is selected. */
 	OnItemClickListener selectEpisode = new OnItemClickListener() 
     {
       @Override
@@ -330,7 +339,7 @@ public class ShowList extends Activity
       }
     };
     
-    //Listener for when an episode's "New" status is toggled
+    /** Listener for when an episode's "New" status is toggled. */
 	public OnCheckedChangeListener toggleNew = new OnCheckedChangeListener()
 	{
 		@Override
@@ -344,7 +353,7 @@ public class ShowList extends Activity
 		}
 	};
     
-    //Adapter for the episode list
+    /** Adapter for the episode list. */
     public class ShowListCursorAdapter extends SimpleCursorAdapter
     {
         private Cursor c;

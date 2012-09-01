@@ -77,7 +77,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
-
 //FIXME: Glow from scrollview covers up bottom line
 //IDEA: Nicklist
 //FIXME: Quit message doesn't work :\ (just locally?)
@@ -85,55 +84,55 @@ import android.widget.ViewAnimator;
 //FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
 //FEATURE: Save chat to file
 
+/** 
+ * @author MrQweex
+ */
+
 public class IRCChat extends Activity implements IRCEventListener
 {
-	private String SERVER_NAME = "irc.geekshed.net";
-	private String CHANNEL_NAME = "#jupiterbroadcasting";
+	private static final int LOG_ID=Menu.FIRST+1;
+	private static final int LOGOUT_ID=LOG_ID+1;
+	private final String SERVER_NAME = "irc.geekshed.net";
+	private final String CHANNEL_NAME = "#jupiterbroadcasting";
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
-	
-	private String CLR_TEXT = "Black",
-				   CLR_TOPIC = "DarkGoldenRod",
-				   CLR_ME = "DarkViolet",
-				   CLR_JOIN = "Blue",
-				   CLR_MYNICK = "SeaGreen",
-				   CLR_NICK = "Blue",
-				   CLR_PART = CLR_JOIN,
-				   CLR_QUIT = CLR_JOIN,
-				   CLR_KICK = CLR_JOIN,
-				   CLR_ERROR = "Maroon",
-				   CLR_MENTION = "LightCoral",
-				   CLR_PM = "DarkCyan";
-	
-	
-	private static final int LOG_ID=Menu.FIRST+1;
-	private static final int LOGOUT_ID=LOG_ID+1;
-	
+	private String CLR_TEXT,
+				   CLR_TOPIC,
+				   CLR_ME,
+				   CLR_JOIN,
+				   CLR_MYNICK,
+				   CLR_NICK,
+				   CLR_PART,
+				   CLR_QUIT,
+				   CLR_KICK,
+				   CLR_ERROR,
+				   CLR_MENTION,
+				   CLR_PM;
 	private static ConnectionManager manager;
 	private static Session session;
 	private static NotificationManager mNotificationManager;
 	private static int mentionCount = 0;
 	private static PendingIntent contentIntent;
 	private static boolean isFocused = false;
-	ScrollView sv, sv2;
-	EditText input;
-	Spanned received;
-	SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
-	boolean isLandscape;
+	private ScrollView sv, sv2;
+	private EditText input;
+	private Spanned received;
+	private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
+	private boolean isLandscape;
+	private static HashMap<String, CharSequence> nickColors = new HashMap<String, CharSequence>();
+	private static ArrayList<CharSequence> COLOR_LIST;
+	private static List<String> nickList;
+	private static Handler chatHandler = null;
+	private Runnable chatUpdater;
 	
-	public static HashMap<String, CharSequence> nickColors = new HashMap<String, CharSequence>();
-	public static ArrayList<CharSequence> COLOR_LIST;
-	List<String> nickList;
-	
-	static Handler chatHandler = null;
-	Runnable chatUpdater;
-	
+	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
 		if(chatHandler==null)
 		{
 			chatHandler = new Handler();
@@ -154,7 +153,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		        }
 			};
 		}
-		
 		isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		COLOR_LIST = new ArrayList<CharSequence>(Arrays.asList(Callisto.RESOURCES.getTextArray(R.array.colors)));
@@ -167,7 +165,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			resume();
 			return;
 		}
-		
+		//Set up the login screen
 		LinearLayout ll = new LinearLayout(this);
 		ll.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
 		ll.setOrientation(LinearLayout.VERTICAL);
@@ -219,12 +217,11 @@ public class IRCChat extends Activity implements IRCEventListener
 		ll.addView(login);
 		setContentView(ll);
 	}
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-	}
 	
+	/** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
+	 * @param keyCode I dunno
+	 * @param event I dunno
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
@@ -297,6 +294,9 @@ public class IRCChat extends Activity implements IRCEventListener
 	    return super.onKeyDown(keyCode, event);
 	} 
 	
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -305,23 +305,26 @@ public class IRCChat extends Activity implements IRCEventListener
         return true;
     }
     
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
- 
         switch (item.getItemId())
         {
         case LOG_ID:
         	((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
             return true;
         case LOGOUT_ID:
-        	logout();
+        	logout(null);
         	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
     
+    /** Used to handle when the screen is rotated, to set the necessary padding. */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
       super.onConfigurationChanged(newConfig);
@@ -333,6 +336,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				  0);
     }
 
+    /** Called when the activity either is created or resumes. Basically everything that must be run even whether or not the user is logged in. */
     public void resume()
     {
     	isFocused = true;
@@ -364,7 +368,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
     }
     
-	
+	/** called to first initiate the IRC chat. Called only when the user has not logged in yet. */
     public void initiate()
     {
     	findViewById(1337).startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
@@ -425,16 +429,17 @@ public class IRCChat extends Activity implements IRCEventListener
 				return super.receiveEvent(e);
 			}
 		});
-		//*/
     }
     
-    public void logout()
+    /** Used to logout, quit, or part. */
+    public void logout(String quitMsg)
     {
-    	String q = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
-    	if(q==null)
+    	if(quitMsg==null)
+    		quitMsg = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
+    	if(quitMsg==null)
     		manager.quit();
     	else
-    		manager.quit(q);
+    		manager.quit(quitMsg);
 		manager = null;
 		session = null;
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
@@ -460,6 +465,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	 * KICK
 	 * http://www.geekshed.net/commands/ircop/
 	 */
+    /** Called when the this class receives any type of IRC event. */
 	public void receiveEvent(IRCEvent e)
 	{
 		Log.d("IRCCHat:receiveEvent", e.getRawEventData());
@@ -758,8 +764,6 @@ public class IRCChat extends Activity implements IRCEventListener
 					chatHandler.post(logUpdater);
 				}
 				break;
-				
-				
 			default:
 				break;
 			
@@ -767,7 +771,12 @@ public class IRCChat extends Activity implements IRCEventListener
 	}
 	
 
-	
+	/** Gets a Spanned (i.e. formatted) message from the title, message, and color.
+	 * @param theTitle The title (e.g. a nick)
+	 * @param theMessage The message
+	 * @param specialColor The name of the color resource for the message, or null if it should be looked up from the color list
+	 * @return
+	 */
 	private Spanned getReceived (String theTitle, String theMessage, String specialColor)
 	{
 		int titleColor = 0xFF000000;
@@ -815,7 +824,10 @@ public class IRCChat extends Activity implements IRCEventListener
 									 , tit, mes, "\n");
 	}
 	
-	
+	/** Gets the nick color from the list, adding it if necessary.
+	 * @param nickInQ The nick in question
+	 * @return The name of the color resource for that specific nick
+	 */
 	public String getNickColor(String nickInQ)
 	{
 		if(!nickColors.containsKey(nickInQ))
@@ -826,7 +838,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		return (String) nickColors.get(nickInQ);
 	}
 
-	
+	/** Runnable to send a message in the UI thread. */
 	Runnable sendMessage = new Runnable(){
 		@Override
         public void run() {
@@ -866,8 +878,10 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 	};
 	
-	
-	//Boolean return value tells if the output should be appended to the chat log
+	/** Parses the outgoing message to determine its type.
+	 * @param msg The message to be sent
+	 * @return True if the output should be appended to the chat log, false otherwise.
+	 */
 	private boolean parseOutgoing(String msg)
 	{
 		msg = msg.replace("\n", "");
@@ -882,9 +896,12 @@ public class IRCChat extends Activity implements IRCEventListener
 			session.changeNick(msg);
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/QUIT ") || msg.trim().toUpperCase().startsWith("/PART"))
+		if(msg.toUpperCase().startsWith("/QUIT") || msg.toUpperCase().startsWith("/PART"))
 		{
-			logout();
+			if(msg.equals("/QUIT") || msg.equals("/PART"))
+				logout(null);
+			else
+				logout(msg.substring("/QUIT ".length()));
 			return false;
 		}
 		if(msg.toUpperCase().startsWith("/WHO "))
@@ -982,7 +999,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		return false;
 	}
 	
-  
+	/** A runnable to update the log */
 	Runnable logUpdater = new Runnable()
 	{
         @Override
