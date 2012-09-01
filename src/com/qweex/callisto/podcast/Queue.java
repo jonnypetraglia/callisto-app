@@ -36,6 +36,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.ImageButton;
 
+/** An activity for showing the queued episodes.
+ * @author MrQweex */
 
 public class Queue extends ListActivity
 {
@@ -43,6 +45,9 @@ public class Queue extends ListActivity
 	NowPlayingAdapter listAdapter;
 	Cursor queue;
 	
+	/** Called when the activity is first created. Sets up the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
@@ -70,12 +75,15 @@ public class Queue extends ListActivity
 		mainListView.setAdapter(listAdapter);
 	}
 
+	/** Called when it is time to create the menu. */
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.add(0, Menu.FIRST, 0, Callisto.RESOURCES.getString(R.string.clear));
         return true;
     }
+	
+	/** Called when an item is selected. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -89,6 +97,7 @@ public class Queue extends ListActivity
     	return true;
     }    
 	
+    /** Listener for the up button ("^"). Moves an entry up in the queue. */
 	OnClickListener moveUp = new OnClickListener() 
     {
 		 @Override
@@ -103,6 +112,7 @@ public class Queue extends ListActivity
 		  }
     };
     
+    /** Listener for the down button ("v"). Moves an entry down in the queue. */
     OnClickListener moveDown = new OnClickListener() 
     {
 		 @Override
@@ -117,6 +127,7 @@ public class Queue extends ListActivity
 		  }
     };
 
+    /** Listener for the remove button ("x"). Moves an entry up in the queue. */
     OnClickListener removeItem = new OnClickListener() 
     {
 		 @Override
@@ -161,6 +172,7 @@ public class Queue extends ListActivity
 		  }
     };
 	
+    /** An adapter for the Queue class. Used to update the queue from the SQLite database. */
 	public class NowPlayingAdapter extends SimpleCursorAdapter
 	{
 	

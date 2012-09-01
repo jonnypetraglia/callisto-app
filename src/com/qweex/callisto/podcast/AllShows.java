@@ -22,12 +22,6 @@ import java.text.ParseException;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.array;
-import com.qweex.callisto.R.color;
-import com.qweex.callisto.R.drawable;
-import com.qweex.callisto.R.id;
-import com.qweex.callisto.R.layout;
-import com.qweex.callisto.R.string;
 
 import android.app.Activity;
 import android.content.Context;
@@ -35,7 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -58,32 +51,38 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//This activity lists all the shows on JupiterBroadcasting
-// It was designed to work with both audio and video, but the video needs some definite tweaking
 //IDEA: Search
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 //IDEA: a way to update the list without updating the app?
 //FIXME: Scrolling in the AllShows view while something is playing is jerky
 
+/** An activity to list all the shows on JupiterBroadcasting. 
+ * It was designed to work with both audio and video, but the video needs some definite tweaking.
+ * @author MrQweex
+ */
+
 public class AllShows extends Activity {
 	
+	/** A boolean value as to if the user has selected video instead of audio. */
 	public static boolean IS_VIDEO;
-	
-	//These are static arrays containing the show names and corresponding feed URLS
-	// A sub-heading will start with a space in the name list and have a value of null in the feeds
-	
+	/** A static array containing corresponding info for the shows.
+	 *  A sub-heading will start with a space in the name list and have a value of null in the feeds.
+	 */
 	public static final String[] SHOW_LIST = Callisto.RESOURCES.getStringArray(R.array.shows);
 	public static final String[] SHOW_LIST_AUDIO = Callisto.RESOURCES.getStringArray(R.array.shows_audio);
 	public static final String[] SHOW_LIST_VIDEO = Callisto.RESOURCES.getStringArray(R.array.shows_video);
 	
 	//-----Local Variables-----
-	private static final int DOWNLOADS_ID = Menu.FIRST+1;
-	private static final int UPDATE_ID = DOWNLOADS_ID+1;
-	private static ListView mainListView;
-	private static AllShowsAdapter listAdapter ;
-	private static View current_view = null;		//This is for adjusting the date on a show in OnResume
-	private static SharedPreferences current_showSettings;
+	private final int DOWNLOADS_ID = Menu.FIRST+1;
+	private final int UPDATE_ID = DOWNLOADS_ID+1;
+	private static ListView mainListView; 		 //Static so that it can be used in a static handler
+	private static AllShowsAdapter listAdapter ; //Static so that it can be used in a static handler
+	private View current_view = null;			 //This is for adjusting the date on a show in OnResume
+	private SharedPreferences current_showSettings;
 	
+	/** Called when the activity is first created. Sets up the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -111,6 +110,7 @@ public class AllShows extends Activity {
 			this.setTitle(getResources().getString(R.string.listen));
 	}
 	
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override
 	public void onResume()
 	{
@@ -140,13 +140,14 @@ public class AllShows extends Activity {
 				Log.e("AllShows:OnResume:ParseException", lastChecked);
 				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
 			}
-		if(Callisto.databaseConnector.getShowNew(the_current).getCount()>0)
+		if(Callisto.databaseConnector.getShow(the_current, true).getCount()>0)
 		current_view.setBackgroundResource(R.drawable.main_colored);
 			
 		
 		current_view=null;
 	}
 	
+	/** Currently not used */
 	@Override
 	public void onStop()
 	{
@@ -154,6 +155,9 @@ public class AllShows extends Activity {
 		super.onStop();
 	}
 	
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -162,6 +166,9 @@ public class AllShows extends Activity {
         return true;
     }
     
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -173,31 +180,18 @@ public class AllShows extends Activity {
         	startActivity(newIntent);
             return true;
         case UPDATE_ID:
-        	updateAllHandler.sendMessage(new Message());
+        	new Handler() {
+                @Override
+                public void handleMessage(Message msg)
+                {  	new UpdateAllShowsTask().execute((Object[]) null);   }
+        	}.sendMessage(new Message());
         	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
     
-    
-    Handler updateAllHandler = new Handler()
-	{
-        @Override
-        public void handleMessage(Message msg)
-        {
-        	new UpdateAllShowsTask().execute((Object[]) null);
-        }
-	};
-	
-	
-
-	
-	
-
-	
-    
-    // Updates the show outside of the UI thread
+    /** Updates the show outside of the UI thread. */
     private class UpdateAllShowsTask extends AsyncTask<Object, Object, Object> 
     {
     	@Override
@@ -217,7 +211,11 @@ public class AllShows extends Activity {
        			continue;
        		current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
 			Callisto.updateShow(i, current_showSettings, false);
-			updateTextHandler.sendEmptyMessage(0);
+			new Handler() {
+				@Override 
+				public void handleMessage(Message msg)
+				{ mainListView.setAdapter(listAdapter);	}
+			}.sendEmptyMessage(0);
        	}
        	
        	return null;
@@ -231,19 +229,8 @@ public class AllShows extends Activity {
        }
     }
     
-	public static Handler updateTextHandler = new Handler()
-	{
-		@Override 
-		public void handleMessage(Message msg)
-		{ 
-			mainListView.setAdapter(listAdapter);
-		}
-	};
-    
-    
-    
 	
-	//Listener for when a show is selected
+	/** Listener for when a show is selected. */
 	OnItemClickListener selectShow = new OnItemClickListener() 
     {
       @Override
@@ -263,7 +250,7 @@ public class AllShows extends Activity {
       }
     };
     
-    //Adapter for this view; extended because we need to format the date
+    /** Adapter for this class's ListView. Extended because the date needs to be formatted. */
     public class AllShowsAdapter extends ArrayAdapter<String>
     {
     	public AllShowsAdapter(Context context, int textViewResourceId, String[] objects)
@@ -332,7 +319,7 @@ public class AllShows extends Activity {
 				}
 				
 				
-				if( Callisto.databaseConnector.getShowNew(AllShows.SHOW_LIST[position]).getCount()>0 )
+				if( Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount()>0 )
 					row.setBackgroundResource(R.drawable.main_colored);
 					
 	

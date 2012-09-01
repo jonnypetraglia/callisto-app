@@ -50,6 +50,10 @@ import android.widget.LinearLayout.LayoutParams;
 
 //FEATURE: Use the developer payload to write a note to Chris
 
+/** The activity to donate in-app directly to Jupiter Broadcasting.
+ * @author MrQweex
+ */
+
 public class Donate extends ListActivity implements OnClickListener
 {
 
@@ -61,6 +65,9 @@ public class Donate extends ListActivity implements OnClickListener
 	private DungeonsPurchaseObserver mDungeonsPurchaseObserver;
 	public final String DONATION_APP_ID = "com.qweex.donation";
 	
+	/** Called when the activity is first created. Sets up the view and whatnot.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -118,6 +125,7 @@ public class Donate extends ListActivity implements OnClickListener
 		itemsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	}
 	
+	/** Called when the user presses the "Donate!" button */
 	@Override
 	public void onClick(View v)
 	{
@@ -126,7 +134,7 @@ public class Donate extends ListActivity implements OnClickListener
 	}
 
 	
-	
+	   /** An adapter to update the donation options to the listview */
 	   private static class CatalogAdapter extends ArrayAdapter<String> {
 	        private CatalogEntry[] mCatalog;
 	        private Context context;
@@ -202,24 +210,21 @@ public class Donate extends ListActivity implements OnClickListener
 	
 	//Everything below this  line is pulled from the Android Dev example
 	/**********************************/
-    /**
-     * Called when this activity becomes visible.
-     */
+    /** Called when this activity becomes visible. */
     @Override
     protected void onStart() {
         super.onStart();
         ResponseHandler.register(mDungeonsPurchaseObserver);
     }
 
-    /**
-     * Called when this activity is no longer visible.
-     */
+    /** Called when this activity is no longer visible. */
     @Override
     protected void onStop() {
         super.onStop();
         ResponseHandler.unregister(mDungeonsPurchaseObserver);
     }
 
+    /** Called when this activity is done. */
     @Override
     protected void onDestroy() {
         super.onDestroy();

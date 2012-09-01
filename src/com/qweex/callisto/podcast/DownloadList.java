@@ -37,13 +37,20 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-//FIXME: So much stuff needs to be fixed; Filesize formatting, just to name a few
+//FEATURE: Progress via a colored background progress bar
+//IDEA: Completed downloads
+
+/** An activity to display all the current downloads. 
+ * @author MrQweex */
 
 public class DownloadList extends ListActivity
 {
 	private ListView mainListView;
 	private DownloadsAdapter listAdapter ;
 	
+	/** Called when the activity is first created. Sets up the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
@@ -69,6 +76,7 @@ public class DownloadList extends ListActivity
 		mainListView.setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
 	}
 	
+	/** Listener for the up button ("^"). Moves a download up in the list. */
 	OnClickListener moveUp = new OnClickListener() 
     {
 		 @Override
@@ -83,6 +91,7 @@ public class DownloadList extends ListActivity
 		  }
     };
     
+    /** Listener for the down button ("v"). Moves a download down in the list. */
     OnClickListener moveDown = new OnClickListener() 
     {
 		 @Override
@@ -97,6 +106,7 @@ public class DownloadList extends ListActivity
 		  }
     };
 
+    /** Listener for the remove button ("x"). Removes a download from the list, and deletes it if it is the current download. */
     OnClickListener removeItem = new OnClickListener() 
     {
 		 @Override
@@ -111,7 +121,7 @@ public class DownloadList extends ListActivity
     };
 
 	
-    //Adapter for this view; extended because we need to format the date
+    /** Adapter for the downloads view; extended because we need to format the date */
     public class DownloadsAdapter extends BaseAdapter
     {
     	ArrayList<Long> downloadQueue;
@@ -167,6 +177,7 @@ public class DownloadList extends ListActivity
 			return downloadQueue.get(arg0);
 		}
 
+		/** Not current used. */
 		@Override
 		public long getItemId(int arg0) {
 			return 0;

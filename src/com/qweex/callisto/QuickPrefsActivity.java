@@ -35,13 +35,17 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 //FEATURE: Configure when update will happen
 
+/** The activity that allows the user to change the preferences.
+ * @author MrQweex
+ */
 
 public class QuickPrefsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {    
 	public final static String DONATION_APP = "com.qweex.donation";
 	private String old_radio;
-	ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it is defined as such in Callisto.playPause
+	private ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it is defined as such in Callisto.playPause
 	
+	/** Called when the activity is created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {        
         super.onCreate(savedInstanceState);        
@@ -55,6 +59,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPause);
     }
     
+    /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
     	if("storage_path".equals(key))
@@ -90,7 +95,12 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	    
     }
     
-    //http://stackoverflow.com/questions/6758841/how-to-know-perticular-package-application-exist-in-the-device
+    /** Determines if a package (i.e. application) is installed on the device.
+     * http://stackoverflow.com/questions/6758841/how-to-know-perticular-package-application-exist-in-the-device
+     * @param targetPackage The target package to test
+     * @param c The Context of the where to search? I dunno.
+     * @return True of the package is installed, false otherwise
+     */
     public static boolean packageExists(String targetPackage, Context c)
     {
 	   PackageManager pm=c.getPackageManager();
@@ -102,25 +112,15 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	    return true;
    }
     
+    /** Checks to make sure that a number (in this case, the scrollback) is a legit integer */
     //http://stackoverflow.com/questions/3206765/number-preferences-in-preference-activity-in-android
-    //@Override
     Preference.OnPreferenceChangeListener numberCheckListener = new OnPreferenceChangeListener() {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            //Check that the string is an integer.
-            return numberCheck(newValue);
+        	return (!newValue.toString().equals("")  &&  newValue.toString().matches("\\d*")); 
         }
     };
 
-
-    private boolean numberCheck(Object newValue) {
-	    if( !newValue.toString().equals("")  &&  newValue.toString().matches("\\d*") ) {
-	        return true;
-	    }
-	    else {
-	        return false;
-    }
-}
 
 }

@@ -40,9 +40,16 @@ import android.webkit.WebView;
 //	    But it took forever and it required figuring out how to do a POST, plus, if the 
 //FEATURE: Someone to make this look pretty/native. Maybe chzbacon?
 
+/** Form to contact the JB team directly from inside Callisto.
+ * @author MrQweex
+ */
 public class ContactForm extends Activity
 {
 	private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
+	
+	/** Called when the activity is first created. Retrieves the wufoo form and inserts it into the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 *  */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -97,6 +104,7 @@ public class ContactForm extends Activity
 		wv.loadData(result, "text/html", "utf-8");
 	}
 	
+	/** Stops the activity from being re-created from  */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
       super.onConfigurationChanged(newConfig);

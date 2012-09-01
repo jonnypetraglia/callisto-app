@@ -27,17 +27,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 
-//This is the Activity for the Splash Screen
-//The plan is for it to be only available if you've donated to JB.
-//It's not much, but it's a small thing to make you feel like you got something back. :)
-
 //FIXME: App doesn't effing exit when you call finish!
+
+/** A nice little splash screen that can be enabled or disabled.
+ * The plan is for it to be only available if you've donated to JB or maybe Qweex.
+ * It's not much, but it's a small thing to make you feel like you got something back. :)
+ * @author notbryant
+ */
 
 public class SplashScreen extends Activity {
 	private int bryantime = 2000;		//This is initialized to 2 seconds but it will
 										//become the length of the sound file
-	boolean dudeJustQuit = true;
-	MediaPlayer player;
+	private boolean dudeJustQuit = true;
+	private MediaPlayer player;
+	
+	/** Called when the activity is created. Sets the view, starts playing the audio, and starts a timer. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +80,7 @@ public class SplashScreen extends Activity {
         catch (IOException e) { launchApp(); } 
     }
     
+    /** Called when the activity is done. */
     @Override
     public void onDestroy()
     {
@@ -89,6 +94,7 @@ public class SplashScreen extends Activity {
     	finish();
     }
     
+    /** Launches the main activity of the app. */
     private void launchApp()
     {
         Intent i = new Intent(SplashScreen.this, Callisto.class);
@@ -96,7 +102,7 @@ public class SplashScreen extends Activity {
         finish();
     }
     
-	Thread t = new Thread() {
+	private Thread t = new Thread() {
         public void run() {
             int time = 100;
             while (time < SplashScreen.this.bryantime)
@@ -107,8 +113,6 @@ public class SplashScreen extends Activity {
                } catch (InterruptedException e) { break; } 
             }
             dudeJustQuit = isFinishing();
-            
-            System.out.println("Dudejustquit " + dudeJustQuit);
             if(!dudeJustQuit)
             	launchApp();
     }

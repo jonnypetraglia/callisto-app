@@ -96,6 +96,7 @@ import android.widget.Toast;
 /** This is the main activity/class for the app.
     It contains the main screen, and also some static elements
     that are globally used across multiple activities
+    @author MrQweex
  */
 public class Callisto extends Activity {
 
@@ -160,7 +161,7 @@ public class Callisto extends Activity {
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
-	 *  */
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{

@@ -17,7 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.utils;
 
-//This is a small class for when the parsing stops part-way through an episode
+/** A small exception class for when the parsing stops part-way through an episode in the XML. */
 public class UnfinishedParseException extends Exception
 {
 	private static final long serialVersionUID = 2068788493309925174L;

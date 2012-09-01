@@ -56,18 +56,18 @@ import android.widget.TextView;
 
 public class NowPlaying extends Activity
 {
+	public static String liveTitle;
 	private final String infoURL = "http://jbradio.airtime.pro/api/live-info";
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
-	Matcher m = null;
-    String currentShow = "Unknown", nextShow = "Unknown";
-    TextView current, next;
-    ImageButton playPause;
-    String live_url;
-    static ProgressDialog pd;
-    static Dialog dg;
-    static String liveTitle;
+	private Matcher m = null;
+    private String currentShow = "Unknown", nextShow = "Unknown";
+    private TextView current, next;
+    private ImageButton playPause;
+    private String live_url;
+    private static ProgressDialog pd;
+    private static Dialog dg;
     
-    ImageButton bigButton;
+    private ImageButton bigButton;
     
     private final int JBLIVE_MENU_ID = Menu.FIRST;
 	

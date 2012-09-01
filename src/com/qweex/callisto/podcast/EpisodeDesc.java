@@ -46,7 +46,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -64,7 +63,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 //FIXME: The scrollview pushes the player controls offscreen. What the crap.
 //FIXME: Doesn't update if the track finishes
 
-
+/** An activity for showing the specific info about a particular episode. */
 public class EpisodeDesc extends Activity
 {
 	//-----Local variables-----
@@ -86,7 +85,9 @@ public class EpisodeDesc extends Activity
 	public static final DecimalFormat twoDec = new DecimalFormat("0.00");
 	private static final String[] SUFFIXES = new String[] {"", "K", "M", "G", "T"};
 
-	
+	/** Called when the activity is first created. Sets up the view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
     {
@@ -174,6 +175,10 @@ System.out.println("butts 3");
         rb.setOnCheckedChangeListener(toggleNew);
     }
 	
+	/** Finds the file extension of a path.
+	 * @param filename The filename to examine
+	 * @return The extension of the input file, including the ".".
+	 */
 	public static String getExtension(String filename)
 	{
 		return filename.substring(filename.lastIndexOf("."));
@@ -188,6 +193,7 @@ System.out.println("butts 3");
     }
     */
 
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override
 	public void onResume()
 	{
@@ -197,7 +203,7 @@ System.out.println("butts 3");
 		determineButtons(false);
 	}
 	
-	//Listener for when the episode's "New" status is toggled
+	/** Listener for when the episode's "New" status is toggled. */
 	private OnCheckedChangeListener toggleNew = new OnCheckedChangeListener()
 	{
 		@Override
@@ -208,7 +214,7 @@ System.out.println("butts 3");
 	};
 	
 	
-	//Listener for when the "play" button is pressed
+	/** Listener for when the "play" button is pressed. */
 	private OnClickListener launchPlay = new OnClickListener() 
     {
 		 @Override
@@ -224,7 +230,7 @@ System.out.println("butts 3");
 		  }
     };
 
-    //Listener for when the "delete" button is pressed
+    /** Listener for when the "delete" button is pressed. */
     private OnClickListener launchDelete = new OnClickListener() 
     {
 		 @Override
@@ -239,7 +245,7 @@ System.out.println("butts 3");
 		  }
     };
 	
-    //Listener for when the "stream" button is pressed
+    /** Listener for when the "stream" button is pressed. */
     private OnClickListener launchStream = new OnClickListener() 
     {
 		@Override
@@ -272,7 +278,7 @@ System.out.println("butts 3");
 		  }
     };
     
-    //Listener for when the "download" button is pressed
+    /** Listener for when the "download" button is pressed. */
     private OnClickListener launchDownload = new OnClickListener() 
     {
 		 @Override
@@ -289,7 +295,7 @@ System.out.println("butts 3");
 		}
     };
     
-  //Listener for when the "download" button is pressed
+    /** Listener for when the "download" button is pressed. */
     private OnClickListener launchCancel = new OnClickListener() 
     {
 		 @Override
@@ -307,7 +313,61 @@ System.out.println("butts 3");
 		  }
     };
     
-    // Starts downloading a file outside the UI thread
+    /** Determines the buttons' text and listeners depending on the status of whether the episode has been downloaded already.
+     * @param forceNotThere Set to True to force the function to believe that the file for the episode is not there */
+    private void determineButtons(boolean forceNotThere)
+    {
+    	if(Callisto.download_queue.contains(id) && !forceNotThere)
+    	{
+    		streamButton.setText(Callisto.RESOURCES.getString(R.string.downloading));
+    		streamButton.setEnabled(false);
+			downloadButton.setText(Callisto.RESOURCES.getString(R.string.cancel));
+			downloadButton.setOnClickListener(launchCancel);
+    	}
+    	else if(file_location.exists() && !forceNotThere)
+		{
+    		if(file_location.length()!=media_size)
+    		{
+        		streamButton.setText(Callisto.RESOURCES.getString(R.string.resume));
+        		streamButton.setOnClickListener(launchDownload);
+    		} else if(Callisto.databaseConnector.isInQueue(id))
+        	{
+        		streamButton.setText(Callisto.RESOURCES.getString(R.string.enqueued));
+        		streamButton.setEnabled(false);
+        	}
+        	else
+        	{
+	    		streamButton.setEnabled(true);
+				streamButton.setText(Callisto.RESOURCES.getString(R.string.play));
+				streamButton.setOnClickListener(launchPlay);
+        	}
+			downloadButton.setText(Callisto.RESOURCES.getString(R.string.delete));
+			downloadButton.setOnClickListener(launchDelete);
+		}
+		else
+		{
+			streamButton.setEnabled(true);
+			streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
+			streamButton.setOnClickListener(launchStream);
+			downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
+			downloadButton.setOnClickListener(launchDownload);
+		}
+    }
+    
+    /** Formats a number given in Bytes into a human readable format.
+     * @param input The input number to examine in bytes
+     * @return A human formatted string, rounded to two decimal places
+     */
+    public static String formatBytes(long input)
+    {
+		  double temp = input;
+		  int i;
+		  for(i=0; temp>5000; i++)
+			  temp/=1024;
+		  return (EpisodeDesc.twoDec.format(temp) + " " + EpisodeDesc.SUFFIXES[i] + "B");
+    }
+    
+    /** A class to start downloading a file outside the UI thread. */
     private class DownloadTask extends AsyncTask<String, Object, Boolean> 
     {
     	
@@ -463,54 +523,5 @@ System.out.println("butts 3");
 	   			downloadButton.setOnClickListener(launchDownload);
     	   }
        }
-    }
-    
-    private void determineButtons(boolean forceNotThere)
-    {
-    	if(Callisto.download_queue.contains(id) && !forceNotThere)
-    	{
-    		streamButton.setText(Callisto.RESOURCES.getString(R.string.downloading));
-    		streamButton.setEnabled(false);
-			downloadButton.setText(Callisto.RESOURCES.getString(R.string.cancel));
-			downloadButton.setOnClickListener(launchCancel);
-    	}
-    	else if(file_location.exists() && !forceNotThere)
-		{
-    		if(file_location.length()!=media_size)
-    		{
-        		streamButton.setText(Callisto.RESOURCES.getString(R.string.resume));
-        		streamButton.setOnClickListener(launchDownload);
-    		} else if(Callisto.databaseConnector.isInQueue(id))
-        	{
-        		streamButton.setText(Callisto.RESOURCES.getString(R.string.enqueued));
-        		streamButton.setEnabled(false);
-        	}
-        	else
-        	{
-	    		streamButton.setEnabled(true);
-				streamButton.setText(Callisto.RESOURCES.getString(R.string.play));
-				streamButton.setOnClickListener(launchPlay);
-        	}
-			downloadButton.setText(Callisto.RESOURCES.getString(R.string.delete));
-			downloadButton.setOnClickListener(launchDelete);
-		}
-		else
-		{
-			streamButton.setEnabled(true);
-			streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
-			streamButton.setOnClickListener(launchStream);
-			downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
-			downloadButton.setOnClickListener(launchDownload);
-		}
-    }
-    
-    
-    public static String formatBytes(long input)
-    {
-		  double temp = input;
-		  int i;
-		  for(i=0; temp>5000; i++)
-			  temp/=1024;
-		  return (EpisodeDesc.twoDec.format(temp) + " " + EpisodeDesc.SUFFIXES[i] + "B");
     }
 }

@@ -76,35 +76,34 @@ import android.widget.Toast;
 //IDEA: Storing the date information in the "PDT" format so it will be correct when you move between timezones without having to refresh
 //CLEAN: popup is incorrect margins for on top
 
+/** Displays upcoming shows for Jupiter Broadcasting. A vertical orientation displays an agenda view,
+ * and a horizontal orientation displays a weekly view. */
+
 public class CalendarActivity extends Activity {
-	static long timeBetween;
-	static View lastView;
-	
 	private final int REFRESH_MENU_ID = Menu.FIRST;
-	
-	Calendar current_cal = Calendar.getInstance();
-	
+	private final static String CALENDAR_FEED_URL = "https://www.google.com/calendar/feeds/jalb5frk4cunnaedbfemuqbhv4@group.calendar.google.com/public/basic?singleevents=false&futureevents=true&&orderby=starttime&sortorder=a";
+	private final long MILLISECONDS_IN_A_DAY=1000*60*60*24;
 	private TextView Tmonth;
 	private TextView Tyear;
 	private Button Bnext;
 	private Button Bprev;
-	String[] months;
-	String[] days;
-	LinearLayout[] dayViews = new LinearLayout[7];
-	long agendaLastDay = Long.parseLong(Callisto.sdfRaw.format((new Date())));
-	LinearLayout agenda;
+	private String[] months;
+	private String[] days;
+	private LinearLayout[] dayViews = new LinearLayout[7];
+	private LinearLayout agenda;
 	private Dialog dg;
+	private PopupWindow popUp;
+	private Calendar current_cal = Calendar.getInstance();
+	private boolean isLandscape = false;
+	private TextView popUp_title, popUp_type, popUp_date, popUp_time;
 	
 	boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
-	boolean isLandscape = false;
-	final long MILLISECONDS_IN_A_DAY=1000*60*60*24;
-	private final static String CALENDAR_FEED_URL = "https://www.google.com/calendar/feeds/jalb5frk4cunnaedbfemuqbhv4@group.calendar.google.com/public/basic?singleevents=false&futureevents=true&&orderby=starttime&sortorder=a";
-	PopupWindow popUp;
-	int TheHeightOfTheFreakingPopup = 0;
-	TextView popUp_title, popUp_type, popUp_date, popUp_time; 
-	
+	int TheHeightOfTheFreakingPopup = 0; 
 	
     
+	/** Called when the activity is first created. Determines the orientation of the screen then initializes the appropriate view.
+	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
+	 *  */
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +114,7 @@ public class CalendarActivity extends Activity {
         months = Callisto.RESOURCES.getStringArray(R.array.months);
         days = Callisto.RESOURCES.getStringArray(R.array.days);
         
+    //Set up the pop up for viewing an event's info
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	View popupV = inflater.inflate(R.layout.event_info, null, false);
 		popUp = new PopupWindow(popupV);
@@ -123,121 +123,9 @@ public class CalendarActivity extends Activity {
 		popUp_type = (TextView) popupV.findViewById(R.id.type);
 		popUp_date = (TextView) popupV.findViewById(R.id.date);
 		popUp_time = (TextView) popupV.findViewById(R.id.time);
-        
+		((Button) popupV.findViewById(R.id.editEvent)).setOnClickListener(editEvent);
 		
-		
-		Button edit = (Button) popupV.findViewById(R.id.editEvent);
-		edit.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				LayoutInflater inflater = (LayoutInflater) CalendarActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	        	View vi = inflater.inflate(R.layout.edit_alarm, null);
-				dg = new Dialog(CalendarActivity.this);
-				dg.setContentView(vi);
-				if(isLandscape)
-					((LinearLayout)vi.findViewById(R.id.landscapeRotate)).setOrientation(LinearLayout.HORIZONTAL);
-				dg.setTitle("Set Alarm/Notification");
-				dg.show();
-				
-				NumberPicker NumP = (NumberPicker) vi.findViewById(R.id.minutesBefore);
-				NumP.setSuffix(" min before");
-				NumP.setIncrement(15);
-				NumP.setRange(0, 90);
-				
-				
-				RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
-			    mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);
-			    mRingtoneManager2.setIncludeDrm(true);
-			    Cursor mCursor2 = mRingtoneManager2.getCursor();
-			    startManagingCursor(mCursor2);
-			    String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.URI_COLUMN_INDEX)};
-			    int[] to = {R.id.text1, R.id.id1, R.id.uri};
-			    SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to );
-			    adapter.setDropDownViewResource( R.layout.simple_spinner_item_plus );
-			    Spinner s = (Spinner) vi.findViewById( R.id.spinner1);
-			    s.setAdapter(adapter);
-				
-				//Set the previous if it exists
-				String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
-				key = Callisto.alarmPrefs.getString(key, "");
-				int min = 0, tone=0;
-				boolean vibrate=false, isAlarm=false;
-				if(key!="")
-				{
-					try {
-					min = Integer.parseInt(key.substring(0, key.indexOf("_")));
-					tone = Integer.parseInt(key.substring(key.indexOf("_")+1,key.lastIndexOf("_")));
-					int i = Integer.parseInt(key.substring(key.lastIndexOf("_")+1));
-					isAlarm=i>10?true:false;
-					vibrate= i%2!=0?true:false;
-					((NumberPicker) vi.findViewById(R.id.minutesBefore)).setValue(min);
-					Cursor c = mRingtoneManager2.getCursor();
-					c.moveToFirst();
-					i=0;
-					while(c.moveToNext())
-					{
-						int x = c.getInt(RingtoneManager.ID_COLUMN_INDEX);
-						System.out.println(x + "=?" + tone);
-						if(x==tone)
-						{
-							((Spinner)vi.findViewById( R.id.spinner1)).setSelection(i);
-							break;
-						}
-						i++;
-					}
-					((RadioButton) vi.findViewById(R.id.isAlarm)).setChecked(isAlarm);
-					((CheckBox) vi.findViewById(R.id.vibrate)).setChecked(vibrate);
-					} catch(Exception e) {
-						System.out.println("crap");
-					}
-				}
-			    
-			    ((Button)vi.findViewById(R.id.save)).setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						View x = (View) v.getParent();
-						
-						Spinner s = (Spinner) x.findViewById( R.id.spinner1);
-						String tone = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.id1)).getText();
-						String uri = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.uri)).getText();
-						String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
-						int min = ((NumberPicker) x.findViewById(R.id.minutesBefore)).getValue();
-						int isAlarm = ((RadioButton) x.findViewById(R.id.isAlarm)).isChecked()?1:0;
-						int vibrate = ((CheckBox) x.findViewById(R.id.vibrate)).isChecked()?1:0;
-						
-						Calendar time = Calendar.getInstance();
-						try {
-							time.setTime(Callisto.sdfRaw.parse(key.substring(key.length()-14)));
-							time.add(Calendar.MINUTE, -1*min);
-						} catch (ParseException e) {}
-						
-						
-						Intent i = new Intent(CalendarActivity.this, AlarmNotificationReceiver.class);
-					    i.putExtra("tone", uri + "/" + tone);
-					    i.putExtra("min", min);
-					    i.putExtra("isAlarm", isAlarm);
-					    i.putExtra("vibrate", vibrate);
-					    i.putExtra("show", key.substring(0, 14));
-					    Toast.makeText(CalendarActivity.this, "Creating event...", Toast.LENGTH_SHORT).show();
-					    PendingIntent pi = PendingIntent.getBroadcast(CalendarActivity.this.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
-					    AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-					    mAlarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3*1000, pi); //DEBUG
-					    
-						
-						
-						SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
-						edit.putString(key, Integer.toString(min) + "_" + uri + "/" + tone + "_" + isAlarm + "" + vibrate);
-						edit.commit();
-						dg.dismiss();
-						popUp.dismiss();
-					}
-			    });
-				
-			}
-    		
-    	});
-		
-        
+   //Weekly View
         if(!isLandscape)
         {
         	
@@ -271,6 +159,7 @@ public class CalendarActivity extends Activity {
 				}
         		
         	});
+	//Agenda View
         }else {
         	Log.v("CalendarActivity:OnCreate", "Layout is landscape -> calendar");
 	        setContentView(R.layout.calendar);
@@ -304,6 +193,10 @@ public class CalendarActivity extends Activity {
         }
     }
 	
+	/** Called when any key is pressed. Used do dismiss the event info popup when you press back.
+	 * @param keyCode I dunno
+	 * @param keyCode I dunno
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
@@ -317,6 +210,7 @@ public class CalendarActivity extends Activity {
 	    return super.onKeyDown(keyCode, event);
 	} 
 	
+	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override
 	public void onResume()
 	{
@@ -332,7 +226,9 @@ public class CalendarActivity extends Activity {
 
 	}
 	
-	
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -341,6 +237,9 @@ public class CalendarActivity extends Activity {
     	return true;
     }
     
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -375,7 +274,7 @@ public class CalendarActivity extends Activity {
     	}
     };
     
-
+    /** Resets the calendar to the current date. */
     public OnClickListener resetCalender = new OnClickListener()
     {
     	@Override
@@ -386,7 +285,7 @@ public class CalendarActivity extends Activity {
     	}    	
     };
     
-    // performs database query outside GUI thread
+    /** Performs database query outside GUI thread. */
     private class FetchEventsTask extends AsyncTask<Object, Object, Object> 
     {
     	ProgressDialog pd;
@@ -540,7 +439,7 @@ public class CalendarActivity extends Activity {
        }
     }
     
-    
+    /** Updates the Weekly view after adjusting the week. */
     public void updateCalendar()
     {
         Tmonth.setText(months[current_cal.get(Calendar.MONTH)]);
@@ -627,7 +526,118 @@ public class CalendarActivity extends Activity {
         current_cal.add(Calendar.DATE, -7 + dayOfWeek);
     }
     
-    //Listener for play/pause button
+    /** Called when the user the presses the "Edit" button for an existing alarm. */
+    public OnClickListener editEvent = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			LayoutInflater inflater = (LayoutInflater) CalendarActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        	View vi = inflater.inflate(R.layout.edit_alarm, null);
+			dg = new Dialog(CalendarActivity.this);
+			dg.setContentView(vi);
+			if(isLandscape)
+				((LinearLayout)vi.findViewById(R.id.landscapeRotate)).setOrientation(LinearLayout.HORIZONTAL);
+			dg.setTitle("Set Alarm/Notification");
+			dg.show();
+			
+			NumberPicker NumP = (NumberPicker) vi.findViewById(R.id.minutesBefore);
+			NumP.setSuffix(" min before");
+			NumP.setIncrement(15);
+			NumP.setRange(0, 90);
+			
+			
+			RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
+		    mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);
+		    mRingtoneManager2.setIncludeDrm(true);
+		    Cursor mCursor2 = mRingtoneManager2.getCursor();
+		    startManagingCursor(mCursor2);
+		    String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.URI_COLUMN_INDEX)};
+		    int[] to = {R.id.text1, R.id.id1, R.id.uri};
+		    SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to );
+		    adapter.setDropDownViewResource( R.layout.simple_spinner_item_plus );
+		    Spinner s = (Spinner) vi.findViewById( R.id.spinner1);
+		    s.setAdapter(adapter);
+			
+			//Set the previous if it exists
+			String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
+			key = Callisto.alarmPrefs.getString(key, "");
+			int min = 0, tone=0;
+			boolean vibrate=false, isAlarm=false;
+			if(key!="")
+			{
+				try {
+				min = Integer.parseInt(key.substring(0, key.indexOf("_")));
+				tone = Integer.parseInt(key.substring(key.indexOf("_")+1,key.lastIndexOf("_")));
+				int i = Integer.parseInt(key.substring(key.lastIndexOf("_")+1));
+				isAlarm=i>10?true:false;
+				vibrate= i%2!=0?true:false;
+				((NumberPicker) vi.findViewById(R.id.minutesBefore)).setValue(min);
+				Cursor c = mRingtoneManager2.getCursor();
+				c.moveToFirst();
+				i=0;
+				while(c.moveToNext())
+				{
+					int x = c.getInt(RingtoneManager.ID_COLUMN_INDEX);
+					System.out.println(x + "=?" + tone);
+					if(x==tone)
+					{
+						((Spinner)vi.findViewById( R.id.spinner1)).setSelection(i);
+						break;
+					}
+					i++;
+				}
+				((RadioButton) vi.findViewById(R.id.isAlarm)).setChecked(isAlarm);
+				((CheckBox) vi.findViewById(R.id.vibrate)).setChecked(vibrate);
+				} catch(Exception e) {
+					System.out.println("crap");
+				}
+			}
+		    
+		    ((Button)vi.findViewById(R.id.save)).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					View x = (View) v.getParent();
+					
+					Spinner s = (Spinner) x.findViewById( R.id.spinner1);
+					String tone = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.id1)).getText();
+					String uri = (String) ((TextView)(s.getSelectedView()).findViewById(R.id.uri)).getText();
+					String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
+					int min = ((NumberPicker) x.findViewById(R.id.minutesBefore)).getValue();
+					int isAlarm = ((RadioButton) x.findViewById(R.id.isAlarm)).isChecked()?1:0;
+					int vibrate = ((CheckBox) x.findViewById(R.id.vibrate)).isChecked()?1:0;
+					
+					Calendar time = Calendar.getInstance();
+					try {
+						time.setTime(Callisto.sdfRaw.parse(key.substring(key.length()-14)));
+						time.add(Calendar.MINUTE, -1*min);
+					} catch (ParseException e) {}
+					
+					
+					Intent i = new Intent(CalendarActivity.this, AlarmNotificationReceiver.class);
+				    i.putExtra("tone", uri + "/" + tone);
+				    i.putExtra("min", min);
+				    i.putExtra("isAlarm", isAlarm);
+				    i.putExtra("vibrate", vibrate);
+				    i.putExtra("show", key.substring(0, 14));
+				    Toast.makeText(CalendarActivity.this, "Creating event...", Toast.LENGTH_SHORT).show();
+				    PendingIntent pi = PendingIntent.getBroadcast(CalendarActivity.this.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
+				    AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+				    mAlarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3*1000, pi); //DEBUG
+				    
+					
+					
+					SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
+					edit.putString(key, Integer.toString(min) + "_" + uri + "/" + tone + "_" + isAlarm + "" + vibrate);
+					edit.commit();
+					dg.dismiss();
+					popUp.dismiss();
+				}
+		    });
+			
+		}
+		
+	};
+    
+    /** Listener for play/pause button. */
 	public OnClickListener clickEvent = new OnClickListener() 
     {
 		@Override
@@ -765,7 +775,7 @@ public class CalendarActivity extends Activity {
     };
     
     
-    
+    /** Loads 7 more days worth of events into the Agenda view */
     public void loadMoreAgenda(boolean thisWeek)
     {
     	
