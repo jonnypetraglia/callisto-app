@@ -54,7 +54,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
-public class NowPlaying extends Activity
+public class LiveStream extends Activity
 {
 	public static String liveTitle;
 	private final String infoURL = "http://jbradio.airtime.pro/api/live-info";
@@ -174,7 +174,7 @@ public class NowPlaying extends Activity
 				Callisto.live_player.setOnPreparedListener(livePreparedListener);
 					try {
 				Callisto.live_player.setDataSource(live_url);
-				livePrepare(NowPlaying.this);
+				livePrepare(LiveStream.this);
 				} catch (Exception e) {
 					dg.show();
 					sendErrorReport("EXCEPTION");
@@ -221,7 +221,7 @@ public class NowPlaying extends Activity
 		        	whatWhat = "???";
 		        }
 
-		    	NowPlaying.sendErrorReport(whatWhat);
+		    	LiveStream.sendErrorReport(whatWhat);
 		        return true;
 		    }
 		});
@@ -244,11 +244,11 @@ public class NowPlaying extends Activity
 				update();
 				Callisto.live_isPlaying = true;
 				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
-				Intent notificationIntent = new Intent(NowPlaying.this, NowPlaying.class);
-				PendingIntent contentIntent = PendingIntent.getActivity(NowPlaying.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
+				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
 				Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-		       	Callisto.notification_playing.setLatestEventInfo(NowPlaying.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
+		       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
 			       	
 		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
@@ -272,7 +272,7 @@ public class NowPlaying extends Activity
 			}
 			catch(Exception e)
 			{
-				NowPlaying.dg.show();
+				LiveStream.dg.show();
 			}
 		}
 	};
@@ -281,7 +281,7 @@ public class NowPlaying extends Activity
 	public void onResume()
 	{
 		super.onResume();
-		live_url = PreferenceManager.getDefaultSharedPreferences(NowPlaying.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+		live_url = PreferenceManager.getDefaultSharedPreferences(LiveStream.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
 		
 		if(Callisto.live_player!=null)
 			update();
@@ -297,7 +297,7 @@ public class NowPlaying extends Activity
 	
 	public static void sendErrorReport(String msg)
 	{
-		String errorReport = NowPlaying.errorReportURL + "?id=Callisto&v=" + Callisto.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;
+		String errorReport = LiveStream.errorReportURL + "?id=Callisto&v=" + Callisto.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;
 		
 		
 		HttpClient httpClient = new DefaultHttpClient();

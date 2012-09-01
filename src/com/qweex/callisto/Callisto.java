@@ -448,7 +448,7 @@ public class Callisto extends Activity {
     	    	Log.w("Callisto:update", "Could not find view: " + "titleView");
     	    else
     	    	if(Callisto.live_player!=null)
-        	    	titleView.setText(NowPlaying.liveTitle + " - JB Radio");
+        	    	titleView.setText(LiveStream.liveTitle + " - JB Radio");
     	    	else if(title==null)
         	    	titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
         	    else
@@ -596,10 +596,10 @@ public class Callisto extends Activity {
 					//3. setDataSource
 					//4. livePrepare
 					try {
-						NowPlaying.liveInit();
-						Callisto.live_player.setOnPreparedListener(NowPlaying.livePreparedListenerOther);
+						LiveStream.liveInit();
+						Callisto.live_player.setOnPreparedListener(LiveStream.livePreparedListenerOther);
 						Callisto.live_player.setDataSource(live_url);
-						NowPlaying.livePrepare(v.getContext());
+						LiveStream.livePrepare(v.getContext());
 						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
 					} catch(Exception e){}
 				}
@@ -702,7 +702,7 @@ public class Callisto extends Activity {
 			switch(v.getId())
 			{
 			case R.id.live:
-				newIntent = new Intent(Callisto.this, NowPlaying.class);
+				newIntent = new Intent(Callisto.this, LiveStream.class);
 				break;
 			case R.id.plan:
 				newIntent = new Intent(Callisto.this, CalendarActivity.class);

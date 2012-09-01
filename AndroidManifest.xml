@@ -52,7 +52,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             ></activity>
         <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity"></activity>
-        <activity android:name="NowPlaying"></activity>
+        <activity android:name=".LiveStream"></activity>
         <activity android:name="Donate"></activity>
 
     <service android:name="com.android.vending.billing.BillingService" />
