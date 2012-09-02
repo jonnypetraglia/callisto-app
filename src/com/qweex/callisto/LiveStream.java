@@ -213,6 +213,7 @@ public class LiveStream extends Activity
 	static public void livePrepare(Context c)
 	{
 		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		pd.setCancelable(true);
 		Callisto.live_player.prepareAsync();
 	}
 	
@@ -221,6 +222,8 @@ public class LiveStream extends Activity
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
+			if(!pd.isShowing())
+				return;
 			pd.cancel();
 			try {
 				Callisto.live_player.start();
@@ -238,6 +241,8 @@ public class LiveStream extends Activity
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
+			if(!pd.isShowing())
+				return;
 			pd.cancel();
 			try {
 				Callisto.live_player.start();
@@ -248,7 +253,7 @@ public class LiveStream extends Activity
 				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
 				Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-		       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
+		       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this, liveTitle,  "JB Radio", contentIntent);
 			       	
 		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);

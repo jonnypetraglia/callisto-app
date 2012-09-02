@@ -64,7 +64,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 //FIXME: The scrollview pushes the player controls offscreen. What the crap.
 //FIXME: Doesn't update if the track finishes
 
-/** An activity for showing the specific info about a particular episode. */
+/** An activity for showing the specific info about a particular episode.
+ * @author MrQweex */
 public class EpisodeDesc extends Activity
 {
 	//-----Local variables-----

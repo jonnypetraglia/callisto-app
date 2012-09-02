@@ -96,6 +96,8 @@ public class CalendarActivity extends Activity {
 	private Calendar current_cal = Calendar.getInstance();
 	private boolean isLandscape = false;
 	private TextView popUp_title, popUp_type, popUp_date, popUp_time;
+	private ProgressDialog pd;
+	private FetchEventsTask fetchTask;
 	
 	boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
 	int TheHeightOfTheFreakingPopup = 0; 
@@ -202,6 +204,11 @@ public class CalendarActivity extends Activity {
 
 	    // Override back button
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    	if(pd.isShowing())
+	    	{
+	    		fetchTask.cancel(true);
+	    		pd.cancel();
+	    	}
 	        if (popUp.isShowing()) {
 	        	popUp.dismiss();
 	            return false;
@@ -246,7 +253,8 @@ public class CalendarActivity extends Activity {
     	switch (item.getItemId())
     	{
     	case REFRESH_MENU_ID:
-    		new FetchEventsTask().execute((Object[]) null);
+    		fetchTask = new FetchEventsTask();
+    		fetchTask.execute((Object[]) null);
     		return true;
     	}
     	return super.onOptionsItemSelected(item);
@@ -288,7 +296,6 @@ public class CalendarActivity extends Activity {
     /** Performs database query outside GUI thread. */
     private class FetchEventsTask extends AsyncTask<Object, Object, Object> 
     {
-    	ProgressDialog pd;
     	
  	   @Override
  	   protected void onPreExecute()
@@ -297,6 +304,7 @@ public class CalendarActivity extends Activity {
  	      if(!isLandscape)
  	    	 agenda.removeAllViews();
  	      pd = ProgressDialog.show(CalendarActivity.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+ 	      pd.setCancelable(true);
  	   }
     	
        @Override
