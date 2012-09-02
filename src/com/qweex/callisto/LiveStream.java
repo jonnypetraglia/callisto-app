@@ -46,6 +46,7 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -180,6 +181,7 @@ public class LiveStream extends Activity
 	/** Initiates the live player. Can be called across activities. */
 	static public void liveInit()
 	{
+		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player = new MediaPlayer();
 		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
@@ -265,6 +267,7 @@ public class LiveStream extends Activity
 		@Override
 		public void onClick(View v)
 		{
+			Log.d("LiveStream:playButton", "Clicked play button");
 			if(!Callisto.playerInfo.isPaused)
 			{
 				Callisto.mplayer.pause();
@@ -273,7 +276,9 @@ public class LiveStream extends Activity
 			
 			if(Callisto.live_player == null || !Callisto.live_isPlaying)
 			{
-				Callisto.mplayer.reset();
+				Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
+				if(Callisto.mplayer!=null)
+					Callisto.mplayer.reset();
 				Callisto.mplayer=null;
 				liveInit();
 				Callisto.live_player.setOnPreparedListener(livePreparedListener);
@@ -288,18 +293,22 @@ public class LiveStream extends Activity
 			}
 			else
 			{
+				Log.d("LiveStream:playButton", "Live player does exist.");
 				if(Callisto.live_isPlaying)
 				{
+					Log.d("LiveStream:playButton", "Pausing.");
 					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_play_lg));
 					Callisto.live_player.pause();
 				}
 				else
 				{
+					Log.d("LiveStream:playButton", "Playing.");
 					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
 					Callisto.live_player.start();
 				}
 				Callisto.live_isPlaying = !Callisto.live_isPlaying;
 			}
+			Log.d("LiveStream:playButton", "Done");
 		}
 	};
 	

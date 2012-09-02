@@ -530,6 +530,8 @@ public class IRCChat extends Activity implements IRCEventListener
 				break;
 			case NOTICE:
 				NoticeEvent ne = (NoticeEvent) e;
+				if(session==null)
+					System.out.println("YUP!");
 				if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
 				{
 					received = getReceived("[NICKSERV]", ne.getNoticeMessage(), CLR_TOPIC);
@@ -565,6 +567,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatHandler.post(chatUpdater);
 				break;
 			case NICK_CHANGE:
+				System.out.println("Butts: " + session.getNick());
 				NickChangeEvent ni = (NickChangeEvent) e;
 				received = getReceived(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, CLR_NICK);
 				chatHandler.post(chatUpdater);
@@ -860,8 +863,6 @@ public class IRCChat extends Activity implements IRCEventListener
 			st2.setSpan(new ForegroundColorSpan(colorBro2), 0, newMessage.length(), 0);
 			}
 			catch(Exception e) {}
-			
-			
 			
 			if(parseOutgoing(newMessage))
 			{

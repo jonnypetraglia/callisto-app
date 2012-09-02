@@ -156,7 +156,6 @@ public class ShowList extends Activity
 			return;
 		
 		
-		//showAdapter.notifyDataSetChanged();	//FIXME: This ruins the icon update
 		long id = Long.parseLong(
 				(String) ((TextView)((View) current_episode.getParent()).findViewById(R.id.hiddenId)).getText()
 				);
@@ -236,14 +235,14 @@ public class ShowList extends Activity
         	.setTitle(Callisto.RESOURCES.getString(R.string.mark_all))
         	.setPositiveButton(Callisto.RESOURCES.getString(R.string.new_), new DialogInterface.OnClickListener() {
         	    public void onClick(DialogInterface dialog, int whichButton) {
-        	    	Callisto.databaseConnector.markNew(0, true);
+        	    	Callisto.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], true);
                 	Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
             	   	ShowList.this.showAdapter.changeCursor(r);
             	   	ShowList.this.showAdapter.notifyDataSetChanged();
         	    }})
         	 .setNegativeButton(Callisto.RESOURCES.getString(R.string.old), new DialogInterface.OnClickListener() {
          	    public void onClick(DialogInterface dialog, int whichButton) {
-         	    	Callisto.databaseConnector.markNew(0, false);
+         	    	Callisto.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], false);
                  	Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
              	   	ShowList.this.showAdapter.changeCursor(r);
              	   	ShowList.this.showAdapter.notifyDataSetChanged();

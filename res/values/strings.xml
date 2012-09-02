@@ -105,6 +105,7 @@
         <item>http://jbradio.out.airtime.pro:8000/jbradio_b</item>
         <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
     </string-array>
+    <string name="stop">Stop</string>
     
 </resources>
 

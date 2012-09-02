@@ -52,6 +52,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -152,11 +153,8 @@ public class EpisodeDesc extends Activity
 			Log.e("ShowList:ShowListAdapter:ParseException", "(This should SERIOUSLY never happen).");
 		}
 		file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-System.out.println("BUTTS 2.8" + media_link);
-System.out.println("BUTTS 2.8" +  getExtension(media_link));
 		file_location = new File(file_location, date + "__" + title + getExtension(media_link));
 		
-System.out.println("butts 3");
 		streamButton = ((Button)this.findViewById(R.id.stream));
 		downloadButton = ((Button)this.findViewById(R.id.download));
 		
@@ -227,6 +225,7 @@ System.out.println("butts 3");
 			 }
 			 ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
 			 ((Button)v).setEnabled(false);
+			 Callisto.playerInfo.update(v.getContext());
 		  }
     };
 
@@ -237,11 +236,32 @@ System.out.println("butts 3");
 		  public void onClick(View v) 
 		  {
 		 	file_location.delete();
+		 	int tempId = -1;
+		 	Cursor c = Callisto.databaseConnector.currentQueue();
+		 	if(c.getCount()!=0)
+		 	{
+		 		c.moveToFirst();
+		 		tempId = c.getInt(c.getColumnIndex("_id"));
+		 	}
+		 	if(id==tempId)
+		 	{
+		 		Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+		 		Callisto.databaseConnector.advanceQueue(1);
+				 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
+				 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+				 if(isPlaying)
+				 {
+				    Callisto.playerInfo.isPaused = true;
+				 	Callisto.mplayer.pause();
+				 }
+				 Callisto.databaseConnector.advanceQueue(1);
+		 	}
 		 	Callisto.databaseConnector.deleteQueueItem(id);
 			streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
 			streamButton.setOnClickListener(launchStream);
 			downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
 			downloadButton.setOnClickListener(launchDownload);
+			Callisto.playerInfo.update(v.getContext());
 		  }
     };
 	
@@ -252,12 +272,10 @@ System.out.println("butts 3");
 		  public void onClick(View v) 
 		  {
 			Log.i("EpisodeDesc:launchStream","Beginning streaming: " + media_link);
-				EpisodeDesc.this.setProgressBarIndeterminateVisibility(true);
-				if(Callisto.mplayer!=null && Callisto.mplayer.isPlaying())
-  			  		Callisto.mplayer.stop();
 				 Callisto.databaseConnector.appendToQueue(id, true);
 				 if(Callisto.databaseConnector.queueCount()==1)
 				 {
+					 EpisodeDesc.this.setProgressBarIndeterminateVisibility(true);
 					 try {
 					 Callisto.mplayer = new MediaPlayer();
 					 Callisto.mplayer.setDataSource(media_link);
@@ -272,9 +290,11 @@ System.out.println("butts 3");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					 EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
 				 }
 				 ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
 				 ((Button)v).setEnabled(false);
+				 Callisto.playerInfo.update(v.getContext());
 		  }
     };
     

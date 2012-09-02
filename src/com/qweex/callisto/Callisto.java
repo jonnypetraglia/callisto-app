@@ -143,6 +143,7 @@ public class Callisto extends Activity {
 	static ProgressBar timeProgress;
 	private static final int QUIT_ID=Menu.FIRST+1;
 	private static final int SETTINGS_ID=QUIT_ID+1;
+	private static final int STOP_ID=SETTINGS_ID+1;
 	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
@@ -465,7 +466,7 @@ public class Callisto extends Activity {
     	    }
     	    else
     	    {
-	    		timeView.setText(formatTimeFromSeconds(position));
+	    		timeView.setText(formatTimeFromSeconds(title==null ? 0 : position));
 	    		timeView.setEnabled(true);
     	    }
     	    
@@ -480,7 +481,7 @@ public class Callisto extends Activity {
     	    }
     	    else
     	    {
-    	    	lengthView.setText(formatTimeFromSeconds(length));
+    	    	lengthView.setText(formatTimeFromSeconds(title==null ? 0 : length));
     	    	lengthView.setEnabled(true);
     	    }
     	    
@@ -497,7 +498,7 @@ public class Callisto extends Activity {
     	    else
     	    {
 	    	    timeProgress.setMax(length);
-	    	    timeProgress.setProgress(position);
+	    	    timeProgress.setProgress(title==null ? 0 : position);
 	    	    timeProgress.setEnabled(true);
     	    }
         	
@@ -999,6 +1000,7 @@ public class Callisto extends Activity {
     {
     	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
     	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
+    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
         return true;
     }
     
@@ -1014,6 +1016,18 @@ public class Callisto extends Activity {
         case SETTINGS_ID:
         	startActivity(new Intent(this, QuickPrefsActivity.class));
         	return true;
+        case STOP_ID:
+        	if(Callisto.mplayer!=null) {
+        		Callisto.mplayer.reset();
+        		Callisto.mplayer = null;
+        	}
+        	if(Callisto.live_player!=null) {
+        		Callisto.live_player.reset();
+        		Callisto.live_player = null;
+        	}
+        	playerInfo.title = null;
+        	playerInfo.update(this);
+        	mNotificationManager.cancel(NOTIFICATION_ID);
         default:
             return super.onOptionsItemSelected(item);
         }

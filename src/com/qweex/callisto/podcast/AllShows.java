@@ -140,8 +140,10 @@ public class AllShows extends Activity {
 				Log.e("AllShows:OnResume:ParseException", lastChecked);
 				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
 			}
-		if(Callisto.databaseConnector.getShow(the_current, true).getCount()>0)
-		current_view.setBackgroundResource(R.drawable.main_colored);
+		if(Callisto.databaseConnector.getShow(the_current, true).getCount()==0)
+			current_view.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.list_selector_background));
+		else
+			current_view.setBackgroundResource(R.drawable.main_colored);
 			
 		
 		current_view=null;
@@ -180,16 +182,18 @@ public class AllShows extends Activity {
         	startActivity(newIntent);
             return true;
         case UPDATE_ID:
-        	new Handler() {
-                @Override
-                public void handleMessage(Message msg)
-                {  	new UpdateAllShowsTask().execute((Object[]) null);   }
-        	}.sendMessage(new Message());
+        	UpdateAllHandler.sendMessage(new Message());
         	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
+    
+    Handler UpdateAllHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg)
+        {  	new UpdateAllShowsTask().execute((Object[]) null);   }
+	};
     
     /** Updates the show outside of the UI thread. */
     private class UpdateAllShowsTask extends AsyncTask<Object, Object, Object> 
@@ -211,15 +215,17 @@ public class AllShows extends Activity {
        			continue;
        		current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
 			Callisto.updateShow(i, current_showSettings, false);
-			new Handler() {
-				@Override 
-				public void handleMessage(Message msg)
-				{ mainListView.setAdapter(listAdapter);	}
-			}.sendEmptyMessage(0);
+			UpdateHandler.sendEmptyMessage(0);
        	}
        	
        	return null;
         }
+       
+       Handler UpdateHandler = new Handler() {
+			@Override 
+			public void handleMessage(Message msg)
+			{ mainListView.setAdapter(listAdapter);	}
+		};
         
        @Override
        protected void onPostExecute(Object result)
@@ -319,7 +325,9 @@ public class AllShows extends Activity {
 				}
 				
 				
-				if( Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount()>0 )
+				if( Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount()==0 )
+					row.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.list_selector_background));
+				else
 					row.setBackgroundResource(R.drawable.main_colored);
 					
 	

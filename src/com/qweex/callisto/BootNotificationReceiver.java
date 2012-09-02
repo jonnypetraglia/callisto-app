@@ -17,6 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+//FIXME This apparently FCs
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -27,19 +28,27 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 public class BootNotificationReceiver extends BroadcastReceiver
 {
+	public final static String PREF_FILE = "alarms";
+	
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		Map<String,?> alarms = Callisto.alarmPrefs.getAll();
+		SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+		Map<String,?> alarms = alarmPrefs.getAll();
+		Log.d("BootNotify", "Begin");
 		for (Map.Entry<String, ?> entry : alarms.entrySet())
 		{
+			Log.d("BootNotify", "Entry: " + entry);
 			String show = entry.getKey().substring(0, entry.getKey().length()-14);
 			Calendar time = Calendar.getInstance();
 			String value = (String) entry.getValue();
 			
+			Log.d("BootNotify", "Getting things");
 			int min = Integer.parseInt(value.substring(0,value.indexOf("_")));
 			String tone = value.substring(value.indexOf("_")+1,value.lastIndexOf("_"));
 			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")));
@@ -52,6 +61,7 @@ public class BootNotificationReceiver extends BroadcastReceiver
 				time.add(Calendar.MINUTE, -1*min);
 			} catch (ParseException e) {}
 			
+			Log.d("BootNotify", "Creating intent");
 			Intent i = new Intent(context, AlarmNotificationReceiver.class);
 		    i.putExtra("tone", tone);
 		    i.putExtra("min", min);
@@ -59,8 +69,10 @@ public class BootNotificationReceiver extends BroadcastReceiver
 		    i.putExtra("vibrate", vibrate);
 		    i.putExtra("show", show);
 		    PendingIntent pi = PendingIntent.getBroadcast(context.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
+		    Log.d("BootNotify", "Setting Alarm");
 		    AlarmManager mAlarm = (AlarmManager) context.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 		    mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi); //DEBUG
 		}
+		Log.d("BootNotify", "Done");
 	}
 }

@@ -24,6 +24,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -87,13 +88,19 @@ public class Queue extends ListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+    	Log.d("Queue:onOptionsItemSelected", "Clearing queue");
     	Callisto.databaseConnector.clearQueue();
 		listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+		Log.d("Queue:onOptionsItemSelected", "Cursor changed");
+		/*
 		ImageButton v = (ImageButton) findViewById(R.id.playPause);
 		if(v!=null)
 			((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+			*/
 	    Callisto.playerInfo.isPaused = true;
-	 	Callisto.mplayer.pause();
+	    if(Callisto.mplayer!=null)
+	    	Callisto.mplayer.pause();
+	 	Log.d("Queue:onOptionsItemSelected", "Derp");
     	return true;
     }    
 	
@@ -133,20 +140,30 @@ public class Queue extends ListActivity
 		 @Override
 		  public void onClick(View v) 
 		  {
+			 Log.d("Queue:removeItem", "Clicked to remove an item in the queue");
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
+			 Log.d("Queue:removeItem", "Found TV");
 			 long id = Long.parseLong((String) tv.getText());
-			 long id2=0;
+			 Log.d("Queue:removeItem", "Parsed long");
+			 long id2=id-1;
 			 Cursor c = Callisto.databaseConnector.currentQueue();
+			 Log.d("Queue:removeItem", "Got cursor");
 			 if(c.getCount()!=0)
-			 {	c.moveToFirst();
-			 	id2 = c.getLong(c.getColumnIndex("_id"));
+			 {
+				 Log.d("Queue:removeItem", "Move to first");
+				 c.moveToFirst();
+				 Log.d("Queue:removeItem", "Getting id2");
+			 	 id2 = c.getLong(c.getColumnIndex("_id"));
 			 }
+			 Log.d("Queue:removeItem", "Parsed long 2");
 			 if(id==id2)
 			 {
+				 Log.d("Queue:removeItem", "Removing the current item; advancing to next");
 				 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
 				 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 				 if(isPlaying)
 				 {
+					 Log.d("Queue:removeItem", "Track is playing");
 				    ((ImageButton)v).setImageDrawable(Callisto.playDrawable);
 				    Callisto.playerInfo.isPaused = true;
 				 	Callisto.mplayer.pause();
@@ -154,6 +171,7 @@ public class Queue extends ListActivity
 				 Callisto.databaseConnector.advanceQueue(1);
 			 }
 			 
+			 Log.d("Queue:removeItem", "Removing item and updating cursor");
 			 Callisto.databaseConnector.deleteQueueItem(id);
 			 Cursor q = Callisto.databaseConnector.getQueue();
 			 listAdapter.changeCursor(q);
@@ -166,9 +184,7 @@ public class Queue extends ListActivity
 		    	Callisto.playerInfo.position = 0;
 		    	Callisto.playerInfo.length = 0;
 			 }
-			 //NowPlaying.this.listAdapter.notifyDataSetChanged();
-			 
-			 
+			 Log.d("Queue:removeItem", "Done");
 		  }
     };
 	

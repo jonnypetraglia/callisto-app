@@ -89,7 +89,14 @@ public class DatabaseConnector
 	public void markNew(long id, boolean is_new)
 	{
 	   database.execSQL("UPDATE " + DATABASE_TABLE  + " SET new='" + (is_new?1:0) + "'" + 
-			   (id!=0 ? (" WHERE _id='" + id + "'") : ""));
+			   " WHERE _id='" + id + "'");
+	}
+	
+	/** [DATABASE_TABLE] Marks an episode as either new or not new. */
+	public void markAllNew(String show, boolean is_new)
+	{
+	   database.execSQL("UPDATE " + DATABASE_TABLE  + " SET new='" + (is_new?1:0) + "'" + 
+			   " WHERE show='" + show + "'");
 	}
 	
 	/** [DATABASE_TABLE] Updates a an episode entry.
@@ -278,10 +285,10 @@ public class DatabaseConnector
 	}
 	
 	/** [DATABASE_QUEUE] Advances the marker for the current item of the queue and returns a cursor containing that item
-	 * @param previous True moves it forward forward, false moves backward
+	 * @param forward True moves it forward forward, false moves backward
 	 * @return A Cursor containing the new current item
 	 */
-	public Cursor advanceQueue(int previous)
+	public Cursor advanceQueue(int forward)
 	{
 		long id;
 		Cursor c = currentQueue();
@@ -296,7 +303,7 @@ public class DatabaseConnector
 			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=1 WHERE _id=" + id); //CLEAN: make more efficient
 			return getQueue();
 		}
-		if(previous!=0)
+		if(forward!=0)
 		{
 			Log.v("DatabaseConnector:advanceQueue", "An old current was found in the queue");
 			c.moveToFirst();
@@ -304,7 +311,7 @@ public class DatabaseConnector
 			//Set the old one to be not current
 			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=0" + " WHERE _id=" + id + "");
 			//Get the new one and set it to be current
-			if(previous<0)
+			if(forward<0)
 				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "_id<" + id, null, null, null, "_id DESC", "1");
 			else
 				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "_id>" + id, null, null, null, null, "1");
@@ -323,9 +330,7 @@ public class DatabaseConnector
 	 */
 	public Cursor currentQueue()
 	{
-		Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "current>'0'", null, null, null, null, "1");
-		if(c.getCount()==0)
-			return null;
+	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "current>'0'", null, null, null, null, "1");
 	   return c;
 		
 	}
