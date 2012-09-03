@@ -54,6 +54,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -474,6 +475,11 @@ public class EpisodeDesc extends Activity
 			            downloadedSize += len;
 				       	perc = downloadedSize*100;
 				       	perc /= TotalSize;
+						if(DownloadList.downloadProgress!=null)
+						{
+							int x = (int)(downloadedSize*100/TotalSize);
+							DownloadList.downloadProgress.setProgress(x);
+						}
 				       	Callisto.notification_download.setLatestEventInfo(getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " + Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": " + perc + "%", Show + ": " + Title, contentIntent);
 				       	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
 					}
@@ -491,6 +497,8 @@ public class EpisodeDesc extends Activity
 							Callisto.databaseConnector.appendToQueue(id, false);
 						
 						Callisto.download_queue.remove(0);
+						if(DownloadList.notifyUpdate!=null)
+							DownloadList.notifyUpdate.sendEmptyMessage(0);
 					}
 		       } catch (IOException e) {
 		    	   Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");
@@ -506,7 +514,7 @@ public class EpisodeDesc extends Activity
 			notificationIntent = new Intent(null, Callisto.class);
 			contentIntent = PendingIntent.getActivity(EpisodeDesc.this, 0, notificationIntent, 0);
 			*/
-		       
+		    
 			Log.i("EpisodeDesc:DownloadTask", "Finished Downloading");
        		mNotificationManager.cancel(NOTIFICATION_ID);
        		if(Callisto.downloading_count>0)

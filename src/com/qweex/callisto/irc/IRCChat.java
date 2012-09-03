@@ -77,9 +77,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
-//FIXME: Glow from scrollview covers up bottom line
 //IDEA: Nicklist
-//FIXME: Quit message doesn't work :\ (just locally?)
 //FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
 //FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
 //FEATURE: Save chat to file
@@ -144,8 +142,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		        	if(received.equals(new SpannableString("")))
 		        		return;
 		            Callisto.chatView.append(received);
-		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
 		            Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
+		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
 		            sv.fullScroll(ScrollView.FOCUS_DOWN);
@@ -345,7 +343,10 @@ public class IRCChat extends Activity implements IRCEventListener
 		COLOR_LIST.remove(CLR_MYNICK);
 		setContentView(R.layout.irc);
 		sv = (ScrollView) findViewById(R.id.scrollView);
+		sv.setVerticalFadingEdgeEnabled(false);
+		sv.setFillViewport(true);
 		sv2 = (ScrollView) findViewById(R.id.scrollView2);
+		sv2.setVerticalFadingEdgeEnabled(false);
 		ScrollView test = ((ScrollView)Callisto.chatView.getParent());
 		if(test!=null)
 			test.removeView(Callisto.chatView);
@@ -436,10 +437,9 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	if(quitMsg==null)
     		quitMsg = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
-    	if(quitMsg==null)
-    		manager.quit();
-    	else
-    		manager.quit(quitMsg);
+    	if(quitMsg!=null)
+    		session.getChannel(CHANNEL_NAME).part(quitMsg);
+		manager.quit();
 		manager = null;
 		session = null;
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);

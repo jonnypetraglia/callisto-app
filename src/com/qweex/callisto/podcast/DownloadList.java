@@ -17,6 +17,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.podcast;
 
+import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,6 +29,9 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +40,7 @@ import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 //FEATURE: Progress via a colored background progress bar
@@ -45,8 +51,11 @@ import android.widget.TextView;
 
 public class DownloadList extends ListActivity
 {
+	/** Contains the ProgressBar of the current download, for use with updating. */
+	public static ProgressBar downloadProgress = null;
 	private ListView mainListView;
-	private DownloadsAdapter listAdapter ;
+	private static DownloadsAdapter listAdapter ;
+	public static Handler notifyUpdate;
 	
 	/** Called when the activity is first created. Sets up the view.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -74,6 +83,16 @@ public class DownloadList extends ListActivity
 		mainListView.setAdapter(listAdapter);
 		mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
 		mainListView.setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
+		
+		notifyUpdate = new Handler()
+	    {
+	        @Override
+	        public void handleMessage(Message msg)
+	        {
+	        	if(listAdapter!=null)
+	        		listAdapter.notifyDataSetChanged();
+	        }
+	    };
 	}
 	
 	/** Listener for the up button ("^"). Moves a download up in the list. */
@@ -119,7 +138,6 @@ public class DownloadList extends ListActivity
 			 Callisto.downloading_count--;
 		  }
     };
-
 	
     /** Adapter for the downloads view; extended because we need to format the date */
     public class DownloadsAdapter extends BaseAdapter
@@ -163,6 +181,21 @@ public class DownloadList extends ListActivity
 		    remove.setOnClickListener(removeItem);
 			up.setEnabled(position>0);
 			down.setEnabled(position>0);
+			
+			try {
+				String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
+				File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+					file_location = new File(file_location, date + "__" + title + ".mp3"); //IDEA: Adjust for watch
+				ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
+				int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex("mp3size")));
+				progress.setMax(100);
+				progress.setProgress(x);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(position==0)
+				downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
 			
     		return row;
     	}

@@ -34,12 +34,14 @@ import android.util.Log;
 public class BootNotificationReceiver extends BroadcastReceiver
 {
 	public final static String PREF_FILE = "alarms";
+	Calendar now = Calendar.getInstance();
 	
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
 		SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
 		Map<String,?> alarms = alarmPrefs.getAll();
+		SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
 		Log.d("BootNotify", "Begin");
 		for (Map.Entry<String, ?> entry : alarms.entrySet())
 		{
@@ -58,8 +60,14 @@ public class BootNotificationReceiver extends BroadcastReceiver
 			
 			try {
 				time.setTime(Callisto.sdfRaw.parse(entry.getKey().substring(14)));
-				time.add(Calendar.MINUTE, -1*min);
 			} catch (ParseException e) {}
+			
+			if(time.before(now))
+			{
+				edit.remove(entry.getKey());
+				continue;
+			}
+			time.add(Calendar.MINUTE, -1*min);
 			
 			Log.d("BootNotify", "Creating intent");
 			Intent i = new Intent(context, AlarmNotificationReceiver.class);
@@ -73,6 +81,7 @@ public class BootNotificationReceiver extends BroadcastReceiver
 		    AlarmManager mAlarm = (AlarmManager) context.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 		    mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi); //DEBUG
 		}
+		edit.commit();
 		Log.d("BootNotify", "Done");
 	}
 }

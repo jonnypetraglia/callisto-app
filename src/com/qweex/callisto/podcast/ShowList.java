@@ -425,7 +425,7 @@ public class ShowList extends Activity
 		    }
 		    
            //Hide the specific views
-	       int[] hide = new int[] { R.id.rightTextView, R.id.moveUp, R.id.moveDown, R.id.remove };
+	       int[] hide = new int[] { R.id.rightTextView, R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress };
            for(int i=0; i<hide.length; i++)
         	   ((View) v.findViewById(hide[i])).setVisibility(View.GONE);
            

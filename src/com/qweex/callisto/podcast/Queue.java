@@ -33,9 +33,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.ImageButton;
+
+//FEATURE: Time progress for each track
 
 /** An activity for showing the queued episodes.
  * @author MrQweex */
@@ -71,7 +74,7 @@ public class Queue extends ListActivity
 		
 		String[] from = new String[] {"_id", "identity"};
 		int[] to = new int[] { R.id.hiddenId, R.id.rowTextView, R.id.rowSubTextView };
-		int[] hide = new int[] { R.id.img, R.id.rightTextView };
+		int[] hide = new int[] { R.id.img, R.id.rightTextView, R.id.progress };
 		listAdapter = new NowPlayingAdapter(this, R.layout.row, queue, from, to, hide); 
 		mainListView.setAdapter(listAdapter);
 	}
@@ -230,6 +233,7 @@ public class Queue extends ListActivity
 	       
 	       String title = c2.getString(c2.getColumnIndex("title"));
 		   String show = c2.getString(c2.getColumnIndex("show"));
+		   long position = c2.getLong(c2.getColumnIndex("position"));
 		   
 		   ((TextView)v.findViewById(R.id.rowTextView)).setText(title);
 		   ((TextView)v.findViewById(R.id.rowSubTextView)).setText(show);
@@ -241,6 +245,7 @@ public class Queue extends ListActivity
 		   down.setOnClickListener(moveDown);
 		   ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
 		   remove.setOnClickListener(removeItem);
+		   ProgressBar progress = ((ProgressBar)v.findViewById(R.id.progress));
 		   
 		   for(int i=0; i<Hide.length; i++)
 			   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);

@@ -119,6 +119,7 @@ public class NumberPicker extends LinearLayout
     private void init()
     {
     	this.setOrientation(LinearLayout.VERTICAL);
+    	LinearLayout.LayoutParams ll = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 	    Button up = new Button(getContext());
 	    up.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_up));
 	    up.setOnClickListener(increase);
@@ -156,9 +157,9 @@ public class NumberPicker extends LinearLayout
 	    Button down = new Button(getContext());
     	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_down));
     	down.setOnClickListener(decrease);
-	    addView(up);
-	    addView(edit);
-	    addView(down);
+	    addView(up, ll);
+	    addView(edit, ll);
+	    addView(down, ll);
 	    refresh();
     }
     

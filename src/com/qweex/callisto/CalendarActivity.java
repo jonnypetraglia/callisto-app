@@ -72,12 +72,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//FEATURE: Alarm!
 //FEATURE: Add recurring alarms; i.e., an alarm for every live TechSnap
 //IDEA: Storing the date information in the "PDT" format so it will be correct when you move between timezones without having to refresh
 //CLEAN: popup is incorrect margins for on top
+//FIXME: If there are no tones available, it will FC when you try to create an event
 
 /** Displays upcoming shows for Jupiter Broadcasting. A vertical orientation displays an agenda view,
- * and a horizontal orientation displays a weekly view. */
+ * and a horizontal orientation displays a weekly view.
+ * @author MrQweex*/
 
 public class CalendarActivity extends Activity {
 	private final int REFRESH_MENU_ID = Menu.FIRST;
@@ -204,7 +207,7 @@ public class CalendarActivity extends Activity {
 
 	    // Override back button
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	    	if(pd.isShowing())
+	    	if(pd!=null && pd.isShowing())
 	    	{
 	    		fetchTask.cancel(true);
 	    		pd.cancel();
@@ -552,7 +555,6 @@ public class CalendarActivity extends Activity {
 			NumP.setIncrement(15);
 			NumP.setRange(0, 90);
 			
-			
 			RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
 		    mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);
 		    mRingtoneManager2.setIncludeDrm(true);
@@ -568,27 +570,28 @@ public class CalendarActivity extends Activity {
 			//Set the previous if it exists
 			String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
 			key = Callisto.alarmPrefs.getString(key, "");
-			int min = 0, tone=0;
+			String tone = "";
+			int min = 0;
 			boolean vibrate=false, isAlarm=false;
 			if(key!="")
 			{
 				try {
 				min = Integer.parseInt(key.substring(0, key.indexOf("_")));
-				tone = Integer.parseInt(key.substring(key.indexOf("_")+1,key.lastIndexOf("_")));
+				tone = key.substring(key.indexOf("_")+1,key.lastIndexOf("_"));
 				int i = Integer.parseInt(key.substring(key.lastIndexOf("_")+1));
 				isAlarm=i>10?true:false;
 				vibrate= i%2!=0?true:false;
 				((NumberPicker) vi.findViewById(R.id.minutesBefore)).setValue(min);
 				Cursor c = mRingtoneManager2.getCursor();
 				c.moveToFirst();
-				i=0;
+				i=1;
 				while(c.moveToNext())
 				{
 					int x = c.getInt(RingtoneManager.ID_COLUMN_INDEX);
-					System.out.println(x + "=?" + tone);
-					if(x==tone)
+					System.out.println(x + "==" + tone);
+					if(tone.endsWith(Integer.toString(x)))
 					{
-						((Spinner)vi.findViewById( R.id.spinner1)).setSelection(i);
+						s.setSelection(i);
 						break;
 					}
 					i++;
@@ -596,7 +599,8 @@ public class CalendarActivity extends Activity {
 				((RadioButton) vi.findViewById(R.id.isAlarm)).setChecked(isAlarm);
 				((CheckBox) vi.findViewById(R.id.vibrate)).setChecked(vibrate);
 				} catch(Exception e) {
-					System.out.println("crap");
+					System.out.println("crap" + key);
+					e.printStackTrace();
 				}
 			}
 		    
@@ -625,11 +629,13 @@ public class CalendarActivity extends Activity {
 				    i.putExtra("min", min);
 				    i.putExtra("isAlarm", isAlarm);
 				    i.putExtra("vibrate", vibrate);
-				    i.putExtra("show", key.substring(0, 14));
+				    i.putExtra("show", key.substring(0, key.length()-14));
+				    i.putExtra("key", key);
 				    Toast.makeText(CalendarActivity.this, "Creating event...", Toast.LENGTH_SHORT).show();
 				    PendingIntent pi = PendingIntent.getBroadcast(CalendarActivity.this.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
 				    AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-				    mAlarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3*1000, pi); //DEBUG
+				    //mAlarm.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 3*1000, pi); //DEBUG
+				    mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi);
 				    
 					
 					

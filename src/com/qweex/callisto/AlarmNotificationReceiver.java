@@ -24,6 +24,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,7 +37,6 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
 	public void onReceive(Context context, Intent intent)
 	{
         Bundle extras = intent.getExtras();
-        System.out.println("RECEIVED");
         if (extras != null)
         {
         	String show = extras.getString("show");
@@ -44,6 +44,7 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
             int min = extras.getInt("min");
 			int isAlarm = extras.getInt("isAlarm"); 
 			int vibrate = extras.getInt("vibrate");
+			String key = extras.getString("key");
             
 			Uri notification;
 			try {
@@ -62,12 +63,18 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
             else
             	Callisto.notification_alarm.flags |= Notification.FLAG_AUTO_CANCEL;
             if(vibrate>0)
-            	Callisto.notification_alarm.vibrate = new long[] {0, 200, 100, 200};
+            	Callisto.notification_alarm.vibrate = new long[] {300, 200, 100, 200};
             Callisto.notification_alarm.sound = notification;
     		
-           	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
+            if(min==0)
+            	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is on right now!", contentIntent);
+            else
+            	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
             mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_alarm);
-
+            
+            SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
+            edit.remove(key);
+            edit.commit();
         }
 
 	}
