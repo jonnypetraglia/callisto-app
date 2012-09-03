@@ -129,7 +129,7 @@ public class Callisto extends Activity {
 		/** Shared Drawable resources for updating the player control graphics. */
     public static Drawable playDrawable, pauseDrawable;
     	/** An instance of the PlayerInfo class, to keep track of the info of a track when updating the player controls across the activities. */
-	public static PlayerInfo playerInfo = null;
+	public static PlayerInfo playerInfo;
 		/** Simply the shared resources of the project, for things like strings, colors, drawables, etc. */
 	public static Resources RESOURCES;
 		/** The value of a dip, to be used programatically when updating a view. */
@@ -159,6 +159,7 @@ public class Callisto extends Activity {
 	public static boolean live_isPlaying = false;
 		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
+	protected static boolean is_widget;
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -434,6 +435,11 @@ public class Callisto extends Activity {
     	 */
     	public void update(Context c)
     	{
+    		if(is_widget)
+    		{
+    			is_widget = false;
+    			return;
+    		}
     		Callisto.nextTrack.setContext(c);
     		if(Callisto.mplayer!=null)
     		{
@@ -520,9 +526,12 @@ public class Callisto extends Activity {
 					play.setImageDrawable(Callisto.pauseDrawable);
     	    }
         	
-    		((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
-    		((Activity)c).findViewById(R.id.previous).setEnabled(Callisto.live_player==null);
-    		((Activity)c).findViewById(R.id.next).setEnabled(Callisto.live_player==null);
+        	if(((Activity)c).findViewById(R.id.seek)!=null)
+        		((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
+        	if(((Activity)c).findViewById(R.id.previous)!=null)
+        		((Activity)c).findViewById(R.id.previous).setEnabled(Callisto.live_player==null);
+        	if(((Activity)c).findViewById(R.id.next)!=null)
+        		((Activity)c).findViewById(R.id.next).setEnabled(Callisto.live_player==null);
         	
         	if(timeTimer==null)
         	{
@@ -575,6 +584,65 @@ public class Callisto extends Activity {
 		}
 	};
 	
+	public static void playPause_(Context c, View v)
+	{			
+		System.out.println("aaaaa: " + is_widget);
+		String live_url = PreferenceManager.getDefaultSharedPreferences(c).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+		if(Callisto.live_player!=null)
+		{
+			if(Callisto.live_isPlaying)
+			{
+				Callisto.live_player.pause();
+				if(v!=null)
+					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+			}
+			else
+			{
+				//1. liveInit
+				//2. setOnPreparedListener
+				//3. setDataSource
+				//4. livePrepare
+				try {
+					LiveStream.liveInit();
+					Callisto.live_player.setOnPreparedListener(LiveStream.livePreparedListenerOther);
+					Callisto.live_player.setDataSource(live_url);
+					LiveStream.livePrepare(v.getContext());
+					if(v!=null)
+						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
+				} catch(Exception e){}
+			}
+			Callisto.live_isPlaying = !Callisto.live_isPlaying;
+			return;
+		}
+		if(databaseConnector.queueCount()==0)
+			return;
+		
+		if(Callisto.mplayer==null)
+		{
+			Log.d("*:playPause","PlayPause initiated");
+			Callisto.mplayer = new MediaPlayer();
+			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
+			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
+			Callisto.playTrack(c, 0, true);
+		}
+		else
+		{
+			if(Callisto.playerInfo.isPaused)
+			{
+				Callisto.mplayer.start();
+				if(v!=null)
+					((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
+			}
+			else
+			{
+				Callisto.mplayer.pause();
+				if(v!=null)
+					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+			}
+			Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
+		}
+	}
+	
     
     /** Listener for play/pause button */
 	public static OnClickListener playPause = new OnClickListener() 
@@ -582,56 +650,7 @@ public class Callisto extends Activity {
 		@Override
 		  public void onClick(View v) 
 		  {
-			String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
-			if(Callisto.live_player!=null)
-			{
-				if(Callisto.live_isPlaying)
-				{
-					Callisto.live_player.pause();
-					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
-				}
-				else
-				{
-					//1. liveInit
-					//2. setOnPreparedListener
-					//3. setDataSource
-					//4. livePrepare
-					try {
-						LiveStream.liveInit();
-						Callisto.live_player.setOnPreparedListener(LiveStream.livePreparedListenerOther);
-						Callisto.live_player.setDataSource(live_url);
-						LiveStream.livePrepare(v.getContext());
-						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
-					} catch(Exception e){}
-				}
-				Callisto.live_isPlaying = !Callisto.live_isPlaying;
-				return;
-			}
-			if(databaseConnector.queueCount()==0)
-				return;
-			
-			if(Callisto.mplayer==null)
-			{
-				Log.d("*:playPause","PlayPause initiated");
-				Callisto.mplayer = new MediaPlayer();
-				Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
-				Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-				Callisto.playTrack(v.getContext(), 0, true);
-			}
-			else
-			{
-				if(Callisto.playerInfo.isPaused)
-				{
-					Callisto.mplayer.start();
-					((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
-				}
-				else
-				{
-					Callisto.mplayer.pause();
-					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
-				}
-				Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
-			}
+			Callisto.playPause_(v.getContext(), v);
 		  }
     };
     
@@ -1050,10 +1069,13 @@ public class Callisto extends Activity {
 			Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
 			if(pd!=null)
 				pd.cancel();
-	    	((ImageButton)((Activity)c).findViewById(R.id.playPause)).setImageDrawable(Callisto.pauseDrawable);
+			ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
+			if(ib!=null)
+				ib.setImageDrawable(Callisto.pauseDrawable);
 	    	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
 			Callisto.mplayer.start();
 			Callisto.playerInfo.isPaused = false;
+			System.out.println("12345: " + is_widget);
 			Callisto.playerInfo.update(c);
 			pd=null;
 		}
@@ -1079,6 +1101,11 @@ public class Callisto extends Activity {
 		        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
 		        target.delete();
 			}
+			Cursor c = Callisto.databaseConnector.currentQueue();
+			c.moveToFirst();
+			long id = c.getLong(c.getColumnIndex("_id"));
+			Callisto.databaseConnector.updatePosition(id, 0);
+			
 			Callisto.playTrack(this.c, 1, true);
 		}
     	

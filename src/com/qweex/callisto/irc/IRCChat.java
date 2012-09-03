@@ -18,7 +18,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 package com.qweex.callisto.irc;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -82,7 +81,7 @@ import android.widget.ViewAnimator;
 //FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
 //FEATURE: Save chat to file
 
-/** 
+/** The IRC portion of the app to connect to the JB chatroom.
  * @author MrQweex
  */
 
@@ -95,7 +94,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
-	private String CLR_TEXT,
+	private int CLR_TEXT,
 				   CLR_TOPIC,
 				   CLR_ME,
 				   CLR_JOIN,
@@ -118,8 +117,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private Spanned received;
 	private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
 	private boolean isLandscape;
-	private static HashMap<String, CharSequence> nickColors = new HashMap<String, CharSequence>();
-	private static ArrayList<CharSequence> COLOR_LIST;
+	private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
 	private static List<String> nickList;
 	private static Handler chatHandler = null;
 	private Runnable chatUpdater;
@@ -153,8 +151,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		COLOR_LIST = new ArrayList<CharSequence>(Arrays.asList(Callisto.RESOURCES.getTextArray(R.array.colors)));
-		Collections.shuffle(COLOR_LIST);
 		
 		profileNick = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_nick", null);
 		profilePass = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_pass", null);
@@ -340,7 +336,6 @@ public class IRCChat extends Activity implements IRCEventListener
     	isFocused = true;
     	mentionCount = 0;
     	nickColors.put(profileNick, CLR_MYNICK);
-		COLOR_LIST.remove(CLR_MYNICK);
 		setContentView(R.layout.irc);
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv.setVerticalFadingEdgeEnabled(false);
@@ -377,18 +372,29 @@ public class IRCChat extends Activity implements IRCEventListener
     	SHOW_TIME = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_time", true);
     	
     	//Read colors
-    	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_text", "Black");
-	    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_topic", "DarkGoldenRod");
-	    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_mynick", "SeaGreen");
-	    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_me", "DarkViolet");
-		CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_join", "Blue");
-	    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_nick", "Blue");
-	    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_part", CLR_JOIN);
-	    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_quit", CLR_JOIN);
-	    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_kick", CLR_JOIN);
-		CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_error", "Maroon");
-		CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_mention", "LightCoral");
-		CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_color_pm", "DarkCyan");
+    		IRCChat.nickColors.put("",
+    	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
+    		IRCChat.nickColors.put(" ",
+	    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
+	    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
+    		IRCChat.nickColors.put("   ",
+	    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_me", 0x9400D3));
+    		IRCChat.nickColors.put("    ",
+		CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_join", 0x0000FF));
+    		IRCChat.nickColors.put("     ",
+	    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_nick", CLR_JOIN));
+    		IRCChat.nickColors.put("      ",
+	    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_part", CLR_JOIN));
+    		IRCChat.nickColors.put("       ",
+	    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_quit", CLR_JOIN));
+    		IRCChat.nickColors.put("        ",
+	    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_kick", CLR_JOIN));
+    		IRCChat.nickColors.put("         ",
+		CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_error", 0x800000));
+    		IRCChat.nickColors.put("          ",
+		CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
+    		IRCChat.nickColors.put("           ",
+		CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
     	
 		
 		Intent notificationIntent = new Intent(this, IRCChat.class);
@@ -529,9 +535,14 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatHandler.post(logUpdater);
 				break;
 			case NOTICE:
+				if(e.getRawEventData().contains("Your nickname is now being changed"))
+				{
+					System.out.println("Changing");
+					logout(null);
+					return;
+					//session.changeNick("Callisto-app");
+				}
 				NoticeEvent ne = (NoticeEvent) e;
-				if(session==null)
-					System.out.println("YUP!");
 				if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
 				{
 					received = getReceived("[NICKSERV]", ne.getNoticeMessage(), CLR_TOPIC);
@@ -542,6 +553,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					received = getReceived("[NOTICE]", ne.getNoticeMessage(), CLR_TOPIC);
 					chatHandler.post(logUpdater);
 				}
+				
 				break;
 			
 		//Chat events
@@ -567,14 +579,12 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatHandler.post(chatUpdater);
 				break;
 			case NICK_CHANGE:
-				System.out.println("Butts: " + session.getNick());
 				NickChangeEvent ni = (NickChangeEvent) e;
 				received = getReceived(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, CLR_NICK);
 				chatHandler.post(chatUpdater);
 				break;
 			case PART:
 				PartEvent p = (PartEvent) e;
-				COLOR_LIST.add(nickColors.get(p.getWho()));
 				nickColors.remove(p.getWho());
 				nickList.remove(p.getWho());
 				received = getReceived("PART: " + p.getWho() + " (" + p.getPartMessage() + ")", null, CLR_PART);
@@ -582,7 +592,6 @@ public class IRCChat extends Activity implements IRCEventListener
 				break;
 			case QUIT:
 				QuitEvent q = (QuitEvent) e;
-				COLOR_LIST.add(nickColors.get(q.getNick()));
 				nickColors.remove(q.getNick());
 				nickList.remove(q.getNick());
 				received = getReceived("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, CLR_QUIT);
@@ -780,29 +789,30 @@ public class IRCChat extends Activity implements IRCEventListener
 	 * @param specialColor The name of the color resource for the message, or null if it should be looked up from the color list
 	 * @return
 	 */
-	private Spanned getReceived (String theTitle, String theMessage, String specialColor)
+	private Spanned getReceived (String theTitle, String theMessage, Integer specialColor)
 	{
 		int titleColor = 0xFF000000;
 		int msgColor = 0xFF000000;
 		try {
-		 titleColor+= Callisto.RESOURCES.getColor(
-				Callisto.RESOURCES.getIdentifier(
-				specialColor!=null ? specialColor :	getNickColor(theTitle), "color", "com.qweex.callisto"));
+		 titleColor+= (specialColor!=null ? specialColor :	getNickColor(theTitle));
 		 if(theMessage!=null)
-			 msgColor+= Callisto.RESOURCES.getColor(
-				Callisto.RESOURCES.getIdentifier(theMessage.contains(session.getNick()) ? CLR_MENTION : CLR_TEXT, "color", "com.qweex.callisto"));
+			 msgColor+= specialColor;
 		} catch(NullPointerException e) {
 		}
-		if(theMessage!=null && theMessage.contains(session.getNick()) && !isFocused)
+		if(theMessage!=null && theMessage.contains(session.getNick()))
 		{
-			if(Callisto.notification_chat==null)
-				Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
-			Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
-			mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
-			if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
+			msgColor = 0xFF000000 + CLR_MENTION;
+			if(!isFocused)
 			{
-				mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
-				mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
+				if(Callisto.notification_chat==null)
+					Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
+				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
+				mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+				if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
+				{
+					mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
+					mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
+				}
 			}
 		}
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
@@ -831,14 +841,32 @@ public class IRCChat extends Activity implements IRCEventListener
 	 * @param nickInQ The nick in question
 	 * @return The name of the color resource for that specific nick
 	 */
-	public String getNickColor(String nickInQ)
+	public Integer getNickColor(String nickInQ)
 	{
 		if(!nickColors.containsKey(nickInQ))
+			nickColors.put(nickInQ, getRandomColor());
+		return (Integer) nickColors.get(nickInQ);
+	}
+	
+	public Integer getRandomColor()
+	{
+		int rndm = 0xFFFFFF;
+		do
 		{
-			nickColors.put(nickInQ, COLOR_LIST.get(0));
-			COLOR_LIST.remove(0);
-		}
-		return (String) nickColors.get(nickInQ);
+			rndm = 0 + (int)(Math.random() * ((0xFFFFFF - 0) + 1));
+			System.out.println("RNDM: " + Integer.toHexString(rndm));
+		} while(!isAcceptable(rndm) && nickColors.containsValue(rndm));
+		return rndm;
+	}
+	
+	private boolean isAcceptable(int rgb)
+	{
+		int red = (rgb >> 16) & 0x000000FF;
+		int green = (rgb >>8 ) & 0x000000FF;
+		int blue = (rgb) & 0x000000FF;
+
+		int ans = ((red*299)+(green*587)+(blue*114))/1000;
+		return (ans >= 128) ? true : false;
 	}
 
 	/** Runnable to send a message in the UI thread. */
@@ -849,12 +877,8 @@ public class IRCChat extends Activity implements IRCEventListener
 			if(newMessage=="")
 				return;
 			SpannableString st = new SpannableString(session.getNick());
-			int colorBro = 0xFF000000 +  
-					Callisto.RESOURCES.getColor(
-					Callisto.RESOURCES.getIdentifier(CLR_ME, "color", "com.qweex.callisto"));
-			int colorBro2 = 0xFF000000 +  
-					Callisto.RESOURCES.getColor(
-					Callisto.RESOURCES.getIdentifier(CLR_TEXT, "color", "com.qweex.callisto"));
+			int colorBro = 0xFF000000 + CLR_ME;
+			int colorBro2 = 0xFF000000 + CLR_TEXT;
 			
 			SpannableString st2 = new SpannableString(newMessage);
 			try {

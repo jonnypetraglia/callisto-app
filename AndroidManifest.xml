@@ -54,6 +54,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <activity android:name="QuickPrefsActivity"></activity>
         <activity android:name=".LiveStream"></activity>
         <activity android:name="Donate"></activity>
+        <activity android:name=".WidgetHandler" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
 
     <service android:name="com.android.vending.billing.BillingService" />
 
@@ -77,6 +78,15 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
       </intent-filter>
     </receiver>
         
+<receiver android:name=".CallistoWidget" android:label="8-bit cloud widget 1">
+  <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+  </intent-filter>
+  <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
+</receiver>
+
+    
+    
     </application>
 
 </manifest>

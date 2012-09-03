@@ -37,7 +37,7 @@ import android.webkit.WebView;
 //This activity is for displaying a form through which the user can contact Jupiter Broadcasting.
 
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
-//	    But it took forever and it required figuring out how to do a POST, plus, if the 
+//	    But it took forever and it required figuring out how to do a POST, plus, if the form ever changed it would probably break.
 //FEATURE: Someone to make this look pretty/native. Maybe chzbacon?
 
 /** Form to contact the JB team directly from inside Callisto.
@@ -45,7 +45,8 @@ import android.webkit.WebView;
  */
 public class ContactForm extends Activity
 {
-	private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
+	//private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
+	private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/";
 	
 	/** Called when the activity is first created. Retrieves the wufoo form and inserts it into the view.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -60,6 +61,8 @@ public class ContactForm extends Activity
 		setTitle(R.string.contact);
 		
 		WebView wv = (WebView) findViewById(R.id.form);
+		wv.getSettings().setJavaScriptEnabled(true);
+		
 	    HttpClient httpClient = new DefaultHttpClient();
 	    HttpContext localContext = new BasicHttpContext();
 	    HttpGet httpGet = new HttpGet(formURL);
@@ -77,7 +80,6 @@ public class ContactForm extends Activity
              input.read(buffer);  
              input.close();  
   
-             // byte buffer into a string  
              result = new String(buffer);
              result = "<style type='text/css'>\n" + result + "\n</style>\n"; 
 	              
@@ -98,10 +100,28 @@ public class ContactForm extends Activity
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(getWindowManager().getDefaultDisplay().getWidth());
 		result = result.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";");
 		result = result.replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";");
-		wv.loadData(result, "text/html", "utf-8");
+		//result = result.replaceAll("=\"/", "=\"http://wufoo.com/");
+		
+		if(formURL.contains("qweex"))
+		{
+			String str1 = "<a href=\"https://master.wufoo.com/forms/m7p0x3/def/field1=qweex.wufoo.com/forms/contact-form/\"";
+			String str2 = "Report Abuse</a>";
+			String remove = result.substring(result.indexOf(str1),
+					result.indexOf(str2)+str2.length());
+			result = result.replace(remove, "");
+		}
+		
+		//Remove Wufoo's CSS
+		String str1 = "<!-- CSS -->";
+		String str2 = "rel=\"stylesheet\">";
+		String remove = result.substring(result.indexOf(str1),
+				result.indexOf(str2)+str2.length());
+		result = result.replace(remove, "");
+		
+		
+		wv.loadDataWithBaseURL("http://wufoo.com", result, "text/html", "utf-8", "about:blank");
 	}
 	
 	/** Stops the activity from being re-created from  */

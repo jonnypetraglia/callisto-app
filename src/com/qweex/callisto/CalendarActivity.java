@@ -856,9 +856,9 @@ public class CalendarActivity extends Activity {
 		        if(thisWeek && i==0)
 		        {
 		        	int showTime = eventDate.getHours()*60 + eventDate.getMinutes();
-			        int currentTime = today.getHours()*60 + today.getMinutes() - 60; //Subtract 60, so people can catch a show that's already in progress
-			        timeBetween = showTime - currentTime;
-			        if(timeBetween < 0)
+			        int currentTime = today.getHours()*60 + today.getMinutes();
+			        timeBetween = showTime - currentTime; //Add 60, so people can catch a show that's already in progress
+			        if(timeBetween+60 < 0)
 			        {
 			        	c.moveToNext();
 			        	continue;
