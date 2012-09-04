@@ -91,7 +91,6 @@ import android.widget.Toast;
 
 //CLEAN: Rename IDs in layout XML
 //CLEAN: Strings.xml
-//FEATURE: Widget
 
 /** This is the main activity/class for the app.
     It contains the main screen, and also some static elements
@@ -181,7 +180,7 @@ public class Callisto extends Activity {
 		alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
 		
 		setContentView(R.layout.main);
-		findViewById(R.id.playPause).setOnClickListener(Callisto.playPause);
+		findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
 		findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
 		findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
 		findViewById(R.id.next).setOnClickListener(Callisto.next);
@@ -215,7 +214,10 @@ public class Callisto extends Activity {
 		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_media_pause);
 		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
 		Callisto.databaseConnector.open();
-		Callisto.playerInfo = new PlayerInfo(Callisto.this);
+		if(Callisto.playerInfo==null)
+			Callisto.playerInfo = new PlayerInfo(Callisto.this);
+		else
+			Callisto.playerInfo.update(Callisto.this);
 		
 		
 		nextTrack = new oOnCompletionListener();
@@ -279,7 +281,7 @@ public class Callisto extends Activity {
 		layout.addView(empty, mParams);
 		layout.addView(controls, cParams);
 		((Activity)c).setContentView(layout);
-		((Activity)c).findViewById(R.id.playPause).setOnClickListener(Callisto.playPause);
+		((Activity)c).findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
 		((Activity)c).findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
 		((Activity)c).findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
 		((Activity)c).findViewById(R.id.next).setOnClickListener(Callisto.next);
@@ -319,9 +321,8 @@ public class Callisto extends Activity {
 	    	ImageButton x = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
 	    	if(x!=null)
 	    		x.setImageDrawable(Callisto.pauseDrawable);
-	    	if(Callisto.mplayer!=null)
-	    		Callisto.mplayer.stop();
 	    	mNotificationManager.cancel(NOTIFICATION_ID);
+	    	Callisto.stop(c);
     		return;
     	}
     	
@@ -409,6 +410,8 @@ public class Callisto extends Activity {
 			Log.e("*playTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
 			e.printStackTrace();
 		}
+		
+		WidgetHandler.updateAllWidgets(c);
     }
     
     
@@ -546,6 +549,13 @@ public class Callisto extends Activity {
         	}
     	}
     	
+    	/** Clears all internal values to their respective blank values (i.e. null or 0). */
+    	public void clear()
+    	{
+    		title = show = date = null;
+    		position = length = 0;
+    		isPaused = true;
+    	}
     }
     
     /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
@@ -584,9 +594,8 @@ public class Callisto extends Activity {
 		}
 	};
 	
-	public static void playPause_(Context c, View v)
+	public static void playPause(Context c, View v)
 	{			
-		System.out.println("aaaaa: " + is_widget);
 		String live_url = PreferenceManager.getDefaultSharedPreferences(c).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
 		if(Callisto.live_player!=null)
 		{
@@ -641,16 +650,17 @@ public class Callisto extends Activity {
 			}
 			Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
 		}
+		WidgetHandler.updateAllWidgets(c);
 	}
 	
     
-    /** Listener for play/pause button */
-	public static OnClickListener playPause = new OnClickListener() 
+    /** Listener for play/pause button; calls playPause(), the function */
+	public static OnClickListener playPauseListener = new OnClickListener() 
     {
 		@Override
 		  public void onClick(View v) 
 		  {
-			Callisto.playPause_(v.getContext(), v);
+			Callisto.playPause(v.getContext(), v);
 		  }
     };
     
@@ -1036,20 +1046,29 @@ public class Callisto extends Activity {
         	startActivity(new Intent(this, QuickPrefsActivity.class));
         	return true;
         case STOP_ID:
-        	if(Callisto.mplayer!=null) {
-        		Callisto.mplayer.reset();
-        		Callisto.mplayer = null;
-        	}
-        	if(Callisto.live_player!=null) {
-        		Callisto.live_player.reset();
-        		Callisto.live_player = null;
-        	}
-        	playerInfo.title = null;
-        	playerInfo.update(this);
-        	mNotificationManager.cancel(NOTIFICATION_ID);
+        	stop(this);
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+    
+    public static void stop(Context c)
+    {
+    	if(Callisto.playerInfo!=null)
+    		Callisto.playerInfo.clear();
+    	if(Callisto.mplayer!=null) {
+    		Callisto.mplayer.reset();
+    		Callisto.mplayer = null;
+    	}
+    	if(Callisto.live_player!=null) {
+    		Callisto.live_player.reset();
+    		Callisto.live_player = null;
+    	}
+    	playerInfo.title = null;
+    	playerInfo.update(c);
+    	mNotificationManager.cancel(NOTIFICATION_ID);
+    	WidgetHandler.updateAllWidgets(c);
     }
     
     public class oOnPreparedListener implements OnPreparedListener
@@ -1064,7 +1083,7 @@ public class Callisto extends Activity {
 
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
-			Log.i("*:playTrack", "Prepared, seeking to " + Callisto.playerInfo.position);
+			Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
 			Callisto.mplayer.seekTo(Callisto.playerInfo.position);
 			Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
 			if(pd!=null)
@@ -1075,7 +1094,6 @@ public class Callisto extends Activity {
 	    	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
 			Callisto.mplayer.start();
 			Callisto.playerInfo.isPaused = false;
-			System.out.println("12345: " + is_widget);
 			Callisto.playerInfo.update(c);
 			pd=null;
 		}
@@ -1093,7 +1111,7 @@ public class Callisto extends Activity {
     	
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			Log.i("*:player:onCompletion", "Playing next track");
+			Log.i("*:mplayer:onCompletion", "Playing next track");
 			boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
 			if(del)
 			{
@@ -1103,7 +1121,7 @@ public class Callisto extends Activity {
 			}
 			Cursor c = Callisto.databaseConnector.currentQueue();
 			c.moveToFirst();
-			long id = c.getLong(c.getColumnIndex("_id"));
+			long id = c.getLong(c.getColumnIndex("identity"));
 			Callisto.databaseConnector.updatePosition(id, 0);
 			
 			Callisto.playTrack(this.c, 1, true);

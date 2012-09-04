@@ -37,8 +37,7 @@ public class WidgetHandler extends Activity {
 		super.onCreate(savedInstanceState);
 		finish();
 		Callisto.is_widget = true;
-		Callisto.playPause_(this, null);
-		WidgetHandler.updateAllWidgets(this);
+		Callisto.playPause(this, null);
 	}
 	
 	/** Produces a call to update all the widgets. 

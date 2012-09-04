@@ -48,14 +48,13 @@ public class CallistoWidget extends AppWidgetProvider {
       views.setOnClickPendingIntent(R.id.widget, pi);
       
       Intent intent = new Intent(context, WidgetHandler.class);
-      intent.putExtra("is_widget", true);
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
       PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
       
       views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
       
       // Updates the text and button
-      if(Callisto.playerInfo!=null)
+      if(Callisto.playerInfo!=null && Callisto.playerInfo.title!=null)
       {
 	      views.setTextViewText(R.id.widgetTitle, Callisto.playerInfo.title);
 	      views.setTextViewText(R.id.widgetShow, Callisto.playerInfo.show);
@@ -63,6 +62,11 @@ public class CallistoWidget extends AppWidgetProvider {
 	    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_play_lg);
 	      else
 	    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_pause_lg);
+      }
+      else
+      {
+    	  views.setTextViewText(R.id.widgetTitle, "Callisto");
+	      views.setTextViewText(R.id.widgetShow, "(Press to enqueue episodes)");
       }
       appWidgetManager.updateAppWidget(appWidgetId, views);
     }

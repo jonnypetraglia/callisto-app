@@ -39,14 +39,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="Callisto is kewl"
+            android:text="Callisto"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/widgetShow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="amiright?"
+            android:text="(Press to enqueue episodes)"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
