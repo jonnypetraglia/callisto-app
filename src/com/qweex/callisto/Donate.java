@@ -129,7 +129,7 @@ public class Donate extends ListActivity implements OnClickListener
 	@Override
 	public void onClick(View v)
 	{
-        if (!mBillingService.requestPurchase(mSku, Consts.ITEM_TYPE_SUBSCRIPTION, mPayloadContents))
+        if (!mBillingService.requestPurchase(mSku, Consts.ITEM_TYPE_INAPP, mPayloadContents))
         	Toast.makeText(v.getContext(), "Sorry, but it looks like your device doesn't support Google's Wallet integration! :(", Toast.LENGTH_SHORT).show();
 	}
 
@@ -319,7 +319,7 @@ public class Donate extends ListActivity implements OnClickListener
 	private enum Managed { MANAGED, UNMANAGED, SUBSCRIPTION }
 	
     private static final CatalogEntry[] CATALOG = new CatalogEntry[] {
-        new CatalogEntry("one_dollar", "$1.00", Managed.UNMANAGED),
+        new CatalogEntry("dollar", "$1.00", Managed.UNMANAGED),
         new CatalogEntry("three_dollar", "$3.00", Managed.UNMANAGED),
         new CatalogEntry("five_dollar", "$5.00", Managed.UNMANAGED),
         new CatalogEntry("ten_dollar", "$10.00", Managed.UNMANAGED),
