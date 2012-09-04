@@ -868,33 +868,52 @@ public class Callisto extends Activity {
   		  }
   		  eventType = xpp.next();
   		  
-  		  //Download the image
-  		  while(!("title".equals(xpp.getName())) && !("image".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  		  String imgurl = null, imgurl2 = null;
+	  //Download the image
+  		  while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG) && !("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
   		  {
+  			  //Handles if there is an <image> tag
+  			  if("image".equals(xpp.getName()))
+  			  {
+  				if(xpp.getAttributeCount()>0)
+  				{
+  					imgurl = xpp.getAttributeValue(null, "href");
+  					eventType = xpp.next();
+  					eventType = xpp.next();
+  				}
+  				else
+  				{
+  					eventType = xpp.next();
+	  				while(!(("image".equals(xpp.getName()) || ("url".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))))
+	  					eventType = xpp.next();
+	  				if(!("image".equals(xpp.getName())))
+	                {
+	                      eventType = xpp.next();
+	                      imgurl = xpp.getText();
+	                      while(!("image".equals(xpp.getName())))
+	                    	  eventType = xpp.next();
+	                }
+  				}
+  			  }
+
 			  eventType = xpp.next();
 			  if(eventType==XmlPullParser.END_DOCUMENT)
 				  throw(new UnfinishedParseException("Thumbnail"));
 		  }
-  		  if(!("title".equals(xpp.getName())))
-		  {
-  			  eventType = xpp.next();
-  	  		  while(!(("image".equals(xpp.getName()) || ("url".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))))
-  	  		  {
-  	  			eventType = xpp.next();
-  	  		  }
-  	  		  if(!("image".equals(xpp.getName())))
-  	  		  {
-  	  	  		eventType = xpp.next();
-  	  	  		String imgurl = xpp.getText();
-	  	  		  try {
-	  	  			  if(imgurl!=null)
-	  	  				  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-	  	  		  } catch(Exception e) {}
-	  	  		  Log.v("*:updateShow", "Parser has downloaded image");
-	  	  		  while(!("image".equals(xpp.getName())))
-	  	  			eventType = xpp.next();
-  	  		  }
-		  }
+  		  //Handles if no <image> tag was found, falls back to <media:thumbnail>
+  		  if(("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+  			  imgurl2 = xpp.getAttributeValue(null, xpp.getAttributeName(0));
+  		  
+  		  if(imgurl2!=null)
+  			  imgurl = imgurl2;
+  		  
+  		  try {
+  			  if(imgurl!=null)
+  				  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+  			  Log.v("*:updateShow", "Parser has downloaded image for " + AllShows.SHOW_LIST[currentShow]);
+  		  } catch(Exception e) {
+  			Log.v("*:updateShow", "Failed to download image");
+  		  }
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)

@@ -78,7 +78,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
       </intent-filter>
     </receiver>
         
-<receiver android:name=".CallistoWidget" android:label="8-bit cloud widget 1">
+<receiver android:name=".CallistoWidget" android:label="Callisto">
   <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
   </intent-filter>
