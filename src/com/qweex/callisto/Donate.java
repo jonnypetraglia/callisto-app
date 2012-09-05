@@ -17,7 +17,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
-import com.android.vending.billing.BillingService;
+import java.math.BigDecimal;
+
+/*import com.android.vending.billing.BillingService;
 import com.android.vending.billing.Consts;
 import com.android.vending.billing.Consts.PurchaseState;
 import com.android.vending.billing.Consts.ResponseCode;
@@ -26,27 +28,33 @@ import com.android.vending.billing.PurchaseObserver;
 import com.android.vending.billing.BillingService.RequestPurchase;
 import com.android.vending.billing.BillingService.RestoreTransactions;
 import com.android.vending.billing.ResponseHandler;
+*/
+import com.paypal.android.MEP.CheckoutButton;
+import com.paypal.android.MEP.PayPal;
+import com.paypal.android.MEP.PayPalPayment;
+import com.paypal.android.simpledemo.ResultDelegate;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+//import android.widget.Button;
 
 //FEATURE: Use the developer payload to write a note to Chris
 
@@ -54,16 +62,60 @@ import android.widget.LinearLayout.LayoutParams;
  * @author MrQweex
  */
 
-public class Donate extends ListActivity implements OnClickListener
+public class Donate extends ListActivity
 {
 
 	private ListView itemsList;
 	private Resources RESOURCES;
-	private Button GiveChrisSomeHardEarnedMoney;
+	private CheckoutButton GiveChrisSomeHardEarnedMoney; //Button for billing
 	private CatalogAdapter mCatalogAdapter;
 	private Handler mHandler;
-	private DungeonsPurchaseObserver mDungeonsPurchaseObserver;
 	public final String DONATION_APP_ID = "com.qweex.donation";
+	LinearLayout ll;
+	//Contains the SKU for Google Wallet or amount for Paypal
+	private static String donationChoice;
+	
+	
+	
+	
+	
+/*-------Paypal--------*/
+	private String memo = "";
+	private String IpnUrl = "http://www.exampleapp.com/ipn";
+	private String paymentID = "8873482296";
+	//FIXME: wat do
+	private final String paypalEmail = "tophfisher@gmail.com";
+	
+	
+	// The PayPal server to be used - can also be ENV_NONE and ENV_LIVE
+	private static final int server = PayPal.ENV_NONE;
+	// The ID of your application that you received from PayPal
+	private static final String appID = "APP-80W284485P519543T";
+	// This is passed in for the startActivityForResult() android function, the value used is up to you
+	private static final int request = 1;
+	protected static final int INITIALIZE_SUCCESS = 0;
+	protected static final int INITIALIZE_FAILURE = 1;
+	// This handler will allow us to properly update the UI. You cannot touch Views from a non-UI thread.
+	Handler hRefresh = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+		    	case INITIALIZE_SUCCESS:
+		    		PayPal pp = PayPal.getInstance();
+		    		// Get the CheckoutButton. There are five different sizes. The text on the button can either be of type TEXT_PAY or TEXT_DONATE.
+		    		GiveChrisSomeHardEarnedMoney = pp.getCheckoutButton(Donate.this, PayPal.BUTTON_194x37, CheckoutButton.TEXT_DONATE);
+		    		GiveChrisSomeHardEarnedMoney.setOnClickListener(clickPaypal);
+		    		ll.addView(GiveChrisSomeHardEarnedMoney);
+		            break;
+		    	case INITIALIZE_FAILURE:
+		    		finish();
+		    		break;
+			}
+		}
+	};
+/*------End----------*/
+	
+	
 	
 	/** Called when the activity is first created. Sets up the view and whatnot.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -78,12 +130,6 @@ public class Donate extends ListActivity implements OnClickListener
 		else
 			RESOURCES = getResources();
 		
-		mBillingService = new BillingService();
-        mBillingService.setContext(this);
-        mHandler = new Handler();
-        mDungeonsPurchaseObserver = new DungeonsPurchaseObserver(mHandler);
-        ResponseHandler.register(mDungeonsPurchaseObserver);
-		
 		//Prepare the listview's appearance
 		itemsList = getListView();
 		itemsList.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
@@ -94,7 +140,7 @@ public class Donate extends ListActivity implements OnClickListener
 		
 		
 		//Prepare the message & button's appearance
-		LinearLayout ll = new LinearLayout(this);
+		ll = new LinearLayout(this);
 		ll.setOrientation(LinearLayout.VERTICAL);
 		TextView msg = new TextView(this);
 		msg.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
@@ -106,11 +152,36 @@ public class Donate extends ListActivity implements OnClickListener
 								 + "."));
 		msg.setMovementMethod(LinkMovementMethod.getInstance());
 		msg.setPadding(30, 10, 30, 10);
-		GiveChrisSomeHardEarnedMoney = new Button(this);
-		GiveChrisSomeHardEarnedMoney.setText("Donate!");
-		GiveChrisSomeHardEarnedMoney.setOnClickListener(this);
+		
 		ll.addView(msg);
-		ll.addView(GiveChrisSomeHardEarnedMoney);
+		
+		/*------Paypal------*/
+		Thread libraryInitializationThread = new Thread() {
+			public void run() {
+				//ProgressDialog pd = ProgressDialog.show(Donate.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+				//pd.show();
+				initLibrary();
+				//pd.dismiss();
+				
+				// The library is initialized so let's create our CheckoutButton and update the UI.
+				if (PayPal.getInstance().isLibraryInitialized()) {
+					hRefresh.sendEmptyMessage(INITIALIZE_SUCCESS);
+				}
+				else {
+					hRefresh.sendEmptyMessage(INITIALIZE_FAILURE);
+				}
+			}
+		};
+		libraryInitializationThread.start();
+		
+		/*------Billing------*/
+		//billingInit();
+		//GiveChrisSomeHardEarnedMoney = new Button(this);
+		//GiveChrisSomeHardEarnedMoney.setText("Donate");
+		//ll.addView(GiveChrisSomeHardEarnedMoney);
+		/*-------------------*/
+		
+		
 		
 		itemsList.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
 		itemsList.setCacheColorHint(RESOURCES.getColor(R.color.backClr));
@@ -123,16 +194,9 @@ public class Donate extends ListActivity implements OnClickListener
 		mCatalogAdapter = new CatalogAdapter(this, CATALOG);
 		itemsList.setAdapter(mCatalogAdapter);
 		itemsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		
 	}
 	
-	/** Called when the user presses the "Donate!" button */
-	@Override
-	public void onClick(View v)
-	{
-        if (!mBillingService.requestPurchase(mSku, Consts.ITEM_TYPE_INAPP, mPayloadContents))
-        	Toast.makeText(v.getContext(), "Sorry, but it looks like your device doesn't support Google's Wallet integration! :(", Toast.LENGTH_SHORT).show();
-	}
-
 	
 	   /** An adapter to update the donation options to the listview */
 	   private static class CatalogAdapter extends ArrayAdapter<String> {
@@ -179,7 +243,8 @@ public class Donate extends ListActivity implements OnClickListener
 								lastChecked.setChecked(false);
 							((RadioButton)newRadio).setChecked(true);
 							lastChecked = (RadioButton) newRadio;
-							mSku = (String) (((LinearLayout)newRadio.getParent()).findViewById(NAME_ID)).getContentDescription(); 
+							//donationChoice = (String) (((LinearLayout)newRadio.getParent()).findViewById(NAME_ID)).getContentDescription(); 
+							donationChoice = ((String) ((TextView)(((LinearLayout)newRadio.getParent()).findViewById(NAME_ID))).getText()).substring(1);
 						}
 	            	});
 	            	((LinearLayout) v).setPadding(50, 0, 50, 0);
@@ -194,7 +259,8 @@ public class Donate extends ListActivity implements OnClickListener
 	            name.setContentDescription(mCatalog[pos].sku);
 	            if(lastChecked==null && pos==0)
 	            {
-	            	mSku = mCatalog[pos].sku; 
+	            	//donationChoice = mCatalog[pos].sku; 
+	            	donationChoice = mCatalog[pos].name.substring(1);
 	            	select.setChecked(true);
 	            	lastChecked = select;
 	            }
@@ -203,40 +269,160 @@ public class Donate extends ListActivity implements OnClickListener
 	            return v;
 	    }
    }
+	   
+	   private static final CatalogEntry[] CATALOG = new CatalogEntry[] {
+	        new CatalogEntry("dollar", "$1.00"),
+	        new CatalogEntry("three_dollar", "$3.00"),
+	        new CatalogEntry("five_dollar", "$5.00"),
+	        new CatalogEntry("ten_dollar", "$10.00"),
+	        new CatalogEntry("twenty_dollar", "$20.00")
+	    };
+	   
+	private static class CatalogEntry {
+	    public String sku;
+	    public String name;
+	
+	    public CatalogEntry(String sku, String name) {
+	        this.sku = sku;
+	        this.name = name;
+	    }
+	}
+
+/*---------------------This is for Paypal----------------*/
+	
+	private void initLibrary() {
+		
+		PayPal pp = PayPal.getInstance();
+		// If the library is already initialized, then we don't need to initialize it again.
+		if(pp == null) {
+			// This is the main initialization call that takes in your Context, the Application ID, and the server you would like to connect to.
+			pp = PayPal.initWithAppID(this, appID, server);
+   			
+			// -- These are required settings.
+        	pp.setLanguage("en_US"); // Sets the language for the library.
+        	// --
+        	
+        	// -- These are a few of the optional settings.
+        	// Sets the fees payer. If there are fees for the transaction, this person will pay for them. Possible values are FEEPAYER_SENDER,
+        	// FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and FEEPAYER_SECONDARYONLY.
+        	pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER); 
+        	// Set to true if the transaction will require shipping.
+        	pp.setShippingEnabled(false);
+        	// Dynamic Amount Calculation allows you to set tax and shipping amounts based on the user's shipping address. Shipping must be
+        	// enabled for Dynamic Amount Calculation. This also requires you to create a class that implements PaymentAdjuster and Serializable.
+        	pp.setDynamicAmountCalculationEnabled(false);
+        	// --
+		}
+	}
+	
+	OnClickListener clickPaypal = new OnClickListener()
+    {
+		public void onClick(View v) {
+			
+			/**
+			 * For each call to checkout() and preapprove(), we pass in a ResultDelegate. If you want your application
+			 * to be notified as soon as a payment is completed, then you need to create a delegate for your application.
+			 * The delegate will need to implement PayPalResultDelegate and Serializable. See our ResultDelegate for
+			 * more details.
+			 */		
+			System.out.println("Butts!");
+			
+				// Use our helper function to create the simple payment.
+				PayPalPayment payment = createPayment();
+				// Use checkout to create our Intent.
+				Intent checkoutIntent = PayPal.getInstance().checkout(payment, Donate.this, new ResultDelegate());
+				// Use the android's startActivityForResult() and pass in our Intent. This will start the library.
+		    	startActivityForResult(checkoutIntent, request);
+		}
+    };
+	
+    
+	private PayPalPayment createPayment() {
+		// Create a basic PayPalPayment.
+		PayPalPayment payment = new PayPalPayment();
+		// Sets the currency type for this payment.
+    	payment.setCurrencyType("USD");
+    	// Sets the recipient for the payment. This can also be a phone number.
+    	payment.setRecipient(paypalEmail);
+    	// Sets the amount of the payment, not including tax and shipping amounts.
+    	payment.setSubtotal(new BigDecimal(donationChoice));
+    	// Sets the payment type. This can be PAYMENT_TYPE_GOODS, PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE.
+    	payment.setPaymentType(PayPal.PAYMENT_TYPE_NONE);
+    	
+    	// Sets the merchant name. This is the name of your Application or Company.
+    	payment.setMerchantName("Jupiter Broadcasting");
+    	// Sets the Custom ID. This is any ID that you would like to have associated with the payment.
+    	payment.setCustomID(paymentID);
+    	// Sets the Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
+    	payment.setIpnUrl(IpnUrl);
+    	// Sets the memo. This memo will be part of the notification sent by PayPal to the necessary parties.
+    	payment.setMemo(memo + "\n-Sent from Callisto");
+    	
+    	return payment;
+	}
+    
+	
+/*---------------------This is for the Google Wallet API----------------*/
+	
+	/*
+	public void billingInit(Context c)
+	{
+		mBillingService = new BillingService();
+        mBillingService.setContext(c);
+        mHandler = new Handler();
+        mDungeonsPurchaseObserver = new DungeonsPurchaseObserver(mHandler);
+        ResponseHandler.register(mDungeonsPurchaseObserver);
+	}
+	*/
 	
 	
-	
-	
+	/*
+	OnClickListener clickBilling = new OnClickListener()
+    {
+    	@Override
+    	public void onClick(View v)
+    	{
+	        if (!mBillingService.requestPurchase(mSku, Consts.ITEM_TYPE_INAPP, mPayloadContents))
+	        	Toast.makeText(v.getContext(), "Sorry, but it looks like your device doesn't support Google's Wallet integration! :(", Toast.LENGTH_SHORT).show();
+		}
+	};
+	*/
 	
 	//Everything below this  line is pulled from the Android Dev example
 	/**********************************/
     /** Called when this activity becomes visible. */
+	   /*
     @Override
     protected void onStart() {
         super.onStart();
         ResponseHandler.register(mDungeonsPurchaseObserver);
     }
+    */
 
     /** Called when this activity is no longer visible. */
+	   /*
     @Override
     protected void onStop() {
         super.onStop();
         ResponseHandler.unregister(mDungeonsPurchaseObserver);
     }
+    */
 
     /** Called when this activity is done. */
+	   /*
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //mPurchaseDatabase.close();
         mBillingService.unbind();
     }
+    */
 	   
-    
+    /*
     private class DungeonsPurchaseObserver extends PurchaseObserver
     {
         public DungeonsPurchaseObserver(Handler handler) {
-            super(Donate.this, handler);
+            super(Donate_2.this, handler);
         }
 
         
@@ -248,7 +434,7 @@ public class Donate extends ListActivity implements OnClickListener
                     restoreDatabase();
                     GiveChrisSomeHardEarnedMoney.setEnabled(true);
                 } else {
-                	Toast.makeText(Donate.this, "Sorry, but it looks like your device doesn't support Google's Wallet integration! :(", Toast.LENGTH_SHORT).show();
+                	Toast.makeText(Donate_2.this, "Sorry, but it looks like your device doesn't support Google's Wallet integration! :(", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -302,44 +488,22 @@ public class Donate extends ListActivity implements OnClickListener
                 }
             }
         }
-        //*/
     }
+	*/   
 	   
-	   
-	   
+	/*
     public static final String DB_INITIALIZED = "db_initialized";
     private String mItemName;
-    private static String mSku;
+    
     private String mPayloadContents = null;
-    //private CatalogAdapter mCatalogAdapter;
 	
 	private BillingService mBillingService;
 	private PurchaseDatabase mPurchaseDatabase;
-	
 	private enum Managed { MANAGED, UNMANAGED, SUBSCRIPTION }
+	private DungeonsPurchaseObserver mDungeonsPurchaseObserver;
 	
-    private static final CatalogEntry[] CATALOG = new CatalogEntry[] {
-        new CatalogEntry("dollar", "$1.00", Managed.UNMANAGED),
-        new CatalogEntry("three_dollar", "$3.00", Managed.UNMANAGED),
-        new CatalogEntry("five_dollar", "$5.00", Managed.UNMANAGED),
-        new CatalogEntry("ten_dollar", "$10.00", Managed.UNMANAGED),
-        new CatalogEntry("twenty_dollar", "$20.00", Managed.UNMANAGED)
-    };
-    
-    private static class CatalogEntry {
-        public String sku;
-        public String name;
-        public Managed managed;
-
-        public CatalogEntry(String sku, String name, Managed managed) {
-            this.sku = sku;
-            this.name = name;
-            this.managed = managed;
-        }
-    }
-
-    
-	
+    */
+	/*
     private void restoreDatabase() {
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         boolean initialized = prefs.getBoolean(DB_INITIALIZED, false);
@@ -348,4 +512,5 @@ public class Donate extends ListActivity implements OnClickListener
             //Toast.makeText(this, R.string.restoring_transactions, Toast.LENGTH_LONG).show();
         }
     }
+    */
 }

@@ -56,6 +56,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <activity android:name=".LiveStream"></activity>
         <activity android:name="Donate"></activity>
         <activity android:name=".WidgetHandler" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+		<activity android:name="com.paypal.android.MEP.PayPalActivity"
+				  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+				  android:configChanges="keyboardHidden|orientation"/>
+        
 
     <service android:name="com.android.vending.billing.BillingService" />
 
