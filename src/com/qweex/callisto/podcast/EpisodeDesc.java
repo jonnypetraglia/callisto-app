@@ -94,6 +94,7 @@ public class EpisodeDesc extends Activity
     {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
 		
 		Log.v("EpisodeDesc:OnCreate", "Launching Activity");
 		View info = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.episode, null, false);
@@ -156,7 +157,9 @@ public class EpisodeDesc extends Activity
 		file_location = new File(file_location, date + "__" + title + getExtension(media_link));
 		
 		streamButton = ((Button)this.findViewById(R.id.stream));
+		streamButton.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
 		downloadButton = ((Button)this.findViewById(R.id.download));
+		downloadButton.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
 		
 		if(isLandscape)
 		{

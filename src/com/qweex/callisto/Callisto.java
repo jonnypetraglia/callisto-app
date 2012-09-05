@@ -167,7 +167,7 @@ public class Callisto extends Activity {
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
 		RESOURCES = getResources();
 		DP = RESOURCES.getDisplayMetrics().density;
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

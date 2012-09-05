@@ -108,6 +108,7 @@ public class ShowList extends Activity
 		{
 			refresh = new Button(this);
 			refresh.setText(Callisto.RESOURCES.getString(R.string.refresh));
+			refresh.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
 			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			refresh.setLayoutParams(p);
 			((LinearLayout)loading.getParent()).setGravity(Gravity.CENTER_HORIZONTAL);
