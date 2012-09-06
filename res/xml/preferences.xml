@@ -51,30 +51,32 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display" android:defaultValue="500"/>
 	        
 	        <PreferenceCategory android:title="Colors">
+	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true"/>
+	            
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-				    android:key="irc_color_text" android:title="Text Color" android:defaultValue="#000000"  alphaSlider="false"/>
+				    android:key="irc_color_text" android:title="Text Color" android:defaultValue="#000000"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-				    android:key="irc_color_topic" android:title="Topic Color" android:defaultValue="#B8860B"  alphaSlider="false"/>
+				    android:key="irc_color_topic" android:title="Topic Color" android:defaultValue="#B8860B"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_mynick" android:title="Your Nick Color" android:defaultValue="#2E8B57"  alphaSlider="false"/>
+		        	android:key="irc_color_mynick" android:title="Your Nick Color" android:defaultValue="#2E8B57"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_me" android:title="/me Color" android:defaultValue="#9400D3"  alphaSlider="false"/>
+		        	android:key="irc_color_me" android:title="/me Color" android:defaultValue="#9400D3"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_pm" android:title="PM Color" android:defaultValue="#008B8B"  alphaSlider="false"/>
+		        	android:key="irc_color_pm" android:title="PM Color" android:defaultValue="#008B8B"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_join" android:title="Join Color" android:defaultValue="#0000FF"  alphaSlider="false"/>
+		        	android:key="irc_color_join" android:title="Join Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_nick" android:title="Nick Change Color" android:defaultValue="#0000FF"  alphaSlider="false"/>
+		        	android:key="irc_color_nick" android:title="Nick Change Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_part" android:title="Part Color" android:defaultValue="#0000FF"  alphaSlider="false"/>
+		        	android:key="irc_color_part" android:title="Part Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_quit" android:title="Quit Color" android:defaultValue="#0000FF"  alphaSlider="false"/>
+		        	android:key="irc_color_quit" android:title="Quit Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_kick" android:title="Kick Color" android:defaultValue="#0000FF"  alphaSlider="false"/>
+		        	android:key="irc_color_kick" android:title="Kick Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_mention" android:title="Mention Color" android:defaultValue="#F08080"  alphaSlider="false"/>
+		        	android:key="irc_color_mention" android:title="Mention Color" android:defaultValue="#F08080"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_error" android:title="Error Color" android:defaultValue="#800000"  alphaSlider="false"/>
+		        	android:key="irc_color_error" android:title="Error Color" android:defaultValue="#800000"  alphaSlider="false" android:dependency="irc_irssi"/>
 	        </PreferenceCategory>
 	    </PreferenceScreen><PreferenceCategory
 	        android:title="Super special settings"

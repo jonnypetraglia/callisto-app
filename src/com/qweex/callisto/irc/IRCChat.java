@@ -121,6 +121,8 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static List<String> nickList;
 	private static Handler chatHandler = null;
 	private Runnable chatUpdater;
+	private boolean irssi;
+	private int IRSSI_GREEN = 0x00B000;
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -154,6 +156,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		
 		profileNick = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_nick", null);
 		profilePass = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_pass", null);
+		irssi = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_irssi", false);
 		if(session!=null)
 		{
 			resume();
@@ -337,6 +340,11 @@ public class IRCChat extends Activity implements IRCEventListener
     	mentionCount = 0;
     	nickColors.put(profileNick, CLR_MYNICK);
 		setContentView(R.layout.irc);
+		if(irssi)
+		{
+			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0);
+			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0);
+		}
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv.setVerticalFadingEdgeEnabled(false);
 		sv.setFillViewport(true);
@@ -372,29 +380,36 @@ public class IRCChat extends Activity implements IRCEventListener
     	SHOW_TIME = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_time", true);
     	
     	//Read colors
-    		IRCChat.nickColors.put("",
-    	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
-    		IRCChat.nickColors.put(" ",
-	    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
-	    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
-    		IRCChat.nickColors.put("   ",
-	    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_me", 0x9400D3));
-    		IRCChat.nickColors.put("    ",
-		CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_join", 0x0000FF));
-    		IRCChat.nickColors.put("     ",
-	    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_nick", CLR_JOIN));
-    		IRCChat.nickColors.put("      ",
-	    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_part", CLR_JOIN));
-    		IRCChat.nickColors.put("       ",
-	    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_quit", CLR_JOIN));
-    		IRCChat.nickColors.put("        ",
-	    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_kick", CLR_JOIN));
-    		IRCChat.nickColors.put("         ",
-		CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_error", 0x800000));
-    		IRCChat.nickColors.put("          ",
-		CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
-    		IRCChat.nickColors.put("           ",
-		CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
+    	if(irssi)
+    	{
+    		CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=IRSSI_GREEN;
+    	}
+    	else
+    	{
+	    		IRCChat.nickColors.put("",
+	    	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
+	    		IRCChat.nickColors.put(" ",
+		    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
+		    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
+	    		IRCChat.nickColors.put("   ",
+		    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_me", 0x9400D3));
+	    		IRCChat.nickColors.put("    ",
+			CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_join", 0x0000FF));
+	    		IRCChat.nickColors.put("     ",
+		    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_nick", CLR_JOIN));
+	    		IRCChat.nickColors.put("      ",
+		    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_part", CLR_JOIN));
+	    		IRCChat.nickColors.put("       ",
+		    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_quit", CLR_JOIN));
+	    		IRCChat.nickColors.put("        ",
+		    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_kick", CLR_JOIN));
+	    		IRCChat.nickColors.put("         ",
+			CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_error", 0x800000));
+	    		IRCChat.nickColors.put("          ",
+			CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
+	    		IRCChat.nickColors.put("           ",
+			CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
+    	}
     	
 		
 		Intent notificationIntent = new Intent(this, IRCChat.class);
@@ -815,6 +830,9 @@ public class IRCChat extends Activity implements IRCEventListener
 				}
 			}
 		}
+		else
+			msgColor = 0xFF000000 + CLR_TEXT;
+		
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
 		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
 		try {
@@ -843,6 +861,8 @@ public class IRCChat extends Activity implements IRCEventListener
 	 */
 	public Integer getNickColor(String nickInQ)
 	{
+		if(irssi)
+			return IRSSI_GREEN;
 		if(!nickColors.containsKey(nickInQ))
 			nickColors.put(nickInQ, getRandomColor());
 		return (Integer) nickColors.get(nickInQ);

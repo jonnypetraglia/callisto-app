@@ -180,7 +180,7 @@ public class Callisto extends Activity {
 		
 		
 		
-		boolean isTablet=true;
+		boolean isTablet=false; //TODO
 		if(isTablet)
 			setContentView(R.layout.main_tablet);
 		else

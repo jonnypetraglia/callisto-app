@@ -107,7 +107,6 @@ public class Donate extends ListActivity
 	private static String memo = "";
 	private static String IpnUrl = "http://www.exampleapp.com/ipn";
 	private static String paymentID = "8873482296";
-	//FIXME: wat do
 	private final static String paypalEmail = "tophfisher@gmail.com";
 	ProgressDialog pd;
 	
