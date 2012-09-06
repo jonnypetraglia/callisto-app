@@ -74,7 +74,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -179,13 +178,19 @@ public class Callisto extends Activity {
 		boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
 		
-		setContentView(R.layout.main);
+		
+		
+		boolean isTablet=true;
+		if(isTablet)
+			setContentView(R.layout.main_tablet);
+		else
+			setContentView(R.layout.main);
+		
 		findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
 		findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
 		findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
 		findViewById(R.id.next).setOnClickListener(Callisto.next);
 		findViewById(R.id.previous).setOnClickListener(Callisto.previous);
-		
 		
 		//This loop sets the onClickListeners and adjusts the button settings if the view is landscape
 		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
@@ -206,7 +211,7 @@ public class Callisto extends Activity {
 				temp.setLayoutParams(tr);
 				temp.setCompoundDrawablesWithIntrinsicBounds(graphics[i], 0, 0, 0);
 			}
-			//*/
+			
 		}
 		
 		//Initialization of (some of the) static variables
@@ -232,13 +237,8 @@ public class Callisto extends Activity {
 	    logView = new TextView(this);
 	    logView.setGravity(Gravity.BOTTOM);
 	    logView.setMaxLines(Integer.parseInt(i));
-	    /*
-	    ScrollView.LayoutParams ll = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
-	    ll.setMargins(0, 0, 0, (int)(50*Callisto.DP));
-	    chatView.setPadding(0, 0, 0, (int)(50*Callisto.DP));
-	    chatView.setLayoutParams(ll);
-	    //*/
 	}
+	
 	
 	/** Called when the activity is going to be destroyed. Currently unused. */
 	@Override

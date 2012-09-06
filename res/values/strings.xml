@@ -20,6 +20,7 @@
 <resources>
     <string name="version_name">0.7 "Protostar"</string>
     
+    <string name="live">Live</string>
 	<string name="watch">Watch</string>
 	<string name="listen">Listen</string>
 	<string name="loading">Loading&#8230;</string>
