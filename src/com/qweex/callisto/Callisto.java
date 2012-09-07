@@ -277,15 +277,21 @@ public class Callisto extends Activity {
 				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f);
 		LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams
 				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f);
-		layout.addView(mainView, mParams);
-		layout.addView(empty, mParams);
+		
+		LinearLayout horl = new LinearLayout(c);
+		horl.setOrientation(LinearLayout.HORIZONTAL);
+		horl.addView(mainView, cParams);
+		horl.addView(empty, cParams);
+		horl.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
+		layout.addView(horl, mParams);
 		layout.addView(controls, cParams);
+		
 		((Activity)c).setContentView(layout);
-		((Activity)c).findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
-		((Activity)c).findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
-		((Activity)c).findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
-		((Activity)c).findViewById(R.id.next).setOnClickListener(Callisto.next);
-		((Activity)c).findViewById(R.id.previous).setOnClickListener(Callisto.previous);
+		controls.findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
+		controls.findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
+		controls.findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
+		controls.findViewById(R.id.next).setOnClickListener(Callisto.next);
+		controls.findViewById(R.id.previous).setOnClickListener(Callisto.previous);
 		Log.v("*:build_layout", "Finished building the layout");
     }
     
