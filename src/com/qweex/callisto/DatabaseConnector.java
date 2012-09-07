@@ -69,6 +69,7 @@ public class DatabaseConnector
 							  String title,
 							  String date,
 							  String description,
+							  String link,
 							  String medialink,
 							  long mediasize,
 							  boolean isVideo) 
@@ -79,6 +80,7 @@ public class DatabaseConnector
 	   newEpisode.put("title", title);
 	   newEpisode.put("date", date);
 	   newEpisode.put("description", description);
+	   newEpisode.put("link", link);
 	   newEpisode.put((isVideo ? "vid" : "mp3") + "link", medialink);
 	   newEpisode.put((isVideo ? "vid" : "mp3") + "size", mediasize);
 	
@@ -155,7 +157,7 @@ public class DatabaseConnector
 	 */
 	public Cursor getOneEpisode(long id) 
 	{
-		Cursor c = database.query(DATABASE_TABLE, new String[] {"_id", "show", "title", "new", "date", "description", "mp3link", "mp3size", "vidlink", "vidsize", "position"},
+		Cursor c = database.query(DATABASE_TABLE, new String[] {"_id", "show", "title", "new", "date", "description", "link", "mp3link", "mp3size", "vidlink", "vidsize", "position"},
 					"_id=" + id, null, null, null, null);
 		return c; 
 	}
@@ -415,6 +417,7 @@ public class DatabaseConnector
 	         	"title TEXT, " +
 	         	"date TEXT, " +
 	         	"description TEXT, " +
+	         	"link TEXT, " +
 	         	"position INTEGER, " +
 	         	"mp3link TEXT, " +
 	         	"mp3size INTEGER, " + 

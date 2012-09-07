@@ -89,6 +89,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
   </intent-filter>
   <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
 </receiver>
+<activity android:name=".irc.NickList" android:theme="@android:style/Theme.Dialog"></activity>
 
     
     

@@ -76,7 +76,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
-//IDEA: Nicklist
+//TODO: Only scroll down if the user is all the way scrolled down
 //FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
 //FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
 //FEATURE: Save chat to file
@@ -89,6 +89,7 @@ public class IRCChat extends Activity implements IRCEventListener
 {
 	private static final int LOG_ID=Menu.FIRST+1;
 	private static final int LOGOUT_ID=LOG_ID+1;
+	private static final int NICKLIST_ID=LOGOUT_ID+1;
 	private final String SERVER_NAME = "irc.geekshed.net";
 	private final String CHANNEL_NAME = "#jupiterbroadcasting";
 	private String profileNick;
@@ -118,11 +119,12 @@ public class IRCChat extends Activity implements IRCEventListener
 	private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
 	private boolean isLandscape;
 	private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
-	private static List<String> nickList;
+	public static List<String> nickList;
 	private static Handler chatHandler = null;
 	private Runnable chatUpdater;
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
+	private MenuItem Nick_MI, Logout_MI, Log_MI;
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -215,6 +217,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		setContentView(ll);
 	}
 	
+
 	/** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
 	 * @param keyCode I dunno
 	 * @param event I dunno
@@ -297,9 +300,21 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
-    	menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_menu_close_clear_cancel);
+    	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
+    	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_allfriends);
+    	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_menu_close_clear_cancel);
+		updateMenu();
         return true;
+    }
+    
+    /** Updates the menu items because invalidateOptionsMenu() is not supported on all APIs. */
+    private void updateMenu()
+    {
+    	try {
+    	Log_MI.setEnabled(session!=null);
+    	Logout_MI.setEnabled(session!=null);
+    	Nick_MI.setEnabled(session!=null);
+    	} catch(Exception e) {}
     }
     
     /** Called when an item in the menu is pressed.
@@ -313,12 +328,34 @@ public class IRCChat extends Activity implements IRCEventListener
         case LOG_ID:
         	((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
             return true;
+        case NICKLIST_ID:
+        	this.startActivityForResult(new Intent(this, NickList.class), 1);
+        	return true;
         case LOGOUT_ID:
         	logout(null);
         	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+    
+    /** Called when an activity is called via startActivityForResult(); called when a nicklist item is selected;
+	 * @param requestCode The request code that is passed to startActivityForResult(); to determine what activity is returning a result
+	 * @param resultCode The result code set by setResult() in the activity
+	 * @param data I dunno
+	 */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+	    super.onActivityResult(requestCode, resultCode, data);
+	    System.out.println(resultCode);
+	    if(resultCode>-1)
+	    {
+		    int start = input.getSelectionStart();
+		    int end = input.getSelectionEnd();
+		    input.getText().replace(Math.min(start, end), Math.max(start, end),
+		    		nickList.get(resultCode), 0, nickList.get(resultCode).length());
+	    }
     }
     
     /** Used to handle when the screen is rotated, to set the necessary padding. */
@@ -350,6 +387,9 @@ public class IRCChat extends Activity implements IRCEventListener
 		sv.setFillViewport(true);
 		sv2 = (ScrollView) findViewById(R.id.scrollView2);
 		sv2.setVerticalFadingEdgeEnabled(false);
+		
+		System.out.println(Callisto.chatView.getText().toString());
+		
 		ScrollView test = ((ScrollView)Callisto.chatView.getParent());
 		if(test!=null)
 			test.removeView(Callisto.chatView);
@@ -366,6 +406,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				return false;
 			}
 		});
+		
 		if(session!=null)
 			session.addIRCEventListener(this);
 		if(Callisto.notification_chat!=null)
@@ -375,6 +416,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	/** called to first initiate the IRC chat. Called only when the user has not logged in yet. */
     public void initiate()
     {
+    	updateMenu();
     	findViewById(1337).startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
     	resume();
     	SHOW_TIME = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_time", true);
@@ -868,6 +910,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		return (Integer) nickColors.get(nickInQ);
 	}
 	
+	/** Generates a random color.
+	 * @return An integer with the hex value of a random color. */
 	public Integer getRandomColor()
 	{
 		int rndm = 0xFFFFFF;
@@ -879,6 +923,9 @@ public class IRCChat extends Activity implements IRCEventListener
 		return rndm;
 	}
 	
+	/** Determines if a random color is acceptable.
+	 * @param rgb The RGB (hex) color to examine
+	 * @return True if it's acceptable, false otherwise. */
 	private boolean isAcceptable(int rgb)
 	{
 		int red = (rgb >> 16) & 0x000000FF;
@@ -914,7 +961,8 @@ public class IRCChat extends Activity implements IRCEventListener
 						Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
 						st,
 						": ",
-						st2
+						st2,
+						"\n"
 						);
 				Callisto.chatView.append(x);
 			}

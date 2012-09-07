@@ -46,6 +46,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -61,16 +63,17 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 //This activity is for displaying specific information about an episode
 
 //FIXME: The scrollview pushes the player controls offscreen. What the crap.
-//FIXME: Doesn't update if the track finishes
 
 /** An activity for showing the specific info about a particular episode.
  * @author MrQweex */
 public class EpisodeDesc extends Activity
 {
 	//-----Local variables-----
+	private static final int SHARE_ID=Menu.FIRST+1;
 	private String media_link = "";
 	private String title = "";
 	private String description = "";
+	private String link = "";
 	private long media_size = 0;
 	private String date = "";
 	private String show = "";
@@ -125,6 +128,7 @@ public class EpisodeDesc extends Activity
 		title = c.getString(c.getColumnIndex("title"));
 		date = c.getString(c.getColumnIndex("date"));
 		description = c.getString(c.getColumnIndex("description"));
+		link = c.getString(c.getColumnIndex("link"));
 		media_size = c.getLong(c.getColumnIndex(AllShows.IS_VIDEO ? "vidsize" : "mp3size"));
 		media_link = c.getString(c.getColumnIndex(AllShows.IS_VIDEO ? "vidlink" : "mp3link"));
 		show = c.getString(c.getColumnIndex("show"));
@@ -171,6 +175,12 @@ public class EpisodeDesc extends Activity
 			hh.addView(bb);
 		}
 	    
+		Callisto.nextTrack.setRunnable(new Runnable(){
+			public void run() {
+				determineButtons(false);
+			}
+		});
+		
 	    CheckBox rb = ((CheckBox)findViewById(R.id.newImg));
         rb.setChecked(is_new);
         rb.setOnCheckedChangeListener(toggleNew);
@@ -185,14 +195,38 @@ public class EpisodeDesc extends Activity
 		return filename.substring(filename.lastIndexOf("."));
 	}
 	
-	/*  //TODO: "Share" option in episode description
+	/** Called when it is time to create the menu.
+	 * @param menu Um, the menu
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
+    	menu.add(0, SHARE_ID, 0, Callisto.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_menu_share);
         return true;
     }
-    */
+    
+    /** Called when an item in the menu is pressed.
+	 * @param item The menu item ID that was pressed
+	 */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+ 
+        switch (item.getItemId())
+        {
+        case SHARE_ID:
+            Intent i=new Intent(android.content.Intent.ACTION_SEND);
+
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Thought I'd share this with you!");
+            i.putExtra(Intent.EXTRA_TEXT, "Check out this awesome episode of " + show + "!\n\n" + link);
+
+            startActivity(Intent.createChooser(i, Callisto.RESOURCES.getString(R.string.share)));
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
 	@Override

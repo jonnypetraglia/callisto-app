@@ -845,7 +845,7 @@ public class Callisto extends Activity {
 	public static Message updateShow(int currentShow, SharedPreferences showSettings, boolean isVideo)
 	{
 		  Log.i("*:updateShow", "Beginning update");
-		  String epDate = null, epTitle = null, epDesc = null;
+		  String epDate = null, epTitle = null, epDesc = null, epLink = null;
 		  String lastChecked = showSettings.getString("last_checked", null);
 		  
 		  String newLastChecked = null;
@@ -927,12 +927,24 @@ public class Callisto extends Activity {
 				  }
 				  eventType = xpp.next();
 				  epTitle = xpp.getText();
-				  System.out.println("B: " + xpp.getText());
 				  if(epTitle==null)
 					  throw(new UnfinishedParseException("Title"));
 				  if(epTitle.indexOf("|")>0)
 						epTitle = epTitle.substring(0, epTitle.indexOf("|")).trim();
 				  Log.d("*:updateShow", "Title: " + epTitle);
+				  
+				  //Link
+				  while(!("link".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+				  {
+					  eventType = xpp.next();
+					  if(eventType==XmlPullParser.END_DOCUMENT)
+						  throw(new UnfinishedParseException("Link"));
+				  }
+				  eventType = xpp.next();
+				  epLink = xpp.getText();
+				  if(epLink==null)
+					  throw(new UnfinishedParseException("Link"));
+				  Log.d("*:updateShow", "Link: " + epLink);
 				  
 				  //Description
 				  while(!("description".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
@@ -991,7 +1003,7 @@ public class Callisto extends Activity {
 				  epDate = Callisto.sdfRaw.format(Callisto.sdfSource.parse(epDate));
 				  //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
 						  								//isVideo, epMediaLink, epMediaSize))
-					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epMediaLink, epMediaSize, isVideo);
+					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epMediaLink, epMediaSize, isVideo);
 		    	  Log.v("*:updateShow", "Inserting episode: " + epTitle);
   		  }
   		  
@@ -1122,15 +1134,25 @@ public class Callisto extends Activity {
     public class oOnCompletionListener implements OnCompletionListener
     {
     	Context c;
+    	Runnable r;
 
     	public void setContext(Context c)
     	{
     		this.c = c;
     	}
     	
+    	public void setRunnable(Runnable r)
+    	{
+    		this.r = r;
+    	}
+    	
 		@Override
 		public void onCompletion(MediaPlayer mp) {
 			Log.i("*:mplayer:onCompletion", "Playing next track");
+			
+			if(r!=null)
+				r.run();
+			
 			boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
 			if(del)
 			{
@@ -1145,6 +1167,8 @@ public class Callisto extends Activity {
 			
 			Callisto.playTrack(this.c, 1, true);
 		}
+		
+		
     	
     }
     
@@ -1156,6 +1180,7 @@ public class Callisto extends Activity {
     	{
     		this.c = c;
     	}
+    	
     	
 
 		@Override

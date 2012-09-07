@@ -1,19 +1,17 @@
 /*
 Copyright (C) 2012 Qweex
-This file is a part of Callisto.
 
-Callisto is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Callisto is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  http://www.apache.org/licenses/LICENSE-2.0
 
-You should have received a copy of the GNU General Public License
-along with Callisto; If not, see <http://www.gnu.org/licenses/>.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package com.qweex.utils;
 
@@ -23,6 +21,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -131,29 +130,38 @@ public class NumberPicker extends LinearLayout
 			@Override
 			public CharSequence filter(CharSequence source, int start, int end,
 					Spanned dest, int dstart, int dend)
-			//FIXME: Does not allow for keyboard input.
 			{
 				try {
+					System.out.println(source + ":" + dest);
 					if(source.length()==0)
 						return null;
-					String result = dest.toString();
-					String s = (String) source.subSequence(prefix.length(), source.length()-suffix.length());
-					result = result.substring(0,dstart) + s.subSequence(start-prefix.length(), end-suffix.length()) + result.substring(dend);
-					int i = Integer.parseInt(result);
+					if(dest.toString()=="")
+						return null;
+					String result = prefix + getValue() + source + suffix;
+					int i = getValue()*10 + Integer.parseInt(source.toString());
 					if(i<min || i>max)
 						return "";
-					//Integer.parseInt((String)source);
 					current = i;
-					//I would do a refresh() here, but it causes this filter to be called, creating an endless loop
-					return null;
-				} catch(Exception e)
-				{
-					e.printStackTrace();
-					return "";
-				}
+					refresh();
+				} catch(Exception e) {}
+				return "";
 			}
 	    	
-	    }});
+    	}});
+	    edit.setOnKeyListener(new OnKeyListener() {                 
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_DEL && event.getAction()==KeyEvent.ACTION_UP){
+                	System.out.println("OLD: " + current);
+                	current = current / 10;
+                	System.out.println("NEW: " + current);
+                	refresh();
+                    return false;
+                }
+                return false;
+            }
+        });
+
 	    Button down = new Button(getContext());
     	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_down));
     	down.setOnClickListener(decrease);
