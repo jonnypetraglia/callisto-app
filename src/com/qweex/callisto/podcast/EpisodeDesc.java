@@ -62,8 +62,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 //This activity is for displaying specific information about an episode
 
-//FIXME: The scrollview pushes the player controls offscreen. What the crap.
-
 /** An activity for showing the specific info about a particular episode.
  * @author MrQweex */
 public class EpisodeDesc extends Activity

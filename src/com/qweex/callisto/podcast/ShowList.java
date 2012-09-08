@@ -109,7 +109,8 @@ public class ShowList extends Activity
 			refresh = new Button(this);
 			refresh.setText(Callisto.RESOURCES.getString(R.string.refresh));
 			refresh.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+			p.setMargins(20,10,20,10);
 			refresh.setLayoutParams(p);
 			((LinearLayout)loading.getParent()).setGravity(Gravity.CENTER_HORIZONTAL);
 			refresh.setPadding(100, 10, 100, 10);
@@ -165,6 +166,17 @@ public class ShowList extends Activity
 		boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
 		((CheckBox)((View) current_episode.getParent()).findViewById(R.id.img)).setChecked(is_new);
 		current_episode=null;
+	}
+	
+	/** Called when a search is requested.
+	 * @return true if the search was handled, false otherwise
+	 */
+	@Override
+	public boolean onSearchRequested ()
+	{
+		SearchResultsActivity.searchShow = AllShows.SHOW_LIST[currentShow];
+		startSearch(null, false, null, false);
+		return true;
 	}
 	
 	/** Not Current Used */

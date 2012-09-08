@@ -17,10 +17,19 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -28,9 +37,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
+import com.qweex.callisto.podcast.AllShows;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.view.Window;
 import android.webkit.WebView;
 
@@ -39,6 +53,7 @@ import android.webkit.WebView;
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
 //	    But it took forever and it required figuring out how to do a POST, plus, if the form ever changed it would probably break.
 //FEATURE: Someone to make this look pretty/native. Maybe chzbacon?
+//FIXME: Pressing a key pushes the keyboard offscreen.
 
 /** Form to contact the JB team directly from inside Callisto.
  * @author MrQweex
@@ -61,16 +76,15 @@ public class ContactForm extends Activity
 		setTitle(R.string.contact);
 		
 		WebView wv = (WebView) findViewById(R.id.form);
-		wv.getSettings().setJavaScriptEnabled(true);
 		
 	    HttpClient httpClient = new DefaultHttpClient();
 	    HttpContext localContext = new BasicHttpContext();
 	    HttpGet httpGet = new HttpGet(formURL);
+	    
 	    HttpResponse response;
 	    String result = "";
 		try
 		{
-			
 			 // Read in the css
 	        InputStream input;  
             input = getAssets().open("style.css");  
@@ -79,22 +93,44 @@ public class ContactForm extends Activity
              byte[] buffer = new byte[size];  
              input.read(buffer);  
              input.close();  
-  
+             
              result = new String(buffer);
-             result = "<style type='text/css'>\n" + result + "\n</style>\n"; 
-	              
-			response = httpClient.execute(httpGet, localContext);
-	
-		    BufferedReader reader = new BufferedReader(
-		        new InputStreamReader(
-		          response.getEntity().getContent()
-		        )
-		      );
-	
-		    String line = null;
-		    while ((line = reader.readLine()) != null){
-		      result += line + "\n";
-		    }
+             result = "<style type='text/css'>\n" + result + "\n</style>\n";
+             
+             long lastModified=0;
+ 			 //HttpURLConnection con = (HttpURLConnection) new URL("https://jblive.wufoo.com/forms/w7x2r7").openConnection();
+			 //lastModified = con.getLastModified();
+			 
+			 File file = new File(Environment.getExternalStorageDirectory() + File.separator + 
+					  Callisto.storage_path + File.separator +
+					  "contact.html");
+			 long lastDate = PreferenceManager.getDefaultSharedPreferences(this).getLong("contact_last_modified", -1);
+			 
+			 
+			 if(lastModified>lastDate || !file.exists())
+			 {
+				 response = httpClient.execute(httpGet, localContext);
+	             BufferedReader reader = new BufferedReader(
+			        new InputStreamReader(
+			          response.getEntity().getContent()
+			        )
+			      );
+		
+	             String line = null;
+	             //BufferedWriter out = new BufferedWriter(new FileWriter(file));
+	             while ((line = reader.readLine()) != null)
+	            	 result += line + "\n";
+	             //out.write(result);
+	             //out.close();
+			 } else
+			 {
+	            input = new BufferedInputStream(new FileInputStream(file));  
+                size = input.available();  
+		        buffer = new byte[size];
+		        input.read(buffer);  
+		        input.close();
+		        result = result + (new String(buffer));
+			 }
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

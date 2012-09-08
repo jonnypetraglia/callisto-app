@@ -39,13 +39,27 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             </intent-filter>
 
         </activity>
-        <activity android:name=".podcast.AllShows"></activity><activity android:name=".podcast.ShowList">
+        <activity android:name=".podcast.AllShows">
+            <meta-data android:name="android.app.default_searchable"
+                   android:value=".podcast.SearchResultsActivity" />
+        </activity>
+        <activity android:name=".podcast.ShowList">
+            <meta-data android:name="android.app.default_searchable"
+                   android:value=".podcast.SearchResultsActivity" />
+        </activity>
+        <activity android:name=".podcast.SearchResultsActivity">
+            <intent-filter>
+            <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                   android:resource="@xml/searchable"/>
         </activity>
         <activity android:name=".podcast.EpisodeDesc"></activity>
         
         <activity android:name="ContactForm" android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
-        <activity android:name="Callisto" android:launchMode="singleTop"></activity>
+        <activity android:name="Callisto" android:launchMode="singleTop">
+        </activity>
         <activity android:name="CalendarActivity"></activity>
         <activity android:name=".irc.IRCChat"
             android:configChanges="keyboardHidden|orientation"
@@ -54,7 +68,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity"></activity>
         <activity android:name=".LiveStream"></activity>
-        <activity android:name="Donate"></activity>
+        <activity android:name="Donate"
+            android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".WidgetHandler" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
 		<activity android:name="com.paypal.android.MEP.PayPalActivity"
 				  android:theme="@android:style/Theme.Translucent.NoTitleBar"

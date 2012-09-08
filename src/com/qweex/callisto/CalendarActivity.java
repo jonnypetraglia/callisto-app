@@ -661,32 +661,7 @@ public class CalendarActivity extends Activity {
 			if(popUp.isShowing())
 				popUp.dismiss();
 			int[] pos = new int[2];
-			//TODO: The method of getting the height of the popup is sketchy
 			v.getLocationOnScreen(pos);
-			if(TheHeightOfTheFreakingPopup==0)
-			{
-				TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
-			}
-
-			Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
-			//TODO: The first time a popup is shown, it's shown in a bad place. Weird.
-			if(isLandscape)
-			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
-				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
-				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
-			}
-			else if(pos[1]>getWindowManager().getDefaultDisplay().getHeight()/2)
-			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
-				popUp.showAsDropDown(v, 0, -1*v.getHeight() - TheHeightOfTheFreakingPopup - 40);
-			}
-			else
-			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error));
-				popUp.showAsDropDown(v, 0, -5);
-			}
-			
 			View w = (View) (isLandscape? v.getParent() : v);
 			String id = (String) ((TextView)w.findViewById(R.id.id)).getText();
 			if(id.equals(""))
@@ -784,6 +759,27 @@ public class CalendarActivity extends Activity {
 				popUp.getContentView().findViewById(R.id.hasAlarm).setVisibility(View.INVISIBLE);
 				((TextView)popUp.getContentView().findViewById(R.id.alarmInfo)).setText("No alarm set");
 				((Button)popUp.getContentView().findViewById(R.id.editEvent)).setText("Add");
+			}
+			
+		    popUp.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+		    TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
+			boolean isLowerHalf = pos[1]>getWindowManager().getDefaultDisplay().getHeight()/2;
+			Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
+			if(isLandscape)
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
+				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
+			}
+			else if(isLowerHalf)
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				popUp.showAsDropDown(v, 0, -1*v.getHeight() - TheHeightOfTheFreakingPopup - (isLowerHalf ? 0 : 40));
+			}
+			else
+			{
+				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error));
+				popUp.showAsDropDown(v, 0, -5);
 			}
 		  }
     };

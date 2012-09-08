@@ -76,7 +76,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
-//TODO: Only scroll down if the user is all the way scrolled down
+//CLEAN: Check: Only scroll down if the user is all the way scrolled down
 //FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
 //FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
 //FEATURE: Save chat to file
@@ -148,7 +148,13 @@ public class IRCChat extends Activity implements IRCEventListener
 		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
-		            sv.fullScroll(ScrollView.FOCUS_DOWN);
+		            boolean atBottom = Callisto.chatView.getBottom() - (sv.getHeight() + sv.getScrollY()) < 100;
+		            if(atBottom)
+		            	sv.fullScroll(ScrollView.FOCUS_DOWN);
+		            
+		            System.out.println("A" + Callisto.chatView.getBottom());
+		            System.out.println("B" + (sv.getHeight() + sv.getScrollY()));
+		            
 		            input.requestFocus();
 		        }
 			};
@@ -859,16 +865,18 @@ public class IRCChat extends Activity implements IRCEventListener
 		if(theMessage!=null && theMessage.contains(session.getNick()))
 		{
 			msgColor = 0xFF000000 + CLR_MENTION;
+			System.out.println("MENTIONED" + isFocused);
 			if(!isFocused)
 			{
 				if(Callisto.notification_chat==null)
 					Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
 				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
 				mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+				System.out.println("MENTIONEddddd " + mentionCount);
 				if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
 				{
 					mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
-					mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
+					//mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
 				}
 			}
 		}
@@ -878,7 +886,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
 		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
 		try {
-			//mes = (SpannableString) URLInString(theMessage);
 			if(theTitle!=null)
 			{
 				if(theMessage!=null)

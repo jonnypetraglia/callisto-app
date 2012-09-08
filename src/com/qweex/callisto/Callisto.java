@@ -48,6 +48,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -159,6 +160,7 @@ public class Callisto extends Activity {
 	public static int appVersion = -1;
 	protected static boolean is_widget;
 	
+	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
 	 */
@@ -177,7 +179,6 @@ public class Callisto extends Activity {
 		//This is the most reliable way I've found to determine if it is landscape
 		boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
-		
 		
 		
 		boolean isTablet=false; //TODO

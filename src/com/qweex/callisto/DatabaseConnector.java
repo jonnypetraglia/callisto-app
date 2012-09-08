@@ -170,6 +170,20 @@ public class DatabaseConnector
 	   database.delete(DATABASE_TABLE, "_id=" + id, null);
 	}
 	
+	/** [DATABASE_TABLE] Searches all shows for a term
+	 * @param searchTerm The search term that is to be searched....for....
+	 * @return A cursor containing the results
+	 */
+	public Cursor searchEpisodes(String searchTerm, String searchShow)
+	{
+		Cursor c = database.query(DATABASE_TABLE, new String[] {"_id", "title", "show", "date"} 
+				, "(title like '%" + searchTerm + "%' or " +
+				  "description like '%" + searchTerm + "%')" + 
+				  (searchShow!="" ? (" and show='" + searchShow + "'") : "")
+				, null, null, null, null);
+		return c;
+	}
+	
 	
 	//-------DATABASE_QUEUE
 	/** [DATABASE_QUEUE] Gets the entirety of the queue.

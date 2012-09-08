@@ -40,6 +40,8 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -50,6 +52,7 @@ import android.text.Html;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,33 +82,21 @@ public class Donate extends ListActivity
 	private Resources RESOURCES;
 	public CheckoutButton GiveChrisSomeHardEarnedMoney; //Button for billing
 	private CatalogAdapter mCatalogAdapter;
-	private Handler mHandler;
 	public final String DONATION_APP_ID = "com.qweex.donation";
 	LinearLayout ll;
 	RadioButton lastChecked = null;
     private static final int NAME_ID = 1234;
     private static final int RADIO_ID = 4321;
     RadioButton CustomRadio;
-    EditText CustomAmount;
+    TextView msgView;
+    EditText CustomAmount, UserMemo;
 	//Contains the SKU for Google Wallet or amount for Paypal
 	private static String donationChoice;
 	
 	
-	
-	/*
-	 * Need:
-	 * (1) What he wants the Memo to be?
-	 * (2) Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
-	 * (3) Payment Type?
-	 * (4) paymentID; ID assigned to particular
-	 * (5) Confirm paypalEmail
-	 * (6) Fee Payer
-	 */
-	
-	
 /*-------Paypal--------*/
 	private static String memo = "";
-	private static String IpnUrl = "http://www.exampleapp.com/ipn";
+	private static String IpnUrl = "";
 	private static String paymentID = "8873482296";
 	private final static String paypalEmail = "tophfisher@gmail.com";
 	ProgressDialog pd;
@@ -130,6 +121,7 @@ public class Donate extends ListActivity
 		    		GiveChrisSomeHardEarnedMoney.setPadding(20, 20, 20, 20);
 		    		GiveChrisSomeHardEarnedMoney.setOnClickListener(clickPaypal);
 		    		ll.addView(GiveChrisSomeHardEarnedMoney);
+		    		ll.addView(msgView);
 		            break;
 		    	case INITIALIZE_FAILURE:
 		    		finish();
@@ -162,12 +154,11 @@ public class Donate extends ListActivity
 		TextView header = new TextView(this);
 		header.setText("Choose amount (USD)");
 		
-		
 		ll = new LinearLayout(this);
 		ll.setOrientation(LinearLayout.VERTICAL);
 		
-		LinearLayout v = new LinearLayout(this);
-		v.setPadding(50, 0, 50, 0);
+		LinearLayout customView = new LinearLayout(this);
+		customView.setPadding(50, 0, 50, 0);
 		LinearLayout v2 = new LinearLayout(this);
 		v2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
 		TextView dollarsign = new TextView(this);
@@ -185,9 +176,17 @@ public class Donate extends ListActivity
     	CustomRadio.setOnClickListener(selectRadio);
     	v2.addView(dollarsign);
     	v2.addView(CustomAmount);
-    	v.addView(v2);
-    	v.addView(CustomRadio);
-    	ll.addView(v);
+    	customView.addView(v2);
+    	customView.addView(CustomRadio);
+    	ll.addView(customView);
+		
+		UserMemo = new EditText(this);
+		UserMemo.setHint("Message to Jupiter Broadcasting");
+		UserMemo.setMinLines(4);
+		UserMemo.setGravity(Gravity.TOP);
+		LinearLayout.LayoutParams x = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+		x.setMargins(10, 10, 10, 10);
+		ll.addView(UserMemo, x);
     	
     	
     	CustomAmount.addTextChangedListener(new TextWatcher() {
@@ -230,18 +229,16 @@ public class Donate extends ListActivity
     	
 		
     	//Prepare the message & button's appearance
-		TextView msg = new TextView(this);
-		msg.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-		msg.setTextSize(11f);
-		msg.setText(Html.fromHtml("100% of your donation will go "
+		msgView = new TextView(this);
+		msgView.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+		msgView.setTextSize(12f);
+		msgView.setText(Html.fromHtml("100% of your donation will go "
 								 + "<i>directly</i>"
 							 	 + " to Jupiter Broadcasting. Afterwards, if you want to donate to the app developer, buy the "
 							 	 + "<a href=\"market://details?id=" + DONATION_APP_ID + "\">donation app in the market</a>"
 								 + "."));
-		msg.setMovementMethod(LinkMovementMethod.getInstance());
-		msg.setPadding(30, 10, 30, 10);
-		
-		ll.addView(msg);
+		msgView.setMovementMethod(LinkMovementMethod.getInstance());
+		msgView.setPadding(30, 0, 30, 15);
 		
 		
 		/*------Paypal------*/
@@ -260,6 +257,13 @@ public class Donate extends ListActivity
 			}
 		};
 		pd = ProgressDialog.show(Donate.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		pd.setCancelable(true);
+		pd.setOnCancelListener(new OnCancelListener(){
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				finish();
+			}
+		});
 		pd.show();
 		libraryInitializationThread.start();
 		
@@ -422,21 +426,25 @@ public class Donate extends ListActivity
 			 * to be notified as soon as a payment is completed, then you need to create a delegate for your application.
 			 * The delegate will need to implement PayPalResultDelegate and Serializable. See our ResultDelegate for
 			 * more details.
-			 */		
+			 */
 			
-			String s = CustomAmount.getText().toString();
-			try {
-				new BigDecimal(s);
-				// Use our helper function to create the simple payment.
-				PayPalPayment payment = createPayment();
-				// Use checkout to create our Intent.
-				Intent checkoutIntent = PayPal.getInstance().checkout(payment, v.getContext(), new ResultDelegate());
-				// Use the android's startActivityForResult() and pass in our Intent. This will start the library.
-		    	((Activity) v.getContext()).startActivityForResult(checkoutIntent, request);
-		    	((CheckoutButton) v).updateButton();
-			} catch(NumberFormatException e){
-				//Toast To User
-			}
+			((CheckoutButton) v).updateButton();
+			if(CustomRadio.isChecked())
+				try {
+					new BigDecimal(CustomAmount.getText().toString());
+				} catch(NumberFormatException e){
+					Toast.makeText(v.getContext(), "The amount you entered is not a valid number, you silly goose.", Toast.LENGTH_SHORT).show();
+					//((CheckoutButton) v).updateButton();
+					return;
+				}
+			
+			memo = UserMemo.getText().toString();
+			if(memo=="")
+				memo = "-Sent from Callisto";
+			PayPalPayment payment = createPayment();
+			Intent checkoutIntent = PayPal.getInstance().checkout(payment, v.getContext(), new ResultDelegate());
+	    	((Activity) v.getContext()).startActivityForResult(checkoutIntent, request);
+	    	//((CheckoutButton) v).updateButton();
 		}
     };
     
@@ -456,7 +464,7 @@ public class Donate extends ListActivity
 		else
 			payment.setSubtotal(new BigDecimal(donationChoice));
     	// Sets the payment type. This can be PAYMENT_TYPE_GOODS, PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE.
-    	payment.setPaymentType(PayPal.PAYMENT_TYPE_NONE);
+    	payment.setPaymentType(PayPal.PAYMENT_TYPE_GOODS);
     	
     	// Sets the merchant name. This is the name of your Application or Company.
     	payment.setMerchantName("Jupiter Broadcasting");
@@ -465,7 +473,7 @@ public class Donate extends ListActivity
     	// Sets the Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
     	payment.setIpnUrl(IpnUrl);
     	// Sets the memo. This memo will be part of the notification sent by PayPal to the necessary parties.
-    	payment.setMemo(memo + "\n-Sent from Callisto");
+    	payment.setMemo(memo);
     	
     	return payment;
 	}
