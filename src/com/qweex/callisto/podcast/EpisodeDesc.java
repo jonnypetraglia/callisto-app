@@ -310,26 +310,10 @@ public class EpisodeDesc extends Activity
 				 Callisto.databaseConnector.appendToQueue(id, true);
 				 if(Callisto.databaseConnector.queueCount()==1)
 				 {
-					 EpisodeDesc.this.setProgressBarIndeterminateVisibility(true);
-					 try {
-					 Callisto.mplayer = new MediaPlayer();
-					 Callisto.mplayer.setDataSource(media_link);
-					 
-					 Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
-					 Callisto.mplayer.prepareAsync();
-					} catch (IllegalArgumentException e) {
-						// TODO EXCEPTION
-						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					 EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
+					 Callisto.playTrack(v.getContext(), 1, true);
 				 }
 				 ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
 				 ((Button)v).setEnabled(false);
-				 Callisto.playerInfo.update(v.getContext());
 		  }
     };
     
