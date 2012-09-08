@@ -44,7 +44,10 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -102,7 +105,7 @@ public class LiveStream extends Activity
 		live_url = PreferenceManager.getDefaultSharedPreferences(LiveStream.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
 		
 		if(Callisto.live_player!=null)
-			update();
+			(new FetchInfo()).execute((Void[]) null);
 		if(Callisto.live_isPlaying)
 			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
 	}
@@ -135,8 +138,11 @@ public class LiveStream extends Activity
     }
 	
     /** Updates the current and next track information. */
-	public void update()
+    private class FetchInfo extends AsyncTask<Void, Void, Void>
     {
+    	@Override
+	    protected Void doInBackground(Void... params)
+    	{
 	    HttpClient httpClient = new DefaultHttpClient();
 	    HttpContext localContext = new BasicHttpContext();
 	    HttpGet httpGet = new HttpGet(infoURL);
@@ -166,9 +172,6 @@ public class LiveStream extends Activity
 		    if(m.groupCount()>1)
 		    	nextShow = m.group(2);
 	    	
-		    current.setText(currentShow);
-		    liveTitle = currentShow;
-		    next.setText(nextShow);
 		    
 		} catch (ClientProtocolException e) {
 			// TODO EXCEPTION
@@ -176,7 +179,28 @@ public class LiveStream extends Activity
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	    updateTracks.sendEmptyMessage(0);
+	    
+	    return null;
+    	}
+    }
+    
+    Handler updateTracks = new Handler()
+    {
+		@Override
+		public void handleMessage(Message msg) {
+		    current.setText(currentShow);
+		    liveTitle = currentShow;
+		    next.setText(nextShow);
+			Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+	       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this, liveTitle,  "JB Radio", contentIntent);
+		       	
+	       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+		}
+    };
+    
 	
 	/** Initiates the live player. Can be called across activities. */
 	static public void liveInit()
@@ -187,7 +211,6 @@ public class LiveStream extends Activity
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
 		    	pd.cancel();
-		    	dg.show();
 		    	String whatWhat="";
 		    	switch (what) {
 		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
@@ -201,8 +224,12 @@ public class LiveStream extends Activity
 		            break;
 		        default:
 		        	whatWhat = "???";
+		        	return true;
 		        }
+		    	
+		    	dg.show();
 
+		    	System.out.println(whatWhat);
 		    	LiveStream.sendErrorReport(whatWhat);
 		        return true;
 		    }
@@ -246,7 +273,7 @@ public class LiveStream extends Activity
 			pd.cancel();
 			try {
 				Callisto.live_player.start();
-				update();
+				(new FetchInfo()).execute((Void[]) null);
 				Callisto.live_isPlaying = true;
 				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
 				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
