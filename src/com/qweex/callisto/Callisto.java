@@ -48,7 +48,6 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -140,9 +139,9 @@ public class Callisto extends Activity {
 	static TextView timeView;
 	static int current;
 	static ProgressBar timeProgress;
-	private static final int QUIT_ID=Menu.FIRST+1;
-	private static final int SETTINGS_ID=QUIT_ID+1;
-	private static final int STOP_ID=SETTINGS_ID+1;
+	private static final int STOP_ID=Menu.FIRST+1;
+	private static final int SETTINGS_ID=STOP_ID+1;
+	private static final int QUIT_ID=SETTINGS_ID+1;
 	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
@@ -1065,9 +1064,9 @@ public class Callisto extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
-    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
     	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
+    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
+    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
         return true;
     }
     
@@ -1077,15 +1076,17 @@ public class Callisto extends Activity {
  
         switch (item.getItemId())
         {
-        case QUIT_ID:
-        	finish();	//FEATURE: Completely quit
-            return true;
-        case SETTINGS_ID:
-        	startActivity(new Intent(this, QuickPrefsActivity.class));
-        	return true;
         case STOP_ID:
         	stop(this);
         	return true;
+        case SETTINGS_ID:
+        	startActivity(new Intent(this, QuickPrefsActivity.class));
+        	return true;
+        case QUIT_ID:
+        	finish();
+        	mNotificationManager.cancelAll();
+        	android.os.Process.killProcess(android.os.Process.myPid());
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }

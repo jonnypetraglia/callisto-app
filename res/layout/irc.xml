@@ -47,6 +47,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:textColor="@color/txtClr"
             android:ellipsize="end"
             android:singleLine="true"
+            android:inputType="textCapSentences"
              />
 
     </LinearLayout>

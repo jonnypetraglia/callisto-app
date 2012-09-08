@@ -305,6 +305,13 @@ public class ShowList extends Activity
    /** Updates the show outside of the UI thread. */
    private class UpdateShowTask extends AsyncTask<Object, Object, Object> 
    {
+	   @Override
+	   protected void onPreExecute()
+	   {
+		   TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
+		   loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+	   }
+	   
       @Override
       protected Object doInBackground(Object... params)
       {
@@ -314,6 +321,8 @@ public class ShowList extends Activity
       @Override
       protected void onPostExecute(Object result)
       {
+    	  TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
+    	  loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
 	  	  if(mainListView!=null)
 	   		  ShowList.this.updateHandler.sendMessage((Message) result);
       }
