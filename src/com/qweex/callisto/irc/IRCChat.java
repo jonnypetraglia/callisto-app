@@ -184,18 +184,21 @@ public class IRCChat extends Activity implements IRCEventListener
 				  0);
 		final EditText user = new EditText(this);
 		final EditText pass = new EditText(this);
-		Button login = new Button(this);
+		final Button login = new Button(this);
 		params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 		user.setText(profileNick);
 		pass.setText(profilePass);
+		user.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+		pass.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+		login.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
 		user.setLayoutParams(params);
 		pass.setLayoutParams(params);
 		login.setLayoutParams(params);
+		pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 		login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_menu_login), null, null, null);
 		
 		user.setHint("Nick");
 		pass.setHint("Password (Optional)");
-		pass.setRawInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 		login.setText("Login");
 		login.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 		login.setOnClickListener(new OnClickListener(){

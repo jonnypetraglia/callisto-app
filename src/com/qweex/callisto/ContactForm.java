@@ -58,8 +58,8 @@ import android.webkit.WebView;
  */
 public class ContactForm extends Activity
 {
-	//private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
-	private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/"; //Used for testing.
+	private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
+	//private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/"; //Used for testing.
 	
 	String result = "";
 	WebView wv;
