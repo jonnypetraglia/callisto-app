@@ -553,7 +553,7 @@ public class CalendarActivity extends Activity {
 			NumberPicker NumP = (NumberPicker) vi.findViewById(R.id.minutesBefore);
 			NumP.setSuffix(" min before");
 			NumP.setIncrement(15);
-			NumP.setRange(0, 90);
+			NumP.setRange(0, 300);
 			
 			RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
 		    mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);

@@ -32,6 +32,8 @@ import android.os.Bundle;
 /** Receives and creates any alarms set in the "Plan" feature. */
 public class AlarmNotificationReceiver extends BroadcastReceiver
 {
+	public final static String PREF_FILE = "alarms";
+	
 	/** Called when an alarm is received. Creates the alarm and sounds it. */
 	@Override
 	public void onReceive(Context context, Intent intent)
@@ -72,7 +74,8 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
             	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
             mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_alarm);
             
-            SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
+            SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor edit = alarmPrefs.edit();
             edit.remove(key);
             edit.commit();
         }

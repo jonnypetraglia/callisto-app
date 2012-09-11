@@ -20,6 +20,7 @@ package com.qweex.callisto;
 //FIXME This apparently FCs
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import android.util.Log;
 
 public class BootNotificationReceiver extends BroadcastReceiver
 {
+	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
 	public final static String PREF_FILE = "alarms";
 	Calendar now = Calendar.getInstance();
 	
@@ -41,7 +43,7 @@ public class BootNotificationReceiver extends BroadcastReceiver
 	{
 		SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
 		Map<String,?> alarms = alarmPrefs.getAll();
-		SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
+		SharedPreferences.Editor edit = alarmPrefs.edit();
 		Log.d("BootNotify", "Begin");
 		for (Map.Entry<String, ?> entry : alarms.entrySet())
 		{
@@ -52,14 +54,17 @@ public class BootNotificationReceiver extends BroadcastReceiver
 			
 			Log.d("BootNotify", "Getting things");
 			int min = Integer.parseInt(value.substring(0,value.indexOf("_")));
+			Log.d("BootNotify", "Thing1: " + min);
 			String tone = value.substring(value.indexOf("_")+1,value.lastIndexOf("_"));
-			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")));
+			Log.d("BootNotify", "Thing1: " + tone);
+			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")-1));
+			Log.d("BootNotify", "Thing1: " + isAlarm_and_vibrate);
 			int isAlarm = isAlarm_and_vibrate>10?1:0;
 			int vibrate = isAlarm_and_vibrate%2!=0?1:0;
 			//min_tone_isAlarmvibrate
 			
 			try {
-				time.setTime(Callisto.sdfRaw.parse(entry.getKey().substring(14)));
+				time.setTime(sdfRaw.parse(entry.getKey().substring(14)));
 			} catch (ParseException e) {}
 			
 			if(time.before(now))
