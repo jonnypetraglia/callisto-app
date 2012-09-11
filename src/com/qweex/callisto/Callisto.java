@@ -35,10 +35,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.qweex.callisto.donate.Donate;
 import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.podcast.AllShows;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
+import com.qweex.callisto.widgets.WidgetHandler;
 import com.qweex.utils.UnfinishedParseException;
 
 import android.app.Activity;
@@ -157,7 +159,7 @@ public class Callisto extends Activity {
 	public static boolean live_isPlaying = false;
 		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
-	protected static boolean is_widget;
+	public static boolean is_widget;
 	
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
