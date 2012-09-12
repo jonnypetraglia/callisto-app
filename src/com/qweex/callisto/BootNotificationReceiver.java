@@ -17,8 +17,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
-//FIXME This apparently FCs
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
