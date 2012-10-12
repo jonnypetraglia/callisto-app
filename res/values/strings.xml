@@ -36,6 +36,7 @@
 	<string name="no_events">No events found for this week. Try "Load More".</string>
 	<string name="list_empty">List is empty</string>
 	<string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>
+	<string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
 	<string name="enqueued">Enqueued</string>
 	<string name="stream">Stream</string>
 	<string name="beginning_download">Beginning download</string>

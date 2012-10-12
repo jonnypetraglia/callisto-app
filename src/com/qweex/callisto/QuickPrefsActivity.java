@@ -33,7 +33,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
-//FEATURE: Configure when update will happen
 
 /** The activity that allows the user to change the preferences.
  * @author MrQweex

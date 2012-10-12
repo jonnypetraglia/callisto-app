@@ -47,6 +47,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -76,10 +78,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewAnimator;
 
-//CLEAN: Check: Only scroll down if the user is all the way scrolled down
-//FIXME: Messages are being repeated for some stupid reason; there is NO formatting on the duplicate messages
-//FIXME: If NickServ changes your nick because you don't identify, the app will crash when trying to receive or send a message. I blame jerklib
-//FEATURE: Save chat to file
 
 /** The IRC portion of the app to connect to the JB chatroom.
  * @author MrQweex
@@ -125,6 +123,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
 	private MenuItem Nick_MI, Logout_MI, Log_MI;
+	private WifiLock IRC_wifiLock;
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -143,19 +142,18 @@ public class IRCChat extends Activity implements IRCEventListener
 		        {
 		        	if(received.equals(new SpannableString("")))
 		        		return;
+		        	System.out.println("RECEIVED:" + received.toString());
 		            Callisto.chatView.append(received);
 		            Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
 		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
-		            boolean atBottom = Callisto.chatView.getBottom() - (sv.getHeight() + sv.getScrollY()) < 100;
+		            System.out.println(Callisto.chatView.getBottom() + " - (" + sv.getHeight() + " + " + sv.getScrollY() + ")<200");
+		            boolean atBottom = Callisto.chatView.getBottom() - (sv.getHeight() + sv.getScrollY()) < 200;
 		            if(atBottom)
 		            	sv.fullScroll(ScrollView.FOCUS_DOWN);
-		            
-		            System.out.println("A" + Callisto.chatView.getBottom());
-		            System.out.println("B" + (sv.getHeight() + sv.getScrollY()));
-		            
 		            input.requestFocus();
+		            //sv.isDirty();
 		        }
 			};
 		}
@@ -219,6 +217,9 @@ public class IRCChat extends Activity implements IRCEventListener
 				initiate();
 			}
 		});
+		
+		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
 		
 		ll.addView(user);
 		ll.addView(pass);
@@ -323,7 +324,9 @@ public class IRCChat extends Activity implements IRCEventListener
     	Log_MI.setEnabled(session!=null);
     	Logout_MI.setEnabled(session!=null);
     	Nick_MI.setEnabled(session!=null);
-    	} catch(Exception e) {}
+    	} catch(Exception e) {
+    		System.out.println("Unable to update menu items.");
+    	}
     }
     
     /** Called when an item in the menu is pressed.
@@ -386,18 +389,12 @@ public class IRCChat extends Activity implements IRCEventListener
     	mentionCount = 0;
     	nickColors.put(profileNick, CLR_MYNICK);
 		setContentView(R.layout.irc);
-		if(irssi)
-		{
-			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0);
-			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0);
-		}
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv.setVerticalFadingEdgeEnabled(false);
 		sv.setFillViewport(true);
 		sv2 = (ScrollView) findViewById(R.id.scrollView2);
 		sv2.setVerticalFadingEdgeEnabled(false);
 		
-		System.out.println(Callisto.chatView.getText().toString());
 		
 		ScrollView test = ((ScrollView)Callisto.chatView.getParent());
 		if(test!=null)
@@ -415,6 +412,13 @@ public class IRCChat extends Activity implements IRCEventListener
 				return false;
 			}
 		});
+		if(irssi)
+		{
+			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0);
+			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0);
+			if(android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
+				input.setTextColor(0xff000000 + IRSSI_GREEN);
+		}
 		
 		if(session!=null)
 			session.addIRCEventListener(this);
@@ -429,6 +433,8 @@ public class IRCChat extends Activity implements IRCEventListener
     	findViewById(1337).startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
     	resume();
     	SHOW_TIME = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_time", true);
+    	if(!IRC_wifiLock.isHeld())
+            IRC_wifiLock.acquire();
     	
     	//Read colors
     	if(irssi)
@@ -502,6 +508,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				return super.receiveEvent(e);
 			}
 		});
+		updateMenu();
     }
     
     /** Used to logout, quit, or part. */
@@ -511,14 +518,25 @@ public class IRCChat extends Activity implements IRCEventListener
     		quitMsg = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
     	if(quitMsg!=null)
     		session.getChannel(CHANNEL_NAME).part(quitMsg);
-		manager.quit();
-		manager = null;
-		session = null;
+    	chatHandler.post(quitHandler);
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
 		isFocused = false;
 		Callisto.chatView.setText("");
+		if(IRC_wifiLock.isHeld())
+            IRC_wifiLock.release();
 		finish();
     }
+    
+    Runnable quitHandler  = new Runnable()
+	{
+        @Override
+        public void run()
+        {
+        	manager.quit();
+    		manager = null;
+    		session = null;
+        }
+	};
     
   //INVITE_EVENT
   //NUMERIC_ERROR_EVENT
@@ -875,7 +893,6 @@ public class IRCChat extends Activity implements IRCEventListener
 					Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
 				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
 				mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
-				System.out.println("MENTIONEddddd " + mentionCount);
 				if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
 				{
 					mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
@@ -956,6 +973,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			SpannableString st = new SpannableString(session.getNick());
 			int colorBro = 0xFF000000 + CLR_ME;
 			int colorBro2 = 0xFF000000 + CLR_TEXT;
+			
 			
 			SpannableString st2 = new SpannableString(newMessage);
 			try {

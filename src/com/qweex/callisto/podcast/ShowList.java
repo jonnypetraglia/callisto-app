@@ -51,6 +51,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -297,7 +298,7 @@ public class ShowList extends Activity
         		Log.i("ShowList:handleMessage", "Not Changing cursor");
         		loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
         	}
-        	setProgressBarIndeterminateVisibility(false);
+        	//setProgressBarIndeterminateVisibility(false);
 		}
 	};
 
@@ -323,8 +324,11 @@ public class ShowList extends Activity
       {
     	  TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
     	  loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
-	  	  if(mainListView!=null)
+    	  if(result==null)
+    		  Toast.makeText(ShowList.this, Callisto.RESOURCES.getString(R.string.update_error), Toast.LENGTH_LONG).show();
+    	  else if(mainListView!=null)
 	   		  ShowList.this.updateHandler.sendMessage((Message) result);
+    	  setProgressBarIndeterminateVisibility(false);
       }
    }
    

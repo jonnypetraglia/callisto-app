@@ -712,6 +712,8 @@ public class Callisto extends Activity {
 					{
 						live_player.reset();
 						live_player = null;
+						if(LiveStream.Live_wifiLock!=null && !LiveStream.Live_wifiLock.isHeld())
+				            LiveStream.Live_wifiLock.release();
 						playerInfo.update(psychV.getContext());
 					}
 				})
@@ -845,6 +847,7 @@ public class Callisto extends Activity {
     
 	/** Updates a show by checking to see if there are any new episodes available.
 	 * 
+	 * @param c The context; used for showing a toast on error.
 	 * @param currentShow The number of the current show in relation to the AllShows.SHOW_LIST array
 	 * @param showSettings The associated SharedPreferences with that show
 	 * @param isVideo true to check the video feed, false to check the audio.
@@ -1025,6 +1028,7 @@ public class Callisto extends Activity {
 	   } catch (UnknownHostException e)
 	   {
 		   Log.e("*:update:UnknownHostException", "Unable to initiate a connection");
+		   return null;
 	   }  catch (IOException e) {
 		   //FIXME: EXCEPTION: IOException
 		   Log.e("*:update:IOException", "IO is a moon");

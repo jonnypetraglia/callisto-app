@@ -72,11 +72,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//FEATURE: Alarm!
-//FEATURE: Add recurring alarms; i.e., an alarm for every live TechSnap
-//IDEA: Storing the date information in the "PDT" format so it will be correct when you move between timezones without having to refresh
 //CLEAN: popup is incorrect margins for on top
-//FIXME: If there are no tones available, it will FC when you try to create an event
 
 /** Displays upcoming shows for Jupiter Broadcasting. A vertical orientation displays an agenda view,
  * and a horizontal orientation displays a weekly view.

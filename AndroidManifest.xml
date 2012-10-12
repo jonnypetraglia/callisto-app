@@ -27,11 +27,12 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.VIBRATE" />
 <uses-permission android:name="com.android.vending.BILLING" />
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>  
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>  
     <application android:label="Callisto" android:icon="@drawable/callisto"> 
 
 
-        <activity android:name="SplashScreen" android:screenOrientation="portrait">
+        <activity android:name="SplashScreen">
 
 
             <intent-filter>
@@ -68,7 +69,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             ></activity>
         <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity"></activity>
-        <activity android:name=".LiveStream"></activity>
+        <activity android:name=".LiveStream"
+            android:configChanges="orientation"></activity>
         <activity android:name=".donate.Donate"
             android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".widgets.WidgetHandler" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>

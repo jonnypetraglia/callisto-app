@@ -50,8 +50,6 @@ import android.webkit.WebView;
 
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
 //	    But it took forever and it required figuring out how to do a POST, plus, if the form ever changed it would probably break.
-//FEATURE: Someone to make this look pretty/native. Maybe chzbacon?
-//FIXME: Pressing a key pushes the keyboard offscreen.
 
 /** Form to contact the JB team directly from inside Callisto.
  * @author MrQweex

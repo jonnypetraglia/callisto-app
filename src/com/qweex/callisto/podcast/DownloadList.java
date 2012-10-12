@@ -43,9 +43,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-//FEATURE: Progress via a colored background progress bar
-//IDEA: Completed downloads
-
 /** An activity to display all the current downloads. 
  * @author MrQweex */
 

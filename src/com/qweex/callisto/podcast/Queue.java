@@ -38,8 +38,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.ImageButton;
 
-//FEATURE: Time progress for each track
-
 /** An activity for showing the queued episodes.
  * @author MrQweex */
 

@@ -38,12 +38,17 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,6 +78,7 @@ public class LiveStream extends Activity
     private static ProgressDialog pd;
     private static Dialog dg;
     private final int JBLIVE_MENU_ID = Menu.FIRST;
+    public static WifiLock Live_wifiLock;
 	
 	/** Called when the activity is first created. Sets up the view and whatnot.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -95,6 +101,11 @@ public class LiveStream extends Activity
 		next = (TextView) findViewById(R.id.next);
 		bigButton = (ImageButton) findViewById(R.id.playPause);
 		bigButton.setOnClickListener(playButton);
+		
+		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+        if(!Live_wifiLock.isHeld())
+            Live_wifiLock.acquire();
 	}
 	
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
@@ -102,12 +113,23 @@ public class LiveStream extends Activity
 	public void onResume()
 	{
 		super.onResume();
+		if(pd!=null)
+			pd.show();
+		
 		live_url = PreferenceManager.getDefaultSharedPreferences(LiveStream.this).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
 		
 		if(Callisto.live_player!=null)
 			(new FetchInfo()).execute((Void[]) null);
 		if(Callisto.live_isPlaying)
 			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+	}
+	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		dg.dismiss();
+		pd.dismiss();
 	}
 	
 	/** Called when it is time to create the menu.
@@ -137,6 +159,11 @@ public class LiveStream extends Activity
     	return super.onOptionsItemSelected(item);
     }
 	
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+    }
+    
     /** Updates the current and next track information. */
     private class FetchInfo extends AsyncTask<Void, Void, Void>
     {
@@ -194,10 +221,12 @@ public class LiveStream extends Activity
 		    next.setText(nextShow);
 			Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
 			PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-	       	Callisto.notification_playing.setLatestEventInfo(LiveStream.this, liveTitle,  "JB Radio", contentIntent);
-		       	
-	       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+			if(Callisto.notification_playing!=null)
+			{
+				Callisto.notification_playing.setLatestEventInfo(LiveStream.this, liveTitle,  "JB Radio", contentIntent);
+		       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+			}
 		}
     };
     
@@ -210,7 +239,7 @@ public class LiveStream extends Activity
 		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
-		    	pd.cancel();
+		    	pd.dismiss();
 		    	String whatWhat="";
 		    	switch (what) {
 		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
@@ -240,6 +269,15 @@ public class LiveStream extends Activity
 	static public void livePrepare(Context c)
 	{
 		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		pd.setOnDismissListener(new OnDismissListener()
+		{
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				pd.cancel();
+				pd = null;
+			}
+	
+		});
 		pd.setCancelable(true);
 		Callisto.live_player.prepareAsync();
 	}
@@ -249,9 +287,9 @@ public class LiveStream extends Activity
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
-			if(!pd.isShowing())
+			if(pd==null || !pd.isShowing())
 				return;
-			pd.cancel();
+			pd.dismiss();
 			try {
 				Callisto.live_player.start();
 				Callisto.live_isPlaying = true;
@@ -268,14 +306,15 @@ public class LiveStream extends Activity
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
-			if(!pd.isShowing())
+			if(pd!=null && !pd.isShowing())
 				return;
-			pd.cancel();
+			if(pd!=null)
+				pd.dismiss();
 			try {
 				Callisto.live_player.start();
 				(new FetchInfo()).execute((Void[]) null);
 				Callisto.live_isPlaying = true;
-				bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+				((ImageButton) findViewById(R.id.playPause)).setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
 				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
@@ -316,6 +355,8 @@ public class LiveStream extends Activity
 				Callisto.live_player.setOnPreparedListener(livePreparedListener);
 					try {
 				Callisto.live_player.setDataSource(live_url);
+				if(!Live_wifiLock.isHeld())
+		            Live_wifiLock.acquire();
 				livePrepare(LiveStream.this);
 				} catch (Exception e) {
 					dg.show();
@@ -334,6 +375,8 @@ public class LiveStream extends Activity
 				}
 				else
 				{
+					if(!Live_wifiLock.isHeld())
+			            Live_wifiLock.acquire();
 					Log.d("LiveStream:playButton", "Playing.");
 					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
 					Callisto.live_player.start();
