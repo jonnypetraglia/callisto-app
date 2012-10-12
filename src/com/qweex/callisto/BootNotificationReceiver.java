@@ -55,7 +55,7 @@ public class BootNotificationReceiver extends BroadcastReceiver
 			Log.d("BootNotify", "Thing1: " + min);
 			String tone = value.substring(value.indexOf("_")+1,value.lastIndexOf("_"));
 			Log.d("BootNotify", "Thing1: " + tone);
-			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")-1));
+			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")+1));
 			Log.d("BootNotify", "Thing1: " + isAlarm_and_vibrate);
 			int isAlarm = isAlarm_and_vibrate>10?1:0;
 			int vibrate = isAlarm_and_vibrate%2!=0?1:0;

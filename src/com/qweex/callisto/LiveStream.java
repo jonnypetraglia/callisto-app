@@ -128,8 +128,10 @@ public class LiveStream extends Activity
 	public void onDestroy()
 	{
 		super.onDestroy();
-		dg.dismiss();
-		pd.dismiss();
+		if(dg!=null)
+			dg.dismiss();
+		if(pd!=null)
+			pd.dismiss();
 	}
 	
 	/** Called when it is time to create the menu.

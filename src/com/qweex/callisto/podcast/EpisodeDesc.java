@@ -39,6 +39,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -82,6 +84,7 @@ public class EpisodeDesc extends Activity
 	private FileOutputStream outStream = null;
 	private byte[] buff = null;
 	private boolean isLandscape;
+	private WifiLock Download_wifiLock;
 	
 	//-----Static Variables-----
 	public static final DecimalFormat twoDec = new DecimalFormat("0.00");
@@ -178,6 +181,9 @@ public class EpisodeDesc extends Activity
 				determineButtons(false);
 			}
 		});
+		
+		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		Download_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_download");
 		
 	    CheckBox rb = ((CheckBox)findViewById(R.id.newImg));
         rb.setChecked(is_new);
@@ -328,6 +334,8 @@ public class EpisodeDesc extends Activity
 			 	Callisto.download_queue.add(EpisodeDesc.this.id);
 			 	Log.i("EpisodeDesc:launchDownload", "Adding download: " + media_link);
 			 	
+			 	if(!Download_wifiLock.isHeld())
+		            Download_wifiLock.acquire();
 			 	if(Callisto.download_queue.size()==1)
 					new DownloadTask().execute(media_link);
 			 	determineButtons(false);
@@ -532,6 +540,8 @@ public class EpisodeDesc extends Activity
 			contentIntent = PendingIntent.getActivity(EpisodeDesc.this, 0, notificationIntent, 0);
 			*/
 		    
+		 	if(Download_wifiLock.isHeld())
+	            Download_wifiLock.release();
 			Log.i("EpisodeDesc:DownloadTask", "Finished Downloading");
        		mNotificationManager.cancel(NOTIFICATION_ID);
        		if(Callisto.downloading_count>0)
