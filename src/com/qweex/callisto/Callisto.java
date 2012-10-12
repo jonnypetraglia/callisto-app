@@ -68,6 +68,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -239,6 +241,36 @@ public class Callisto extends Activity {
 	    logView = new TextView(this);
 	    logView.setGravity(Gravity.BOTTOM);
 	    logView.setMaxLines(Integer.parseInt(i));
+	    
+	    
+	    
+	    PhoneStateListener phoneStateListener = new PhoneStateListener() {
+	        @Override
+	        public void onCallStateChanged(int state, String incomingNumber) {
+	            if (state == TelephonyManager.CALL_STATE_RINGING) {
+	            	if(Callisto.live_isPlaying
+	            			|| !Callisto.playerInfo.isPaused)
+	            	{
+	            		playPause(Callisto.this, null);	            		
+	            	}
+	                //Incoming call: Pause music
+	            } else if(state == TelephonyManager.CALL_STATE_IDLE) {
+	                //Not in call: Play music
+	            } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+	            	if(Callisto.live_isPlaying
+	            			|| !Callisto.playerInfo.isPaused)
+	            	{
+	            		playPause(Callisto.this, null);	            		
+	            	}
+	            }
+	            super.onCallStateChanged(state, incomingNumber);
+	        }
+	    };
+	    TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+	    if(mgr != null) {
+	        mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+	    }
+
 	}
 	
 	
