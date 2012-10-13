@@ -370,11 +370,15 @@ public class ShowList extends Activity
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 		{
-			//this is way too hard to read
+			Long id = Long.parseLong((String)
+					((TextView)((View) buttonView.getParent()).findViewById(R.id.hiddenId)).getText());
+			System.out.println("IsChecked 1: " + id + " " + isChecked);
 			Callisto.databaseConnector.markNew(
-					Long.parseLong((String)
-							((TextView)((View) buttonView.getParent()).findViewById(R.id.hiddenId)).getText())
+					id
 					, isChecked);
+			Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+			c.moveToFirst();
+			System.out.println("IsChecked 2: " + c.getInt(c.getColumnIndex("new")));
 		}
 	};
     
@@ -405,14 +409,17 @@ public class ShowList extends Activity
            
     	   
            //Get info
-    	   String id = this.c.getString(this.c.getColumnIndex("_id"));
+    	   long id = this.c.getLong(this.c.getColumnIndex("_id"));
+    	   this.c = Callisto.databaseConnector.getOneEpisode(id);
+    	   this.c.moveToFirst();
+    	   
            String date = this.c.getString(this.c.getColumnIndex("date"));
            String title = this.c.getString(this.c.getColumnIndex("title"));
            String media_link = this.c.getString(this.c.getColumnIndex("mp3link"));
-           
+           System.out.println("IsChecked???: " + id + " " + this.c.getInt(this.c.getColumnIndex("new")));
     	   
     	   //_id
-    	   ((TextView) v.findViewById(R.id.hiddenId)).setText(id);
+    	   ((TextView) v.findViewById(R.id.hiddenId)).setText(Long.toString(id));
     	   //title
     	   ((TextView) v.findViewById(R.id.rowTextView)).setText(title);
     	   //date

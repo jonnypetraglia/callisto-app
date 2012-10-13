@@ -94,12 +94,15 @@ public class CallistoWidget extends AppWidgetProvider {
    * @param context The...uh....context....
    * @param intent The...uh....intent....
    */
-  @Override
-  public void onReceive(Context context, Intent intent) {
-   super.onReceive(context, intent);
-	Callisto.is_widget = true;
-	System.out.println("HEY");
-	Callisto.playPause(context, null);
-  }
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		super.onReceive(context, intent);
+		if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction()))
+			return;
+		System.out.println("Action: " + intent.getAction());
+		Callisto.is_widget = true;
+		System.out.println("HEY");
+		Callisto.playPause(context, null);
+	}
 
 }
