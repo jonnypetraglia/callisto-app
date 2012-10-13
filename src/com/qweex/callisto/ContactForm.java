@@ -33,6 +33,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import com.qweex.callisto.podcast.EpisodeDesc;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -69,7 +71,8 @@ public class ContactForm extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		//setProgressBarIndeterminateVisibility(false);
 		
 		setContentView(R.layout.contact2);
 		setTitle(R.string.contact);

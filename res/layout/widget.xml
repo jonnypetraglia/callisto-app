@@ -23,7 +23,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     android:background="#434343"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="15dp" >
+    android:paddingBottom="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp" >
 
     <LinearLayout
         android:id="@+id/widget"

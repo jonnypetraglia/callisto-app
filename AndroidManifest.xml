@@ -58,7 +58,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         </activity>
         <activity android:name=".podcast.EpisodeDesc"></activity>
         
-        <activity android:name="ContactForm" android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name="ContactForm"
+            android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
         <activity android:name="Callisto" android:launchMode="singleTop">
         </activity>
@@ -73,7 +74,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:configChanges="orientation"></activity>
         <activity android:name=".donate.Donate"
             android:configChanges="keyboardHidden|orientation"></activity>
-        <activity android:name=".widgets.WidgetHandler" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <!-- 
+        <activity android:name=".widgets.WidgetHandler"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+             -->
 		<activity android:name="com.paypal.android.MEP.PayPalActivity"
 				  android:theme="@android:style/Theme.Translucent.NoTitleBar"
 				  android:configChanges="keyboardHidden|orientation"/>
@@ -91,6 +95,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
     </receiver>
+    <receiver android:name=".widgets.WidgetHandler" android:label="Callisto">
+	   <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
+	</receiver>
+    
  
     
     <receiver android:name="com.android.vending.billing.BillingReceiver">

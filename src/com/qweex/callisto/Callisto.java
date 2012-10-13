@@ -52,6 +52,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -436,7 +437,17 @@ public class Callisto extends Activity {
 			Callisto.mplayer.setOnPreparedListener(okNowPlay);
 			Log.i("*:playTrack", "Preparing...");
 			if(isStreaming)
+			{
 				okNowPlay.pd = ProgressDialog.show(c, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+				okNowPlay.pd.setCancelable(true);
+				okNowPlay.pd.setOnDismissListener(new OnDismissListener() {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						Callisto.mplayer.stop();
+						dialog.cancel();
+					}
+				});
+			}
 			Callisto.mplayer.prepareAsync();
 			//FIXME: EXCEPTIONS
 		} catch (IllegalArgumentException e) {
@@ -636,7 +647,10 @@ public class Callisto extends Activity {
 	
 	public static void playPause(Context c, View v)
 	{			
-		String live_url = PreferenceManager.getDefaultSharedPreferences(c).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+		String live_url = "";
+		try {
+		live_url = PreferenceManager.getDefaultSharedPreferences(c).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+		} catch(NullPointerException e) {}
 		if(Callisto.live_player!=null)
 		{
 			if(Callisto.live_isPlaying)
@@ -663,7 +677,7 @@ public class Callisto extends Activity {
 			Callisto.live_isPlaying = !Callisto.live_isPlaying;
 			return;
 		}
-		if(databaseConnector.queueCount()==0)
+		if(databaseConnector==null || databaseConnector.queueCount()==0)
 			return;
 		
 		if(Callisto.mplayer==null)
@@ -1165,9 +1179,11 @@ public class Callisto extends Activity {
 			Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
 			if(pd!=null)
 				pd.cancel();
-			ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
-			if(ib!=null)
+			try {
+				ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
 				ib.setImageDrawable(Callisto.pauseDrawable);
+			} catch(NullPointerException e) {} //Case for when ib is not found
+			  catch(ClassCastException e) {} //Case for when it's the widget
 	    	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
 			Callisto.mplayer.start();
 			Callisto.playerInfo.isPaused = false;

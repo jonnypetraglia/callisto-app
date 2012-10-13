@@ -20,27 +20,30 @@ package com.qweex.callisto.widgets;
 import com.qweex.callisto.Callisto;
 
 import android.app.Activity;
+import android.app.Service;
 import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 
 /** A very small class that handles when the user presses the button on the widget.
  * @author MrQweex */
 
-public class WidgetHandler extends Activity {
+public class WidgetHandler extends BroadcastReceiver {
 
 	/** Called when the activity is first created. Immediately calls Callisto's playPause_ function.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		finish();
+	  public void onReceive(Context context, Intent intent) {
 		Callisto.is_widget = true;
-		Callisto.playPause(this, null);
+		System.out.println("HEY");
+		Callisto.playPause(null, null);
 	}
+	//*/
 	
 	/** Produces a call to update all the widgets. 
 	 * @param c The context, used for getApplicationContext()*/

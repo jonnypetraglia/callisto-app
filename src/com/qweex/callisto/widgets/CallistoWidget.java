@@ -28,6 +28,10 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.RemoteViews;
 
 /**  Manages the widgets for the Callisto app.
@@ -47,14 +51,12 @@ public class CallistoWidget extends AppWidgetProvider {
       int appWidgetId = appWidgetIds[i];
       RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
       
-      
       PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, Callisto.class), PendingIntent.FLAG_CANCEL_CURRENT);
       views.setOnClickPendingIntent(R.id.widget, pi);
       
-      Intent intent = new Intent(context, WidgetHandler.class);
+      Intent intent = new Intent(context, CallistoWidget.class);
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-      PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-      
+      PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
       views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
       
       // Updates the text and button
@@ -75,4 +77,13 @@ public class CallistoWidget extends AppWidgetProvider {
       appWidgetManager.updateAppWidget(appWidgetId, views);
     }
   }
+  
+  //@Override
+  public void onReceive(Context context, Intent intent) {
+   super.onReceive(context, intent);
+	Callisto.is_widget = true;
+	System.out.println("HEY");
+	Callisto.playPause(context, null);
+  }
+
 }
