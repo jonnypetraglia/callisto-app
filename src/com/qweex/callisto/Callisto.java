@@ -40,7 +40,7 @@ import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.podcast.AllShows;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
-import com.qweex.callisto.widgets.WidgetHandler;
+import com.qweex.callisto.widgets.CallistoWidget;
 import com.qweex.utils.UnfinishedParseException;
 
 import android.app.Activity;
@@ -462,7 +462,7 @@ public class Callisto extends Activity {
 			e.printStackTrace();
 		}
 		
-		WidgetHandler.updateAllWidgets(c);
+		CallistoWidget.updateAllWidgets(c);
     }
     
     
@@ -704,7 +704,7 @@ public class Callisto extends Activity {
 			}
 			Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
 		}
-		WidgetHandler.updateAllWidgets(c);
+		CallistoWidget.updateAllWidgets(c);
 	}
 	
     
@@ -1159,7 +1159,7 @@ public class Callisto extends Activity {
     	playerInfo.title = null;
     	playerInfo.update(c);
     	mNotificationManager.cancel(NOTIFICATION_ID);
-    	WidgetHandler.updateAllWidgets(c);
+    	CallistoWidget.updateAllWidgets(c);
     }
     
     public class oOnPreparedListener implements OnPreparedListener

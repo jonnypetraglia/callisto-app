@@ -25,6 +25,7 @@ import com.qweex.callisto.R;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -77,8 +78,23 @@ public class CallistoWidget extends AppWidgetProvider {
       appWidgetManager.updateAppWidget(appWidgetId, views);
     }
   }
+
+  /** Produces a call to update all the widgets. 
+   * @param c The context, used for getApplicationContext()*/
+  public static void updateAllWidgets(Context c){
+      AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(c.getApplicationContext());
+      int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(c, CallistoWidget.class));
+      if (appWidgetIds.length > 0) {
+          new CallistoWidget().onUpdate(c, appWidgetManager, appWidgetIds);
+      }
+  }
+
   
-  //@Override
+  /** Called when the user presses a button on the widget.
+   * @param context The...uh....context....
+   * @param intent The...uh....intent....
+   */
+  @Override
   public void onReceive(Context context, Intent intent) {
    super.onReceive(context, intent);
 	Callisto.is_widget = true;

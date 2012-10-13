@@ -74,10 +74,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:configChanges="orientation"></activity>
         <activity android:name=".donate.Donate"
             android:configChanges="keyboardHidden|orientation"></activity>
-        <!-- 
-        <activity android:name=".widgets.WidgetHandler"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
-             -->
 		<activity android:name="com.paypal.android.MEP.PayPalActivity"
 				  android:theme="@android:style/Theme.Translucent.NoTitleBar"
 				  android:configChanges="keyboardHidden|orientation"/>
@@ -95,9 +91,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 <category android:name="android.intent.category.DEFAULT" />
         </intent-filter>
     </receiver>
-    <receiver android:name=".widgets.WidgetHandler" android:label="Callisto">
-	   <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
-	</receiver>
     
  
     
