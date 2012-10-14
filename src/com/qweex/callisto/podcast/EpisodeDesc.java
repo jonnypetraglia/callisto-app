@@ -248,6 +248,7 @@ public class EpisodeDesc extends Activity
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 		{
+			System.out.println("ED "+ id + " " + isChecked);
 			Callisto.databaseConnector.markNew(id, isChecked);
 		}
 	};

@@ -56,6 +56,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
 				    android:key="irc_color_text" android:title="Text Color" android:defaultValue="#000000"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
+				    android:key="irc_color_back" android:title="Background Color" android:defaultValue="#FFFFFF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        <net.margaritov.preference.colorpicker.ColorPickerPreference
 				    android:key="irc_color_topic" android:title="Topic Color" android:defaultValue="#B8860B"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
 		        	android:key="irc_color_mynick" android:title="Your Nick Color" android:defaultValue="#2E8B57"  alphaSlider="false" android:dependency="irc_irssi"/>

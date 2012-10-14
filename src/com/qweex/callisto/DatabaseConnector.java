@@ -237,22 +237,26 @@ public class DatabaseConnector
 	
 	/** [DATABASE_QUEUE] Moves an item either forward or back in the queue
 	 * @param id1 The ID to move either forward or back
-	 * @param isDown True means direction is back, otherwise moves forward.
+	 * @param dir The direction to move; + is up, - is down, 0 is delete
 	 */
-	public void move(long id1, boolean isDown)
+	public void move(long id1, int dir)
 	{
 		
+		   //Get the one that is selected
 	       Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id=" + id1, null, null, null, null);
 	       c1.moveToFirst();
 	       long identity1 = c1.getLong(c1.getColumnIndex("identity"));
 	       int current1 = c1.getInt(c1.getColumnIndex("current"));
 	       int streaming1 = c1.getInt(c1.getColumnIndex("streaming"));
 		   
+	       //Get the one that it will move with
 	       Cursor c2;
-	       if(isDown)
+	       if(dir<0)
 	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id<" + id1, null, null, null, "_id DESC", "1");
 	       else
 	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id>" + id1, null, null, null, "_id ASC", "1");
+	       if(dir==0)
+	    	   deleteQueueItem(id1);
 	       if(c2.getCount()==0)
 	    	   return;
 	       c2.moveToFirst();
@@ -261,8 +265,11 @@ public class DatabaseConnector
 	       int current2 = c2.getInt(c2.getColumnIndex("current"));
 	       int streaming2 = c2.getInt(c2.getColumnIndex("streaming"));
 	       
-	       updateQueue(id1, identity2, current2, streaming2);
-	       updateQueue(id2, identity1, current1, streaming1);
+	       if(dir!=0)
+	       {
+		       updateQueue(id1, identity2, current2, streaming2);
+		       updateQueue(id2, identity1, current1, streaming1);
+	       }
 		   
 	}
 	

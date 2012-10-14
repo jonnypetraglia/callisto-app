@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import com.qweex.callisto.Callisto;
@@ -94,6 +95,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private String profilePass;
 	private boolean SHOW_TIME = true;
 	private int CLR_TEXT,
+				   CLR_BACK,
 				   CLR_TOPIC,
 				   CLR_ME,
 				   CLR_JOIN,
@@ -113,13 +115,13 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static boolean isFocused = false;
 	private ScrollView sv, sv2;
 	private EditText input;
-	private Spanned received;
+	private static Spanned received;
 	private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
 	private boolean isLandscape;
 	private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
 	public static List<String> nickList;
 	private static Handler chatHandler = null;
-	private Runnable chatUpdater;
+	private static Runnable chatUpdater;
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
 	private MenuItem Nick_MI, Logout_MI, Log_MI;
@@ -140,9 +142,9 @@ public class IRCChat extends Activity implements IRCEventListener
 		        @Override
 		        public void run()
 		        {
+		        	System.out.println("RECEIVED:" + received.toString());
 		        	if(received.equals(new SpannableString("")))
 		        		return;
-		        	System.out.println("RECEIVED:" + received.toString());
 		            Callisto.chatView.append(received);
 		            Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
 		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
@@ -414,10 +416,15 @@ public class IRCChat extends Activity implements IRCEventListener
 		});
 		if(irssi)
 		{
-			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0);
-			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0);
+			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000);
+			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000);
 			if(android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
 				input.setTextColor(0xff000000 + IRSSI_GREEN);
+		}
+		else
+		{
+			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
+			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
 		}
 		
 		if(session!=null)
@@ -431,7 +438,6 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	updateMenu();
     	findViewById(1337).startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
-    	resume();
     	SHOW_TIME = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_time", true);
     	if(!IRC_wifiLock.isHeld())
             IRC_wifiLock.acquire();
@@ -440,11 +446,14 @@ public class IRCChat extends Activity implements IRCEventListener
     	if(irssi)
     	{
     		CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=IRSSI_GREEN;
+    		CLR_BACK=0x0;
     	}
     	else
     	{
 	    		IRCChat.nickColors.put("",
 	    	CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
+	    		IRCChat.nickColors.put("",
+	    	CLR_BACK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
 	    		IRCChat.nickColors.put(" ",
 		    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
 		    CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
@@ -467,7 +476,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	    		IRCChat.nickColors.put("           ",
 			CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
     	}
-    	
+    	resume();
 		
 		Intent notificationIntent = new Intent(this, IRCChat.class);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -485,7 +494,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			session.onEvent(auth, Type.CONNECT_COMPLETE , Type.MODE_EVENT);
 		}
 		session.addIRCEventListener(this);
-		
+		/*
 		session.setInternalParser(new jerklib.parsers.DefaultInternalEventParser()
 		{
 			@Override
@@ -507,7 +516,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				catch(Exception ex){}
 				return super.receiveEvent(e);
 			}
-		});
+		});*/
 		updateMenu();
     }
     
@@ -521,7 +530,6 @@ public class IRCChat extends Activity implements IRCEventListener
     	chatHandler.post(quitHandler);
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
 		isFocused = false;
-		Callisto.chatView.setText("");
 		if(IRC_wifiLock.isHeld())
             IRC_wifiLock.release();
 		finish();
@@ -532,6 +540,14 @@ public class IRCChat extends Activity implements IRCEventListener
         @Override
         public void run()
         {
+    		int titleColor = 0xFF000000 + CLR_ERROR;
+    		SpannableString tit = new SpannableString("~~~~~[TERMINATED]~~~~~");
+			tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
+			tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
+    		
+    		Spanned s =  (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+    									 , tit, "\n");
+    		Callisto.chatView.append(s);
         	manager.quit();
     		manager = null;
     		session = null;
@@ -654,6 +670,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					received = getReceived("->" + m.getNick(), m.getMessage(), CLR_PM);
 				else
 					received = getReceived(m.getNick(), m.getMessage(), null);
+				System.out.println("CHANNEL_MESSAGE: " + m.getMessage());
 				chatHandler.post(chatUpdater);
 				break;
 			case JOIN:
@@ -941,13 +958,37 @@ public class IRCChat extends Activity implements IRCEventListener
 	 * @return An integer with the hex value of a random color. */
 	public Integer getRandomColor()
 	{
-		int rndm = 0xFFFFFF;
-		do
+		int back = CLR_BACK;
+		int background_avg = 0;
+		for(int i=0; i<6; ++i)
 		{
+			background_avg += back % 16;
+			back %= 16;
+		}
+		background_avg /= 6;
+		
+		int rndm;
+		Random randomGenerator = new Random();
+		do {
+			rndm = 0;
+			for(int i=0; i<6; ++i)
+			{
+				if(background_avg>0x7)
+					rndm += ((randomGenerator.nextInt(background_avg - 0x7) + 0x0) << (i*4));
+				else
+					rndm += ((randomGenerator.nextInt(0xF - 0x7 + background_avg) + 0x7 + background_avg) << (i*4));
+			}
+			System.out.println("Rndm: " + rndm);
+		} while(nickColors.containsValue(rndm));
+		return rndm;
+		
+		/*
+		int rndm = 0xFFFFFF;
+		do {
 			rndm = 0 + (int)(Math.random() * ((0xFFFFFF - 0) + 1));
-			System.out.println("RNDM: " + Integer.toHexString(rndm));
 		} while(!isAcceptable(rndm) && nickColors.containsValue(rndm));
 		return rndm;
+		//*/
 	}
 	
 	/** Determines if a random color is acceptable.
@@ -956,7 +997,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private boolean isAcceptable(int rgb)
 	{
 		int red = (rgb >> 16) & 0x000000FF;
-		int green = (rgb >>8 ) & 0x000000FF;
+		int green = (rgb >> 8) & 0x000000FF;
 		int blue = (rgb) & 0x000000FF;
 
 		int ans = ((red*299)+(green*587)+(blue*114))/1000;

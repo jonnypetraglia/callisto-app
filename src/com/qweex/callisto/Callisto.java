@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -163,6 +164,7 @@ public class Callisto extends Activity {
 		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
 	public static boolean is_widget;
+	private static boolean startPlaying = false;
 	
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
@@ -352,7 +354,7 @@ public class Callisto extends Activity {
 	 * @param previousOrNext >0 if it should play the next track, <0 for the previous, and 0 for the current
 	 * @param startPlaying true if the player should start playing when it changes tracks, false otherwise
 	 */
-    public static void playTrack(Context c, int previousOrNext, boolean startPlaying)
+    public static void playTrack(Context c, int previousOrNext, boolean sp)
     {    	
 		Cursor queue = Callisto.databaseConnector.advanceQueue(previousOrNext);
     	//If there are no items in the queue, stop the player
@@ -432,8 +434,7 @@ public class Callisto extends Activity {
 			Callisto.mplayer.setDataSource(media_location);
 			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
 			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-			if(!startPlaying)
-				return;
+			Callisto.startPlaying = sp;
 			Callisto.mplayer.setOnPreparedListener(okNowPlay);
 			Log.i("*:playTrack", "Preparing...");
 			if(isStreaming)
@@ -624,6 +625,7 @@ public class Callisto extends Activity {
 			if(Callisto.mplayer==null || !Callisto.mplayer.isPlaying())
 				return;
 			i++;
+			try {
 			Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
 			current = Callisto.playerInfo.position/1000;
 			timeProgress.setProgress(current);
@@ -641,6 +643,11 @@ public class Callisto extends Activity {
 				{
 					Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
 				}
+			}
+			
+			} catch(Exception e)
+			{
+				System.out.println("!!!");
 			}
 		}
 	};
@@ -1185,9 +1192,11 @@ public class Callisto extends Activity {
 			} catch(NullPointerException e) {} //Case for when ib is not found
 			  catch(ClassCastException e) {} //Case for when it's the widget
 	    	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
+	    	Callisto.playerInfo.update(c);
+	    	if(!startPlaying)
+				return;
 			Callisto.mplayer.start();
 			Callisto.playerInfo.isPaused = false;
-			Callisto.playerInfo.update(c);
 			pd=null;
 		}
     	

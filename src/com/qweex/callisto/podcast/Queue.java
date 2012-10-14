@@ -93,14 +93,10 @@ public class Queue extends ListActivity
     	Callisto.databaseConnector.clearQueue();
 		listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
 		Log.d("Queue:onOptionsItemSelected", "Cursor changed");
-		/*
-		ImageButton v = (ImageButton) findViewById(R.id.playPause);
-		if(v!=null)
-			((ImageButton)v).setImageDrawable(Callisto.playDrawable);
-			*/
+		updateNowPlaying(0);
 	    Callisto.playerInfo.isPaused = true;
 	    if(Callisto.mplayer!=null)
-	    	Callisto.mplayer.pause();
+	    	Callisto.mplayer.stop();
 	 	Log.d("Queue:onOptionsItemSelected", "Derp");
     	return true;
     }    
@@ -113,7 +109,8 @@ public class Queue extends ListActivity
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
 			 long id = Long.parseLong((String) tv.getText());
-			 Callisto.databaseConnector.move(id, true);
+			 Callisto.databaseConnector.move(id, 1);
+			 updateNowPlaying(id);
 			 
 			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
 			 //NowPlaying.this.listAdapter.notifyDataSetChanged();
@@ -128,12 +125,31 @@ public class Queue extends ListActivity
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
 			 long id = Long.parseLong((String) tv.getText());
-			 Callisto.databaseConnector.move(id, false);
+			 Callisto.databaseConnector.move(id, -1);
+			 updateNowPlaying(id);
 			 
 			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-			 //NowPlaying.this.listAdapter.notifyDataSetChanged();
 		  }
     };
+    
+    void updateNowPlaying(long id)
+    {
+    	if(id==0)
+    	{
+    		Callisto.playerInfo.title = null;
+    		Callisto.playerInfo.show = null;
+    		Callisto.playerInfo.date = "";
+    		Callisto.playerInfo.position = 0;
+    		Callisto.playerInfo.length = 0;
+    		return;
+    	}
+    	Cursor c2 = Callisto.databaseConnector.getOneEpisode(id);
+    	c2.moveToFirst();
+    	Callisto.playerInfo.title = c2.getString(c2.getColumnIndex("title"));
+    	Callisto.playerInfo.show = c2.getString(c2.getColumnIndex("show"));
+    	Callisto.playerInfo.date = c2.getString(c2.getColumnIndex("date"));
+    	Callisto.playerInfo.position = c2.getInt(c2.getColumnIndex("position"));
+    }
 
     /** Listener for the remove button ("x"). Moves an entry up in the queue. */
     OnClickListener removeItem = new OnClickListener() 
@@ -143,50 +159,36 @@ public class Queue extends ListActivity
 		  {
 			 Log.d("Queue:removeItem", "Clicked to remove an item in the queue");
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-			 Log.d("Queue:removeItem", "Found TV");
 			 long id = Long.parseLong((String) tv.getText());
-			 Log.d("Queue:removeItem", "Parsed long");
-			 long id2=id-1;
+			 long current_id = id;
+			 
 			 Cursor c = Callisto.databaseConnector.currentQueue();
-			 Log.d("Queue:removeItem", "Got cursor");
-			 if(c.getCount()!=0)
+			 
+			 if(c.getCount()==0)
+				 updateNowPlaying(0);
+			 else
 			 {
-				 Log.d("Queue:removeItem", "Move to first");
 				 c.moveToFirst();
-				 Log.d("Queue:removeItem", "Getting id2");
-			 	 id2 = c.getLong(c.getColumnIndex("_id"));
-			 }
-			 Log.d("Queue:removeItem", "Parsed long 2");
-			 if(id==id2)
-			 {
-				 Log.d("Queue:removeItem", "Removing the current item; advancing to next");
-				 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-				 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
-				 if(isPlaying)
+				 current_id = c.getLong(c.getColumnIndex("_id"));
+				 updateNowPlaying(c.getLong(c.getColumnIndex("identity")));
+				 if(id==current_id)
 				 {
-					 Log.d("Queue:removeItem", "Track is playing");
-				    ((ImageButton)v).setImageDrawable(Callisto.playDrawable);
-				    Callisto.playerInfo.isPaused = true;
-				 	Callisto.mplayer.pause();
+					 Log.d("Queue:removeItem", "Removing the current item; advancing to next");
+					 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
+					 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+					 if(isPlaying)
+					 {
+						 Log.d("Queue:removeItem", "Track is playing");
+					    Callisto.playerInfo.isPaused = true;
+					 }
+					 
 				 }
-				 Callisto.databaseConnector.advanceQueue(1);
 			 }
-			 
-			 Log.d("Queue:removeItem", "Removing item and updating cursor");
-			 Callisto.databaseConnector.deleteQueueItem(id);
-			 Cursor q = Callisto.databaseConnector.getQueue();
-			 listAdapter.changeCursor(q);
-			 
-			 if(q.getCount()==0)
-			 {
-		    	Callisto.playerInfo.title = null;
-		    	Callisto.playerInfo.show = null;
-		    	Callisto.playerInfo.date = null;
-		    	Callisto.playerInfo.position = 0;
-		    	Callisto.playerInfo.length = 0;
-			 }
+			 Callisto.databaseConnector.move(id, 0);
+			 			 
+			 listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
 			 Log.d("Queue:removeItem", "Done");
-		  }
+	  }
     };
 	
     /** An adapter for the Queue class. Used to update the queue from the SQLite database. */

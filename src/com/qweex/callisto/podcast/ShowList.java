@@ -160,12 +160,12 @@ public class ShowList extends Activity
 		
 		
 		long id = Long.parseLong(
-				(String) ((TextView)((View) current_episode.getParent()).findViewById(R.id.hiddenId)).getText()
+				(String) ((TextView)((View) current_episode).findViewById(R.id.hiddenId)).getText()
 				);
 		Cursor c = Callisto.databaseConnector.getOneEpisode(id);
 		c.moveToFirst();
 		boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
-		((CheckBox)((View) current_episode.getParent()).findViewById(R.id.img)).setChecked(is_new);
+		((CheckBox)((View) current_episode).findViewById(R.id.img)).setChecked(is_new);
 		current_episode=null;
 	}
 	
@@ -207,7 +207,6 @@ public class ShowList extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-    	
         switch (item.getItemId())
         {
         case RELOAD_ID:
@@ -372,13 +371,11 @@ public class ShowList extends Activity
 		{
 			Long id = Long.parseLong((String)
 					((TextView)((View) buttonView.getParent()).findViewById(R.id.hiddenId)).getText());
-			System.out.println("IsChecked 1: " + id + " " + isChecked);
 			Callisto.databaseConnector.markNew(
 					id
 					, isChecked);
 			Cursor c = Callisto.databaseConnector.getOneEpisode(id);
 			c.moveToFirst();
-			System.out.println("IsChecked 2: " + c.getInt(c.getColumnIndex("new")));
 		}
 	};
     
@@ -416,7 +413,6 @@ public class ShowList extends Activity
            String date = this.c.getString(this.c.getColumnIndex("date"));
            String title = this.c.getString(this.c.getColumnIndex("title"));
            String media_link = this.c.getString(this.c.getColumnIndex("mp3link"));
-           System.out.println("IsChecked???: " + id + " " + this.c.getInt(this.c.getColumnIndex("new")));
     	   
     	   //_id
     	   ((TextView) v.findViewById(R.id.hiddenId)).setText(Long.toString(id));
