@@ -58,8 +58,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         </activity>
         <activity android:name=".podcast.EpisodeDesc"></activity>
         
-        <activity android:name="ContactForm"
-            android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name=".ContactForm" android:configChanges="keyboardHidden|orientation"
+            ></activity>
         <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
         <activity android:name="Callisto" android:launchMode="singleTop">
         </activity>

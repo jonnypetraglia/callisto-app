@@ -74,10 +74,15 @@ public class ContactForm extends Activity
 		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		//setProgressBarIndeterminateVisibility(false);
 		
+		/*
 		setContentView(R.layout.contact2);
 		setTitle(R.string.contact);
-		
 		wv = (WebView) findViewById(R.id.form);
+		//*/
+		
+		wv = new WebView(this);
+		setContentView(wv);
+		//*/
 
 		Handler mHandler = new Handler();
 		FetchForm fetchForm = new FetchForm();
@@ -132,7 +137,6 @@ public class ContactForm extends Activity
 	             
 	             result = new String(buffer);
 	             result = "<style type='text/css'>\n" + result + "\n</style>\n";
-	             System.out.println(result);
 	             
 	             long lastModified=0;
 	 			 //HttpURLConnection con = (HttpURLConnection) new URL("https://jblive.wufoo.com/forms/w7x2r7").openConnection();
@@ -172,10 +176,6 @@ public class ContactForm extends Activity
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			result = result.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";");
-			result = result.replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";");
-			//result = result.replaceAll("=\"/", "=\"http://wufoo.com/");
-			
 			
 			if(formURL.contains("qweex") && false)
 			{
@@ -194,9 +194,9 @@ public class ContactForm extends Activity
 					result.indexOf(str2)+str2.length());
 			result = result.replace(remove, "");
 			
-			System.out.println("3");
 			
-			wv.loadDataWithBaseURL("http://wufoo.com", result, "text/html", "utf-8", "about:blank");
+			
+			wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
 			return null;
 		}
 	};
@@ -206,5 +206,7 @@ public class ContactForm extends Activity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
       super.onConfigurationChanged(newConfig);
+      //wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";").replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";"), "text/html", "utf-8", "about:blank");
+
     }
 }
