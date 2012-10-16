@@ -1,0 +1,23 @@
+This minor version update introduces several bugfixes. 
+It includes 9 fixes to issues submitted to Callisto's Google Code page, but please remember that the 'Protostar' means 'Beta'.
+
+	Feature: Update notes -- A list of new features for this release.
+	Fix: Wi-fi connectivity -- Wi-fi should stay connected during streaming.
+	Fix: Irssi mode -- Irssi mode should now work correctly with colors.
+	Fix: Crash while rotate -- Fixed several cases of crashing when rotating & loading.
+	Fix: On-boot crash -- Finally fixed the on-boot-received. I sincerely hope so.
+	Feature: Pause for incoming phone call -- Player should pause when you received a phone call.
+	Fix: Widget -- Fixed the widget's appearance and functionality.
+	Fix: New/Seen -- Fixed the ability to toggle new or not new in show lists.
+	Fix: Now Playing info -- The now playing should now be updated at all times.
+	Feature: IRC Background -- Added the ability to set the background color. Consequently, nick colors may be less interesting now.
+	Feature: More "Stop" -- Added Stop menus....EVERYWHERE!
+	Feature: BACON! -- Added a special feature for people who donate ;)
+	
+	Special Thanks -- BlastyrWurm, crshbnct, & nogal, For submitting so many bugs to Google Code and testing them for me -- chz|bacon, For helping me get a ICS running device -- JupiterBroadcasting, for being awesome, as always.
+
+If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
+
+This release is dedicated to Jason, in hopes that he will forgive a very busy college student who is honestly trying his hardest without sacrificing his future career."
+
+	-MrQweex

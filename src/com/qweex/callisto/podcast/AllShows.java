@@ -71,7 +71,8 @@ public class AllShows extends Activity {
 	public static final String[] SHOW_LIST_VIDEO = Callisto.RESOURCES.getStringArray(R.array.shows_video);
 	
 	//-----Local Variables-----
-	private final int DOWNLOADS_ID = Menu.FIRST+1;
+	private final int STOP_ID = Menu.FIRST + 1;
+	private final int DOWNLOADS_ID = STOP_ID+1;
 	private final int UPDATE_ID = DOWNLOADS_ID+1;
 	private static ListView mainListView; 		 //Static so that it can be used in a static handler
 	private static AllShowsAdapter listAdapter ; //Static so that it can be used in a static handler
@@ -172,6 +173,7 @@ public class AllShows extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
     	menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(R.drawable.ic_menu_forward);
     	menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_menu_refresh);
         return true;
@@ -186,6 +188,9 @@ public class AllShows extends Activity {
  
         switch (item.getItemId())
         {
+        case STOP_ID:
+        	Callisto.stop(this);
+        	return true;
         case DOWNLOADS_ID:
         	Intent newIntent = new Intent(AllShows.this, DownloadList.class);
         	startActivity(newIntent);

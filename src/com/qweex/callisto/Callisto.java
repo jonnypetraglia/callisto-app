@@ -28,7 +28,6 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,6 +35,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.qweex.callisto.bonuses.Bacon;
 import com.qweex.callisto.donate.Donate;
 import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.podcast.AllShows;
@@ -77,6 +77,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -145,9 +146,13 @@ public class Callisto extends Activity {
 	static TextView timeView;
 	static int current;
 	static ProgressBar timeProgress;
+	
 	private static final int STOP_ID=Menu.FIRST+1;
 	private static final int SETTINGS_ID=STOP_ID+1;
-	private static final int QUIT_ID=SETTINGS_ID+1;
+	private static final int MORE_ID=SETTINGS_ID+1;
+	private static final int RELEASE_ID=MORE_ID+1;
+	private static final int BACON_ID=RELEASE_ID+1;
+	private static final int QUIT_ID=BACON_ID+1;
 	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
@@ -165,6 +170,7 @@ public class Callisto extends Activity {
 	public static int appVersion = -1;
 	public static boolean is_widget;
 	private static boolean startPlaying = false;
+	private Dialog news;
 	
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
@@ -273,7 +279,108 @@ public class Callisto extends Activity {
 	    if(mgr != null) {
 	        mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 	    }
-
+	    
+	    //Update shows
+	    SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(this);
+	    int lastVersion = pf.getInt("appVersion", 0);
+	    if(!(Callisto.appVersion>lastVersion))
+	    	return;
+	    
+	    showUpdateNews();
+	    SharedPreferences.Editor editor = pf.edit();
+	    editor.putInt("appVersion", Callisto.appVersion);
+	    editor.commit();
+	}
+	
+	public void showUpdateNews()
+	{
+	    TextView newsHeader = new TextView(this);
+	    newsHeader.setPadding(5, 5, 5, 5);
+	    TextView newsFooter = new TextView(this);
+	    newsFooter.setPadding(5, 5, 5, 5);
+		
+	    android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
+	    java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
+        java.util.List<java.util.List<java.util.Map<String, String>>> childData = new ArrayList<java.util.List<java.util.Map<String, String>>>();
+        java.io.BufferedReader bufReader;
+        try {
+         bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
+        } catch(Exception e) { return; }
+        String line=null;
+        int place = 1;
+        try {
+        while( (line=bufReader.readLine()) != null )
+        {
+        	//Header
+        	switch(place)
+        	{
+        	//header
+        	case 1:
+            	if("".equals(line))
+            	{
+            		place--;
+            		continue;
+            	}
+            	newsHeader.setText(newsHeader.getText() + "\n" + line);
+            	break;
+        	case -1:
+        		newsFooter.setText(newsFooter.getText() + "\n" + line);
+        		break;
+        	case 0:
+            	if("".equals(line))
+            	{
+            		place--;
+            		continue;
+            	}
+	        	java.util.Map<String, String> curGroupMap = new java.util.HashMap<String, String>();
+	        	java.util.List<java.util.Map<String, String>> children = new ArrayList<java.util.Map<String, String>>();
+	        	groupData.add(curGroupMap);
+	
+	        	int x = line.indexOf("--",1);
+	        	int y = line.indexOf("--", x+2);;
+	        	curGroupMap.put("TITLE", line.substring(0, x).trim());
+	        	while(true)
+	        	{
+	        		if(y==-1)
+	        			y = line.length();
+		        	java.util.Map<String, String> curChildMap = new java.util.HashMap<String, String>();
+		            children.add(curChildMap);
+		            curChildMap.put("DESCRIPTION", line.substring(x+2, y).trim());
+		            if(y==line.length())
+		            	break;
+	        		x = line.indexOf("--", x+2);
+	        		y = line.indexOf("--", x+2);
+	        	}
+	            childData.add(children);
+	            break;
+        	}
+        }
+        } catch(Exception e) {}
+	    
+	    
+	    android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
+                this,
+                groupData,
+                R.layout.news_listitem1,
+                new String[] { "TITLE" },
+                new int[] { android.R.id.text1 },
+                childData,
+                R.layout.news_listitem2,
+                new String[] { "DESCRIPTION" },
+                new int[] { android.R.id.text1 }
+                );
+	    elv.addHeaderView(newsHeader);
+	    elv.addFooterView(newsFooter);
+        elv.setAdapter(mAdapter);
+        elv.setGroupIndicator(null);
+	    news = new Dialog(this);
+	    try {
+	    	news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+	    } catch(Exception e) {
+	    	news.setTitle("Update notes");
+	    }
+	    news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+	    news.show();
 	}
 	
 	
@@ -282,6 +389,7 @@ public class Callisto extends Activity {
 	public void onDestroy()
 	{
 		super.onDestroy();
+		news.dismiss();
 	}
 	
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
@@ -1123,23 +1231,35 @@ public class Callisto extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+    	
     	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
     	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
+    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_menu_more);
+    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_menu_info_details);
+    	theSubMenu.add(0, BACON_ID, 0, RESOURCES.getString(R.string.bacon)).setIcon(R.drawable.ic_menu_star).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+    	
     	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
+    	//*/
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
- 
         switch (item.getItemId())
         {
         case STOP_ID:
-        	stop(this);
+        	Callisto.stop(this);
         	return true;
         case SETTINGS_ID:
         	startActivity(new Intent(this, QuickPrefsActivity.class));
+        	return true;
+        case RELEASE_ID:
+        	showUpdateNews();
+            return true;
+        case BACON_ID:
+        	Intent i = new Intent(Callisto.this, Bacon.class);
+            startActivity(i);
         	return true;
         case QUIT_ID:
         	finish();

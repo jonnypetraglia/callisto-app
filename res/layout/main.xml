@@ -15,42 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
-
 <!-- This is the layout for the main Callisto activity-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/naub" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:background="@color/backClr">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/naub"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@color/backClr" >
+    <TableLayout android:id="@+id/mainMenu" android:layout_width="fill_parent" android:layout_height="0dip" android:padding="10dp" android:layout_weight="1.0">
 
-    <TableLayout
-        android:id="@+id/mainMenu"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:padding="10dp"
-        android:layout_weight="1.0" >
+        <TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:padding="0dp">
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:padding="0dp" >
-
-            <Button
-                android:id="@+id/listen"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_play_clip"
-                android:paddingTop="10dp"
-                android:text="@string/play"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp" />
+            <Button android:id="@+id/listen" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_play_clip" android:paddingTop="10dp" android:text="@string/play" android:textColor="@android:color/primary_text_light" android:textSize="20sp"/>
 <!-- 
             <Button
                 android:id="@+id/watch"
@@ -66,102 +38,29 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:textSize="20sp"
                 android:visibility="gone" />
              -->
-            <Button
-                android:id="@+id/live"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_star"
-                android:paddingTop="10dp"
-                android:text="@string/live"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp" />
+            <Button android:id="@+id/live" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_star" android:paddingTop="10dp" android:text="@string/live" android:textColor="@android:color/primary_text_light" android:textSize="20sp"/>
 
         </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:visibility="visible" >
+        <TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
 
-            <Button
-                android:id="@+id/plan"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_today"
-                android:paddingTop="10dp"
-                android:text="@string/plan"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp"
-                android:visibility="visible" />
+            <Button android:id="@+id/plan" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_today" android:paddingTop="10dp" android:text="@string/plan" android:textColor="@android:color/primary_text_light" android:textSize="20sp" android:visibility="visible"/>
 
-            <Button
-                android:id="@+id/chat"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_allfriends"
-                android:paddingTop="10dp"
-                android:text="@string/chat"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp"
-                android:visibility="visible" />
+            <Button android:id="@+id/chat" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_allfriends" android:paddingTop="10dp" android:text="@string/chat" android:textColor="@android:color/primary_text_light" android:textSize="20sp" android:visibility="visible"/>
 
         </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:visibility="visible" >
+        <TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
 
-            <Button
-                android:id="@+id/contact"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_send"
-                android:paddingTop="10dp"
-                android:text="@string/contact"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp"
-                android:visibility="visible" />
+            <Button android:id="@+id/contact" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_send" android:paddingTop="10dp" android:text="@string/contact" android:textColor="@android:color/primary_text_light" android:textSize="20sp" android:visibility="visible"/>
 
-            <Button
-                android:id="@+id/donate"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_emoticons"
-                android:paddingTop="10dp"
-                android:text="@string/donate"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp"
-                android:visibility="visible" />
+            <Button android:id="@+id/donate" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_margin="5dp" android:layout_weight="1.0" android:drawablePadding="-10dp" android:drawableTop="@drawable/ic_menu_emoticons" android:paddingTop="10dp" android:text="@string/donate" android:textColor="@android:color/primary_text_light" android:textSize="20sp" android:visibility="visible"/>
 
         </TableRow>
         <!--  -->
         <!--  -->
     </TableLayout>
 
-    <include
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/controls"
-        android:stretchColumns="*" />
+    <include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/controls" android:stretchColumns="*"/>
 
 </LinearLayout>

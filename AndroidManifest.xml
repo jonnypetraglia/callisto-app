@@ -32,7 +32,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     <application android:label="Callisto" android:icon="@drawable/callisto"> 
 
 
-        <activity android:name="SplashScreen">
+        <activity android:name=".bonuses.SplashScreen">
 
 
             <intent-filter>
@@ -78,6 +78,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 				  android:theme="@android:style/Theme.Translucent.NoTitleBar"
 				  android:configChanges="keyboardHidden|orientation"/>
         
+		<activity android:name=".bonuses.Bacon"></activity>
 
     <service android:name="com.android.vending.billing.BillingService" />
 

@@ -73,7 +73,8 @@ public class ShowList extends Activity
     private String feedURL;
     private ListView mainListView = null;
     private CursorAdapter showAdapter;
-	private static final int RELOAD_ID=Menu.FIRST+1;
+	private static final int STOP_ID=Menu.FIRST+1;
+	private static final int RELOAD_ID=STOP_ID+1;
 	private static final int CLEAR_ID=RELOAD_ID+1;
 	private static final int FILTER_ID=CLEAR_ID+1;
 	private static final int MARK_ID = FILTER_ID+1;
@@ -194,8 +195,9 @@ public class ShowList extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
     	menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_menu_refresh);
-    	menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
+    	//menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
     	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_menu_zoom);
     	menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_menu_mark);
         return true;
@@ -209,6 +211,9 @@ public class ShowList extends Activity
     {
         switch (item.getItemId())
         {
+        case STOP_ID:
+        	Callisto.stop(this);
+        	return true;
         case RELOAD_ID:
         	reload();
             return true;

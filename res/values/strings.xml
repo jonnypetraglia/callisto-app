@@ -33,6 +33,9 @@
 	<string name="queue_error">There was an error loading the next song. It has been removed from the queue.</string>
 	<string name="seek_title">Seek to position</string>
 	<string name="quit">Quit</string>
+	<string name="more">More</string>
+	<string name="bacon">BACON!</string>
+	<string name="release_notes">Release Notes</string>
 	<string name="no_events">No events found for this week. Try "Load More".</string>
 	<string name="list_empty">List is empty</string>
 	<string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>

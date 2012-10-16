@@ -69,7 +69,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 public class EpisodeDesc extends Activity
 {
 	//-----Local variables-----
-	private static final int SHARE_ID=Menu.FIRST+1;
+	private static final int STOP_ID=Menu.FIRST+1;
+	private static final int SHARE_ID=STOP_ID + 1;
 	private String media_link = "";
 	private String title = "";
 	private String description = "";
@@ -205,6 +206,7 @@ public class EpisodeDesc extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
     	menu.add(0, SHARE_ID, 0, Callisto.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_menu_share);
         return true;
     }
@@ -218,6 +220,9 @@ public class EpisodeDesc extends Activity
  
         switch (item.getItemId())
         {
+        case STOP_ID:
+        	Callisto.stop(this);
+        	return true;
         case SHARE_ID:
             Intent i=new Intent(android.content.Intent.ACTION_SEND);
 
