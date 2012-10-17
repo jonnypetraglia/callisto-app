@@ -89,6 +89,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static final int LOG_ID=Menu.FIRST+1;
 	private static final int LOGOUT_ID=LOG_ID+1;
 	private static final int NICKLIST_ID=LOGOUT_ID+1;
+	private static final int SAVE_ID=NICKLIST_ID+1;
 	private final String SERVER_NAME = "irc.geekshed.net";
 	private final String CHANNEL_NAME = "#jupiterbroadcasting";
 	private String profileNick;
@@ -124,7 +125,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static Runnable chatUpdater;
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
-	private MenuItem Nick_MI, Logout_MI, Log_MI;
+	private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI;
 	private WifiLock IRC_wifiLock;
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -249,11 +250,6 @@ public class IRCChat extends Activity implements IRCEventListener
 				isFocused = false;
 				return true;
 			}
-			/*
-			Intent i = new Intent(IRCChat.this, Callisto.class);
-            startActivity(i);
-	        return true;
-	        */
 		}
 	    if (keyCode == KeyEvent.KEYCODE_SEARCH)
 	    {
@@ -314,6 +310,7 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
     	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_allfriends);
+    	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(R.drawable.ic_menu_save);
     	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_menu_close_clear_cancel);
 		updateMenu();
         return true;
@@ -325,10 +322,9 @@ public class IRCChat extends Activity implements IRCEventListener
     	try {
     	Log_MI.setEnabled(session!=null);
     	Logout_MI.setEnabled(session!=null);
+    	Save_MI.setEnabled(session!=null);
     	Nick_MI.setEnabled(session!=null);
-    	} catch(Exception e) {
-    		System.out.println("Unable to update menu items.");
-    	}
+    	} catch(Exception e) {}
     }
     
     /** Called when an item in the menu is pressed.
@@ -344,6 +340,9 @@ public class IRCChat extends Activity implements IRCEventListener
             return true;
         case NICKLIST_ID:
         	this.startActivityForResult(new Intent(this, NickList.class), 1);
+        	return true;
+        case SAVE_ID:
+        	//TODO: Save to file
         	return true;
         case LOGOUT_ID:
         	logout(null);

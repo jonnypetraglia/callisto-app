@@ -451,6 +451,7 @@ public class DatabaseConnector
 	 	         "(_id integer primary key autoincrement, " +
 	 	         	"identity INTEGER, " + 
 	 	         	"current INTEGER, " + 
+	 	         	//"length INTEGER" + 
 	 	         	"streaming INTEGER);";
 	 	      db.execSQL(createQuery2);
 	 	      
