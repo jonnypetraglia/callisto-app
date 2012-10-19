@@ -31,7 +31,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:key="live_url"
             android:entries="@array/live_quality"
             android:entryValues="@array/live_sources"
-            android:defaultValue="http://www.jblive.am"
+            android:defaultValue="http://jbradio.out.airtime.pro:8000/jbradio_b"
 	        />
 	    <CheckBoxPreference 
 	        android:key="completion_delete"
