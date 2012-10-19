@@ -207,7 +207,7 @@ public class Callisto extends Activity {
 		
 		//This loop sets the onClickListeners and adjusts the button settings if the view is landscape
 		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
-		int [] graphics = {R.drawable.ic_menu_play_clip, R.drawable.ic_menu_view, R.drawable.ic_menu_today, R.drawable.ic_menu_allfriends, R.drawable.ic_menu_send, R.drawable.ic_menu_emoticons};
+		int [] graphics = {R.drawable.ic_menu_play_clip, R.drawable.access_point, android.R.drawable.ic_menu_today, R.drawable.ic_menu_allfriends, android.R.drawable.ic_menu_send, R.drawable.heart};
 		
 		Button temp;
 		for(int i=0; i<buttons.length; i++)
@@ -228,8 +228,8 @@ public class Callisto extends Activity {
 		}
 		
 		//Initialization of (some of the) static variables
-		Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_media_play);
-		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_media_pause);
+		Callisto.playDrawable = RESOURCES.getDrawable(android.R.drawable.ic_media_play);
+		Callisto.pauseDrawable = RESOURCES.getDrawable(android.R.drawable.ic_media_pause);
 		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
 		Callisto.databaseConnector.open();
 		if(Callisto.playerInfo==null)
@@ -389,7 +389,8 @@ public class Callisto extends Activity {
 	public void onDestroy()
 	{
 		super.onDestroy();
-		news.dismiss();
+		if(news!=null)
+			news.dismiss();
 	}
 	
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
@@ -1232,14 +1233,12 @@ public class Callisto extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	
-    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
-    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_menu_preferences);
-    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_menu_more);
-    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_menu_info_details);
-    	theSubMenu.add(0, BACON_ID, 0, RESOURCES.getString(R.string.bacon)).setIcon(R.drawable.ic_menu_star).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
-    	
-    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_menu_close_clear_cancel);
-    	//*/
+    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
+    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(android.R.drawable.ic_menu_preferences);
+    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(android.R.drawable.ic_menu_more);
+    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(android.R.drawable.ic_menu_info_details);
+    	theSubMenu.add(0, BACON_ID, 0, RESOURCES.getString(R.string.bacon)).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         return true;
     }
     

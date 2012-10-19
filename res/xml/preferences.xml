@@ -52,7 +52,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        
 	        <PreferenceCategory android:title="Colors">
 	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true"/>
-	            
+	            <CheckBoxPreference android:key="nick_colors" android:title="Random nick colors" android:defaultValue="true" android:summary="Generate a random color for each nick." android:disableDependentsState="true" android:dependency="irc_irssi"/>
+	            <net.margaritov.preference.colorpicker.ColorPickerPreference
+	            	android:key="irc_color_etcnick" android:title="Other nick color" android:defaultValue="#2E8B91"  alphaSlider="false" android:dependency="nick_colors"/>
+				
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
 				    android:key="irc_color_text" android:title="Text Color" android:defaultValue="#000000"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference

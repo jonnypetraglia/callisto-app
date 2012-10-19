@@ -206,8 +206,8 @@ public class EpisodeDesc extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
-    	menu.add(0, SHARE_ID, 0, Callisto.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_menu_share);
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
+    	menu.add(0, SHARE_ID, 0, Callisto.RESOURCES.getString(R.string.share)).setIcon(android.R.drawable.ic_menu_share);
         return true;
     }
     

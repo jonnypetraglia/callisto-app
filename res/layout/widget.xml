@@ -56,8 +56,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
     <ImageButton
         android:id="@+id/widgetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_media_play_lg" />
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_media_play" />
 
 </LinearLayout>

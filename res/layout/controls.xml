@@ -115,7 +115,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_input_get" />
+            android:src="@drawable/list" />
         
         <ImageButton
             android:id="@+id/seek"
@@ -123,7 +123,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_menu_search" />
+            android:src="@drawable/progress_bar_zoom" />
         
         <ImageButton
             android:id="@+id/previous"
@@ -131,7 +131,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_media_previous" />
+            android:src="@android:drawable/ic_media_previous" />
         
         <ImageButton
             android:id="@+id/playPause"
@@ -139,7 +139,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_media_play" />
+            android:src="@android:drawable/ic_media_play" />
         
         <ImageButton
             android:id="@+id/next"
@@ -147,7 +147,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_height="wrap_content"
             android:layout_weight="1"
 			android:scaleType="center"
-            android:src="@drawable/ic_media_next" />
+            android:src="@android:drawable/ic_media_next" />
     </LinearLayout>
 
 </LinearLayout>

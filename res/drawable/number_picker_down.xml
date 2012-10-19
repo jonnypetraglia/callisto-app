@@ -19,17 +19,17 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_enabled="false"
-        android:drawable="@drawable/timepicker_down_disabled" />
+        android:drawable="@drawable/numberpicker_down_disabled" />
     <item
         android:state_focused="true"
         android:state_enabled="false"
-        android:drawable="@drawable/timepicker_down_disabled_focused" />
+        android:drawable="@drawable/numberpicker_down_disabled_focused" />
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/timepicker_down_pressed" />
+        android:drawable="@drawable/numberpicker_down_pressed" />
     <item
         android:state_selected="true"
-        android:drawable="@drawable/timepicker_down_selected" />
+        android:drawable="@drawable/numberpicker_down_selected" />
     <item
-        android:drawable="@drawable/timepicker_down_normal" />
+        android:drawable="@drawable/numberpicker_down_normal" />
 </selector>

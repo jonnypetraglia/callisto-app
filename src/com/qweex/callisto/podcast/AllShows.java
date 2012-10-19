@@ -173,8 +173,18 @@ public class AllShows extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
-    	menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(R.drawable.ic_menu_forward);
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
+    	//android.graphics.drawable.Drawable DownloadIcon = getResources().getDrawable(R.drawable.ic_menu_forward);
+    	
+    	Bitmap bmpOriginal = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_forward);
+    	Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
+    	android.graphics.Canvas tempCanvas = new android.graphics.Canvas(bmResult); 
+    	tempCanvas.rotate(90, bmpOriginal.getWidth()/2, bmpOriginal.getHeight()/2);
+    	tempCanvas.drawBitmap(bmpOriginal, 0, 0, null);
+    	android.graphics.drawable.Drawable DownloadIcon = new android.graphics.drawable.BitmapDrawable(getResources(), bmResult);
+	
+    	
+    	menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(DownloadIcon);
     	menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_menu_refresh);
         return true;
     }

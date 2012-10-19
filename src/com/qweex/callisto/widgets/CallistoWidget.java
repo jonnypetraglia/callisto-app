@@ -28,6 +28,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +42,8 @@ import android.widget.RemoteViews;
  * @author MrQweex */
 
 public class CallistoWidget extends AppWidgetProvider {
+	//Bitmap playIcon, pauseIcon;
+	
 	
 	/** Called when the widgets have been notified that they need to be updated
 	 * @param context Check the Android docs
@@ -47,10 +52,22 @@ public class CallistoWidget extends AppWidgetProvider {
 	 */
   public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
     final int N = appWidgetIds.length;
+    /*
+    if(playIcon==null)
+    {
+    	playIcon = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_media_play);
+    }
+    if(pauseIcon==null)
+    {
+    	pauseIcon = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_media_pause);
+    }
+    */
+    
     Log.v("CallistoWidget:onUpdate",  "Updating widgets " + Arrays.asList(appWidgetIds));
     for (int i = 0; i < N; i++) {
       int appWidgetId = appWidgetIds[i];
       RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+      //views.setImageViewBitmap(R.id.widgetButton, playIcon);
       
       PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, Callisto.class), PendingIntent.FLAG_CANCEL_CURRENT);
       views.setOnClickPendingIntent(R.id.widget, pi);
@@ -60,15 +77,19 @@ public class CallistoWidget extends AppWidgetProvider {
       PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
       views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
       
+      if(Callisto.playerInfo==null || Callisto.playerInfo.isPaused)
+    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_play);
+    	  //views.setImageViewBitmap(R.id.widgetButton, playIcon);
+      else
+    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_pause);
+    	  //views.setImageViewBitmap(R.id.widgetButton, pauseIcon);
+   
+      
       // Updates the text and button
       if(Callisto.playerInfo!=null && Callisto.playerInfo.title!=null)
       {
 	      views.setTextViewText(R.id.widgetTitle, Callisto.playerInfo.title);
 	      views.setTextViewText(R.id.widgetShow, Callisto.playerInfo.show);
-	      if(Callisto.playerInfo.isPaused)
-	    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_play_lg);
-	      else
-	    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_pause_lg);
       }
       else
       {

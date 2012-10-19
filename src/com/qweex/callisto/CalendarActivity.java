@@ -49,6 +49,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -97,6 +98,7 @@ public class CalendarActivity extends Activity {
 	private TextView popUp_title, popUp_type, popUp_date, popUp_time;
 	private ProgressDialog pd;
 	private FetchEventsTask fetchTask;
+	private static Drawable popup_above;
 	
 	boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
 	int TheHeightOfTheFreakingPopup = 0; 
@@ -109,6 +111,9 @@ public class CalendarActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(Callisto.RESOURCES.getString(R.string.agenda_title));
+        
+        //TODO: flip
+        popup_above = getResources().getDrawable(R.drawable.popup_inline_error);
         
         isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
         
@@ -763,13 +768,13 @@ public class CalendarActivity extends Activity {
 			Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
 			if(isLandscape)
 			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				popUp.getContentView().setBackgroundDrawable(popup_above);
 				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
 				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
 			}
 			else if(isLowerHalf)
 			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error_above));
+				popUp.getContentView().setBackgroundDrawable(popup_above);
 				popUp.showAsDropDown(v, 0, -1*v.getHeight() - TheHeightOfTheFreakingPopup - (isLowerHalf ? 0 : 40));
 			}
 			else

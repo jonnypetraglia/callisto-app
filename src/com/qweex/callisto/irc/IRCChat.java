@@ -17,6 +17,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.irc;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,6 +53,7 @@ import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Html;
@@ -95,7 +98,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
-	private int CLR_TEXT,
+	private static int CLR_TEXT,
 				   CLR_BACK,
 				   CLR_TOPIC,
 				   CLR_ME,
@@ -146,17 +149,20 @@ public class IRCChat extends Activity implements IRCEventListener
 		        	System.out.println("RECEIVED:" + received.toString());
 		        	if(received.equals(new SpannableString("")))
 		        		return;
+		            
+				    View view = (View) Callisto.chatView;
+				    boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= 0;
+				    
 		            Callisto.chatView.append(received);
 		            Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
 		            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
-		            System.out.println(Callisto.chatView.getBottom() + " - (" + sv.getHeight() + " + " + sv.getScrollY() + ")<200");
-		            boolean atBottom = Callisto.chatView.getBottom() - (sv.getHeight() + sv.getScrollY()) < 200;
+				    
 		            if(atBottom)
-		            	sv.fullScroll(ScrollView.FOCUS_DOWN);
+		            	sv.post(new Runnable() {      public void run() {
+		                    	sv.scrollTo(0, 1000000000); } }); 
 		            input.requestFocus();
-		            //sv.isDirty();
 		        }
 			};
 		}
@@ -309,9 +315,9 @@ public class IRCChat extends Activity implements IRCEventListener
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
-    	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_allfriends);
-    	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(R.drawable.ic_menu_save);
-    	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_menu_close_clear_cancel);
+    	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_friendslist);
+    	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(android.R.drawable.ic_menu_save);
+    	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		updateMenu();
         return true;
     }
@@ -342,7 +348,20 @@ public class IRCChat extends Activity implements IRCEventListener
         	this.startActivityForResult(new Intent(this, NickList.class), 1);
         	return true;
         case SAVE_ID:
-        	//TODO: Save to file
+        	CharSequence cs = Callisto.chatView.getText();
+        	File fileLocation = new File(Environment.getExternalStorageDirectory(),
+        			Callisto.storage_path + File.separator + 
+        			"ChatLog_" + Callisto.sdfRaw.format(new Date()) + 
+        			".txt");
+        	try {
+	        	FileOutputStream fOut = new FileOutputStream(fileLocation);
+	        	fOut.write(cs.toString().getBytes());
+	    	    fOut.close();
+	    	    Toast.makeText(this, "File written to: \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        	} catch(Exception e) {
+        		e.printStackTrace();
+        		Toast.makeText(this, "Unable to write to: \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        	}
         	return true;
         case LOGOUT_ID:
         	logout(null);
@@ -361,7 +380,6 @@ public class IRCChat extends Activity implements IRCEventListener
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
 	    super.onActivityResult(requestCode, resultCode, data);
-	    System.out.println(resultCode);
 	    if(resultCode>-1)
 	    {
 		    int start = input.getSelectionStart();
@@ -393,6 +411,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv.setVerticalFadingEdgeEnabled(false);
 		sv.setFillViewport(true);
+		
 		sv2 = (ScrollView) findViewById(R.id.scrollView2);
 		sv2.setVerticalFadingEdgeEnabled(false);
 		
@@ -413,20 +432,23 @@ public class IRCChat extends Activity implements IRCEventListener
 				return false;
 			}
 		});
-		if(irssi)
+		
+		if(session==null)
 		{
-			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000);
-			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000);
-			if(android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
-				input.setTextColor(0xff000000 + IRSSI_GREEN);
+			if(irssi)
+			{
+				((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000);
+				((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000);
+				if(android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
+					input.setTextColor(0xff000000 + IRSSI_GREEN);
+			}
+			else
+			{
+				((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
+				((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
+			}
 		}
 		else
-		{
-			((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
-			((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
-		}
-		
-		if(session!=null)
 			session.addIRCEventListener(this);
 		if(Callisto.notification_chat!=null)
 			Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
@@ -524,13 +546,17 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	if(quitMsg==null)
     		quitMsg = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
-    	if(quitMsg!=null)
+    	else
     		session.getChannel(CHANNEL_NAME).part(quitMsg);
+    	System.out.println(1);
     	chatHandler.post(quitHandler);
+    	System.out.println(2);
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
 		isFocused = false;
-		if(IRC_wifiLock.isHeld())
+		System.out.println(3);
+		if(IRC_wifiLock!=null && IRC_wifiLock.isHeld())
             IRC_wifiLock.release();
+		System.out.println(6);
 		finish();
     }
     
@@ -544,10 +570,15 @@ public class IRCChat extends Activity implements IRCEventListener
 			tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
 			tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
     		
-    		Spanned s =  (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-    									 , tit, "\n");
+    		Spanned s =  (Spanned) TextUtils.concat("\n",Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+    									 , tit);
     		Callisto.chatView.append(s);
+    		try {
         	manager.quit();
+    		} catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     		manager = null;
     		session = null;
         }
@@ -865,9 +896,12 @@ public class IRCChat extends Activity implements IRCEventListener
 				else if(realType.equals("340"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-					received = getReceived("[TIME]", realmsg, CLR_TOPIC);
+					received = getReceived("[USERIP]", realmsg, CLR_TOPIC);
 					chatHandler.post(chatUpdater);
 				}
+				//Nicklist? something else?
+				else if(realType.equals("353") || realType.equals("329"))
+					break;
 				//etc
 				else
 				{
@@ -936,8 +970,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		} catch(Exception ieieieie) {
 		}
 		
-		return (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-									 , tit, mes, "\n");
+		return (Spanned) TextUtils.concat("\n", Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+									 , tit, mes);
 	}
 	
 	/** Gets the nick color from the list, adding it if necessary.
@@ -946,6 +980,8 @@ public class IRCChat extends Activity implements IRCEventListener
 	 */
 	public Integer getNickColor(String nickInQ)
 	{
+		if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("nick_colors", true))
+			return PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_etcnick", 0x2E8B91);
 		if(irssi)
 			return IRSSI_GREEN;
 		if(!nickColors.containsKey(nickInQ))
@@ -1026,11 +1062,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			if(parseOutgoing(newMessage))
 			{
 				Spanned x = (Spanned) TextUtils.concat(
+						"\n",
 						Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
 						st,
 						": ",
-						st2,
-						"\n"
+						st2
 						);
 				Callisto.chatView.append(x);
 			}

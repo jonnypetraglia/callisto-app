@@ -195,10 +195,10 @@ public class ShowList extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.stop);
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
     	menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_menu_refresh);
     	//menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
-    	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_menu_zoom);
+    	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(android.R.drawable.ic_menu_zoom);
     	menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_menu_mark);
         return true;
     }

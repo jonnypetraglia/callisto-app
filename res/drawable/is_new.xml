@@ -16,11 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
 <item android:drawable="@drawable/jb_planet" 
     android:state_pressed="true"/>  
 <item android:drawable="@drawable/jb_planet" 
     android:state_checked="true"/>  
 <item android:drawable="@drawable/jb_planet"
     android:state_focused="true" />
-<item android:drawable="@drawable/jb_disabled" />  
+<item android:drawable="@drawable/jb_disabled" />
+ -->  
 </selector> 

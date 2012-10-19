@@ -42,6 +42,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
@@ -79,6 +81,7 @@ public class LiveStream extends Activity
     private static Dialog dg;
     private final int JBLIVE_MENU_ID = Menu.FIRST;
     public static WifiLock Live_wifiLock;
+    //private static Bitmap playIcon, pauseIcon;
 	
 	/** Called when the activity is first created. Sets up the view and whatnot.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -88,6 +91,17 @@ public class LiveStream extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nowplaying);
+		/*
+		if(playIcon==null)
+		{
+			 playIcon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_media_play);
+			 //playIcon = Bitmap.createScaledBitmap(playIcon, (int)(playIcon.getWidth()*1.5), (int)(playIcon.getHeight()*1.5), false);
+		}
+		if(pauseIcon==null)
+		{
+			 pauseIcon = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_media_pause);
+		}
+		*/
 		
 		dg = new Dialog(this);
 		bigButton = (ImageButton) findViewById(R.id.playPause);
@@ -101,6 +115,7 @@ public class LiveStream extends Activity
 		next = (TextView) findViewById(R.id.next);
 		bigButton = (ImageButton) findViewById(R.id.playPause);
 		bigButton.setOnClickListener(playButton);
+		bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_play));
 		
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
@@ -121,7 +136,8 @@ public class LiveStream extends Activity
 		if(Callisto.live_player!=null)
 			(new FetchInfo()).execute((Void[]) null);
 		if(Callisto.live_isPlaying)
-			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+			bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause));
+			//bigButton.setImageBitmap(pauseIcon);
 	}
 	
 	@Override
@@ -257,8 +273,8 @@ public class LiveStream extends Activity
 		        	whatWhat = "???";
 		        	return true;
 		        }
-		    	
-		    	dg.show();
+		    	if(dg!=null)
+		    		dg.show();
 
 		    	System.out.println(whatWhat);
 		    	LiveStream.sendErrorReport(whatWhat);
@@ -316,7 +332,8 @@ public class LiveStream extends Activity
 				Callisto.live_player.start();
 				(new FetchInfo()).execute((Void[]) null);
 				Callisto.live_isPlaying = true;
-				((ImageButton) findViewById(R.id.playPause)).setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+				//((ImageButton) findViewById(R.id.playPause)).setImageBitmap(pauseIcon);
+				bigButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_media_pause));
 				Intent notificationIntent = new Intent(LiveStream.this, LiveStream.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(LiveStream.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
@@ -372,7 +389,8 @@ public class LiveStream extends Activity
 				if(Callisto.live_isPlaying)
 				{
 					Log.d("LiveStream:playButton", "Pausing.");
-					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_play_lg));
+					//bigButton.setImageBitmap(playIcon);
+					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_play));
 					Callisto.live_player.pause();
 				}
 				else
@@ -380,7 +398,8 @@ public class LiveStream extends Activity
 					if(!Live_wifiLock.isHeld())
 			            Live_wifiLock.acquire();
 					Log.d("LiveStream:playButton", "Playing.");
-					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause_lg));
+					//bigButton.setImageBitmap(pauseIcon);
+					bigButton.setImageDrawable(Callisto.RESOURCES.getDrawable(R.drawable.ic_media_pause));
 					Callisto.live_player.start();
 				}
 				Callisto.live_isPlaying = !Callisto.live_isPlaying;

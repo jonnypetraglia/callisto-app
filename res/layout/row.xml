@@ -112,20 +112,20 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:padding="2dp"
-        android:src="@drawable/_up" />
+        android:src="@drawable/expander_ic_maximized" />
 
     <ImageButton
         android:id="@+id/moveDown"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:padding="2dp"
-        android:src="@drawable/_down" />
+        android:src="@drawable/expander_ic_minimized" />
 
     <ImageButton
         android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:padding="2dp"
-        android:src="@drawable/ic_delete" />
+        android:src="@android:drawable/ic_delete" />
 
 </LinearLayout>
