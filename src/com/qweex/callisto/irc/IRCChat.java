@@ -159,6 +159,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		            received = new SpannableString("");
 		            Callisto.chatView.invalidate();
 				    
+		            System.out.println(view.getBottom()-(sv.getHeight()+sv.getScrollY()));
 		            if(atBottom)
 		            	sv.post(new Runnable() {      public void run() {
 		                    	sv.scrollTo(0, 1000000000); } }); 
@@ -549,7 +550,17 @@ public class IRCChat extends Activity implements IRCEventListener
     	else
     		session.getChannel(CHANNEL_NAME).part(quitMsg);
     	System.out.println(1);
-    	chatHandler.post(quitHandler);
+    	
+		int titleColor = 0xFF000000 + CLR_ERROR;
+		SpannableString tit = new SpannableString("~~~~~[TERMINATED]~~~~~");
+		tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
+		tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
+		
+		Spanned s =  (Spanned) TextUtils.concat("\n",Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+									 , tit);
+		Callisto.chatView.append(s);
+    	
+    	new QuitPlz().execute(null);
     	System.out.println(2);
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
 		isFocused = false;
@@ -559,30 +570,19 @@ public class IRCChat extends Activity implements IRCEventListener
 		System.out.println(6);
 		finish();
     }
-    
-    Runnable quitHandler  = new Runnable()
-	{
-        @Override
-        public void run()
-        {
-    		int titleColor = 0xFF000000 + CLR_ERROR;
-    		SpannableString tit = new SpannableString("~~~~~[TERMINATED]~~~~~");
-			tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
-			tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
-    		
-    		Spanned s =  (Spanned) TextUtils.concat("\n",Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-    									 , tit);
-    		Callisto.chatView.append(s);
-    		try {
-        	manager.quit();
-    		} catch(Exception e)
-    		{
-    			e.printStackTrace();
-    		}
-    		manager = null;
-    		session = null;
-        }
-	};
+	
+	
+    private class QuitPlz extends android.os.AsyncTask<Void, Void, Void>
+    {
+    @Override
+    protected Void doInBackground(Void ...voids)
+    {
+		manager.quit();
+		manager = null;
+		session = null;
+    	return null;
+    }
+    }
     
   //INVITE_EVENT
   //NUMERIC_ERROR_EVENT
@@ -899,8 +899,8 @@ public class IRCChat extends Activity implements IRCEventListener
 					received = getReceived("[USERIP]", realmsg, CLR_TOPIC);
 					chatHandler.post(chatUpdater);
 				}
-				//Nicklist? something else?
-				else if(realType.equals("353") || realType.equals("329"))
+				//Nicklist? something else? MOTD
+				else if(realType.equals("353") || realType.equals("329") || realType.equals("332"))
 					break;
 				//etc
 				else

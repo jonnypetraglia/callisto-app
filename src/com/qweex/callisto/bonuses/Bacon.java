@@ -28,6 +28,7 @@ public class Bacon extends Activity {
 		}
 	}
 	
+	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();

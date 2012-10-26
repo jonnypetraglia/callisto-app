@@ -17,10 +17,12 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,7 +32,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -41,6 +52,7 @@ import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.podcast.AllShows;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
+import com.qweex.callisto.podcast.ShowList;
 import com.qweex.callisto.widgets.CallistoWidget;
 import com.qweex.utils.UnfinishedParseException;
 
@@ -62,12 +74,17 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -173,6 +190,16 @@ public class Callisto extends Activity {
 	private Dialog news;
 	
 	
+	//Live stuff
+	public static WifiLock Live_wifiLock;
+	private static ProgressDialog pd;
+    private static Dialog dg;
+	private static final String infoURL = "http://jbradio.airtime.pro/api/live-info";
+	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
+	private static Matcher liveMatcher = null;
+	private static LIVE_FetchInfo LIVE_update = null;
+	
+	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
 	 */
@@ -226,6 +253,7 @@ public class Callisto extends Activity {
 			}
 			
 		}
+		((Button) findViewById(R.id.live)).setOnClickListener(LIVE_PlayButton);
 		
 		//Initialization of (some of the) static variables
 		Callisto.playDrawable = RESOURCES.getDrawable(android.R.drawable.ic_media_play);
@@ -250,6 +278,15 @@ public class Callisto extends Activity {
 	    logView = new TextView(this);
 	    logView.setGravity(Gravity.BOTTOM);
 	    logView.setMaxLines(Integer.parseInt(i));
+	    
+	    	//Creates the dialog for live error
+		dg = new Dialog(this);
+		TextView t = new TextView(this);
+		t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info (via the Menu button) to see if it's just this app.");
+		dg.setContentView(t);
+		dg.setTitle("By the beard of Zeus!");
+		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
 	    
 	    
 	    
@@ -292,97 +329,6 @@ public class Callisto extends Activity {
 	    editor.commit();
 	}
 	
-	public void showUpdateNews()
-	{
-	    TextView newsHeader = new TextView(this);
-	    newsHeader.setPadding(5, 5, 5, 5);
-	    TextView newsFooter = new TextView(this);
-	    newsFooter.setPadding(5, 5, 5, 5);
-		
-	    android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
-	    java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
-        java.util.List<java.util.List<java.util.Map<String, String>>> childData = new ArrayList<java.util.List<java.util.Map<String, String>>>();
-        java.io.BufferedReader bufReader;
-        try {
-         bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
-        } catch(Exception e) { return; }
-        String line=null;
-        int place = 1;
-        try {
-        while( (line=bufReader.readLine()) != null )
-        {
-        	//Header
-        	switch(place)
-        	{
-        	//header
-        	case 1:
-            	if("".equals(line))
-            	{
-            		place--;
-            		continue;
-            	}
-            	newsHeader.setText(newsHeader.getText() + "\n" + line);
-            	break;
-        	case -1:
-        		newsFooter.setText(newsFooter.getText() + "\n" + line);
-        		break;
-        	case 0:
-            	if("".equals(line))
-            	{
-            		place--;
-            		continue;
-            	}
-	        	java.util.Map<String, String> curGroupMap = new java.util.HashMap<String, String>();
-	        	java.util.List<java.util.Map<String, String>> children = new ArrayList<java.util.Map<String, String>>();
-	        	groupData.add(curGroupMap);
-	
-	        	int x = line.indexOf("--",1);
-	        	int y = line.indexOf("--", x+2);;
-	        	curGroupMap.put("TITLE", line.substring(0, x).trim());
-	        	while(true)
-	        	{
-	        		if(y==-1)
-	        			y = line.length();
-		        	java.util.Map<String, String> curChildMap = new java.util.HashMap<String, String>();
-		            children.add(curChildMap);
-		            curChildMap.put("DESCRIPTION", line.substring(x+2, y).trim());
-		            if(y==line.length())
-		            	break;
-	        		x = line.indexOf("--", x+2);
-	        		y = line.indexOf("--", x+2);
-	        	}
-	            childData.add(children);
-	            break;
-        	}
-        }
-        } catch(Exception e) {}
-	    
-	    
-	    android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
-                this,
-                groupData,
-                R.layout.news_listitem1,
-                new String[] { "TITLE" },
-                new int[] { android.R.id.text1 },
-                childData,
-                R.layout.news_listitem2,
-                new String[] { "DESCRIPTION" },
-                new int[] { android.R.id.text1 }
-                );
-	    elv.addHeaderView(newsHeader);
-	    elv.addFooterView(newsFooter);
-        elv.setAdapter(mAdapter);
-        elv.setGroupIndicator(null);
-	    news = new Dialog(this);
-	    try {
-	    	news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-	    } catch(Exception e) {
-	    	news.setTitle("Update notes");
-	    }
-	    news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-	    news.show();
-	}
-	
 	
 	/** Called when the activity is going to be destroyed. Currently unused. */
 	@Override
@@ -391,6 +337,10 @@ public class Callisto extends Activity {
 		super.onDestroy();
 		if(news!=null)
 			news.dismiss();
+		if(dg!=null)
+			dg.dismiss();
+		if(pd!=null)
+			pd.dismiss();
 	}
 	
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
@@ -398,6 +348,8 @@ public class Callisto extends Activity {
 	public void onResume()
 	{
 		super.onResume();
+		if(pd!=null)
+			pd.show();
 		Log.v("Callisto:onResume", "Resuming main activity");
 		Callisto.playerInfo.update(Callisto.this);
 	}
@@ -618,9 +570,7 @@ public class Callisto extends Activity {
     	    if(titleView==null)
     	    	Log.w("Callisto:update", "Could not find view: " + "titleView");
     	    else
-    	    	if(Callisto.live_player!=null)
-        	    	titleView.setText(LiveStream.liveTitle + " - JB Radio");
-    	    	else if(title==null)
+    	    	if(title==null && Callisto.live_player==null)
         	    	titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
         	    else
         	    	titleView.setText(title + " - " + show);
@@ -631,7 +581,7 @@ public class Callisto extends Activity {
     	    	Log.w("Callisto:update", "Could not find view: " + "TimeView");
     	    else if(Callisto.live_player!=null)
     	    {
-    	    	timeView.setText("--");
+    	    	timeView.setText("Next");
     	    	timeView.setEnabled(false);
     	    }
     	    else
@@ -782,10 +732,10 @@ public class Callisto extends Activity {
 				//3. setDataSource
 				//4. livePrepare
 				try {
-					LiveStream.liveInit();
-					Callisto.live_player.setOnPreparedListener(LiveStream.livePreparedListenerOther);
+					LIVE_Init();
+					Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
 					Callisto.live_player.setDataSource(live_url);
-					LiveStream.livePrepare(v.getContext());
+					LIVE_Prepare(v.getContext());
 					if(v!=null)
 						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
 				} catch(Exception e){}
@@ -874,8 +824,8 @@ public class Callisto extends Activity {
 					{
 						live_player.reset();
 						live_player = null;
-						if(LiveStream.Live_wifiLock!=null && !LiveStream.Live_wifiLock.isHeld())
-				            LiveStream.Live_wifiLock.release();
+						if(Live_wifiLock!=null && !Live_wifiLock.isHeld())
+				            Live_wifiLock.release();
 						playerInfo.update(psychV.getContext());
 					}
 				})
@@ -1221,12 +1171,331 @@ public class Callisto extends Activity {
  	   return m;
 	}
 
+	
+	
+	
+	
+	
+	
     
+    /** Updates the current and next track information. */
+    public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
+    {
+    	@Override
+	    protected Void doInBackground(Void... c)
+    	{
+	    HttpClient httpClient = new DefaultHttpClient();
+	    HttpContext localContext = new BasicHttpContext();
+	    HttpGet httpGet = new HttpGet(infoURL);
+	    HttpResponse response;
+	    try
+		{
+			response = httpClient.execute(httpGet, localContext);
+		    BufferedReader reader = new BufferedReader(
+			        new InputStreamReader(
+			          response.getEntity().getContent()
+			        )
+			      );
+		    
+		    String line = null, result = "";
+		    while ((line = reader.readLine()) != null){
+		      result += line + "\n";
+		    }
+		    
+		    if(liveMatcher==null)
+		    	liveMatcher = (Pattern.compile(".*?\"currentShow\".*?"
+		    					+ "\"name\":\"(.*?)\""
+		    					+ ".*"
+								+ "\"name\":\"(.*?)\""
+		    					+ ".*?")
+		    					).matcher(result);
+		    if(liveMatcher.find())
+		    	playerInfo.title = liveMatcher.group(1);
+		    if(liveMatcher.groupCount()>1)
+		    	playerInfo.show = liveMatcher.group(2);
+		    
+	    	
+		    updateHandler.sendEmptyMessage(0);
+		    
+	    	/*
+			Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+	    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+			Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+	       	Callisto.notification_playing.setLatestEventInfo(c[0], playerInfo.title,  "JB Radio", contentIntent);
+		       	
+	       	NotificationManager mNotificationManager =  (NotificationManager) Callisto.this.getSystemService(Context.NOTIFICATION_SERVICE);
+	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+	       	*/
+		    
+		} catch (ClientProtocolException e) {
+			// TODO EXCEPTION
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    
+	    /*
+	    Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+		if(Callisto.notification_playing!=null)
+		{
+			Callisto.notification_playing.setLatestEventInfo(Callisto.this, playerInfo.title,  "JB Radio", contentIntent);
+	       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+		}
+		*/
+	    
+	    return null;
+    	}
+    }
+    
+	private Handler updateHandler = new Handler()
+	{
+        @Override
+        public void handleMessage(Message msg)
+        {
+        	playerInfo.update(Callisto.this);
+        }
+	};
+    
+	/** Initiates the live player. Can be called across activities. */
+	static public void LIVE_Init()
+	{
+		Log.d("LiveStream:liveInit", "Initiating the live player.");
+		Callisto.live_player = new MediaPlayer();
+		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
+		    public boolean onError(MediaPlayer mp, int what, int extra) {
+		    	pd.dismiss();
+		    	String whatWhat="";
+		    	switch (what) {
+		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+		            whatWhat = "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK";
+		            break;
+		        case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+		        	whatWhat = "MEDIA_ERROR_SERVER_DIED";
+		            break;
+		        case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+		        	whatWhat = "MEDIA_ERROR_UNKNOWN";
+		            break;
+		        default:
+		        	whatWhat = "???";
+		        	return true;
+		        }
+		    	if(dg!=null)
+		    		dg.show();
+
+		    	System.out.println(whatWhat);
+		    	LIVE_SendErrorReport(whatWhat);
+		        return true;
+		    }
+		});
+	}
+	
+	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
+	static public void LIVE_Prepare(Context c)
+	{
+		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		pd.setOnDismissListener(new OnDismissListener()
+		{
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				pd.cancel();
+				pd = null;
+			}
+	
+		});
+		pd.setCancelable(true);
+		Callisto.live_player.prepareAsync();
+	}
+	
+	/** Listener for the live player in only the LiveStream activity. Starts it playing or displays an error message. */
+	private static OnPreparedListener LIVE_PreparedListener = new OnPreparedListener()
+	{
+		@Override
+		public void onPrepared(MediaPlayer arg0) {
+			if(pd!=null && !pd.isShowing())
+				return;
+			if(pd!=null)
+				pd.dismiss();
+			try {
+				Callisto.live_player.start();
+				LIVE_update = new LIVE_FetchInfo();
+				Callisto.LIVE_update.execute(null);
+				Callisto.live_isPlaying = true;
+			}
+			catch(Exception e)
+			{
+				dg.show();
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	/** Listener for the play button. Duh! */
+	private OnClickListener LIVE_PlayButton = new OnClickListener()
+	{
+		@Override
+		public void onClick(View v)
+		{
+			Log.d("LiveStream:playButton", "Clicked play button");
+			if(!Callisto.playerInfo.isPaused)
+			{
+				Callisto.mplayer.pause();
+				Callisto.playerInfo.isPaused = true;
+			}
+			
+			if(Callisto.live_player == null || !Callisto.live_isPlaying)
+			{
+				Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
+				if(Callisto.mplayer!=null)
+					Callisto.mplayer.reset();
+				Callisto.mplayer=null;
+				LIVE_Init();
+				Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+				String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+				try {
+					Callisto.live_player.setDataSource(live_url);
+					if(!Live_wifiLock.isHeld())
+			            Live_wifiLock.acquire();
+					LIVE_Prepare(Callisto.this);
+				} catch (Exception e) {
+					dg.show();
+					LIVE_SendErrorReport("EXCEPTION");
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				Log.d("LiveStream:playButton", "Live player does exist.");
+				if(Callisto.live_isPlaying)
+				{
+					Log.d("LiveStream:playButton", "Pausing.");
+					Callisto.live_player.pause();
+				}
+				else
+				{
+					if(!Live_wifiLock.isHeld())
+			            Live_wifiLock.acquire();
+					Log.d("LiveStream:playButton", "Playing.");
+					Callisto.live_player.start();
+				}
+				Callisto.live_isPlaying = !Callisto.live_isPlaying;
+			}
+			Log.d("LiveStream:playButton", "Done");
+		}
+	};
+	
+	/** Sends an error report to the folks at Qweex. COMPLETELY anonymous. The only information that is sent is the version of Callisto and the version of Android. */
+	public static void LIVE_SendErrorReport(String msg)
+	{
+		String errorReport = errorReportURL + "?id=Callisto&v=" + Callisto.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;
+		HttpClient httpClient = new DefaultHttpClient();
+	    HttpContext localContext = new BasicHttpContext();
+	    HttpGet httpGet = new HttpGet(errorReport);
+	    try {
+	    httpClient.execute(httpGet, localContext);
+	    }catch(Exception e){}
+	}
+	
+	
     
     //Everything below this line is either vastly incomplete or for debugging
     //-------------------------
     
     
+	public void showUpdateNews()
+	{
+	    TextView newsHeader = new TextView(this);
+	    newsHeader.setPadding(5, 5, 5, 5);
+	    TextView newsFooter = new TextView(this);
+	    newsFooter.setPadding(5, 5, 5, 5);
+		
+	    android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
+	    java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
+        java.util.List<java.util.List<java.util.Map<String, String>>> childData = new ArrayList<java.util.List<java.util.Map<String, String>>>();
+        java.io.BufferedReader bufReader;
+        try {
+         bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
+        } catch(Exception e) { return; }
+        String line=null;
+        int place = 1;
+        try {
+        while( (line=bufReader.readLine()) != null )
+        {
+        	//Header
+        	switch(place)
+        	{
+        	//header
+        	case 1:
+            	if("".equals(line))
+            	{
+            		place--;
+            		continue;
+            	}
+            	newsHeader.setText(newsHeader.getText() + "\n" + line);
+            	break;
+        	case -1:
+        		newsFooter.setText(newsFooter.getText() + "\n" + line);
+        		break;
+        	case 0:
+            	if("".equals(line))
+            	{
+            		place--;
+            		continue;
+            	}
+	        	java.util.Map<String, String> curGroupMap = new java.util.HashMap<String, String>();
+	        	java.util.List<java.util.Map<String, String>> children = new ArrayList<java.util.Map<String, String>>();
+	        	groupData.add(curGroupMap);
+	
+	        	int x = line.indexOf("--",1);
+	        	int y = line.indexOf("--", x+2);;
+	        	curGroupMap.put("TITLE", line.substring(0, x).trim());
+	        	while(true)
+	        	{
+	        		if(y==-1)
+	        			y = line.length();
+		        	java.util.Map<String, String> curChildMap = new java.util.HashMap<String, String>();
+		            children.add(curChildMap);
+		            curChildMap.put("DESCRIPTION", line.substring(x+2, y).trim());
+		            if(y==line.length())
+		            	break;
+	        		x = line.indexOf("--", x+2);
+	        		y = line.indexOf("--", x+2);
+	        	}
+	            childData.add(children);
+	            break;
+        	}
+        }
+        } catch(Exception e) {}
+	    
+	    
+	    android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
+                this,
+                groupData,
+                R.layout.news_listitem1,
+                new String[] { "TITLE" },
+                new int[] { android.R.id.text1 },
+                childData,
+                R.layout.news_listitem2,
+                new String[] { "DESCRIPTION" },
+                new int[] { android.R.id.text1 }
+                );
+	    elv.addHeaderView(newsHeader);
+	    elv.addFooterView(newsFooter);
+        elv.setAdapter(mAdapter);
+        elv.setGroupIndicator(null);
+	    news = new Dialog(this);
+	    try {
+	    	news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+	    } catch(Exception e) {
+	    	news.setTitle("Update notes");
+	    }
+	    news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+	    news.show();
+	}
+	
     
     
     @Override
