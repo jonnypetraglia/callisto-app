@@ -97,7 +97,6 @@ public class Queue extends ListActivity
 		    	Callisto.mplayer.stop();
 	    	Callisto.databaseConnector.clearQueue();
 			listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-			//listAdapter.notifyDataSetChanged();
 			Log.d("Queue:onOptionsItemSelected", "Cursor changed");
 			updateNowPlaying(0);
 		    Callisto.playerInfo.isPaused = true;

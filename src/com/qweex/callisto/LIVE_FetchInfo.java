@@ -14,6 +14,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 /** Updates the current and next track information. */
@@ -56,17 +61,7 @@ public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
 	    	Callisto.playerInfo.show = liveMatcher.group(2);
 	    
 	    Callisto.updateHandler.sendEmptyMessage(0);
-	    
-    	/*
-		Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
-		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-       	Callisto.notification_playing.setLatestEventInfo(c[0], playerInfo.title,  "JB Radio", contentIntent);
-	       	
-       	NotificationManager mNotificationManager =  (NotificationManager) Callisto.this.getSystemService(Context.NOTIFICATION_SERVICE);
-       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-       	*/
+	    //CallistoWidget.updateAllWidgets(Callisto.LIVE_PreparedListener.c);
 	    
 	} catch (ClientProtocolException e) {
 		// TODO EXCEPTION
@@ -77,16 +72,18 @@ public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
 		e.printStackTrace();
 	};
     
-    /*
-    Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
-	PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-	if(Callisto.notification_playing!=null)
+    
+    Intent notificationIntent = new Intent(Callisto.LIVE_PreparedListener.c, Callisto.class);
+	PendingIntent contentIntent = PendingIntent.getActivity(Callisto.LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+	if(Callisto.notification_playing==null)
 	{
-		Callisto.notification_playing.setLatestEventInfo(Callisto.this, playerInfo.title,  "JB Radio", contentIntent);
-       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+		Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
 	}
-	*/
+	Callisto.notification_playing.setLatestEventInfo(Callisto.LIVE_PreparedListener.c, Callisto.playerInfo.title,  "JB Radio", contentIntent);
+   	NotificationManager mNotificationManager =  (NotificationManager) Callisto.LIVE_PreparedListener.c.getSystemService(Context.NOTIFICATION_SERVICE);
+   	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+	//*/
     
     return null;
 	}

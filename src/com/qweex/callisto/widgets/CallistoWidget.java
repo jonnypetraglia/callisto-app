@@ -28,14 +28,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.RemoteViews;
 
 /**  Manages the widgets for the Callisto app.
@@ -77,7 +70,10 @@ public class CallistoWidget extends AppWidgetProvider {
       PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
       views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
       
-      if(Callisto.playerInfo==null || Callisto.playerInfo.isPaused)
+      if(Callisto.playerInfo!=null)
+    	  System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
+      if((Callisto.live_player!=null && !Callisto.live_isPlaying) ||
+    		  (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
     	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_play);
     	  //views.setImageViewBitmap(R.id.widgetButton, playIcon);
       else

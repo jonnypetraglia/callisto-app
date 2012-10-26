@@ -170,7 +170,8 @@ public class Callisto extends Activity {
 	private static final int RELEASE_ID=MORE_ID+1;
 	private static final int BACON_ID=RELEASE_ID+1;
 	private static final int QUIT_ID=BACON_ID+1;
-	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
+	private static final int SAVE_POSITION_EVERY = 40,
+						     CHECK_LIVE_EVERY = 400;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
 	public static OnCompletionListenerWithContext nextTrack;
@@ -705,9 +706,22 @@ public class Callisto extends Activity {
 		int i=0;
 		public void run()
 		{
-			if(Callisto.mplayer==null || !Callisto.mplayer.isPlaying())
-				return;
 			i++;
+			if(Callisto.live_player!=null && Callisto.live_isPlaying)
+			{
+				if(i==Callisto.CHECK_LIVE_EVERY)
+				{
+					LIVE_update = new LIVE_FetchInfo();
+					Callisto.LIVE_update.execute(null);
+					i=0;
+				}
+				return;
+			}
+			if(Callisto.mplayer==null || !Callisto.mplayer.isPlaying())
+			{
+				i=0;
+				return;
+			}
 			try {
 			Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
 			current = Callisto.playerInfo.position/1000;
@@ -715,13 +729,13 @@ public class Callisto extends Activity {
 			timeView.setText(formatTimeFromSeconds(current));
 			if(i==Callisto.SAVE_POSITION_EVERY)
 			{
+				i=0;
 				try {
 				Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
 		    	Cursor queue = Callisto.databaseConnector.currentQueue();
 		    	queue.moveToFirst();
 		    	Long identity = queue.getLong(queue.getColumnIndex("identity"));
 				Callisto.databaseConnector.updatePosition(identity, Callisto.mplayer.getCurrentPosition());
-				i=0;
 				} catch(NullPointerException e)
 				{
 					Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
@@ -758,13 +772,15 @@ public class Callisto extends Activity {
 				try {
 					LIVE_Init();
 					Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+					LIVE_PreparedListener.setContext(c);
 					Callisto.live_player.setDataSource(live_url);
-					LIVE_Prepare(v.getContext());
+					LIVE_Prepare(null);
 					if(v!=null)
 						((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
 				} catch(Exception e){}
 			}
 			Callisto.live_isPlaying = !Callisto.live_isPlaying;
+			CallistoWidget.updateAllWidgets(c);
 			return;
 		}
 		if(databaseConnector==null || databaseConnector.queueCount()==0)
@@ -851,6 +867,7 @@ public class Callisto extends Activity {
 						if(Live_wifiLock!=null && !Live_wifiLock.isHeld())
 				            Live_wifiLock.release();
 						playerInfo.update(psychV.getContext());
+						mNotificationManager.cancel(NOTIFICATION_ID);
 					}
 				})
 				.setNegativeButton("Nope", new DialogInterface.OnClickListener(){
@@ -1208,7 +1225,8 @@ public class Callisto extends Activity {
         @Override
         public void handleMessage(Message msg)
         {
-        	playerInfo.update(Callisto.LIVE_PreparedListener.c);
+        	if(Callisto.LIVE_PreparedListener.c!=null)
+        		playerInfo.update(Callisto.LIVE_PreparedListener.c);
         }
 	};
     
@@ -1217,7 +1235,9 @@ public class Callisto extends Activity {
 	{
 		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player = new MediaPlayer();
+		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
 		    	pd.dismiss();
@@ -1244,27 +1264,32 @@ public class Callisto extends Activity {
 		        return true;
 		    }
 		});
+		Log.d("LiveStream:liveInit", "Initiating the live player.");
 	}
 	
 	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
 	static public void LIVE_Prepare(Context c)
 	{
-		LIVE_PreparedListener.pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-		LIVE_PreparedListener.pd.setOnDismissListener(new OnDismissListener()
+		Log.d("LiveStream:LIVE_Prepare", "Preparing the live player.");
+		if(c!=null)
 		{
-			@Override
-			public void onDismiss(DialogInterface dialog) {
-				LIVE_PreparedListener.pd.cancel();
-				LIVE_PreparedListener.pd = null;
-			}
-	
-		});
-		LIVE_PreparedListener.pd.setCancelable(true);
+			LIVE_PreparedListener.pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+			LIVE_PreparedListener.pd.setOnDismissListener(new OnDismissListener()
+			{
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					LIVE_PreparedListener.pd.cancel();
+					LIVE_PreparedListener.pd = null;
+				}
+		
+			});
+			LIVE_PreparedListener.pd.setCancelable(true);
+		}
 		Callisto.live_player.prepareAsync();
 	}
 	
 	/** Listener for the live player in only the LiveStream activity. Starts it playing or displays an error message. */
-	private static OnPreparedListenerWithContext LIVE_PreparedListener = new OnPreparedListenerWithContext()
+	static OnPreparedListenerWithContext LIVE_PreparedListener = new OnPreparedListenerWithContext()
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
@@ -1276,7 +1301,6 @@ public class Callisto extends Activity {
 				pd.dismiss();
 			}
 			//*/
-			System.out.println(pd.isShowing());
 			try {
 				Callisto.live_player.start();
 				LIVE_update = new LIVE_FetchInfo();
@@ -1295,14 +1319,35 @@ public class Callisto extends Activity {
 	private OnClickListener LIVE_PlayButton = new OnClickListener()
 	{
 		@Override
-		public void onClick(View v)
+		public void onClick(final View v)
 		{
 			Log.d("LiveStream:playButton", "Clicked play button");
-			if(!Callisto.playerInfo.isPaused)
+			if(Callisto.mplayer!=null)
 			{
-				Callisto.mplayer.pause();
-				Callisto.playerInfo.isPaused = true;
+				Dialog dg = new AlertDialog.Builder(v.getContext())
+				.setTitle("Switch from playlist to live?")
+				.setPositiveButton("Yup", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						mNotificationManager.cancel(NOTIFICATION_ID);
+						mplayer.reset();
+						mplayer = null;
+						v.performClick();
+					}
+				})
+				.setNegativeButton("Nope", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).create();
+				dg.show();
+				return;
 			}
+			
+			
 			
 			if(Callisto.live_player == null || !Callisto.live_isPlaying)
 			{
@@ -1311,9 +1356,13 @@ public class Callisto extends Activity {
 					Callisto.mplayer.reset();
 				Callisto.mplayer=null;
 				LIVE_Init();
+				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
 				Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
 				LIVE_PreparedListener.setContext(v.getContext());
+				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
 				String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+				Log.d("LiveStream:playButton", "Alright so getting url");
 				try {
 					Callisto.live_player.setDataSource(live_url);
 					if(!Live_wifiLock.isHeld())
