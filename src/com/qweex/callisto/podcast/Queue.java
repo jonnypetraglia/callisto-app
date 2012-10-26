@@ -89,16 +89,23 @@ public class Queue extends ListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-    	Log.d("Queue:onOptionsItemSelected", "Clearing queue");
-    	Callisto.databaseConnector.clearQueue();
-		listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
-		Log.d("Queue:onOptionsItemSelected", "Cursor changed");
-		updateNowPlaying(0);
-	    Callisto.playerInfo.isPaused = true;
-	    if(Callisto.mplayer!=null)
-	    	Callisto.mplayer.stop();
-	 	Log.d("Queue:onOptionsItemSelected", "Derp");
-    	return true;
+        switch (item.getItemId())
+        {
+        case Menu.FIRST:
+	    	Log.d("Queue:onOptionsItemSelected", "Clearing queue");
+	    	if(Callisto.mplayer!=null)
+		    	Callisto.mplayer.stop();
+	    	Callisto.databaseConnector.clearQueue();
+			listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+			//listAdapter.notifyDataSetChanged();
+			Log.d("Queue:onOptionsItemSelected", "Cursor changed");
+			updateNowPlaying(0);
+		    Callisto.playerInfo.isPaused = true;
+		 	Log.d("Queue:onOptionsItemSelected", "Derp");
+	    	return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }    
 	
     /** Listener for the up button ("^"). Moves an entry up in the queue. */
@@ -217,6 +224,8 @@ public class Queue extends ListActivity
 	            v = inflater.inflate(R.layout.row, null);
 	       }
     	   this.c = getCursor();
+    	   if(this.c.getCount()==0)
+    		   return v;
 	       this.c.moveToPosition(pos);
 	       
 	       Long _id = this.c.getLong(c.getColumnIndex("_id"));
@@ -229,6 +238,8 @@ public class Queue extends ListActivity
 	       
 	       
 	       Cursor c2 = Callisto.databaseConnector.getOneEpisode(identity);
+	       if(c2.getCount()==0)
+	    	   return v;
 	       c2.moveToFirst();
 	       
 	       String title = c2.getString(c2.getColumnIndex("title"));

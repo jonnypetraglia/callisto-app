@@ -173,9 +173,9 @@ public class Callisto extends Activity {
 	private static final int SAVE_POSITION_EVERY = 40;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
 	
-	public static oOnCompletionListener nextTrack;
-	public static oOnErrorListener nextTrackBug;
-	public static oOnPreparedListener okNowPlay;
+	public static OnCompletionListenerWithContext nextTrack;
+	public static OnErrorListenerWithContext nextTrackBug;
+	public static OnPreparedListenerWithContext okNowPlay;
 	public static final int NOTIFICATION_ID = 1337;
 	private static NotificationManager mNotificationManager;
 	public static SharedPreferences alarmPrefs;
@@ -186,7 +186,6 @@ public class Callisto extends Activity {
 		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
 	public static boolean is_widget;
-	private static boolean startPlaying = false;
 	private Dialog news;
 	
 	
@@ -194,9 +193,7 @@ public class Callisto extends Activity {
 	public static WifiLock Live_wifiLock;
 	private static ProgressDialog pd;
     private static Dialog dg;
-	private static final String infoURL = "http://jbradio.airtime.pro/api/live-info";
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
-	private static Matcher liveMatcher = null;
 	private static LIVE_FetchInfo LIVE_update = null;
 	
 	
@@ -265,11 +262,34 @@ public class Callisto extends Activity {
 		else
 			Callisto.playerInfo.update(Callisto.this);
 		
-		
-		nextTrack = new oOnCompletionListener();
-		nextTrackBug = new oOnErrorListener();
-	    okNowPlay = new oOnPreparedListener();
+		System.out.println("Creating listeners");
+		nextTrack = new OnCompletionListenerWithContext();
+		nextTrackBug = new OnErrorListenerWithContext();
+	    okNowPlay = new OnPreparedListenerWithContext()
+	    {
+	    	@Override
+	    	public void onPrepared(MediaPlayer arg0) {
+	    		Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
+	    		Callisto.mplayer.seekTo(Callisto.playerInfo.position);
+	    		Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
+	    		if(pd!=null)
+	    			pd.cancel();
+	    		try {
+	    			ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
+	    			ib.setImageDrawable(Callisto.pauseDrawable);
+	    		} catch(NullPointerException e) {} //Case for when ib is not found
+	    		  catch(ClassCastException e) {} //Case for when it's the widget
+	        	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
+	        	Callisto.playerInfo.update(c);
+	        	if(!startPlaying)
+	    			return;
+	    		Callisto.mplayer.start();
+	    		Callisto.playerInfo.isPaused = false;
+	    		pd=null;
+	    	}
+	    };
 	    
+	    System.out.println("Create IRC stuff");
 	    	//Create the views for the the IRC
 	    chatView = new TextView(this);
 	    chatView.setGravity(Gravity.BOTTOM);
@@ -279,6 +299,7 @@ public class Callisto extends Activity {
 	    logView.setGravity(Gravity.BOTTOM);
 	    logView.setMaxLines(Integer.parseInt(i));
 	    
+	    System.out.println("Create live stuff");
 	    	//Creates the dialog for live error
 		dg = new Dialog(this);
 		TextView t = new TextView(this);
@@ -286,10 +307,11 @@ public class Callisto extends Activity {
 		dg.setContentView(t);
 		dg.setTitle("By the beard of Zeus!");
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+		if(Live_wifiLock==null || !Live_wifiLock.isHeld())
+			Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
 	    
 	    
-	    
+		System.out.println("BLAHR");
 	    PhoneStateListener phoneStateListener = new PhoneStateListener() {
 	        @Override
 	        public void onCallStateChanged(int state, String incomingNumber) {
@@ -495,7 +517,7 @@ public class Callisto extends Activity {
 			Callisto.mplayer.setDataSource(media_location);
 			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
 			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-			Callisto.startPlaying = sp;
+			LIVE_PreparedListener.startPlaying = sp;
 			Callisto.mplayer.setOnPreparedListener(okNowPlay);
 			Log.i("*:playTrack", "Preparing...");
 			if(isStreaming)
@@ -572,8 +594,10 @@ public class Callisto extends Activity {
     	    else
     	    	if(title==null && Callisto.live_player==null)
         	    	titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
-        	    else
+        	    else if(Callisto.live_player==null)
         	    	titleView.setText(title + " - " + show);
+        	    else
+        	    	titleView.setText(title + " - JB Radio");
     	    
     	    //timeView
 	    	Callisto.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
@@ -581,7 +605,7 @@ public class Callisto extends Activity {
     	    	Log.w("Callisto:update", "Could not find view: " + "TimeView");
     	    else if(Callisto.live_player!=null)
     	    {
-    	    	timeView.setText("Next");
+    	    	timeView.setText("Next ");
     	    	timeView.setEnabled(false);
     	    }
     	    else
@@ -596,7 +620,7 @@ public class Callisto extends Activity {
     	    	Log.w("Callisto:update", "Could not find view: " + "lengthView");
     	    else if(Callisto.live_player!=null)
     	    {
-    	    	lengthView.setText("--");
+    	    	lengthView.setText(show);
     	    	lengthView.setEnabled(false);
     	    }
     	    else
@@ -712,7 +736,7 @@ public class Callisto extends Activity {
 	};
 	
 	public static void playPause(Context c, View v)
-	{			
+	{
 		String live_url = "";
 		try {
 		live_url = PreferenceManager.getDefaultSharedPreferences(c).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
@@ -721,7 +745,7 @@ public class Callisto extends Activity {
 		{
 			if(Callisto.live_isPlaying)
 			{
-				Callisto.live_player.pause();
+				Callisto.live_player.stop();
 				if(v!=null)
 					((ImageButton)v).setImageDrawable(Callisto.playDrawable);
 			}
@@ -959,7 +983,6 @@ public class Callisto extends Activity {
     
 	/** Updates a show by checking to see if there are any new episodes available.
 	 * 
-	 * @param c The context; used for showing a toast on error.
 	 * @param currentShow The number of the current show in relation to the AllShows.SHOW_LIST array
 	 * @param showSettings The associated SharedPreferences with that show
 	 * @param isVideo true to check the video feed, false to check the audio.
@@ -1178,84 +1201,14 @@ public class Callisto extends Activity {
 	
 	
     
-    /** Updates the current and next track information. */
-    public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
-    {
-    	@Override
-	    protected Void doInBackground(Void... c)
-    	{
-	    HttpClient httpClient = new DefaultHttpClient();
-	    HttpContext localContext = new BasicHttpContext();
-	    HttpGet httpGet = new HttpGet(infoURL);
-	    HttpResponse response;
-	    try
-		{
-			response = httpClient.execute(httpGet, localContext);
-		    BufferedReader reader = new BufferedReader(
-			        new InputStreamReader(
-			          response.getEntity().getContent()
-			        )
-			      );
-		    
-		    String line = null, result = "";
-		    while ((line = reader.readLine()) != null){
-		      result += line + "\n";
-		    }
-		    
-		    if(liveMatcher==null)
-		    	liveMatcher = (Pattern.compile(".*?\"currentShow\".*?"
-		    					+ "\"name\":\"(.*?)\""
-		    					+ ".*"
-								+ "\"name\":\"(.*?)\""
-		    					+ ".*?")
-		    					).matcher(result);
-		    if(liveMatcher.find())
-		    	playerInfo.title = liveMatcher.group(1);
-		    if(liveMatcher.groupCount()>1)
-		    	playerInfo.show = liveMatcher.group(2);
-		    
-	    	
-		    updateHandler.sendEmptyMessage(0);
-		    
-	    	/*
-			Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
-			PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-	    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
-			Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-	       	Callisto.notification_playing.setLatestEventInfo(c[0], playerInfo.title,  "JB Radio", contentIntent);
-		       	
-	       	NotificationManager mNotificationManager =  (NotificationManager) Callisto.this.getSystemService(Context.NOTIFICATION_SERVICE);
-	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-	       	*/
-		    
-		} catch (ClientProtocolException e) {
-			// TODO EXCEPTION
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    
-	    /*
-	    Intent notificationIntent = new Intent(Callisto.this, Callisto.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(Callisto.this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-		if(Callisto.notification_playing!=null)
-		{
-			Callisto.notification_playing.setLatestEventInfo(Callisto.this, playerInfo.title,  "JB Radio", contentIntent);
-	       	NotificationManager mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-	       	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-		}
-		*/
-	    
-	    return null;
-    	}
-    }
+
     
-	private Handler updateHandler = new Handler()
+	static public Handler updateHandler = new Handler()
 	{
         @Override
         public void handleMessage(Message msg)
         {
-        	playerInfo.update(Callisto.this);
+        	playerInfo.update(Callisto.LIVE_PreparedListener.c);
         }
 	};
     
@@ -1296,29 +1249,34 @@ public class Callisto extends Activity {
 	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
 	static public void LIVE_Prepare(Context c)
 	{
-		pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-		pd.setOnDismissListener(new OnDismissListener()
+		LIVE_PreparedListener.pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+		LIVE_PreparedListener.pd.setOnDismissListener(new OnDismissListener()
 		{
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				pd.cancel();
-				pd = null;
+				LIVE_PreparedListener.pd.cancel();
+				LIVE_PreparedListener.pd = null;
 			}
 	
 		});
-		pd.setCancelable(true);
+		LIVE_PreparedListener.pd.setCancelable(true);
 		Callisto.live_player.prepareAsync();
 	}
 	
 	/** Listener for the live player in only the LiveStream activity. Starts it playing or displays an error message. */
-	private static OnPreparedListener LIVE_PreparedListener = new OnPreparedListener()
+	private static OnPreparedListenerWithContext LIVE_PreparedListener = new OnPreparedListenerWithContext()
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
-			if(pd!=null && !pd.isShowing())
-				return;
+			
 			if(pd!=null)
+			{
+				if(!pd.isShowing())
+					return;
 				pd.dismiss();
+			}
+			//*/
+			System.out.println(pd.isShowing());
 			try {
 				Callisto.live_player.start();
 				LIVE_update = new LIVE_FetchInfo();
@@ -1354,6 +1312,7 @@ public class Callisto extends Activity {
 				Callisto.mplayer=null;
 				LIVE_Init();
 				Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+				LIVE_PreparedListener.setContext(v.getContext());
 				String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
 				try {
 					Callisto.live_player.setDataSource(live_url);
@@ -1555,99 +1514,5 @@ public class Callisto extends Activity {
     	playerInfo.update(c);
     	mNotificationManager.cancel(NOTIFICATION_ID);
     	CallistoWidget.updateAllWidgets(c);
-    }
-    
-    public class oOnPreparedListener implements OnPreparedListener
-    {
-    	Context c;
-    	public ProgressDialog pd = null;
-
-    	public void setContext(Context c)
-    	{
-    		this.c = c;
-    	}
-
-		@Override
-		public void onPrepared(MediaPlayer arg0) {
-			Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
-			Callisto.mplayer.seekTo(Callisto.playerInfo.position);
-			Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
-			if(pd!=null)
-				pd.cancel();
-			try {
-				ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
-				ib.setImageDrawable(Callisto.pauseDrawable);
-			} catch(NullPointerException e) {} //Case for when ib is not found
-			  catch(ClassCastException e) {} //Case for when it's the widget
-	    	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
-	    	Callisto.playerInfo.update(c);
-	    	if(!startPlaying)
-				return;
-			Callisto.mplayer.start();
-			Callisto.playerInfo.isPaused = false;
-			pd=null;
-		}
-    	
-    }
-    
-    public class oOnCompletionListener implements OnCompletionListener
-    {
-    	Context c;
-    	Runnable r;
-
-    	public void setContext(Context c)
-    	{
-    		this.c = c;
-    	}
-    	
-    	public void setRunnable(Runnable r)
-    	{
-    		this.r = r;
-    	}
-    	
-		@Override
-		public void onCompletion(MediaPlayer mp) {
-			Log.i("*:mplayer:onCompletion", "Playing next track");
-			
-			if(r!=null)
-				r.run();
-			
-			boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
-			if(del)
-			{
-		        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
-		        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
-		        target.delete();
-			}
-			Cursor c = Callisto.databaseConnector.currentQueue();
-			c.moveToFirst();
-			long id = c.getLong(c.getColumnIndex("identity"));
-			Callisto.databaseConnector.updatePosition(id, 0);
-			
-			Callisto.playTrack(this.c, 1, true);
-		}
-		
-		
-    	
-    }
-    
-    public class oOnErrorListener implements OnErrorListener
-    {
-    	Context c;
-
-    	public void setContext(Context c)
-    	{
-    		this.c = c;
-    	}
-    	
-    	
-
-		@Override
-		public boolean onError(MediaPlayer mp, int what, int extra) {
-			System.out.println("Next Track Bug");
-			//Callisto.playTrack(this.c);
-			return true;
-		}
-    	
     }
 }
