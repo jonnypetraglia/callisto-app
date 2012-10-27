@@ -29,7 +29,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@*android:drawable/bottom_bar"
+        android:background="@android:drawable/bottom_bar"
         android:orientation="horizontal" >
 
         <Button

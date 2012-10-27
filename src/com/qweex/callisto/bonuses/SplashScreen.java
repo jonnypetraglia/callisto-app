@@ -17,22 +17,20 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.bonuses;
 
-import java.io.IOException;
+import java.io.File;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.QuickPrefsActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.R.layout;
 
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 
-//FIXME: App doesn't effing exit when you call finish!
 
 /** A nice little splash screen that can be enabled or disabled.
  * The plan is for it to be only available if you've donated to JB or maybe Qweex.
@@ -68,21 +66,20 @@ public class SplashScreen extends Activity {
             return;
 		}
         
-        try {
 	        if(appSettings.getBoolean("splash_quote", true))
 	        {
+	        	try {
+        		File target = new File(Environment.getExternalStorageDirectory(), PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto")
+        				+ File.separator + "extras" + File.separator + "bryan.mp3");
+        		System.out.println(target.getAbsolutePath());
 		        player = new MediaPlayer();
-		        AssetFileDescriptor afd = getAssets().openFd("bryan.mp3");
-	            player.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+		        player.setDataSource(target.getAbsolutePath());
 	            player.prepare();
-	            bryantime = player.getDuration();
 	            player.start();
+	            bryantime = player.getDuration();
+	        	} catch (Exception e) {}
 	        }
-            t.start();
-            } 
-        catch (IllegalArgumentException e) { launchApp(); } 
-        catch (IllegalStateException e) { launchApp(); } 
-        catch (IOException e) { launchApp(); } 
+            t.start();  
     }
     
     /** Called when the activity is done. */
@@ -110,7 +107,7 @@ public class SplashScreen extends Activity {
 	private Thread t = new Thread() {
         public void run() {
             int time = 100;
-            while (time < SplashScreen.this.bryantime)
+            while (time < SplashScreen.this.bryantime+100)
             {
                try {
 				sleep(100);

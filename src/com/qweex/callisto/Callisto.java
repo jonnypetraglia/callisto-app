@@ -17,12 +17,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,11 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -52,7 +46,6 @@ import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.podcast.AllShows;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
-import com.qweex.callisto.podcast.ShowList;
 import com.qweex.callisto.widgets.CallistoWidget;
 import com.qweex.utils.UnfinishedParseException;
 
@@ -76,9 +69,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
@@ -169,7 +161,8 @@ public class Callisto extends Activity {
 	private static final int MORE_ID=SETTINGS_ID+1;
 	private static final int RELEASE_ID=MORE_ID+1;
 	private static final int BACON_ID=RELEASE_ID+1;
-	private static final int QUIT_ID=BACON_ID+1;
+	private static final int QUIT_ID=BACON_ID+1,
+							 CHRISROLL_ID=QUIT_ID+1;
 	private static final int SAVE_POSITION_EVERY = 40,
 						     CHECK_LIVE_EVERY = 400;	//Cycles, not necessarily seconds
 	private Timer timeTimer = null;
@@ -312,7 +305,6 @@ public class Callisto extends Activity {
 			Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
 	    
 	    
-		System.out.println("BLAHR");
 	    PhoneStateListener phoneStateListener = new PhoneStateListener() {
 	        @Override
 	        public void onCallStateChanged(int state, String incomingNumber) {
@@ -712,7 +704,7 @@ public class Callisto extends Activity {
 				if(i==Callisto.CHECK_LIVE_EVERY)
 				{
 					LIVE_update = new LIVE_FetchInfo();
-					Callisto.LIVE_update.execute(null);
+					Callisto.LIVE_update.execute((Void [])null);
 					i=0;
 				}
 				return;
@@ -964,15 +956,26 @@ public class Callisto extends Activity {
      * @throws IOException
      * @throws NullPointerException
      */
-    public static void downloadImage(String img_url, String show) throws IOException, NullPointerException
-    {
+    public static class downloadImage extends AsyncTask<String, Void, Void>
+    {	
+    	@Override
+        protected Void doInBackground(String... s)
+    	{
+    //public static void downloadImage(String img_url, String show) throws IOException, NullPointerException
+    //{
+		try {
+		String img_url = s[0], show = s[1];
+		System.out.println(img_url);
     	if(img_url==null)
     		throw(new NullPointerException());
     	File f = new File(Environment.getExternalStorageDirectory() + File.separator + 
     				      storage_path + File.separator +
     				      show + EpisodeDesc.getExtension(img_url));
+    	System.out.println(f.getAbsolutePath());
     	if(f.exists())
-    		return;
+    		return null;
+    	(new File(Environment.getExternalStorageDirectory() + File.separator + 
+			      storage_path)).mkdirs();
 	    URL url = new URL (img_url);
 	    InputStream input = url.openStream();
 	    try {
@@ -994,6 +997,11 @@ public class Callisto extends Activity {
 	    Bitmap scale  = Bitmap.createScaledBitmap(bitmap, (int)(60*DP), (int)(60*DP), true);
 	    OutputStream fOut = new FileOutputStream(f);
     	scale.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
+    		} catch(Exception e) {
+    			Log.v("*:updateShow", "Failed to download image");
+    		}
+    	return null;
+    }
     }
 
     
@@ -1069,14 +1077,12 @@ public class Callisto extends Activity {
   		  
   		  if(imgurl2!=null)
   			  imgurl = imgurl2;
-  		  
-  		  try {
-  			  if(imgurl!=null)
-  				  downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-  			  Log.v("*:updateShow", "Parser has downloaded image for " + AllShows.SHOW_LIST[currentShow]);
-  		  } catch(Exception e) {
-  			Log.v("*:updateShow", "Failed to download image");
-  		  }
+		  if(imgurl!=null)
+		  {
+			  new downloadImage().execute(imgurl, AllShows.SHOW_LIST[currentShow]);
+			  //downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
+			  Log.v("*:updateShow", "Parser is downloading image for " + AllShows.SHOW_LIST[currentShow]);
+		  }
   		  
   		  //Get episodes
   		  while(eventType!=XmlPullParser.END_DOCUMENT)
@@ -1304,7 +1310,7 @@ public class Callisto extends Activity {
 			try {
 				Callisto.live_player.start();
 				LIVE_update = new LIVE_FetchInfo();
-				Callisto.LIVE_update.execute(null);
+				Callisto.LIVE_update.execute((Void [])null);
 				Callisto.live_isPlaying = true;
 			}
 			catch(Exception e)
@@ -1315,7 +1321,7 @@ public class Callisto extends Activity {
 		}
 	};
 	
-	/** Listener for the play button. Duh! */
+	/** Listener for the Live button. */
 	private OnClickListener LIVE_PlayButton = new OnClickListener()
 	{
 		@Override
@@ -1409,10 +1415,7 @@ public class Callisto extends Activity {
 	
 	
     
-    //Everything below this line is either vastly incomplete or for debugging
-    //-------------------------
-    
-    
+    /** Shows the update news for the current version */
 	public void showUpdateNews()
 	{
 	    TextView newsHeader = new TextView(this);
@@ -1508,13 +1511,23 @@ public class Callisto extends Activity {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
-    {
-    	
+    {    	
     	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
     	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(android.R.drawable.ic_menu_preferences);
     	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(android.R.drawable.ic_menu_more);
     	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(android.R.drawable.ic_menu_info_details);
-    	theSubMenu.add(0, BACON_ID, 0, RESOURCES.getString(R.string.bacon)).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+    	
+    	if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
+    	{
+	    	String baconString = "Get Bacon";
+	    	File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+	    	if(target.exists())
+	    		baconString = RESOURCES.getString(R.string.bacon);
+	    	theSubMenu.add(0, BACON_ID, 0, baconString).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+	    	theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+    	}
+    	
+    	
     	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
         return true;
     }
@@ -1534,9 +1547,21 @@ public class Callisto extends Activity {
         	showUpdateNews();
             return true;
         case BACON_ID:
+        	File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+	    	if(!target.exists())
+	    	{
+	    		new downloadExtras().execute((Void[])null);
+	    		return true;
+	    	}
         	Intent i = new Intent(Callisto.this, Bacon.class);
             startActivity(i);
         	return true;
+        case CHRISROLL_ID:
+	    	Uri uri = Uri.parse("http://www.youtube.com/watch?v=98E2hfxF8oE");
+	    	uri = Uri.parse("vnd.youtube:"  + uri.getQueryParameter("v"));
+	    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+	    	startActivity(intent);
+	    	return true;
         case QUIT_ID:
         	finish();
         	mNotificationManager.cancelAll();
@@ -1547,6 +1572,48 @@ public class Callisto extends Activity {
         }
     }
     
+    public class downloadExtras extends AsyncTask<Void, Void, Void>
+    {	
+    	@Override
+        protected Void doInBackground(Void... c)
+    	{
+        	final String FILELOC = "http://www.qweex.com/qweexware/callisto/extras/";
+        	String[] files = {"baconlove.gif", "bryan.mp3", "gangnam.mid", "gangnam.gif"};
+        	File f = new File(Environment.getExternalStorageDirectory() + File.separator + 
+				      storage_path + File.separator +
+				      "extras");
+        	f.mkdir();
+        	for(int i=0; i<files.length; i++)
+        	{
+    	    	f = new File(Environment.getExternalStorageDirectory() + File.separator + 
+    	    				      storage_path + File.separator +
+    	    				      "extras" + File.separator + files[i]);
+    	    	if(f.exists())
+    	    		continue;
+    	    	try {
+    		    URL url = new URL (FILELOC + files[i]);
+    		    InputStream input = url.openStream();
+    		    try {
+    		        OutputStream output = new FileOutputStream (f.getPath());
+    		        try {
+    		            byte[] buffer = new byte[5 * 1024];
+    		            int bytesRead = 0;
+    		            while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+    		                output.write(buffer, 0, bytesRead);
+    		            }
+    		        } finally {
+    		            output.close();
+    		        }
+    		    } finally {
+    		        input.close();
+    		    }
+    	    	} catch(Exception e) {e.printStackTrace();}
+        	}
+        	return null;
+    	}
+    };
+    
+    /** Stops the player. Clears the notifications, releases resources, etc. */
     public static void stop(Context c)
     {
     	if(Callisto.playerInfo!=null)

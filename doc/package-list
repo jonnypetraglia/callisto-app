@@ -1,5 +1,9 @@
+com.paypal.android.simpledemo
 com.qweex.callisto
+com.qweex.callisto.bonuses
+com.qweex.callisto.donate
 com.qweex.callisto.irc
 com.qweex.callisto.podcast
+com.qweex.callisto.widgets
 com.qweex.utils
 net.margaritov.preference.colorpicker

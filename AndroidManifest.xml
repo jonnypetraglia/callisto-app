@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qweex.callisto" android:versionName='@string/version_name' android:versionCode="2">
+    package="com.qweex.callisto" android:versionName='@string/version_name' android:versionCode="3">
 
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15" />
     
@@ -29,7 +29,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 <uses-permission android:name="com.android.vending.BILLING" />
 <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 <uses-permission android:name="android.permission.WAKE_LOCK"/>  
-    <application android:label="Callisto" android:icon="@drawable/callisto"> 
+    <application android:label="Callisto" android:icon="@drawable/callisto" android:debuggable="false"> 
 
 
         <activity android:name=".bonuses.SplashScreen">
@@ -78,7 +78,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 				  android:theme="@android:style/Theme.Translucent.NoTitleBar"
 				  android:configChanges="keyboardHidden|orientation"/>
         
-		<activity android:name=".bonuses.Bacon"></activity>
+		<activity android:name=".bonuses.Bacon"
+		    android:configChanges="keyboardHidden|orientation"></activity>
 
     <service android:name="com.android.vending.billing.BillingService" />
 
