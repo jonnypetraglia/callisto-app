@@ -434,22 +434,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			}
 		});
 		
-		if(session==null)
-		{
-			if(irssi)
-			{
-				((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000);
-				((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000);
-				if(android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
-					input.setTextColor(0xff000000 + IRSSI_GREEN);
-			}
-			else
-			{
-				((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
-				((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(0xFF000000 + PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
-			}
-		}
-		else
+		((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(CLR_BACK);
+		((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(CLR_BACK);
+		if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
+			input.setTextColor(0xff000000 + IRSSI_GREEN);
+		if(session!=null)
 			session.addIRCEventListener(this);
 		if(Callisto.notification_chat!=null)
 			Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
