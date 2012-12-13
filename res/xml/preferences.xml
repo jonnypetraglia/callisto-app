@@ -93,7 +93,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:defaultValue="true" />
 	        <CheckBoxPreference
 	            android:key="splash_quote"
-	            android:summary="Toggle the quote when starting the all"
+	            android:summary="Toggle the quote when starting the app"
 	            android:title="@string/splash_quote" 
 	            android:defaultValue="true"
 	            android:dependency="splash_show"
