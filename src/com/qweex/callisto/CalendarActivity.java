@@ -731,9 +731,13 @@ public class CalendarActivity extends Activity {
 					if(d.contains("/"))
 					{
 						SimpleDateFormat sdf = new SimpleDateFormat(Callisto.europeanDates ? "dd/MM" : "MM/dd");
-						if(d.indexOf("/", d.indexOf("/"))>0)
+						if(d.indexOf("/", d.indexOf("/")+1)>0)
+						{
 							sdf = Callisto.sdfDestination;
+							System.out.println("PARSEDERP" + d.indexOf("/", d.indexOf("/")) + " " +  d.indexOf("/"));
+						}
 						Calendar dt = Calendar.getInstance();
+						System.out.println("PARSE " + (Callisto.europeanDates ? "dd/MM" : "MM/dd") + " - "  + d);
 						dt.setTime(sdf.parse(d));
 						dt.set(Calendar.YEAR, (new java.util.Date()).getYear());
 						d = Callisto.sdfRawSimple1.format(dt.getTime());
@@ -748,11 +752,12 @@ public class CalendarActivity extends Activity {
 							{
 								i=(i-1+7)%7;
 								Calendar cl = Calendar.getInstance();
-								int j = (cl.get(Calendar.DAY_OF_WEEK)-1) % 7;
-								if(j<i)
-									cl.add(Calendar.DAY_OF_WEEK, j-i);
+								int j = (cl.get(Calendar.DAY_OF_WEEK));// % 7;
+								System.out.println(j + "<<" + i);
+								if(j<=i)
+									cl.add(Calendar.DATE, i-j);
 								else
-									cl.add(Calendar.DAY_OF_WEEK, 7-j+i);
+									cl.add(Calendar.DATE, 7+i-j);
 								d = Callisto.sdfRawSimple1.format(cl.getTime());
 								break;
 							}
@@ -764,7 +769,9 @@ public class CalendarActivity extends Activity {
 				t = c.getString(c.getColumnIndex("time"));
 				s = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(t));
 				popUp_time.setText(s);
-			} catch (ParseException e) {}
+			} catch (ParseException e) {
+				System.out.println("PARSEEXCEPTION");
+			}
 			
 			Map<String,?> alarms = Callisto.alarmPrefs.getAll();
 			String key = title + d + t;
@@ -859,7 +866,7 @@ public class CalendarActivity extends Activity {
 			
     		//Get a cursor containing the valid events for that day
     		Cursor c=null;
-			c = Callisto.databaseConnector.dayEvents(targetDate, current_cal.get(Calendar.DAY_OF_WEEK)-1);
+			c = Callisto.databaseConnector.dayEvents(targetDate, current_cal.get(Calendar.DAY_OF_WEEK));
     		c.moveToFirst();
         	
     		//Add these events to the agenda

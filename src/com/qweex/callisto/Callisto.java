@@ -135,11 +135,11 @@ public class Callisto extends Activity {
 										 sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd"),
 								 		 sdfRawSimple2 = new SimpleDateFormat("HHmmss"),
 								 		 sdfTime = new SimpleDateFormat("hh:mm aa"),
-								 		 sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
-								 		 sdfDestination = new SimpleDateFormat("MM/dd/yyyy"),
-								 		 sdfFile = new SimpleDateFormat("yyyy-MM-dd"),
-								 		 sdfHuman = new SimpleDateFormat("MMM d"),
-								 		 sdfHumanLong = new SimpleDateFormat("MMM d, yyyy");
+								 		 sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+		public static SimpleDateFormat sdfDestination;
+		public static final SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd");
+		public static final SimpleDateFormat sdfHuman = new SimpleDateFormat("MMM d");
+		public static final SimpleDateFormat sdfHumanLong = new SimpleDateFormat("MMM d, yyyy");
 		/** Shared Drawable resources for updating the player control graphics. */
     public static Drawable playDrawable, pauseDrawable;
     	/** An instance of the PlayerInfo class, to keep track of the info of a track when updating the player controls across the activities. */
@@ -150,6 +150,8 @@ public class Callisto extends Activity {
 	public static float DP;
 		/** One of the Views for the IRC client. Having them static lets them be updated at any time, and not be destroyed when you leave the IRC screen. */
 	public static TextView chatView, logView;
+		/** If you should be a "weirdo" that likes dates in a logically correct manner. */
+	public static boolean europeanDates;
 	
 	//------Local variables-----
 	static TextView timeView;
@@ -198,6 +200,9 @@ public class Callisto extends Activity {
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
+		sdfDestination = new SimpleDateFormat(europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
 		
 		RESOURCES = getResources();
 		DP = RESOURCES.getDisplayMetrics().density;
