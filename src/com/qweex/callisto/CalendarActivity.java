@@ -337,9 +337,7 @@ public class CalendarActivity extends Activity {
        protected Object doInBackground(Object... params)
        {
     	   try
-    	   {
-	       	Callisto.databaseConnector.clearCalendar();
-	       	
+    	   {  	
 	       	XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 	       	factory.setNamespaceAware(true);
 	   	    XmlPullParser xpp = factory.newPullParser();
@@ -351,6 +349,8 @@ public class CalendarActivity extends Activity {
 	   	    SimpleDateFormat sdfReplaces = new SimpleDateFormat("EE MMM dd, yyyy hha z", Locale.US);
 	   	    SimpleDateFormat sdfReplaces2 = new SimpleDateFormat("EE MMM dd, yyyy hh:mma z", Locale.US);
 	   	    SimpleDateFormat sdfRecurring = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz", Locale.US);
+	   	    
+	   	    Callisto.databaseConnector.clearCalendar();
 	   	    
 	   	    int eventType = xpp.getEventType();
 	   		  //Skip the first heading
@@ -425,6 +425,7 @@ public class CalendarActivity extends Activity {
 	   					if(stupidBug)
 	   						evDate = evDate.replace(" PDT", " PST8PDT");
    						tempDate.setTime(sdfRecurring.parse(evDate));
+   						e.printStackTrace();
 	   				} catch (ParseException e1) {
 						// TODO EXCEPTION: ParseException
 						e1.printStackTrace();
@@ -432,15 +433,6 @@ public class CalendarActivity extends Activity {
 	   				}
 	   			} 
 
-	   			/*
-				if(stupidBug && false)	//Can manually adjust the offset, but this is some bad mojo
-				{
-					  Calendar cal = Calendar.getInstance();
-					  cal.setTime(butts);
-					  cal.add(Calendar.HOUR, -2);
-					  butts = cal.getTime();	    
-				}//*/
-	   			//TODO: daguydatpwnz's fix
 	   			System.out.println("TZD: " + timezoneDifference());
 	   			
 				evDate = Callisto.sdfRaw.format(tempDate.getTime());
@@ -451,23 +443,30 @@ public class CalendarActivity extends Activity {
 	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_MONTH) : -1);
 	   		  }
     	   } catch(XmlPullParserException e) {
+    		   e.printStackTrace();
+    		   return "XML";
     	     }catch (MalformedURLException e2) {
-			e2.printStackTrace();
+    	    	 e2.printStackTrace();
+    	    	 return "URL";
 			}catch (IOException e2) {
-       			//TODO: EXCEPTION
-			e2.printStackTrace();	
+				e2.printStackTrace();	
+				return "I/O";
 			}
     	   catch(NullPointerException e)
   			{
   				Log.e("BUTTS", "HERE");
   			}
-    	   
           return null;
        }
 
        @Override
        protected void onPostExecute(Object result)
        {
+    	   if(result!=null)
+    	   {
+    		   Toast.makeText(CalendarActivity.this, (String)(result) + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();
+    	   }
+    	   
     	   pd.hide();
     	   if(isLandscape)
     		   Tmonth.performClick();
