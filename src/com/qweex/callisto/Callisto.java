@@ -1251,7 +1251,8 @@ public class Callisto extends Activity {
 		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
-		    	pd.dismiss();
+		    	if(pd!=null)
+		    		pd.hide();
 		    	String whatWhat="";
 		    	switch (what) {
 		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
@@ -1309,7 +1310,7 @@ public class Callisto extends Activity {
 			{
 				if(!pd.isShowing())
 					return;
-				pd.dismiss();
+				pd.hide();
 			}
 			//*/
 			try {

@@ -245,7 +245,8 @@ public class Donate extends ListActivity
 		Thread libraryInitializationThread = new Thread() {
 			public void run() {
 				initLibrary();
-				pd.dismiss();
+				if(pd!=null)
+	    		   pd.hide();
 				
 				// The library is initialized so let's create our CheckoutButton and update the UI.
 				if (PayPal.getInstance().isLibraryInitialized()) {

@@ -463,6 +463,7 @@ public class CalendarActivity extends Activity {
        @Override
        protected void onPostExecute(Object result)
        {
+    	   
     	   pd.hide();
     	   if(result!=null)
     		   Toast.makeText(CalendarActivity.this, (String)(result) + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();

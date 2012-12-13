@@ -112,7 +112,8 @@ public class ContactForm extends Activity
        @Override
        protected void onPostExecute(Void result)
        {
-    	   pd.dismiss();
+    	   if(pd!=null)
+    		   pd.hide();
        }
 	    
 	    
