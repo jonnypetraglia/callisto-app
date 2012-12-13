@@ -27,7 +27,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -297,6 +296,29 @@ public class CalendarActivity extends Activity {
     	}    	
     };
     
+    /** Calculates the difference between Jupiter time and local time.
+     * http://obscuredclarity.blogspot.com/2010/08/determine-time-difference-between-two.html **/
+    private int timezoneDifference()
+    {
+    	int hourDifference, dayDifference;
+    	
+    	Calendar Jupiter = new java.util.GregorianCalendar(TimeZone.getTimeZone("PST8PDT"));
+		Jupiter.setTimeInMillis(new java.util.Date().getTime());
+		int JupiterHourOfDay = Jupiter.get(Calendar.HOUR_OF_DAY);
+		int JupiterDayOfMonth = Jupiter.get(Calendar.DAY_OF_MONTH);
+    	
+    	// Local Time  
+    	int localHourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);  
+    	int localDayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);  
+    	  
+    	// Difference between New York and Local Time (for me Germany)  
+    	hourDifference = JupiterHourOfDay - localHourOfDay;  
+    	dayDifference = JupiterDayOfMonth - localDayOfMonth;  
+    	if (dayDifference != 0) 
+    		hourDifference = hourDifference + 24;    
+    	return hourDifference;
+    }
+    
     /** Performs database query outside GUI thread. */
     private class FetchEventsTask extends AsyncTask<Object, Object, Object> 
     {
@@ -392,22 +414,22 @@ public class CalendarActivity extends Activity {
 	   			  else
 	   				  continue;
 	   			
-	   			  Date tempDate = null;
+	   			  Calendar tempDate = Calendar.getInstance();
 	   			
 	   			  
+	   			  System.out.println("evdate: " + evDate);
 	   			try {
-	   				tempDate = sdf.parse(evDate);
+	   				tempDate.setTime(sdf.parse(evDate));
 	   			} catch (ParseException e) {
 	   				try {
 	   					if(stupidBug)
 	   						evDate = evDate.replace(" PDT", " PST8PDT");
-   						tempDate = sdfRecurring.parse(evDate);
+   						tempDate.setTime(sdfRecurring.parse(evDate));
 	   				} catch (ParseException e1) {
 						// TODO EXCEPTION: ParseException
 						e1.printStackTrace();
 						continue;
 	   				}
-	   				 
 	   			} 
 
 	   			/*
@@ -418,12 +440,15 @@ public class CalendarActivity extends Activity {
 					  cal.add(Calendar.HOUR, -2);
 					  butts = cal.getTime();	    
 				}//*/
-				evDate = Callisto.sdfRaw.format(tempDate);
+	   			//TODO: daguydatpwnz's fix
+	   			System.out.println("TZD: " + timezoneDifference());
+	   			
+				evDate = Callisto.sdfRaw.format(tempDate.getTime());
    				
 	   			  String evTime =evDate.substring(8).trim();
 	   			  evDate =  evDate.substring(0,8).trim(); 
 	   				
-	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.getDay() : -1);
+	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_MONTH) : -1);
 	   		  }
     	   } catch(XmlPullParserException e) {
     	     }catch (MalformedURLException e2) {
@@ -708,13 +733,14 @@ public class CalendarActivity extends Activity {
 						SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
 						if(d.indexOf("/", d.indexOf("/"))>0)
 							sdf = Callisto.sdfDestination;
-						Date dt = sdf.parse(d);
-						dt.setYear((new Date()).getYear());
-						d = Callisto.sdfRawSimple1.format(dt);
+						Calendar dt = Calendar.getInstance();
+						dt.setTime(sdf.parse(d));
+						dt.set(Calendar.YEAR, (new java.util.Date()).getYear());
+						d = Callisto.sdfRawSimple1.format(dt.getTime());
 					}
 					//Today
 					else if(d.equals(Callisto.RESOURCES.getString(R.string.today)))
-						d = Callisto.sdfRawSimple1.format(new Date());
+						d = Callisto.sdfRawSimple1.format(new java.util.Date());
 					else
 						//Mon Tue Wed
 						for(int i=1; i<=days.length; i++)
@@ -837,23 +863,23 @@ public class CalendarActivity extends Activity {
 	        	View v = inflater.inflate(R.layout.agenda_row, null);
 	        	v.setOnClickListener(clickEvent);
 	        	
-	        	Date eventDate = null;
+	        	Calendar eventDate = Calendar.getInstance();
 		        try
 		        {
 		        	String d = c.getString(c.getColumnIndex("date"));
 		        	String t = c.getString(c.getColumnIndex("time"));
-		        	eventDate = Callisto.sdfRaw.parse(d+t);
+		        	eventDate.setTime(Callisto.sdfRaw.parse(d+t));
 		        } catch(Exception e)
 		        {	e.printStackTrace();    }
 		        
 		        
-		        Date today = new Date();
+		        Calendar today = Calendar.getInstance();
 		        String timeUntil = "NOW!";
 		        int timeBetween = 24*60;
 		        if(thisWeek && i==0)
 		        {
-		        	int showTime = eventDate.getHours()*60 + eventDate.getMinutes();
-			        int currentTime = today.getHours()*60 + today.getMinutes();
+		        	int showTime = eventDate.get(Calendar.HOUR_OF_DAY)*60 + eventDate.get(Calendar.MINUTE);
+			        int currentTime = today.get(Calendar.HOUR_OF_DAY)*60 + today.get(Calendar.MINUTE);
 			        timeBetween = showTime - currentTime; //Add 60, so people can catch a show that's already in progress
 			        if(timeBetween+60 < 0)
 			        {
@@ -877,7 +903,7 @@ public class CalendarActivity extends Activity {
 		        }
 		        else
 		        	//Next Year
-	        	if(current_cal.get(Calendar.YEAR)==today.getYear())
+	        	if(current_cal.get(Calendar.YEAR)==today.get(Calendar.YEAR))
 	        		((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE) + "/" + current_cal.get(Calendar.YEAR));
 		        else //Else
 		        	((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE));
@@ -889,7 +915,7 @@ public class CalendarActivity extends Activity {
 		        	((TextView) v.findViewById(R.id.soon)).setText("SOON");
 		        }
 		        else
-		        	((TextView) v.findViewById(R.id.time)).setText(Callisto.sdfTime.format(eventDate));
+		        	((TextView) v.findViewById(R.id.time)).setText(Callisto.sdfTime.format(eventDate.getTime()));
 		        //Show
 		        ((TextView) v.findViewById(R.id.show)).setText(c.getString(c.getColumnIndex("show")));
 		        //Type
