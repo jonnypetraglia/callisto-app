@@ -100,7 +100,7 @@ public class CalendarActivity extends Activity {
 	private static Drawable popup_above;
 	
 	boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
-	int TheHeightOfTheFreakingPopup = 0; 
+	int TheHeightOfTheFreakingPopup = 0;
 	
     
 	/** Called when the activity is first created. Determines the orientation of the screen then initializes the appropriate view.
@@ -110,6 +110,7 @@ public class CalendarActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(Callisto.RESOURCES.getString(R.string.agenda_title));
+        
         
         //TODO: flip
         popup_above = getResources().getDrawable(R.drawable.popup_inline_error);
@@ -243,7 +244,7 @@ public class CalendarActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
-    	menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_menu_refresh);
+    	menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, Callisto.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_menu_refresh);
     	return true;
     }
     
@@ -417,7 +418,6 @@ public class CalendarActivity extends Activity {
 	   			  Calendar tempDate = Calendar.getInstance();
 	   			
 	   			  
-	   			  System.out.println("evdate: " + evDate);
 	   			try {
 	   				tempDate.setTime(sdf.parse(evDate));
 	   			} catch (ParseException e) {
@@ -433,14 +433,15 @@ public class CalendarActivity extends Activity {
 	   				}
 	   			} 
 
-	   			System.out.println("TZD: " + timezoneDifference());
 	   			
 				evDate = Callisto.sdfRaw.format(tempDate.getTime());
    				
 	   			  String evTime =evDate.substring(8).trim();
-	   			  evDate =  evDate.substring(0,8).trim(); 
+	   			  evDate =  evDate.substring(0,8).trim();
+	   			  
+	   			System.out.println("TZD: " + tempDate.get(Calendar.DAY_OF_WEEK) + " " + evType.trim());
 	   				
-	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_MONTH) : -1);
+	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_WEEK) : -1);
 	   		  }
     	   } catch(XmlPullParserException e) {
     		   e.printStackTrace();
@@ -462,16 +463,16 @@ public class CalendarActivity extends Activity {
        @Override
        protected void onPostExecute(Object result)
        {
-    	   if(result!=null)
-    	   {
-    		   Toast.makeText(CalendarActivity.this, (String)(result) + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();
-    	   }
-    	   
     	   pd.hide();
-    	   if(isLandscape)
-    		   Tmonth.performClick();
-    	   else
-    		   loadMoreAgenda(true);
+    	   if(result!=null)
+    		   Toast.makeText(CalendarActivity.this, (String)(result) + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();
+    	   else {
+    		   ((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.load_more));
+    		   if(isLandscape)
+    			   Tmonth.performClick();
+    		   else
+    			   loadMoreAgenda(true);
+    	   }
        }
     }
     
@@ -729,7 +730,7 @@ public class CalendarActivity extends Activity {
 					// MM/dd format
 					if(d.contains("/"))
 					{
-						SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+						SimpleDateFormat sdf = new SimpleDateFormat(Callisto.europeanDates ? "dd/MM" : "MM/dd");
 						if(d.indexOf("/", d.indexOf("/"))>0)
 							sdf = Callisto.sdfDestination;
 						Calendar dt = Calendar.getInstance();
@@ -821,7 +822,14 @@ public class CalendarActivity extends Activity {
     	
     	if(Callisto.databaseConnector.eventCount()==0)
     	{
-    		loading.setText(Callisto.RESOURCES.getString(R.string.no_events));
+    		if(thisWeek)
+    		{
+	    		loading.setText(Callisto.RESOURCES.getString(R.string.no_events));
+	    		((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.fetch));
+	    		return;
+    		}
+    		fetchTask = new FetchEventsTask();
+    		fetchTask.execute((Object[]) null);
     		return;
     	}
     	
@@ -892,6 +900,8 @@ public class CalendarActivity extends Activity {
 			        	timeUntil = "Now!";
 		        }
 		        
+		        
+		        System.out.println(current_cal.get(Calendar.YEAR) + "==" + today.get(Calendar.YEAR));
 	        	//Date
 		        if(thisWeek)
 		        {
@@ -901,12 +911,19 @@ public class CalendarActivity extends Activity {
 		        		((TextView) v.findViewById(R.id.date)).setText(days[(i+dayOfWeek)%7]);
 		        }
 		        else
-		        	//Next Year
-	        	if(current_cal.get(Calendar.YEAR)==today.get(Calendar.YEAR))
-	        		((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE) + "/" + current_cal.get(Calendar.YEAR));
-		        else //Else
-		        	((TextView) v.findViewById(R.id.date)).setText(current_cal.get(Calendar.MONTH) + "/" + current_cal.get(Calendar.DATE));
-		        
+		        {
+		        	//Etc
+	        		String temp2;
+			        if(Callisto.europeanDates)
+			        	temp2 = current_cal.get(Calendar.DATE) + "/" + (current_cal.get(Calendar.MONTH)+1);
+			        else
+			        	temp2 = (current_cal.get(Calendar.MONTH)+1) + "/" + current_cal.get(Calendar.DATE);
+			        	
+		        	((TextView) v.findViewById(R.id.date)).setText(temp2 + 
+	    					//If it's next year, display the year
+	    					(current_cal.get(Calendar.YEAR)!=today.get(Calendar.YEAR) ? ("/" + current_cal.get(Calendar.YEAR)) : "")
+	        			);
+		        }
 		        //Time
 		        if(thisWeek && i==0 && timeBetween<=60*12)
 		        {
