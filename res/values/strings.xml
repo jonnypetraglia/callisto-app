@@ -28,6 +28,8 @@
 	<string name="downloads">Downloads</string>
 	<string name="agenda_title">Upcoming Shows</string>
 	<string name="refresh">Refresh</string>
+	<string name="reload">Reload</string>
+	<string name="fetch">Fetch Calendar</string>
 	<string name="loading_msg">Please be patient. Cook some bacon or something.</string>
 	<string name="queue_size">Queue size</string>
 	<string name="queue_error">There was an error loading the next song. It has been removed from the queue.</string>
