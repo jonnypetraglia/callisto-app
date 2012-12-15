@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/IRC_Login"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/backClr"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/user"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:color="@color/txtClr"
+        android:hint="Nick"
+        android:ems="10" />
+    
+    <EditText
+        android:id="@+id/pass"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:color="@color/txtClr"
+        android:hint="Password (Optional)"
+        android:inputType="textPassword"
+        android:ems="10" />
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Login"
+        android:color="@color/txtClr" />
+
+</LinearLayout>

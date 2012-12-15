@@ -134,6 +134,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private WifiLock IRC_wifiLock;
 	final private int RECONNECT_TRIES = 5;
 	private int SESSION_TIMEOUT = 40;
+	private EditText user, pass;
 	
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -190,36 +191,21 @@ public class IRCChat extends Activity implements IRCEventListener
 			return;
 		}
 		//Set up the login screen
-		LinearLayout ll = new LinearLayout(this);
-		ll.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
-		ll.setOrientation(LinearLayout.VERTICAL);
-		LinearLayout.LayoutParams params 
-			= new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-		ll.setLayoutParams(params);
-		ll.setId(1337);
+		setContentView(R.layout.irc_login);
+		user = (EditText) findViewById(R.id.user);
+		pass = (EditText) findViewById(R.id.pass);
+		Button login = (Button) findViewById(R.id.login);
+		user.setText(profileNick);
+		pass.setText(profilePass);
+		
+		LinearLayout ll = (LinearLayout) findViewById(R.id.IRC_Login);
 		ll.setPadding(getWindowManager().getDefaultDisplay().getHeight()/10,
 				  getWindowManager().getDefaultDisplay().getHeight()/(isLandscape?6:4),
 				  getWindowManager().getDefaultDisplay().getHeight()/10,
 				  0);
-		final EditText user = new EditText(this);
-		final EditText pass = new EditText(this);
-		final Button login = new Button(this);
-		params = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-		user.setText(profileNick);
-		pass.setText(profilePass);
-		user.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-		pass.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-		login.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-		user.setLayoutParams(params);
-		pass.setLayoutParams(params);
-		login.setLayoutParams(params);
-		pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+		
 		login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_menu_login), null, null, null);
 		
-		user.setHint("Nick");
-		pass.setHint("Password (Optional)");
-		login.setText("Login");
-		login.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 		login.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -241,11 +227,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
-		
-		ll.addView(user);
-		ll.addView(pass);
-		ll.addView(login);
-		setContentView(ll);
 	}
 	
 
