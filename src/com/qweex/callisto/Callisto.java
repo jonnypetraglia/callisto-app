@@ -1437,7 +1437,7 @@ public class Callisto extends Activity {
          bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
         } catch(Exception e) { return; }
         String line=null;
-        int place = 1;
+        int place = 111;
         try {
         while( (line=bufReader.readLine()) != null )
         {
@@ -1445,13 +1445,15 @@ public class Callisto extends Activity {
         	switch(place)
         	{
         	//header
+        	case 111:
         	case 1:
             	if("".equals(line))
             	{
             		place--;
             		continue;
             	}
-            	newsHeader.setText(newsHeader.getText() + "\n" + line);
+            	newsHeader.setText(newsHeader.getText() + (place==111?"":"\n") + line);
+            	if(place==111) place=1;
             	break;
         	case -1:
         		newsFooter.setText(newsFooter.getText() + "\n" + line);

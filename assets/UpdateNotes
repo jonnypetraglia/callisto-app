@@ -1,25 +1,21 @@
 This minor version update introduces several bugfixes. 
-It includes 9 fixes to issues submitted to Callisto's Google Code page, but please remember that the 'Protostar' means 'Beta'.
+It includes several fixes to issues submitted to Callisto's Google Code page, but please remember that the 'Protostar' means 'Beta'.
 
-	Feature: Update notes -- A list of new features for this release.
-	Fix: Wi-fi connectivity -- Wi-fi should stay connected during streaming.
-	Fix: Irssi mode -- Irssi mode should now work correctly with colors.
-	Fix: Crash while rotate -- Fixed several cases of crashing when rotating & loading.
-	Fix: On-boot crash -- Finally fixed the on-boot-received. I sincerely hope so.
-	Feature: Pause for incoming phone call -- Player should pause when you received a phone call.
-	Fix: Widget -- Fixed the widget's appearance and functionality.
-	Fix: New/Seen -- Fixed the ability to toggle new or not new in show lists.
-	Fix: Now Playing info -- The now playing should now be updated at all times.
-	Feature: IRC Background -- Added the ability to set the background color. Consequently, nick colors may be less interesting now.
-	Feature: More "Stop" -- Added Stop menu items....EVERYWHERE!
-	Feature: BACON! -- Added another special feature for people who donate ;) If you do donate, use the "Get Bacon" menu option to download the goodies to your SD card.
-	Fix: IRC scrolling -- The IRC should now hopefully scroll when the user has scrolled down all the way.
-	Feature: Smaller install -- This release has tried to strip the size of the app greatly. For example, the live stream screen has been done away with.
-	New Permission: WAKE_LOCK -- Required to keep the wi-fi alive when streaming, downloading, or on IRC.
-	Special Thanks -- BlastyrWurm, crshbnct, & nogal, For submitting so many bugs to Google Code and testing them for me -- chz|bacon, For helping me get a ICS running device -- JupiterBroadcasting, for being awesome, as always.
+	Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
+	Fix: Timezone -- Should be fixed for timezone translation for the calendar.
+	Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
+	Fix: Crash on rotate -- Fixed crashing when rotating with a progress dialog open.
+	Fix: IRC Background -- Fixed the background not sticking; other color settings should better as well.
+	Fix: Calendar days misalign -- Calendar days in landscape should now be all the same height.
+	Feature: IRC timeout -- Will try to connect until a specified time.
+	Feature: IRC retries -- Upon given an issue, will retry multiple times.
+	Fix: IRC message discrenpencies -- Fixed messages being skipped, going to the wrong screen, or duplicating.
+	Fix: IRC auto-identify -- This should now work flawlessly, assuming you enter the right password.
+	Feature: IRC obfusication -- Encryption is impossible for locally stored passwords, but obfusication is now done on nicks & passwords.
+	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
 
-This release is dedicated to Jason, in hopes that he will forgive a very busy college student who is honestly trying his hardest without sacrificing his future career.
+This release is dedicated to nogal, for just generally being awesome; thanks for all the encouragement, continual bug reports, and just niceness about you.
 
 	-MrQweex
