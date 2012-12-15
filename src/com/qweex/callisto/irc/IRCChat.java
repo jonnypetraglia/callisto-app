@@ -64,6 +64,7 @@ import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +73,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,7 +88,8 @@ import android.widget.ViewAnimator;
 public class IRCChat extends Activity implements IRCEventListener
 {
 	private static final int LOG_ID=Menu.FIRST+1;
-	private static final int LOGOUT_ID=LOG_ID+1;
+	private static final int CHANGE_ID=LOG_ID+1;
+	private static final int LOGOUT_ID=CHANGE_ID+1;
 	private static final int NICKLIST_ID=LOGOUT_ID+1;
 	private static final int SAVE_ID=NICKLIST_ID+1;
 	private final String SERVER_NAME = "irc.geekshed.net";
@@ -127,11 +130,12 @@ public class IRCChat extends Activity implements IRCEventListener
 	private static Runnable chatUpdater;
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
-	private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI;
+	private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI, Change_MI;
 	private WifiLock IRC_wifiLock;
 	final private int RECONNECT_TRIES = 5;
 	private int SESSION_TIMEOUT = 40;
 	private EditText user, pass;
+	private PopupWindow changeNickDialog;
 	
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -222,6 +226,43 @@ public class IRCChat extends Activity implements IRCEventListener
 			}
 		});
 		
+		//Build the ChangeNickDialog
+		changeNickDialog = new PopupWindow(this);
+		android.widget.FrameLayout fl = new android.widget.FrameLayout(this);
+		fl.setPadding((int)(10*Callisto.DP), (int)(10*Callisto.DP), (int)(10*Callisto.DP), (int)(10*Callisto.DP));
+		fl.addView(getLayoutInflater().inflate(R.layout.irc_login, null, false));
+		changeNickDialog.setContentView(fl);
+		changeNickDialog.setFocusable(true);
+		changeNickDialog.setTouchable(true);
+		Button l = (Button) fl.findViewById(R.id.login);
+		l.setText("Change");
+		l.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String nick = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.user)).getText().toString();
+				String pass = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.pass)).getText().toString();
+				if(nick.equals(""))
+				{
+					changeNickDialog.dismiss();
+					return;
+				}
+				profileNick = nick;
+				parseOutgoing("/nick " + profileNick);
+				if(pass.equals(""))
+				{
+					changeNickDialog.dismiss();
+					return;
+				}
+				profilePass = pass;
+				parseOutgoing("/msg nickserv identify " + profilePass);
+				return;
+			}
+		});
+		changeNickDialog.setOutsideTouchable(true);
+		changeNickDialog.setWidth(getWindowManager().getDefaultDisplay().getWidth()*8/10);
+		changeNickDialog.setHeight(getWindowManager().getDefaultDisplay().getHeight()*8/10);
+		changeNickDialog.setAnimationStyle(android.R.style.Animation_Dialog);
+		
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
 	}
@@ -307,6 +348,7 @@ public class IRCChat extends Activity implements IRCEventListener
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
+    	Change_MI = menu.add(0, CHANGE_ID, 0, "Change Nick").setIcon(android.R.drawable.ic_menu_set_as);
     	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_friendslist);
     	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(android.R.drawable.ic_menu_save);
     	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
@@ -319,10 +361,11 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	try {
     	Log_MI.setEnabled(session!=null);
+    	Nick_MI.setEnabled(session!=null);
 //    	Logout_MI.setEnabled(session!=null);
     	Save_MI.setEnabled(session!=null);
-    	//Nick_MI.setEnabled(session!=null);
-    	Nick_MI.setTitle(session==null ? "Reconnect" : "NickList");
+//    	Nick_MI.setEnabled(session!=null);    	
+    	Change_MI.setTitle(session==null ? "Reconnect" : "Change Nick");
     	} catch(Exception e) {}
     }
     
@@ -337,11 +380,15 @@ public class IRCChat extends Activity implements IRCEventListener
         case LOG_ID:
         	((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
             return true;
-        case NICKLIST_ID:
+        case CHANGE_ID:
+        	System.out.println("Herpaderp");
         	if("Reconnect".equals(item.getTitle().toString()))
         		actuallyConnect();
         	else
-        		this.startActivityForResult(new Intent(this, NickList.class), 1);
+        		changeNickDialog.showAtLocation(findViewById(R.id.viewanimator), android.view.Gravity.CENTER, 0, 0);
+    		return true;
+        case NICKLIST_ID:
+    		this.startActivityForResult(new Intent(this, NickList.class), 1);
         	return true;
         case SAVE_ID:
         	CharSequence cs = Callisto.chatView.getText();
