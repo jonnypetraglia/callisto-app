@@ -129,14 +129,14 @@ public class IRCChat extends Activity implements IRCEventListener
 	private boolean isLandscape;
 	private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
 	public static List<String> nickList;
-	private static Handler chatHandler = null;
+	private static Handler ircHandler = null;
 	private static Runnable chatUpdater;
 	private boolean irssi;
 	private int IRSSI_GREEN = 0x00B000;
 	private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI;
 	private WifiLock IRC_wifiLock;
 	final private int RECONNECT_TRIES = 5;
-	private int SESSION_TIMEOUT = 1;
+	private int SESSION_TIMEOUT = 40;
 	
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -146,15 +146,19 @@ public class IRCChat extends Activity implements IRCEventListener
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if(chatHandler==null)
+		if(ircHandler==null)
 		{
-			chatHandler = new Handler();
+			ircHandler = new Handler();
 			chatUpdater = new Runnable()
 			{
 		        @Override
 		        public void run()
 		        {
-		        	Spanned received = chatQueue.remove();
+		        	Spanned received;
+		        	System.out.println("RECEIVED: " + chatQueue.size());
+		        	while(!chatQueue.isEmpty())
+		        	{
+		        	received = chatQueue.poll();
 		        	System.out.println("RECEIVED:" + received.toString());
 		        	if(received.equals(new SpannableString("")))
 		        		return;
@@ -171,7 +175,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		            System.out.println(view.getBottom()-(sv.getHeight()+sv.getScrollY()));
 		            if(atBottom)
 		            	sv.post(new Runnable() {      public void run() {
-		                    	sv.scrollTo(0, 1000000000); } }); 
+		                    	sv.scrollTo(0, 1000000000); } });
+		        	}
 		            input.requestFocus();
 		        }
 			};
@@ -339,7 +344,7 @@ public class IRCChat extends Activity implements IRCEventListener
     	Log_MI.setEnabled(session!=null);
     	Logout_MI.setEnabled(session!=null);
     	Save_MI.setEnabled(session!=null);
-    	Nick_MI.setEnabled(session!=null);
+    	//Nick_MI.setEnabled(session!=null);
     	Nick_MI.setTitle(session==null ? "Reconnect" : "NickList");
     	} catch(Exception e) {}
     }
@@ -447,8 +452,9 @@ public class IRCChat extends Activity implements IRCEventListener
 			}
 		});
 		
-		((LinearLayout) findViewById(R.id.lin)).setBackgroundColor(CLR_BACK);
-		((ScrollView) findViewById(R.id.scrollView2)).setBackgroundColor(CLR_BACK);
+		System.out.println("CLR: " + CLR_BACK);
+		sv.setBackgroundColor(CLR_BACK);
+		sv2.setBackgroundColor(CLR_BACK);
 		if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
 			input.setTextColor(0xff000000 + IRSSI_GREEN);
 		if(session!=null)
@@ -520,8 +526,35 @@ public class IRCChat extends Activity implements IRCEventListener
 		manager.setAutoReconnect(RECONNECT_TRIES);
 		session = manager.requestConnection(SERVER_NAME);
 		chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
-		chatHandler.post(chatUpdater);
+		ircHandler.post(chatUpdater);
+		
+		
 		Timer loopTimer = new Timer();
+	    TimerTask loopTask = new TimerTask()
+		{
+			int i=0;
+			public void run()
+			{
+				if(session==null || session.isConnected())
+				{
+					this.cancel();
+					return;
+				}
+				System.out.println("TIMEOUT: " + i);
+				if(i==SESSION_TIMEOUT)
+				{
+					manager.quit();
+					manager = null;
+					session = null;
+					updateMenu();
+					chatQueue.add(getReceived("[TIMEOUT]", "Connection timed out. Either check your connection, or set a longer timeout in the settings.", CLR_ME));
+					ircHandler.post(chatUpdater);
+					this.cancel();
+				}
+				i++;
+			}
+		};
+		loopTimer.purge();
 		loopTimer.schedule(loopTask, 0, 1000);
 		
 		if(profilePass!=null && profilePass!="")
@@ -557,30 +590,6 @@ public class IRCChat extends Activity implements IRCEventListener
     
     
     
-    TimerTask loopTask = new TimerTask()
-	{
-		int i=0;
-		public void run()
-		{
-			if(session==null || session.isConnected())
-			{
-				this.cancel();
-				return;
-			}
-			i++;
-			System.out.println("HERPADERP" + i);
-			if(i==SESSION_TIMEOUT)
-			{
-				manager.quit();
-				manager = null;
-				session = null;
-				updateMenu();
-				chatQueue.add(getReceived("[TIMEOUT]", "Connection timed out. Either check your connection, or set a longer timeout in the settings.", CLR_ME));
-				chatHandler.post(chatUpdater);
-				this.cancel();
-			}
-		}
-	};
     
     /** Used to logout, quit, or part. */
     public void logout(String quitMsg)
@@ -598,7 +607,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		
 		Spanned s =  (Spanned) TextUtils.concat("\n",Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
 									 , tit);
-		Callisto.chatView.append(s);
+		chatQueue.add(s);
+		ircHandler.post(chatUpdater);
     	
     	new QuitPlz().execute(null);
     	System.out.println(2);
@@ -663,7 +673,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					String realAction = ce.getCtcpString().substring(realEvent.length()).trim();
 					String realPerson = ce.getRawEventData().substring(1, ce.getRawEventData().indexOf("!"));
 					chatQueue.add(getReceived("* " + realPerson + " " + realAction, null, CLR_ME));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				break;
 			case AWAY_EVENT://This isn't even effing used! (for other people's away
@@ -673,7 +683,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					chatQueue.add(getReceived("You are " + (a.isAway() ? " now " : " no longer ") + "away (" + a.getAwayMessage() + ")", null, CLR_TOPIC));					
 				}
 				chatQueue.add(getReceived("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), CLR_TOPIC));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 				
 		//Syslog events
@@ -682,48 +692,48 @@ public class IRCChat extends Activity implements IRCEventListener
 				ServerInformationEvent s = (ServerInformationEvent) e;
 				ServerInformation S = s.getServerInformation();
 				logQueue.add(getReceived("[INFO]", S.getServerName(), CLR_TOPIC));
-				chatHandler.post(logUpdater);
+				ircHandler.post(logUpdater);
 				break;
 			case SERVER_VERSION_EVENT:
 				ServerVersionEvent sv = (ServerVersionEvent) e;
 				logQueue.add(getReceived("[VERSION]", sv.getVersion(), CLR_TOPIC));
-				chatHandler.post(logUpdater);
+				ircHandler.post(logUpdater);
 				break;
 			case CONNECT_COMPLETE:
 				ConnectionCompleteEvent c = (ConnectionCompleteEvent) e;
 				logQueue.add(getReceived(null, c.getActualHostName() + "\nConnection complete", CLR_TOPIC));
 				e.getSession().join(CHANNEL_NAME);
-				chatHandler.post(logUpdater);
+				ircHandler.post(logUpdater);
 				break;
 			case JOIN_COMPLETE:
 				//JoinCompleteEvent jce = (JoinCompleteEvent) e;
 				chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case MOTD:
 				MotdEvent mo = (MotdEvent) e;
 				logQueue.add(getReceived("[MOTD]", mo.getMotdLine(), CLR_TOPIC));
-				chatHandler.post(logUpdater);
+				ircHandler.post(logUpdater);
 				break;
 			case NOTICE:
 				if(e.getRawEventData().contains("Your nickname is now being changed"))
 				{
 					System.out.println("Changing");
-					logout(null);
-					return;
+					//logout(null);
 					//session.changeNick("Callisto-app");
 				}
 				NoticeEvent ne = (NoticeEvent) e;
 				if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
 				{
-					System.out.println("FUCK YEAH BANANAS");
 					chatQueue.add(getReceived("[NICKSERV]", ne.getNoticeMessage(), CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					System.out.println("FUCK YEAH BANANAS " + chatQueue.size());
+					ircHandler.post(chatUpdater);
 				}
 				else
 				{
 					logQueue.add(getReceived("[NOTICE]", ne.getNoticeMessage(), CLR_TOPIC));
-					chatHandler.post(logUpdater);
+					System.out.println("fuck no bananas");
+					ircHandler.post(logUpdater);
 				}
 				
 				break;
@@ -732,7 +742,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			case TOPIC:
 				TopicEvent t = (TopicEvent) e;
 				chatQueue.add(getReceived(t.getTopic() +  " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, CLR_TOPIC));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			
 			case PRIVATE_MESSAGE:
@@ -743,47 +753,47 @@ public class IRCChat extends Activity implements IRCEventListener
 				else
 					chatQueue.add(getReceived(m.getNick(), m.getMessage(), null));
 				System.out.println("CHANNEL_MESSAGE: " + m.getMessage());
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case JOIN:
 				JoinEvent j = (JoinEvent) e;
 				nickList.add(j.getNick());
 				chatQueue.add(getReceived(j.getNick() + " entered the room.", null, CLR_JOIN));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case NICK_CHANGE:
 				NickChangeEvent ni = (NickChangeEvent) e;
 				chatQueue.add(getReceived(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, CLR_NICK));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case PART:
 				PartEvent p = (PartEvent) e;
 				nickColors.remove(p.getNick());
 				nickList.remove(p.getNick());
 				chatQueue.add(getReceived("PART: " + p.getNick() + " (" + p.getPartMessage() + ")", null, CLR_PART));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case QUIT:
 				QuitEvent q = (QuitEvent) e;
 				nickColors.remove(q.getNick());
 				nickList.remove(q.getNick());
 				chatQueue.add(getReceived("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, CLR_QUIT));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case KICK_EVENT:
 				KickEvent k = (KickEvent) e;
 				chatQueue.add(getReceived("KICK:  " + k.getWho() + " was kicked by " + k.byWho()  + ". (" + k.getMessage() + ")", null, CLR_KICK));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case NICK_IN_USE:
 				NickInUseEvent n = (NickInUseEvent) e;
 				chatQueue.add(getReceived("NICKINUSE:  " + n.getInUseNick() + " is in use.", null, CLR_ERROR));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case WHO_EVENT:
 				WhoEvent we = (WhoEvent) e;
 				chatQueue.add(getReceived("[WHO]", we.getNick() + " is " + we.getUserName() + "@" + we.getServerName() + " (" + we.getRealName() + ")", CLR_TOPIC));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case WHOIS_EVENT:
 				WhoisEvent wie = (WhoisEvent) e;
@@ -794,7 +804,7 @@ public class IRCChat extends Activity implements IRCEventListener
 						, getReceived("[WHOIS]", wie.getUser() + " is a user on channels: " + var, CLR_TOPIC)
 						, getReceived("[WHOIS]", wie.getUser() + " has been idle for " + wie.secondsIdle() + " seconds", CLR_TOPIC)
 						, getReceived("[WHOIS]", wie.getUser() + " has been online since " + wie.signOnTime(), CLR_TOPIC)));
-				chatHandler.post(chatUpdater);
+				ircHandler.post(chatUpdater);
 				break;
 			case WHOWAS_EVENT: //TODO: Fix?
 				WhowasEvent wwe = (WhowasEvent) e;
@@ -806,16 +816,16 @@ public class IRCChat extends Activity implements IRCEventListener
 				//ConnectionLostEvent co = (ConnectionLostEvent) e;
 				chatQueue.add(getReceived("CONNECTION WAS LOST", null, CLR_ERROR));
 				logQueue.add(getReceived("CONNECTION WAS LOST", null, CLR_ERROR));
-				chatHandler.post(chatUpdater);
-				chatHandler.post(logUpdater);
+				ircHandler.post(chatUpdater);
+				ircHandler.post(logUpdater);
 				break;
 			case ERROR:
 				//ErrorEvent ev = (ErrorEvent) e;
 				String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-				chatQueue.add(getReceived("[ERROR]", rrealmsg + "- attempt " + session.getRetries(), CLR_ERROR));
-				logQueue.add(getReceived("[ERROR]", rrealmsg + "- attempt " + session.getRetries(), CLR_ERROR));
-				chatHandler.post(chatUpdater);
-				chatHandler.post(logUpdater);
+				chatQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
+//				logQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
+				ircHandler.post(chatUpdater);
+//				chatHandler.post(logUpdater);
 				break;
 				
 			//Events not handled by jerklib
@@ -835,7 +845,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				//PING     //TEST
 				if(realType.equals("PING"))
 				{
-					return;
+					break;
 				}
 				//ISON
 				if(realType.equals("303"))
@@ -844,24 +854,24 @@ public class IRCChat extends Activity implements IRCEventListener
 					if(name.trim().equals(""))
 						return;
 					chatQueue.add(getReceived("[ISON]", name + " is online", CLR_TOPIC));
-					chatHandler.post(chatUpdater);
-					return;
+					ircHandler.post(chatUpdater);
+					break;
 				}
 				//MAP
 				if(realType.equals("006"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					logQueue.add(getReceived("[MAP] " + realmsg, null, CLR_TOPIC));
-					chatHandler.post(logUpdater);
-					return;
+					ircHandler.post(logUpdater);
+					break;
 				}
 				//LUSERS
 				if((i>=250 && i<=255) || i==265 || i==266)
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					logQueue.add(getReceived("[LUSERS]", realmsg, CLR_TOPIC));
-					chatHandler.post(logUpdater);
-					return;
+					ircHandler.post(logUpdater);
+					break;
 				}
 				/*
 				//VERSION //CLEAN: Is this even needed?
@@ -878,31 +888,31 @@ public class IRCChat extends Activity implements IRCEventListener
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					logQueue.add(getReceived("[RULES]", realmsg, CLR_TOPIC));
-					chatHandler.post(logUpdater);
-					return;
+					ircHandler.post(logUpdater);
+					break;
 				}
 				//LINKS
 				else if(realType.equals("364") || realType.equals("365"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					logQueue.add(getReceived("[LINKS]", realmsg, CLR_TOPIC));
-					chatHandler.post(logUpdater);
-					return;
+					ircHandler.post(logUpdater);
+					break;
 				}
 				//ADMIN
 				else if(i>=256 && i<=259)
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					chatQueue.add(getReceived("[ADMIN]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
-					return;
+					ircHandler.post(chatUpdater);
+					break;
 				}
 				//WHO part 2
 				else if(realType.equals("315"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					chatQueue.add(getReceived("[WHO]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				//WHOIS part 2
 				else if(realType.equals("307"))
@@ -911,7 +921,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					realmsg = e.getRawEventData().substring(ijk, e.getRawEventData().indexOf(":", 2)-1)
 							+ " " + e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					chatQueue.add(getReceived("[WHOIS]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				//USERHOST
 				else if(realType.equals("302"))
@@ -919,7 +929,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
 					chatQueue.add(getReceived("[USERHOST]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				//CREDITS
 				else if(realType.equals("371"))
@@ -927,21 +937,21 @@ public class IRCChat extends Activity implements IRCEventListener
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
 					logQueue.add(getReceived("[CREDITS]", realmsg, CLR_TOPIC));
-					chatHandler.post(logUpdater);
+					ircHandler.post(logUpdater);
 				}
 				//TIME
 				else if(realType.equals("391"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					chatQueue.add(getReceived("[TIME]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				//USERIP
 				else if(realType.equals("340"))
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					chatQueue.add(getReceived("[USERIP]", realmsg, CLR_TOPIC));
-					chatHandler.post(chatUpdater);
+					ircHandler.post(chatUpdater);
 				}
 				//Nicklist? something else? MOTD
 				else if(realType.equals("353") || realType.equals("329") || realType.equals("332"))
@@ -951,7 +961,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				{
 					realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 					logQueue.add(getReceived("[" + realType + "]", realmsg, CLR_TOPIC));
-					chatHandler.post(logUpdater);
+					ircHandler.post(logUpdater);
 				}
 				break;
 			default:
@@ -960,16 +970,22 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		} catch(Exception e2)
 		{
-			System.err.println("Dude what?");
+			System.err.println("Dude what? " + e.getRawEventData());
 			e2.printStackTrace();
 		}
-		System.out.println(session.getRetries() + ">=" +  manager.getRetries());
-		if(session.getRetries() >= manager.getRetries())
+		System.out.println("rETRY: " + session.getRetries());
+		if(session.getRetries()>0)
 		{
-			chatQueue.add(getReceived("[Callisto]", "Maximum amount of retries exceeded. Quitting.", CLR_TOPIC));
-			logQueue.add(getReceived("[Callisto]", "Maximum amount of retries exceeded. Quitting.", CLR_TOPIC));
-			chatHandler.post(logUpdater);
-			chatHandler.post(chatUpdater);
+			if(session.getRetries() >= manager.getRetries())
+			{
+				chatQueue.add(getReceived("[Callisto]", "Maximum amount of retries exceeded. Quitting.", CLR_TOPIC));
+				ircHandler.post(chatUpdater);
+			}
+			else if(false)
+			{
+				chatQueue.add(getReceived("[Callisto]", "Retrying connection: attempt " + session.getRetries(), CLR_TOPIC));
+				ircHandler.post(chatUpdater);
+			}
 		}
 	}
 	
@@ -1011,6 +1027,24 @@ public class IRCChat extends Activity implements IRCEventListener
 		else
 			msgColor = 0xFF000000 + CLR_TEXT;
 		
+		java.util.ArrayList<Integer[]> bold = new java.util.ArrayList<Integer[]>();
+		java.util.ArrayList<Integer[]> underline = new java.util.ArrayList<Integer[]>();
+		while(theMessage!=null && theMessage.contains(""))
+		{
+			System.out.println("Nerts1" + theMessage);
+			Integer temp[] = {theMessage.indexOf(""),
+							  theMessage.indexOf("", theMessage.indexOf("")+1)};
+			bold.add(temp); 
+			theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
+		}
+		while(theMessage!=null && theMessage.contains(""))
+		{
+			System.out.println("Nerts2");
+			Integer temp[] = {theMessage.indexOf(""),theMessage.indexOf("", theMessage.indexOf("")+1)};
+			underline.add(temp); 
+			theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
+		}
+		
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
 		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
 		try {
@@ -1024,6 +1058,22 @@ public class IRCChat extends Activity implements IRCEventListener
 			if(theMessage!=null)
 			{
 				mes.setSpan(new ForegroundColorSpan(msgColor), 0, mes.length(), 0);
+				while(!bold.isEmpty() && true)
+				{
+					mes.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+							bold.get(0)[0],
+							bold.get(0)[1],
+							0);
+					bold.remove(0);
+				}
+				while(!underline.isEmpty() && true)
+				{
+					mes.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),
+							bold.get(0)[0],
+							bold.get(0)[1],
+							0);
+					underline.remove(0);
+				}
 			}
 		} catch(Exception ie) {
 		}
@@ -1127,7 +1177,11 @@ public class IRCChat extends Activity implements IRCEventListener
 						st2
 						);
 				Callisto.chatView.append(x);
+				Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
+	            Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
+	            Callisto.chatView.invalidate();
 			}
+			
 			input.requestFocus();
 			input.setText("");
 		}
@@ -1139,19 +1193,20 @@ public class IRCChat extends Activity implements IRCEventListener
 	 */
 	private boolean parseOutgoing(String msg)
 	{
+		boolean ns = false;
 		msg = msg.replace("\n", "");
 		if(!msg.startsWith("/"))
 		{
 			session.getChannel(CHANNEL_NAME).say(msg);
 			return true;
 		}
-		if(msg.toUpperCase().startsWith("/NICK "))
+		else if(msg.toUpperCase().startsWith("/NICK "))
 		{
 			msg =  msg.substring("/NICK ".length());
 			session.changeNick(msg);
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/QUIT") || msg.toUpperCase().startsWith("/PART"))
+		else if(msg.toUpperCase().startsWith("/QUIT") || msg.toUpperCase().startsWith("/PART"))
 		{
 			if(msg.equals("/QUIT") || msg.equals("/PART"))
 				logout(null);
@@ -1159,31 +1214,32 @@ public class IRCChat extends Activity implements IRCEventListener
 				logout(msg.substring("/QUIT ".length()));
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/WHO "))
+		else if(msg.toUpperCase().startsWith("/WHO "))
 		{
 			session.who(msg.substring("/WHO ".length()));
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/WHOIS "))
+		else if(msg.toUpperCase().startsWith("/WHOIS "))
 		{
 			session.whois(msg.substring("/WHOIS ".length()));
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/WHOWAS "))
+		else if(msg.toUpperCase().startsWith("/WHOWAS "))
 		{
 			session.whoWas(msg.substring("/WHOWAS ".length()));
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/MSG "))
+		else if(msg.toUpperCase().startsWith("/MSG ") || (ns = msg.toUpperCase().startsWith("/ns ")))
 		{
-			String targetNick = msg.substring("/MSG ".length(), msg.indexOf(" ", "/MSG ".length()+1));
-			String targetMsg = msg.substring("/MSG ".length() + targetNick.length()); 
+			String targetNick = msg.substring(
+					(ns ? "/NS " : "/MSG ").length(), msg.indexOf(" ", (ns ? "/NS " : "/MSG ").length()+1));
+			String targetMsg = msg.substring((ns ? "/NS " : "/MSG ").length() + targetNick.length()); 
 			session.sayPrivate(targetNick, targetMsg);
 			chatQueue.add(getReceived("<-" + targetNick, targetMsg, CLR_PM));
-			chatHandler.post(chatUpdater);
+			ircHandler.post(chatUpdater);
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/ISON ")
+		else if(msg.toUpperCase().startsWith("/ISON ")
 		|| msg.toUpperCase().equals("/MOTD")
 		|| msg.toUpperCase().equals("/RULES")
 		|| msg.toUpperCase().equals("/LUSERS")
@@ -1205,11 +1261,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			session.sayRaw(msg.substring(1));
 			return false;
 		}
-		if(msg.toUpperCase().startsWith("/ME "))
+		else if(msg.toUpperCase().startsWith("/ME "))
 		{
 			session.action(CHANNEL_NAME, "ACTION" + msg.substring(3));
 			chatQueue.add(getReceived("* " + session.getNick() + msg.substring(3), null, CLR_ME));
-			chatHandler.post(chatUpdater);
+			ircHandler.post(chatUpdater);
 			return false;
 		}
 		
@@ -1219,12 +1275,12 @@ public class IRCChat extends Activity implements IRCEventListener
 			//session.ctcp(msg.substring("/PING ".length()), "ping");
 			return true;
 		}
-		if(msg.toUpperCase().startsWith("/AWAY "))
+		else if(msg.toUpperCase().startsWith("/AWAY "))
 		{
 			session.setAway(msg.toUpperCase().substring("/AWAY ".length()));
 			return false;	//TODO: CHECK
 		}
-		if(msg.toUpperCase().equals("/AWAY"))
+		else if(msg.toUpperCase().equals("/AWAY"))
 		{
 			if(session.isAway())
 				session.unsetAway();
@@ -1233,12 +1289,18 @@ public class IRCChat extends Activity implements IRCEventListener
 			return false;
 		}
 		
-		if(msg.toUpperCase().startsWith("/JOIN ")
+		else if(msg.toUpperCase().startsWith("/JOIN ")
 	    || msg.toUpperCase().startsWith("/CYCLE ")
 	    || msg.toUpperCase().startsWith("/LIST ")
 	    || msg.toUpperCase().startsWith("/KNOCK "))
 		{
 			Toast.makeText(IRCChat.this, "What, is the JB chat not enough for you?!", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		else if(msg.startsWith("/"))
+		{
+			String unknown = msg.substring(1, msg.indexOf(" "));
+			Toast.makeText(IRCChat.this, "The command '" + unknown + "' is unknown. E-mail the developer if it's something that Callisto is missing.", Toast.LENGTH_LONG).show();
 			return false;
 		}
 		/*
@@ -1250,7 +1312,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		*/
 		chatQueue.add(getReceived("[CALLISTO]", "Command not recognized!", CLR_TOPIC));
-		chatHandler.post(chatUpdater);
+		ircHandler.post(chatUpdater);
 		return false;
 	}
 	

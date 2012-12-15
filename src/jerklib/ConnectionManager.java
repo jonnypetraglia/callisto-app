@@ -220,12 +220,12 @@ public class ConnectionManager
 
 		dispatchTimer.cancel();
 
-		System.out.println("NERTS2");
+//		System.out.println("NERTS2");
 		for (Session session : new ArrayList<Session>(sessionMap.values()))
 		{
 			session.close(quitMsg);
 		}
-		System.out.println("NERTS3");
+//		System.out.println("NERTS3");
 		sessionMap.clear();
 
 		socChanMap.clear();

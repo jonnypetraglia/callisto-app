@@ -292,11 +292,13 @@ public class Callisto extends Activity {
 	    	//Create the views for the the IRC
 	    chatView = new TextView(this);
 	    chatView.setGravity(Gravity.BOTTOM);
+	    chatView.setBackgroundColor(0x00000000);
 	    String i=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
 	    chatView.setMaxLines(Integer.parseInt(i));
 	    logView = new TextView(this);
 	    logView.setGravity(Gravity.BOTTOM);
 	    logView.setMaxLines(Integer.parseInt(i));
+	    logView.setBackgroundColor(0x00000000);
 	    
 	    System.out.println("Create live stuff");
 	    	//Creates the dialog for live error

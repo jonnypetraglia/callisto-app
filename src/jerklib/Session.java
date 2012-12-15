@@ -314,12 +314,12 @@ public class Session extends RequestGenerator
 	 */
 	public void close(String quitMessage)
 	{
-		System.out.println("NERTS1-1");
+//		System.out.println("NERTS1-1");
 		if (con != null)
 		{
 			con.quit(quitMessage);
 		}
-		System.out.println("NERTS1-2");
+//		System.out.println("NERTS1-2");
 		conman.removeSession(this);
 		isLoggedIn = false;
 	}

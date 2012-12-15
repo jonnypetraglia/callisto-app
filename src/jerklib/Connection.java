@@ -122,7 +122,7 @@ class Connection
 
 		if (!socChannel.isConnected())
 		{
-			log.severe("Read call while sochan.isConnected() == false");
+//			log.severe("Read call while sochan.isConnected() == false");
 			return -1;
 		}
 
@@ -284,21 +284,21 @@ class Connection
 		ByteBuffer buff = ByteBuffer.allocate(dataArray.length);
 		buff.put(dataArray);
 		buff.flip();
-		System.out.println("NERTS3-3");
+//		System.out.println("NERTS3-3");
 		int amount = 0;
 		try
 		{
-			System.out.println("NERTS3-3.0");
+//			System.out.println("NERTS3-3.0");
 			amount = socChannel.write(buff);
-			System.out.println("NERTS3-3.1");
+//			System.out.println("NERTS3-3.1");
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
-			System.out.println("NERTS3-3.2");
+//			System.out.println("NERTS3-3.2");
 			session.disconnected(e);
 		}
-		System.out.println("NERTS3-4");
+//		System.out.println("NERTS3-4");
 		if (session.getState() == State.DISCONNECTED) { return amount; }
 
 		fireWriteEvent(req);
@@ -407,11 +407,11 @@ class Connection
 			if (quitMessage == null) quitMessage = "";
 			WriteRequest request = new WriteRequest("QUIT :" + quitMessage + "\r\n", session);
 			writeRequests.add(request);
-			System.out.println("NERTS2-4");
+//			System.out.println("NERTS2-4");
 			// clear out write queue
 			if(socChannel.isConnected())
-			doWrites();
-			System.out.println("NERTS2-5");
+				doWrites();
+//			System.out.println("NERTS2-5");
 			socChannel.close();
 		}
 		catch (IOException e)
