@@ -28,7 +28,9 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_height="wrap_content"
         android:color="@color/txtClr"
         android:hint="Nick"
-        android:ems="10" />
+        android:ems="10"
+        android:maxLines="1"
+        android:singleLine="true" />
     
     <EditText
         android:id="@+id/pass"

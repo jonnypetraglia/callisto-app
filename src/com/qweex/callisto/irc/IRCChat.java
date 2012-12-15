@@ -64,7 +64,6 @@ import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -136,6 +135,10 @@ public class IRCChat extends Activity implements IRCEventListener
 	private int SESSION_TIMEOUT = 40;
 	private EditText user, pass;
 	private PopupWindow changeNickDialog;
+	private int timeoutCount;
+	private Timer loopTimer = new Timer();
+	private TimerTask loopTask;
+	private String nickSearch = "", lastNickSearched = "";
 	
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -263,9 +266,11 @@ public class IRCChat extends Activity implements IRCEventListener
 		changeNickDialog.setHeight(getWindowManager().getDefaultDisplay().getHeight()*8/10);
 		changeNickDialog.setAnimationStyle(android.R.style.Animation_Dialog);
 		
+		
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
 	}
+	
 	
 
 	/** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
@@ -275,6 +280,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
+		System.out.println("DERPY " + keyCode);
 		if (keyCode == KeyEvent.KEYCODE_HOME)
 		{
 			isFocused = false;
@@ -292,54 +298,67 @@ public class IRCChat extends Activity implements IRCEventListener
 	    {
 	    	if(nickList==null)
 	    		return true;
-	    	String t = input.getText().toString();
 	    	int i = input.getSelectionStart();
 	    	int i2 = input.getSelectionEnd();
 	    	if(i!=i2)
 	    		return false;
-	    	t = t.substring(0, i);
-	    	t = t.substring(t.lastIndexOf(" ")+1);
-	    	String s = "";
+	    	if(nickSearch.equals(""))
+	    	{
+	    		nickSearch = input.getText().toString();
+		    	nickSearch = nickSearch.substring(0, i).substring(nickSearch.lastIndexOf(" ")+1).toUpperCase();
+		    	lastNickSearched = nickSearch;
+	    	}
 	    	
+	    	String s = "";
+	    	System.out.println("Search: " + nickSearch + " | " + lastNickSearched);
 	    	Iterator<String> iterator = nickList.iterator();
 	    	while(iterator.hasNext())
 	    	{
 	    		s = (String) iterator.next();
-	    		if(s.toUpperCase().equals(t.toUpperCase()))
+	    		System.out.println("Herpaderp " + s);
+	    		if(s.toUpperCase().equals(lastNickSearched))
 	    		{
 	    			s = (String) iterator.next();
+	    			System.out.println("Herpaderpesque " + s);
+	    			if(s==null)
+	    			{
+	    				System.out.println("Herpaderpeqsudsadsa " + s);
+	    				iterator = nickList.iterator();
+	    				s = iterator.next();
+	    				while(!s.startsWith(nickSearch)); s = iterator.next();
+	    			}
 	    			break;
 	    		}
-	    		if(s.toUpperCase().startsWith(t.toUpperCase()))
+	    		if(s.toUpperCase().startsWith(nickSearch))
 	    			break;
 	    	}
 	    	if(!iterator.hasNext())
 	    		s = null;
+	    	System.out.println("HerpaderOP " + s);
 	    	if(s!=null)
 	    	{
-	    		String newt = input.getText().toString().substring(0,i-t.length())
+	    		String newt = input.getText().toString().substring(0,i-lastNickSearched.length())
 	    				+ s
 	    				+ input.getText().toString().substring(i);
 	    		input.setText(newt);
 	    		try {
-	    			input.setSelection(i-t.length()+s.length());
+	    			input.setSelection(i-lastNickSearched.length()+s.length());
 	    		} catch(Exception e){}
+	    		lastNickSearched = s.toUpperCase();
 	    	}
 	    	else
-	    	{
-	    		//TODO: Notify user that no nick was found
-	    		/*
-	    		input.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.Salmon));
-	    		try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-	    		input.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.editbox_background));
-	    		//*/
-	    	}
+	    		new EditTextFlash(0, input, 200, ircHandler);
 	    }
 	    return super.onKeyDown(keyCode, event);
 	} 
+	
+	/** Used to reset the string that is used for the nick completion */
+	@Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() != KeyEvent.KEYCODE_SEARCH && event.getAction()==KeyEvent.ACTION_DOWN) 
+	    	nickSearch = "";
+        return super.dispatchKeyEvent(event);
+     }
 	
 	/** Called when it is time to create the menu.
 	 * @param menu Um, the menu
@@ -552,11 +571,9 @@ public class IRCChat extends Activity implements IRCEventListener
 		chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
 		ircHandler.post(chatUpdater);
 		
-		
-		Timer loopTimer = new Timer();
-	    TimerTask loopTask = new TimerTask()
+		timeoutCount = 0;
+	    loopTask = new TimerTask()
 		{
-			int i=0;
 			public void run()
 			{
 				if(session==null || session.isConnected())
@@ -564,8 +581,8 @@ public class IRCChat extends Activity implements IRCEventListener
 					this.cancel();
 					return;
 				}
-				System.out.println("TIMEOUT: " + i);
-				if(i==SESSION_TIMEOUT)
+				System.out.println("TIMEOUT: " + timeoutCount);
+				if(timeoutCount>=SESSION_TIMEOUT)
 				{
 					manager.quit();
 					manager = null;
@@ -575,7 +592,7 @@ public class IRCChat extends Activity implements IRCEventListener
 					ircHandler.post(chatUpdater);
 					this.cancel();
 				}
-				i++;
+				timeoutCount++;
 			}
 		};
 		loopTimer.purge();
@@ -607,9 +624,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		});*/
     }
     
-    
-    
-    
     /** Used to logout, quit, or part. */
     public void logout(String quitMsg)
     {
@@ -640,13 +654,13 @@ public class IRCChat extends Activity implements IRCEventListener
 		finish();
     }
 	
-	
     private class QuitPlz extends android.os.AsyncTask<Void, Void, Void>
     {
     @Override
     protected Void doInBackground(Void ...voids)
     {
-		manager.quit();
+    	if(manager!=null)
+    		manager.quit();
 		manager = null;
 		session = null;
     	return null;
@@ -847,10 +861,16 @@ public class IRCChat extends Activity implements IRCEventListener
 			case ERROR:
 				//ErrorEvent ev = (ErrorEvent) e;
 				String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+				this.loopTask.cancel();
+				loopTimer.purge();
 				chatQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
-//				logQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
+				logQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
 				ircHandler.post(chatUpdater);
-//				chatHandler.post(logUpdater);
+				ircHandler.post(logUpdater);
+				manager.quit();
+				manager = null;
+				session = null;
+				updateMenu();
 				break;
 				
 			//Events not handled by jerklib
@@ -1360,11 +1380,56 @@ public class IRCChat extends Activity implements IRCEventListener
         };	
 
     };
-   
-    //https://svn.apache.org/repos/asf/cayenne/main/branches/cayenne-jdk1.5-generics-unpublished/src/main/java/org/apache/cayenne/conf/Rot47PasswordEncoder.java
-    //Used under the Apache license
-    //I took the relevant function and took it out of the class.
-    //I also removed comments to make the code size smaller.
+    
+    /** A function object to flash the background of an EditText control.
+	 *  Changes the background, waits a certain amount of time, then changes it back
+	 * @author notbryant */
+	static class EditTextFlash
+	{
+		SpannableString inputText;
+		android.text.style.BackgroundColorSpan flash;
+		EditText view;
+		Handler H;
+		int selA, selB;
+		/**
+		 * @param color The color the flash the background; Salmon (0xFA8072) is a good choice
+		 * @param view The EditText to be flashed
+		 * @param time The time in milliseconds to flash it
+		 * @param H A handler to use to update the view
+		 */
+		EditTextFlash(int color, EditText view, int time, Handler H)
+		{
+			this.view = view;
+			this.H = H;
+			color = Callisto.RESOURCES.getColor(com.qweex.callisto.R.color.Salmon);
+			flash = new android.text.style.BackgroundColorSpan(color);
+			
+			inputText = new SpannableString(view.getText().toString());
+    		selA = view.getSelectionStart();
+    		selB = view.getSelectionEnd();
+    		inputText.setSpan(flash, 0, inputText.length(), 0);
+    		view.setText(inputText);
+    		view.setSelection(selA, selB);
+    		H.postDelayed(R, time);
+		}
+		private Runnable R = new Runnable()
+		{
+	        @Override
+	        public void run()
+	        {
+	    		inputText.removeSpan(flash);
+	    		view.setText(inputText);
+	    		view.setSelection(selA, selB);;
+	        }
+		};
+	}
+    
+    
+	/** A simple but effective obfusication cypher.
+	 * https://svn.apache.org/repos/asf/cayenne/main/branches/cayenne-jdk1.5-generics-unpublished/src/main/java/org/apache/cayenne/conf/Rot47PasswordEncoder.java
+	 * Used under the Apache license
+	 * I took the relevant function and extracted it out of the class. I also removed comments to make the code size smaller.
+	 */
     public String Rot47(String value)
     {
         int length = value.length();

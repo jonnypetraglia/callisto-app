@@ -48,6 +48,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:ellipsize="end"
             android:singleLine="true"
             android:inputType="textCapSentences"
+            android:focusable="true"
              />
 
     </LinearLayout>
