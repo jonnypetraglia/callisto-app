@@ -20,7 +20,6 @@ package com.qweex.callisto.irc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,9 +38,7 @@ import jerklib.Profile;
 import jerklib.ServerInformation;
 import jerklib.Session;
 import jerklib.events.*;
-import jerklib.events.IRCEvent.Type;
 import jerklib.listeners.IRCEventListener;
-import jerklib.util.NickServAuthPlugin;
 
 
 import android.app.Activity;
@@ -184,8 +181,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		profileNick = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_nick", null);
-		profilePass = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_pass", null);
+		profileNick = Rot47(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_nick", null));
+		profilePass = Rot47(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_pass", null));
 		irssi = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_irssi", false);
 		if(session!=null)
 		{
@@ -226,17 +223,17 @@ public class IRCChat extends Activity implements IRCEventListener
 		login.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				String nick = user.getText().toString();
-				if(nick==null || nick.trim().equals(""))
+				String profileNick = user.getText().toString();
+				System.out.println("profileNick: " + profileNick);
+				if(profileNick==null || profileNick.trim().equals(""))
 				{
 					Toast.makeText(IRCChat.this, "Dude, you have to enter a nick.", Toast.LENGTH_SHORT).show();
 					return;
 				}
-				String passwd = pass.getText().toString();
+				String profilePassword = pass.getText().toString();
 				SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
-				e.putString("irc_nick", nick);
-				e.putString("irc_pass", passwd);
-				profileNick = nick;
+				e.putString("irc_nick", Rot47(profileNick));
+				e.putString("irc_pass", Rot47(profilePassword));
 				e.commit();
 				initiate();
 			}
@@ -344,7 +341,7 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	try {
     	Log_MI.setEnabled(session!=null);
-    	Logout_MI.setEnabled(session!=null);
+//    	Logout_MI.setEnabled(session!=null);
     	Save_MI.setEnabled(session!=null);
     	//Nick_MI.setEnabled(session!=null);
     	Nick_MI.setTitle(session==null ? "Reconnect" : "NickList");
@@ -707,6 +704,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
 				if(profilePass!=null && profilePass!="")
 					parseOutgoing("/MSG NickServ identify " + profilePass);
+				System.out.println("Decrypted password: " + profilePass);
 				ircHandler.post(chatUpdater);
 				break;
 			case MOTD:
@@ -1239,10 +1237,13 @@ public class IRCChat extends Activity implements IRCEventListener
 		{
 			String targetNick = msg.substring(
 					("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
-			String targetMsg = msg.substring("/MSG ".length() + targetNick.length()); 
+			String targetMsg = msg.substring("/MSG ".length() + targetNick.length());
 			session.sayPrivate(targetNick, targetMsg);
-			chatQueue.add(getReceived("<-" + targetNick, targetMsg, CLR_PM));
-			ircHandler.post(chatUpdater);
+			if(!targetNick.toUpperCase().equals("NICKSERV") && targetMsg.toUpperCase().startsWith("IDENTIFY"))
+			{
+				chatQueue.add(getReceived("<-" + targetNick, targetMsg, CLR_PM));
+				ircHandler.post(chatUpdater);
+			}
 			return false;
 		}
 		else if(msg.toUpperCase().startsWith("/ISON ")
@@ -1334,5 +1335,34 @@ public class IRCChat extends Activity implements IRCEventListener
         };	
 
     };
+   
+    //https://svn.apache.org/repos/asf/cayenne/main/branches/cayenne-jdk1.5-generics-unpublished/src/main/java/org/apache/cayenne/conf/Rot47PasswordEncoder.java
+    //Used under the Apache license
+    //I took the relevant function and took it out of the class.
+    //I also removed comments to make the code size smaller.
+    public String Rot47(String value)
+    {
+        int length = value.length();
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < length; i++)
+        {
+          char c = value.charAt(i);
+
+          // Process letters, numbers, and symbols -- ignore spaces.
+          if (c != ' ')
+          {
+            // Add 47 (it is ROT-47, after all).
+            c += 47;
+
+            if (c > '~')
+              c -= 94;
+          }
+
+          result.append(c);
+        }
+
+        return result.toString();
+      }
 
 }
