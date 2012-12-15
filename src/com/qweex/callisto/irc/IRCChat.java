@@ -453,8 +453,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		});
 		
 		System.out.println("CLR: " + CLR_BACK);
-		sv.setBackgroundColor(CLR_BACK);
-		sv2.setBackgroundColor(CLR_BACK);
+		Callisto.chatView.setBackgroundColor(CLR_BACK);
+		Callisto.logView.setBackgroundColor(CLR_BACK);
 		if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
 			input.setTextColor(0xff000000 + IRSSI_GREEN);
 		if(session!=null)
@@ -741,7 +741,10 @@ public class IRCChat extends Activity implements IRCEventListener
 		//Chat events
 			case TOPIC:
 				TopicEvent t = (TopicEvent) e;
-				chatQueue.add(getReceived(t.getTopic() +  " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, CLR_TOPIC));
+				if(t.getTopic()=="")
+					chatQueue.add(getReceived("[TOPIC] ", "No Topic Set", CLR_TOPIC));
+				else
+					chatQueue.add(getReceived("[TOPIC] " + t.getTopic() + " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, CLR_TOPIC));
 				ircHandler.post(chatUpdater);
 				break;
 			
