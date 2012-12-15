@@ -108,7 +108,8 @@ public class IRCChat extends Activity implements IRCEventListener
 				   CLR_KICK,
 				   CLR_ERROR,
 				   CLR_MENTION,
-				   CLR_PM;
+				   CLR_PM,
+				   CLR_LINKS;
 	private static ConnectionManager manager;
 	private static Session session;
 	private static NotificationManager mNotificationManager;
@@ -495,9 +496,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			}
 		});
 		
-		System.out.println("CLR: " + CLR_BACK);
+		System.out.println("CLR: " + Integer.toHexString(CLR_LINKS));
 		Callisto.chatView.setBackgroundColor(CLR_BACK);
+		Callisto.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
 		Callisto.logView.setBackgroundColor(CLR_BACK);
+		Callisto.logView.setLinkTextColor(0xFF000000 + CLR_LINKS);
 		if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
 			input.setTextColor(0xff000000 + IRSSI_GREEN);
 		if(session!=null && session.getIRCEventListeners().size()==0)
@@ -518,7 +521,7 @@ public class IRCChat extends Activity implements IRCEventListener
     	//Read colors
     	if(irssi)
     	{
-    		CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=IRSSI_GREEN;
+    		CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=CLR_LINKS=IRSSI_GREEN;
     		CLR_BACK=0x0;
     	}
     	else
@@ -548,6 +551,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
 	    		IRCChat.nickColors.put("           ",
 			CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
+    		CLR_LINKS = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_links", 0x0000EE);
     	}
     	resume();
 		
