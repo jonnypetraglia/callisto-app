@@ -1084,9 +1084,11 @@ public class Callisto extends Activity {
   			  imgurl = imgurl2;
 		  if(imgurl!=null)
 		  {
+			  if(imgurl.startsWith("http://linuxactionshow.com") || imgurl.startsWith("www.linuxactionshow.com") || imgurl.startsWith("http://www.linuxactionshow.com"))
+				  imgurl = "http://www.jupiterbroadcasting.com/images/LASBadge-Audio144.jpg";
 			  new downloadImage().execute(imgurl, AllShows.SHOW_LIST[currentShow]);
 			  //downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-			  Log.v("*:updateShow", "Parser is downloading image for " + AllShows.SHOW_LIST[currentShow]);
+			  Log.v("*:updateShow", "Parser is downloading image for " + AllShows.SHOW_LIST[currentShow] + ":" + imgurl);
 		  }
   		  
   		  //Get episodes
