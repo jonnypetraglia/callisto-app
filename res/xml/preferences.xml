@@ -84,6 +84,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 		        	android:key="irc_color_mention" android:title="Mention Color" android:defaultValue="#F08080"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
 		        	android:key="irc_color_error" android:title="Error Color" android:defaultValue="#800000"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        <Preference 
+		            android:title="Reset colors" android:key="reset_colors"/>
 	        </PreferenceCategory>
 	    </PreferenceScreen><PreferenceCategory
 	        android:title="Super special settings"

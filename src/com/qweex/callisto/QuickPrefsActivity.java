@@ -19,16 +19,21 @@ package com.qweex.callisto;
 
 import java.io.File;
 
+import net.margaritov.preference.colorpicker.ColorPickerPreference;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -56,6 +61,43 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         old_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPauseListener);
+        
+        
+        this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener(){
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+		       	 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		       		    @Override
+		       		    public void onClick(DialogInterface dialog, int which) {
+		       		        switch (which){
+		       		        case DialogInterface.BUTTON_POSITIVE:
+		       		            //Yes button clicked
+		       		        	String[] keys = {"text", "back", "topic", "mynick", "me", "links", "pm", "join", "nick", "part", "quit", "kick", "mention", "error"};
+		       		        	SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(QuickPrefsActivity.this).edit();
+		       		        	for(String k : keys)
+		       		        		e.remove("irc_color_" + k);
+		       		        	e.commit();
+		       		        	finish();
+		       		        	android.content.Intent i = new android.content.Intent(QuickPrefsActivity.this, QuickPrefsActivity.class);
+		       		        	startActivity(i);
+		       		            break;
+
+		       		        case DialogInterface.BUTTON_NEGATIVE:
+		       		            //No button clicked
+		       		            break;
+		       		        }
+		       		    }
+		       		};
+
+		       		AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
+		       		builder.setTitle("Dude wait");
+		       		builder.setMessage("Are you sure you want to reset the IRC colors to their default values?");
+		       		builder.setPositiveButton("Yup", dialogClickListener);
+		       		builder.setNegativeButton("Nope", dialogClickListener);
+		       		builder.show();
+		       		return true;
+			}
+        });
     }
     
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
