@@ -33,8 +33,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import com.qweex.callisto.podcast.EpisodeDesc;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -45,7 +43,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.view.Window;
 import android.webkit.WebView;
 
 //This activity is for displaying a form through which the user can contact Jupiter Broadcasting.

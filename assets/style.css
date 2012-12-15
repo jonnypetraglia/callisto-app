@@ -14,6 +14,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
+
+
+Got a lot of help from http://kolorkube.com/klick/build-a-sexy-form-with-the-newest-technology-css-3-style-revolution/
+Icons are all from: http://www.softicons.com/free-icons/designers/axialis-team
 */
 
 .embed .wufoo .info, p, h1, .hide {
@@ -31,6 +35,12 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
   padding-right: 0; 
 }
 
+body {
+	padding-top: 2em;
+	padding-bottom: 2em;
+	padding-right: 1.5em;
+	padding-left: 1.5em;
+}
 
 .desc {
 	font-size: 1.5em;
@@ -45,29 +55,94 @@ span {
 
 .field, .submit {
 	width:;
-	font-size: 1.5em;
 }
-
-.field .radio {
-	display:block;
-	float:left;
-	text-align:left;
-}
-
-.choice {
-	margin-bottom:1.5em;
-	display:block;
-}
-
 
 textarea {
 	height:;
+	line-height: 150%;
 }
 
 li {
 	margin-bottom:1.5em;
+	list-style: none;
 }
 
 .req {
 	color:red;
+}
+
+fieldset {
+	border: 1px solid #999999;
+}
+
+
+input[type="radio"],
+input[type="checkbox"] {
+	display: none;
+}
+input[type="radio"] + label,
+input[type="radio"]:checked + label {
+		background-image: url(file:///android_asset/uncheck.png);
+		padding:0;
+		display: block;
+		appearance:none;
+		-webkit-appearance:none;
+		background-position: top left;
+		background-repeat: no-repeat;
+		background-size:32px 32px;
+		text-indent:36px;
+		padding-top:16px;
+		text-align:left;
+		text-size:1.5em;
+		vertical-align:top;
+		padding-bottom:2em;
+}
+input[type="radio"]:checked + label {
+	background-image: url(file:///android_asset/check.png);
+}
+
+
+
+input, textarea, select { 
+	padding: 9px;
+	border: solid 1px #E5E5E5;
+	outline: 0;
+	font: normal 1em Verdana, Tahoma, sans-serif;
+	background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+}
+
+select {
+background-image: url(file:///android_asset/arrow.png), -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	height: 48px;
+	background-position: center right;
+	background-repeat: no-repeat;
+	overflow: hidden;
+	font-size: 1em;
+}
+
+
+input:hover, textarea:hover,
+input:focus, textarea:focus { 
+	border-color: #C9C9C9; 
+	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
+	}
+
+.form label { 
+	margin-left: 10px; 
+	color: #999999; 
+	}
+.submit input {
+	width: auto;
+	padding: 9px 15px;
+	background: #617798;
+	border: 0;
+	font-size: 14px;
+	color: #FFFFFF;
+	-webkit-border-radius: 5px;
+	}
+body,td,th {
+	font-family: Tahoma, Geneva, sans-serif;
+	color: #333;
 }
