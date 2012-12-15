@@ -274,6 +274,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 	    if (keyCode == KeyEvent.KEYCODE_SEARCH)
 	    {
+	    	if(nickList==null)
+	    		return true;
 	    	String t = input.getText().toString();
 	    	int i = input.getSelectionStart();
 	    	int i2 = input.getSelectionEnd();
@@ -457,7 +459,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		Callisto.logView.setBackgroundColor(CLR_BACK);
 		if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
 			input.setTextColor(0xff000000 + IRSSI_GREEN);
-		if(session!=null)
+		if(session!=null && session.getIRCEventListeners().size()==0)
 			session.addIRCEventListener(this);
 		if(Callisto.notification_chat!=null)
 			Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
@@ -557,11 +559,6 @@ public class IRCChat extends Activity implements IRCEventListener
 		loopTimer.purge();
 		loopTimer.schedule(loopTask, 0, 1000);
 		
-		if(profilePass!=null && profilePass!="")
-		{
-			final NickServAuthPlugin auth = new NickServAuthPlugin(profilePass, 'e', session, Arrays.asList(CHANNEL_NAME));
-			session.onEvent(auth, Type.CONNECT_COMPLETE , Type.MODE_EVENT);
-		}
 		session.addIRCEventListener(this);
 		/*
 		session.setInternalParser(new jerklib.parsers.DefaultInternalEventParser()
@@ -708,6 +705,8 @@ public class IRCChat extends Activity implements IRCEventListener
 			case JOIN_COMPLETE:
 				//JoinCompleteEvent jce = (JoinCompleteEvent) e;
 				chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
+				if(profilePass!=null && profilePass!="")
+					parseOutgoing("/MSG NickServ identify " + profilePass);
 				ircHandler.post(chatUpdater);
 				break;
 			case MOTD:
@@ -1196,14 +1195,18 @@ public class IRCChat extends Activity implements IRCEventListener
 	 */
 	private boolean parseOutgoing(String msg)
 	{
-		boolean ns = false;
 		msg = msg.replace("\n", "");
+		
 		if(!msg.startsWith("/"))
 		{
 			session.getChannel(CHANNEL_NAME).say(msg);
 			return true;
 		}
-		else if(msg.toUpperCase().startsWith("/NICK "))
+		
+		if(msg.toUpperCase().startsWith("/NS "))
+			msg = "/MSG NickServ " + msg.substring("/NS ".length());
+		
+		if(msg.toUpperCase().startsWith("/NICK "))
 		{
 			msg =  msg.substring("/NICK ".length());
 			session.changeNick(msg);
@@ -1232,11 +1235,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			session.whoWas(msg.substring("/WHOWAS ".length()));
 			return false;
 		}
-		else if(msg.toUpperCase().startsWith("/MSG ") || (ns = msg.toUpperCase().startsWith("/ns ")))
+		else if(msg.toUpperCase().startsWith("/MSG "))
 		{
 			String targetNick = msg.substring(
-					(ns ? "/NS " : "/MSG ").length(), msg.indexOf(" ", (ns ? "/NS " : "/MSG ").length()+1));
-			String targetMsg = msg.substring((ns ? "/NS " : "/MSG ").length() + targetNick.length()); 
+					("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
+			String targetMsg = msg.substring("/MSG ".length() + targetNick.length()); 
 			session.sayPrivate(targetNick, targetMsg);
 			chatQueue.add(getReceived("<-" + targetNick, targetMsg, CLR_PM));
 			ircHandler.post(chatUpdater);
