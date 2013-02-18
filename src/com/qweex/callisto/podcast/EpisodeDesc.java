@@ -159,12 +159,12 @@ public class EpisodeDesc extends Activity
 			Log.e("ShowList:ShowListAdapter:ParseException", "(This should SERIOUSLY never happen).");
 		}
 		file_location_audio = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-		file_location_audio = new File(file_location_audio, date + "__" + title + getExtension(mp3_link));
+		file_location_audio = new File(file_location_audio, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(mp3_link));
         System.out.println(vid_link==null?"Fail":"nope");
         if(vid_link!=null)
         {
             file_location_video = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-            file_location_video = new File(file_location_video, date + "__" + title + getExtension(vid_link));
+            file_location_video = new File(file_location_video, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(vid_link));
         }
 		
 		streamButton = ((Button)this.findViewById(R.id.stream));
@@ -505,6 +505,14 @@ public class EpisodeDesc extends Activity
 
             boolean isVideo;
 			Cursor current;
+
+
+            Callisto.notification_download.setLatestEventInfo(getApplicationContext(),
+                    Callisto.RESOURCES.getString(R.string.downloading) + "...",
+                    "", contentIntent);
+            mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+
+
 			while(!Callisto.download_queue.isEmpty())
 			{
 	   			try
@@ -534,7 +542,7 @@ public class EpisodeDesc extends Activity
 					if(title.indexOf("|")>0)
 						Title = Title.substring(0, title.indexOf("|"));
 					Title=Title.trim();
-					Target = new File(Target, Date + "__" + Title + getExtension(Link));
+					Target = new File(Target, Date + "__" + DownloadList.makeFileFriendly(Title) + getExtension(Link));
 					
 					URL url = new URL(Link);
 					HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -553,12 +561,19 @@ public class EpisodeDesc extends Activity
 						outStream = new FileOutputStream(Target);
 					buff = new byte[5 * 1024];
 					TotalSize = ucon.getContentLength();
-					int len;
-					long downloadedSize = Target.length();
-					long perc = 0;
+					int len = 0;
+					long downloadedSize = Target.length(),
+                         perc = 0;
+
+                    int SPD_COUNT = 200,
+                        dli = 0;
+                    long lastTime = (new java.util.Date()).getTime(),
+                         all_spds = 0;
+                    double avg_speed = 0;
+                    DecimalFormat df = new DecimalFormat("#.##");
 					
 					//Here is where the actual downloading happens
-					while ((len = inStream.read(buff)) != -1)
+					while (len != -1)
 					{
                         Log.i("EpisodeDesc:DownloadTask", "DERP: " + downloadedSize);
 						if(Callisto.download_queue.size()==0 || !Callisto.download_queue.get(0).equals(id))
@@ -567,19 +582,64 @@ public class EpisodeDesc extends Activity
 							Target.delete();
 							break;
 						}
+
+                        try {
+                        len = inStream.read(buff);
+                        if(len==-1)
+                            break;
+
+
 						outStream.write(buff,0,len);
 			            downloadedSize += len;
 				       	perc = downloadedSize*100;
 				       	perc /= TotalSize;
-						if(DownloadList.downloadProgress!=null)
-						{
-							int x = (int)(downloadedSize*100/TotalSize);
-							//DownloadList.downloadProgress.setProgress(x);
-                            DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
-                            DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
-						}
-				       	Callisto.notification_download.setLatestEventInfo(getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " + Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": " + perc + "%", Show + ": " + Title, contentIntent);
-				       	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+
+                        //Add to the average speed
+                        long temp_spd = 0;
+                        long time_diff = ((new java.util.Date()).getTime() - lastTime);
+                        if(time_diff>0)
+                        {
+                            temp_spd= len*100/time_diff;
+                            dli++;
+                        }
+
+                        all_spds += temp_spd;
+                        lastTime = (new java.util.Date()).getTime();
+
+                        //If the time is right, do it!
+                        if(dli==SPD_COUNT)
+                        {
+                            dli = 0;
+                            avg_speed = all_spds*1.0/SPD_COUNT/100;
+                            Log.e("BACON", temp_spd + "->" + all_spds + " == " + avg_speed);
+                            all_spds = 0;
+
+                            if(DownloadList.downloadProgress!=null)
+                            {
+                                int x = (int)(downloadedSize*100/TotalSize);
+                                DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
+                                DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
+                            }
+                            Callisto.notification_download.setLatestEventInfo(getApplicationContext(),
+                                       Callisto.RESOURCES.getString(R.string.downloading) + " " +
+                                       Callisto.current_download + " " +
+                                       Callisto.RESOURCES.getString(R.string.of) + " " +
+                                       Callisto.downloading_count + ": " + perc + "%  (" +
+                                       df.format(avg_speed) + "kb/s)",
+                                   Show + ": " + Title, contentIntent);
+                            mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+                        }
+                        } catch (IOException e) {
+                            Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e1) {}
+                        } catch (Exception e) {
+                            Log.e("EpisodeDesc:DownloadTask:??Exception", e.getClass() + " : " + e.getMessage());
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e1) {}
+                        }
 					}
 					
 					if(Callisto.download_queue.size()!=0 && Callisto.download_queue.get(0).equals(id))
@@ -598,15 +658,17 @@ public class EpisodeDesc extends Activity
 						if(DownloadList.notifyUpdate!=null)
 							DownloadList.notifyUpdate.sendEmptyMessage(0);
 					}
-		       } catch (IOException e) {
-		    	   Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");
-		    	   e.printStackTrace();
-		       } catch (ParseException e) {
+                }catch (ParseException e) {
 					Log.e("EpisodeDesc:DownloadTask:ParseException", "Error parsing a date from the SQLite db: ");
 					Log.e("EpisodeDesc:DownloadTask:ParseException", Date);
 					Log.e("EpisodeDesc:DownloadTask:ParseException", "(This should never happen).");
 					e.printStackTrace();
-		       }
+		       } catch(Exception e) {
+                   Log.e("EEEEEEEE " + e.getClass(), "Msg: " + e.getMessage());
+                   try {
+                       Thread.sleep(1000);
+                   } catch (InterruptedException e1) {}
+               }
 			}
 			/*//IDEA: Change intent upon download completion?
 			notificationIntent = new Intent(null, Callisto.class);

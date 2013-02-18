@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteStatement;
@@ -54,6 +55,7 @@ public class DatabaseConnector
 	public void open() throws SQLException 
 	{
 	   database = databaseOpenHelper.getWritableDatabase();
+        databaseOpenHelper.onUpgrade(database, 0, 1);
 	}
 	
 	/** Closes the database when you are done with it. */
@@ -414,11 +416,32 @@ public class DatabaseConnector
 	public void clearCalendar() {
 		database.execSQL("DELETE FROM " + DATABASE_CALENDAR + ";");
 	}
-	
+
+
+    public int getLength(long identity)
+    {
+        Cursor c = database.query(DATABASE_TABLE, new String[] {"_id", "length"},
+                "_id=" + identity, null, null, null, null);
+        try {
+            c.moveToFirst();
+            return c.getInt(c.getColumnIndex("length"));
+        } catch(Exception e)
+        {
+            return 0;
+        }
+    }
+
+    public void putLength(String title, long length)
+    {
+        database.execSQL("UPDATE " + DATABASE_TABLE  + " SET length='" + length + "'" +
+                " WHERE title='" + title + "'");
+    }
+
 	/** Helper open class for DatabaseConnector */
 	private class DatabaseOpenHelper extends SQLiteOpenHelper 
 	{
-	   public DatabaseOpenHelper(Context context, String name, CursorFactory factory, int version) 
+        static final int DB_VERSION = 2;
+        public DatabaseOpenHelper(Context context, String name, CursorFactory factory, int version)
 	   {
 	      super(context, name, factory, version);
 	   }
@@ -464,6 +487,11 @@ public class DatabaseConnector
 	   @Override
 	   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
 	   {
+           Log.e("DERP", "Upgrading DB");
+           try {
+           String sql = "ALTER TABLE " + DATABASE_TABLE + " ADD COLUMN length INTEGER";
+           db.execSQL(sql);
+           } catch(SQLiteException e){}
 	   }
 	}
 }

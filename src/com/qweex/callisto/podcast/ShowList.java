@@ -412,7 +412,8 @@ public class ShowList extends Activity
     	   
            String date = this.c.getString(this.c.getColumnIndex("date"));
            String title = this.c.getString(this.c.getColumnIndex("title"));
-           String media_link = this.c.getString(this.c.getColumnIndex("mp3link"));
+           String mp3_link = this.c.getString(this.c.getColumnIndex("mp3link"));
+           String vid_link = this.c.getString(this.c.getColumnIndex("mp3link"));
     	   
     	   //_id
     	   ((TextView) v.findViewById(R.id.hiddenId)).setText(Long.toString(id));
@@ -439,13 +440,26 @@ public class ShowList extends Activity
            
 		    
 		    
-			File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-	   		file_location = new File(file_location, Callisto.sdfFile.format(tempDate) + "__" + title + EpisodeDesc.getExtension(media_link));
+			File file_location1 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+	   		file_location1 = new File(file_location1, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+            File file_location2 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            file_location2 = new File(file_location2, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 		    
-		    if(file_location.exists())
+		    if(file_location1.exists() || file_location2.exists())
             {
-        	   ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
-        	   ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                Log.e("DERERERERERE", file_location1.length() + " == " + this.c.getLong(this.c.getColumnIndex("mp3size")));
+                Log.e("DERERERERERE", file_location2.length() + " == " + this.c.getLong(this.c.getColumnIndex("vidsize")));
+                if(file_location1.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
+                   file_location2.length()==this.c.getLong(this.c.getColumnIndex("vidsize")))
+                {
+                   ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
+                   ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                }
+                else
+                {
+                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
+                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
+                }
             }
 		    else
 		    {

@@ -185,6 +185,8 @@ public class Callisto extends Activity {
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
 	private static LIVE_FetchInfo LIVE_update = null;
 
+    private static TimerRunnable clock;
+
     //Owner, Admin, Op, Voice
 
 	
@@ -267,6 +269,8 @@ public class Callisto extends Activity {
 	    		Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
 	    		Callisto.mplayer.seekTo(Callisto.playerInfo.position);
 	    		Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
+                Callisto.databaseConnector.putLength(Callisto.playerInfo.title, Callisto.mplayer.getDuration());
+
                 Log.i("*:mplayer:onPrepared", "Prepared, length is " + Callisto.playerInfo.length);
 	    		try {
 	    			ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
@@ -721,16 +725,19 @@ public class Callisto extends Activity {
     /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
 	private void TimerMethod()
 	{
-        TimerHandler.post(TimerRunnable);
+        if(clock==null)
+            clock = new TimerRunnable();
+        TimerHandler.post(clock);
 //		Callisto.this.runOnUiThread(TimerRunnable);
 	}
 
     private Handler TimerHandler = new Handler();
 
 	/** A runnable to be used in conjunction with the update() function. Updates the player time every set amount of time. */
-	Runnable TimerRunnable = new Runnable()
+    class TimerRunnable implements Runnable
+	//Runnable TimerRunnable = new Runnable()
 	{
-		int i=0;
+		public int i=0;
 		public void run()
 		{
 			i++;
@@ -967,7 +974,7 @@ public class Callisto extends Activity {
 	    	alertDialog.setMessage(formatTimeFromSeconds(Callisto.mplayer.getCurrentPosition()/1000) + "/" + formatTimeFromSeconds(Callisto.playerInfo.length));
 	    	sb.setMax(Callisto.playerInfo.length);
 	    	sb.setProgress(Callisto.mplayer.getCurrentPosition()/1000);
-	    	
+
 	    	alertDialog.setButton(Callisto.RESOURCES.getString(android.R.string.yes), new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
@@ -985,6 +992,7 @@ public class Callisto extends Activity {
 				
 				public void onStopTrackingTouch(SeekBar arg0) {
 					Callisto.mplayer.seekTo(arg0.getProgress()*1000);
+                    Callisto.clock.i=Callisto.SAVE_POSITION_EVERY;
 				}
 	        });
 		  }

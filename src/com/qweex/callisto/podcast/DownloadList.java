@@ -186,7 +186,7 @@ public class DownloadList extends ListActivity
 			try {
 				String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
 				File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-					file_location = new File(file_location, date + "__" + title + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
+					file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
 				ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
 				int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));
 				progress.setMax(100);
@@ -195,6 +195,14 @@ public class DownloadList extends ListActivity
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+            (row.findViewById(R.id.row)).measure(0,0);
+            int x =(row.findViewById(R.id.row)).getMeasuredHeight();
+            //Update the progressbar height
+            ((ProgressBar)row.findViewById(R.id.progress)).getLayoutParams().height=x;
+            ((ProgressBar)row.findViewById(R.id.progress)).setMinimumHeight(x);
+            ((ProgressBar)row.findViewById(R.id.progress)).invalidate();
+
 			if(position==0)
 				downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
 			
@@ -216,5 +224,14 @@ public class DownloadList extends ListActivity
 		public long getItemId(int arg0) {
 			return 0;
 		}
+
+
+    }
+
+    public static String makeFileFriendly(String input)
+    {
+        String output = input;
+
+        return output;
     }
 }

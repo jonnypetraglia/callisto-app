@@ -72,7 +72,7 @@ public class Queue extends ListActivity
 		
 		String[] from = new String[] {"_id", "identity"};
 		int[] to = new int[] { R.id.hiddenId, R.id.rowTextView, R.id.rowSubTextView };
-		int[] hide = new int[] { R.id.img, R.id.rightTextView, R.id.progress };
+		int[] hide = new int[] { R.id.img, R.id.rightTextView };
 		listAdapter = new NowPlayingAdapter(this, R.layout.row, queue, from, to, hide); 
 		mainListView.setAdapter(listAdapter);
 	}
@@ -230,11 +230,29 @@ public class Queue extends ListActivity
 	       Long _id = this.c.getLong(c.getColumnIndex("_id"));
 	       boolean isCurrent = this.c.getLong(c.getColumnIndex("current"))>0;
 	       Long identity = this.c.getLong(c.getColumnIndex("identity"));
+            /*
 	       if(isCurrent)
 	    	   v.setBackgroundColor(getResources().getColor(R.color.SandyBrown));
 	       else
 	    	   v.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-	       
+	    	   */
+            (v.findViewById(R.id.row)).measure(0,0);
+            int x =(v.findViewById(R.id.row)).getMeasuredHeight();
+            Log.e("DERP", "IS: " + x);
+
+            //Update the progressbar height
+            try {
+                Cursor time = Callisto.databaseConnector.getOneEpisode(identity);
+                time.moveToFirst();
+                int xy = (int) (time.getLong(time.getColumnIndex("position"))*100.0 / Callisto.databaseConnector.getLength(identity));
+                ((ProgressBar)v.findViewById(R.id.progress)).setProgress(Double.isNaN(xy) ? 0 : xy);
+            } catch(Exception e){
+                ((ProgressBar)v.findViewById(R.id.progress)).setProgress(0);
+            }
+            ((ProgressBar)v.findViewById(R.id.progress)).getLayoutParams().height=x;
+            ((ProgressBar)v.findViewById(R.id.progress)).setMinimumHeight(x);
+            ((ProgressBar)v.findViewById(R.id.progress)).invalidate();
+
 	       
 	       Cursor c2 = Callisto.databaseConnector.getOneEpisode(identity);
 	       if(c2.getCount()==0)
@@ -255,7 +273,6 @@ public class Queue extends ListActivity
 		   down.setOnClickListener(moveDown);
 		   ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
 		   remove.setOnClickListener(removeItem);
-		   ProgressBar progress = ((ProgressBar)v.findViewById(R.id.progress));
 		   
 		   for(int i=0; i<Hide.length; i++)
 			   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);

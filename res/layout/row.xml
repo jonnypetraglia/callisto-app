@@ -18,83 +18,84 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
 <!-- This is a row that is used for various ListViews -->
 <!-- It contains many extra views that can be hidden. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+        >
+
+    <!-- android:progressDrawable="@drawable/test_drawable" -->
+    <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/test_drawable"
+            android:minHeight="30dp"
+            android:layout_width="fill_parent"
+            android:progress="50"
+            android:background="#ff000000"
+            android:layout_height="fill_parent" />
+
+
+<LinearLayout
     android:id="@+id/row"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:background="@android:color/transparent"
     android:cacheColorHint="@android:color/transparent"
     android:orientation="horizontal" >
 
-    <TableLayout
-        android:layout_width="0dip"
+    <LinearLayout
+        android:id="@+id/linearLayout1337"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1.0" >
+        android:layout_weight="1"
+        android:orientation="vertical" >
 
-        <TableRow
-            android:id="@+id/daedeawdwad"
+        <TextView
+            android:id="@+id/hiddenId"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout1337"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical" >
+        <!-- Main text (e.g. Episode title) -->
+        <TextView
+            android:id="@+id/rowTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1.0"
+            android:ellipsize="end"
+            android:paddingBottom="1dp"
+            android:paddingTop="10dp"
+            android:singleLine="true"
+            android:text="Row"
+            android:textColor="@color/txtClr"
+            android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/hiddenId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
+        <!-- Sub text (e.g. Episode date, show, etc) -->
+        <TextView
+            android:id="@+id/rowSubTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1.0"
+            android:paddingBottom="10dp"
+            android:paddingTop="1dp"
+            android:text="Subrow"
+            android:textColor="@color/txtClr"
+            android:textSize="13sp" />
+    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/rowTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1.0"
-                    android:ellipsize="end"
-                    android:paddingBottom="1dp"
-                    android:paddingTop="10dp"
-                    android:singleLine="true"
-                    android:text="Row"
-                    android:textColor="@color/txtClr"
-                    android:textSize="16sp" />
+    <!-- Right text (e.g. time) -->
+    <TextView
+        android:id="@+id/rightTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="00:00"
+        android:textColor="@color/txtClr"
+        android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/rowSubTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1.0"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="1dp"
-                    android:text="Subrow"
-                    android:textColor="@color/txtClr"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/rightTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="00:00"
-                android:textColor="@color/txtClr"
-                android:textSize="12sp" />
-
-        </TableRow>
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-
-    </TableLayout>
-
+    <!-- Seen/unseen -->
     <CheckBox
         android:id="@+id/img"
         android:layout_width="65dp"
@@ -129,3 +130,5 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:src="@android:drawable/ic_delete" />
 
 </LinearLayout>
+
+</RelativeLayout>
