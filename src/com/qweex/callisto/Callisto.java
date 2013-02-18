@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.widget.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -91,15 +92,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
 
 
 //Task Tags: todo clean feature fixme wtf idea
@@ -191,7 +184,9 @@ public class Callisto extends Activity {
     private static Dialog dg;
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
 	private static LIVE_FetchInfo LIVE_update = null;
-	
+
+    //Owner, Admin, Op, Voice
+
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -268,23 +263,35 @@ public class Callisto extends Activity {
 	    {
 	    	@Override
 	    	public void onPrepared(MediaPlayer arg0) {
+
 	    		Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
 	    		Callisto.mplayer.seekTo(Callisto.playerInfo.position);
 	    		Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
-	    		if(pd!=null)
-	    			pd.cancel();
+                Log.i("*:mplayer:onPrepared", "Prepared, length is " + Callisto.playerInfo.length);
 	    		try {
 	    			ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
 	    			ib.setImageDrawable(Callisto.pauseDrawable);
-	    		} catch(NullPointerException e) {} //Case for when ib is not found
+	    		} catch(NullPointerException e) {
+                    Log.w("*:mplayer:onPrepared", "Could not find the button");
+                } //Case for when ib is not found
 	    		  catch(ClassCastException e) {} //Case for when it's the widget
-	        	Log.i("*:playTrack", "Starting to play: " + Callisto.playerInfo.title);
-	        	Callisto.playerInfo.update(c);
+                Log.i("*:mplayer:onPrepared", (startPlaying ? "" : "NOT ") + "Starting to play: " + Callisto.playerInfo.title);
 	        	if(!startPlaying)
+	        	{
+	        		Callisto.playerInfo.update(c);
 	    			return;
+	        	}
+                Log.i("*:mplayer:onPrepared", "HERP");
 	    		Callisto.mplayer.start();
 	    		Callisto.playerInfo.isPaused = false;
-	    		pd=null;
+	    		Callisto.playerInfo.update(c);
+
+                if(pd!=null)
+                {
+                    pd.setOnDismissListener(null);
+                    pd.dismiss();
+                }
+                pd=null;
 	    	}
 	    };
 	    
@@ -302,7 +309,7 @@ public class Callisto extends Activity {
 	    	//Creates the dialog for live error
 		dg = new Dialog(this);
 		TextView t = new TextView(this);
-		t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info (via the Menu button) to see if it's just this app.");
+		t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
 		dg.setContentView(t);
 		dg.setTitle("By the beard of Zeus!");
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -421,7 +428,7 @@ public class Callisto extends Activity {
     		playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 		}
 	};
-	/** Listener for the Previous ("<") button. Goes back to the previosu track, if there is one. */
+	/** Listener for the Previous ("<") button. Goes back to the previous track, if there is one. */
     public static OnClickListener previous = new OnClickListener()
     {
     	@Override public void onClick(View v)
@@ -433,7 +440,7 @@ public class Callisto extends Activity {
 	/** This method plays the next song in the queue, if there is one.
 	 * @param c The context of the current activity.
 	 * @param previousOrNext >0 if it should play the next track, <0 for the previous, and 0 for the current
-	 * @param startPlaying true if the player should start playing when it changes tracks, false otherwise
+	 * @param sp true if the player should start playing when it changes tracks, false otherwise
 	 */
     public static void playTrack(Context c, int previousOrNext, boolean sp)
     {    	
@@ -457,19 +464,20 @@ public class Callisto extends Activity {
     	Long id = queue.getLong(queue.getColumnIndex("_id"));
     	Long identity = queue.getLong(queue.getColumnIndex("identity"));
     	boolean isStreaming = queue.getInt(queue.getColumnIndex("streaming"))>0;
+        boolean isVideo = queue.getInt(queue.getColumnIndex("video"))>0;
         Cursor db = Callisto.databaseConnector.getOneEpisode(identity);
 	    db.moveToFirst();
 	    
 	    String media_location;
 	    Callisto.playerInfo.title = db.getString(db.getColumnIndex("title"));
 	    Callisto.playerInfo.position = db.getInt(db.getColumnIndex("position"));
-	    System.out.println("Position=" + Callisto.playerInfo.position);
+	    System.out.println("Position1=" + Callisto.playerInfo.position);
 	    Callisto.playerInfo.date = db.getString(db.getColumnIndex("date"));
 	    Callisto.playerInfo.show = db.getString(db.getColumnIndex("show"));
 	    Log.i("*:playTrack", "Loading info: " + Callisto.playerInfo.title);
 	    if(isStreaming)
 	    {
-	    	media_location = db.getString(db.getColumnIndex("mp3link"));
+	    	media_location = db.getString(db.getColumnIndex(isVideo?"vidlink":"mp3link"));
 	    }
 	    else
 	    {
@@ -486,7 +494,8 @@ public class Callisto extends Activity {
 			}
 		    
 	        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
-	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
+	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title +
+                    EpisodeDesc.getExtension(db.getString(db.getColumnIndex(isVideo?"vidlink":"mp3link"))));
 	        if(!target.exists())
 	        {
 	        	Log.e("*:playTrack", "File not found: " + target.getPath());
@@ -496,6 +505,7 @@ public class Callisto extends Activity {
 	        }
 	        media_location = target.getPath();
 	    }
+        System.out.println("Position2=" + Callisto.playerInfo.position);
 	    
 		Intent notificationIntent = new Intent(c, EpisodeDesc.class);
 		notificationIntent.putExtra("id", identity);
@@ -505,19 +515,31 @@ public class Callisto extends Activity {
        	Callisto.notification_playing.setLatestEventInfo(c,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
        	
        	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-	    
-       	
+
+        System.out.println("Position3=" + Callisto.playerInfo.position);
+       	if(isVideo)
+           {
+               Intent intent= new Intent(c, VideoActivity.class);
+               intent.putExtra("uri", media_location);
+               intent.putExtra("seek", Callisto.playerInfo.position);
+               System.out.println("Position0=" + Callisto.playerInfo.position);
+               Callisto.playerInfo.update(c);
+               System.out.println("Position0=" + Callisto.playerInfo.position);
+               c.startActivity(intent);
+                return;
+           }
 		try {
 			if(Callisto.mplayer==null)
 				Callisto.mplayer = new MediaPlayer(); //This could be a problem
 			Callisto.mplayer.reset();
 			Callisto.okNowPlay.setContext(c);
 			Callisto.mplayer.setDataSource(media_location);
+            Log.i("*:playTrack", "Setting source: " + media_location);
 			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
 			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-			LIVE_PreparedListener.startPlaying = sp;
+			okNowPlay.startPlaying = sp;
 			Callisto.mplayer.setOnPreparedListener(okNowPlay);
-			Log.i("*:playTrack", "Preparing...");
+			Log.i("*:playTrack", "Preparing..." + sp);
 			if(isStreaming)
 			{
 				okNowPlay.pd = ProgressDialog.show(c, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
@@ -577,7 +599,12 @@ public class Callisto extends Activity {
     			return;
     		}
     		Callisto.nextTrack.setContext(c);
-    		if(Callisto.mplayer!=null)
+            if(VideoActivity.videoView!=null)
+            {
+                length = VideoActivity.videoView.getDuration()/1000;
+                position = VideoActivity.videoView.getCurrentPosition()/1000;
+            }
+    		else if(Callisto.mplayer!=null)
     		{
     			length = Callisto.mplayer.getDuration()/1000;
     			position = Callisto.mplayer.getCurrentPosition()/1000;
@@ -690,13 +717,16 @@ public class Callisto extends Activity {
     		isPaused = true;
     	}
     }
-    
+
     /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
 	private void TimerMethod()
 	{
-		Callisto.this.runOnUiThread(TimerRunnable);
+        TimerHandler.post(TimerRunnable);
+//		Callisto.this.runOnUiThread(TimerRunnable);
 	}
-	
+
+    private Handler TimerHandler = new Handler();
+
 	/** A runnable to be used in conjunction with the update() function. Updates the player time every set amount of time. */
 	Runnable TimerRunnable = new Runnable()
 	{
@@ -714,16 +744,21 @@ public class Callisto extends Activity {
 				}
 				return;
 			}
-			if(Callisto.mplayer==null || !Callisto.mplayer.isPlaying())
+			if((Callisto.mplayer==null || !Callisto.mplayer.isPlaying()) &&
+                    (VideoActivity.videoView==null || !VideoActivity.videoView.isPlaying()))
 			{
 				i=0;
 				return;
 			}
 			try {
-			Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
+            if(VideoActivity.videoView!=null)
+                Callisto.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
+            else
+			    Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
 			current = Callisto.playerInfo.position/1000;
 			timeProgress.setProgress(current);
 			timeView.setText(formatTimeFromSeconds(current));
+            Log.i("Callisto:TimerMethod", "Timer mon " + Callisto.playerInfo.position);
 			if(i==Callisto.SAVE_POSITION_EVERY)
 			{
 				i=0;
@@ -732,7 +767,7 @@ public class Callisto extends Activity {
 		    	Cursor queue = Callisto.databaseConnector.currentQueue();
 		    	queue.moveToFirst();
 		    	Long identity = queue.getLong(queue.getColumnIndex("identity"));
-				Callisto.databaseConnector.updatePosition(identity, Callisto.mplayer.getCurrentPosition());
+				Callisto.databaseConnector.updatePosition(identity, Callisto.playerInfo.position);
 				} catch(NullPointerException e)
 				{
 					Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
@@ -741,7 +776,7 @@ public class Callisto extends Activity {
 			
 			} catch(Exception e)
 			{
-				System.out.println("!!!");
+				System.out.println("HERP!!!");
 			}
 		}
 	};
@@ -793,6 +828,7 @@ public class Callisto extends Activity {
 		}
 		else
 		{
+			Log.d("*:playPause","PlayPause is " + (Callisto.playerInfo.isPaused ? "" : "NOT") + "paused");
 			if(Callisto.playerInfo.isPaused)
 			{
 				Callisto.mplayer.start();
@@ -1015,10 +1051,9 @@ public class Callisto extends Activity {
 	 * 
 	 * @param currentShow The number of the current show in relation to the AllShows.SHOW_LIST array
 	 * @param showSettings The associated SharedPreferences with that show
-	 * @param isVideo true to check the video feed, false to check the audio.
 	 * @return A Message object with arg1 being 1 if the show found new episodes, 0 otherwise.
 	 */
-	public static Message updateShow(int currentShow, SharedPreferences showSettings, boolean isVideo)
+	public static Message updateShow(int currentShow, SharedPreferences showSettings)
 	{
 		  Log.i("*:updateShow", "Beginning update");
 		  String epDate = null, epTitle = null, epDesc = null, epLink = null;
@@ -1031,18 +1066,28 @@ public class Callisto extends Activity {
   		  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
   		  factory.setNamespaceAware(true);
   		  XmlPullParser xpp = factory.newPullParser();
-  		  URL url = new URL(isVideo ? AllShows.SHOW_LIST_VIDEO[currentShow] : AllShows.SHOW_LIST_AUDIO[currentShow]);
+          XmlPullParserFactory factory2 = XmlPullParserFactory.newInstance();
+          factory2.setNamespaceAware(true);
+          XmlPullParser xpp_vid = factory2.newPullParser();
+  		  //URL url = new URL(isVideo ? AllShows.SHOW_LIST_VIDEO[currentShow] : AllShows.SHOW_LIST_AUDIO[currentShow]);
+            URL url = new URL(AllShows.SHOW_LIST_AUDIO[currentShow]);
+            URL url2 = new URL(AllShows.SHOW_LIST_VIDEO[currentShow]);
   		  InputStream input = url.openConnection().getInputStream();
+          InputStream input2 = url2.openConnection().getInputStream();
   		  xpp.setInput(input, null);
+          xpp_vid.setInput(input2, null);
   		  
   		  Log.v("*:updateShow", "Parser is prepared");
   		  int eventType = xpp.getEventType();
+          int eventType2 = xpp_vid.getEventType();
   		
   		  while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG))
   		  {
   			  eventType = xpp.next();
+              eventType2 = xpp_vid.next();
   		  }
   		  eventType = xpp.next();
+          eventType2 = xpp_vid.next();
   		  
   		  String imgurl = null, imgurl2 = null;
 	  //Download the image
@@ -1056,23 +1101,34 @@ public class Callisto extends Activity {
   					imgurl = xpp.getAttributeValue(null, "href");
   					eventType = xpp.next();
   					eventType = xpp.next();
+                    eventType2 = xpp_vid.next();
+                    eventType2 = xpp_vid.next();
   				}
   				else
   				{
   					eventType = xpp.next();
+                    eventType2 = xpp_vid.next();
 	  				while(!(("image".equals(xpp.getName()) || ("url".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))))
+                    {
 	  					eventType = xpp.next();
+                        eventType2 = xpp_vid.next();
+                    }
 	  				if(!("image".equals(xpp.getName())))
 	                {
 	                      eventType = xpp.next();
+                          eventType2 = xpp_vid.next();
 	                      imgurl = xpp.getText();
 	                      while(!("image".equals(xpp.getName())))
+                          {
 	                    	  eventType = xpp.next();
+                              eventType2 = xpp_vid.next();
+                          }
 	                }
   				}
   			  }
 
 			  eventType = xpp.next();
+              eventType2 = xpp_vid.next();
 			  if(eventType==XmlPullParser.END_DOCUMENT)
 				  throw(new UnfinishedParseException("Thumbnail"));
 		  }
@@ -1101,13 +1157,22 @@ public class Callisto extends Activity {
 					  if(eventType==XmlPullParser.END_DOCUMENT)
 						  throw(new UnfinishedParseException("Title"));
 				  }
+                  while(!("title".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                  {
+                    eventType2 = xpp_vid.next();
+                    if(eventType2==XmlPullParser.END_DOCUMENT)
+                        throw(new UnfinishedParseException("Title"));
+                  }
+
 				  eventType = xpp.next();
+                  eventType2 = xpp_vid.next();
 				  epTitle = xpp.getText();
 				  if(epTitle==null)
 					  throw(new UnfinishedParseException("Title"));
 				  if(epTitle.indexOf("|")>0)
 						epTitle = epTitle.substring(0, epTitle.indexOf("|")).trim();
 				  Log.d("*:updateShow", "Title: " + epTitle);
+                  Log.e("*:updateShow", "Title: " + xpp_vid.getText());
 				  
 				  //Link
 				  while(!("link".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
@@ -1116,11 +1181,20 @@ public class Callisto extends Activity {
 					  if(eventType==XmlPullParser.END_DOCUMENT)
 						  throw(new UnfinishedParseException("Link"));
 				  }
+                  while(!("link".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                  {
+                    eventType2 = xpp_vid.next();
+                    if(eventType==XmlPullParser.END_DOCUMENT)
+                        throw(new UnfinishedParseException("Link"));
+                  }
+
 				  eventType = xpp.next();
+                  eventType2 = xpp_vid.next();
 				  epLink = xpp.getText();
 				  if(epLink==null)
 					  throw(new UnfinishedParseException("Link"));
 				  Log.d("*:updateShow", "Link: " + epLink);
+                  Log.e("*:updateShow", "Link: " + xpp_vid.getText());
 				  
 				  //Description
 				  while(!("description".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
@@ -1129,11 +1203,20 @@ public class Callisto extends Activity {
 					  if(eventType==XmlPullParser.END_DOCUMENT)
 						  throw(new UnfinishedParseException("Description"));
 				  }
+                  while(!("description".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                  {
+                    eventType2 = xpp_vid.next();
+                    if(eventType2==XmlPullParser.END_DOCUMENT)
+                        throw(new UnfinishedParseException("Description"));
+                  }
+
 				  eventType = xpp.next();
+                  eventType2 = xpp_vid.next();
 				  epDesc = xpp.getText();
 				  if(epDesc==null)
 					  throw(new UnfinishedParseException("Description"));
 				  Log.d("*:updateShow", "Desc: " + epDesc);
+                  Log.e("*:updateShow", "Desc: " + xpp_vid.getText());
 				  
 				  //Date
 				  while(!("pubDate".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
@@ -1142,11 +1225,19 @@ public class Callisto extends Activity {
 					  if(eventType==XmlPullParser.END_DOCUMENT)
 						  throw(new UnfinishedParseException("Date"));
 				  }
+                  while(!("pubDate".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                  {
+                    eventType2 = xpp_vid.next();
+                    if(eventType2==XmlPullParser.END_DOCUMENT)
+                        throw(new UnfinishedParseException("Date"));
+                  }
+
 				  eventType = xpp.next();
+                  eventType2 = xpp_vid.next();
 				  epDate = xpp.getText();
 				  Log.d("*:updateShow", "Date: " + epDate);
-				  
-				  
+                  Log.e("*:updateShow", "Date: " + xpp_vid.getText());
+
 				  
 				  if(epDate==null)
 					  throw(new UnfinishedParseException("Date"));
@@ -1162,24 +1253,37 @@ public class Callisto extends Activity {
 					  if(eventType==XmlPullParser.END_DOCUMENT)
 						  throw(new UnfinishedParseException("Media"));
 				  }
+
+                  while(!("enclosure".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                  {
+                    eventType2 = xpp_vid.next();
+                    if(eventType2==XmlPullParser.END_DOCUMENT)
+                        throw(new UnfinishedParseException("Media"));
+                  }
+
 				  
-				  String epMediaLink = xpp.getAttributeValue(xpp.getNamespace(),"url");
-				  if(epMediaLink==null)
-					  throw(new UnfinishedParseException("MediaLink"));
+				  String epAudioLink = xpp.getAttributeValue(xpp.getNamespace(),"url"),
+                         epVideoLink = xpp_vid.getAttributeValue(xpp.getNamespace(),"url");
+				  if(epAudioLink==null)
+					  throw(new UnfinishedParseException("AudioLink"));
 				  
 				  String temp = xpp.getAttributeValue(xpp.getNamespace(),"length");
 				  if(temp==null)
 					  throw(new UnfinishedParseException("MediaSize"));
-				  long epMediaSize = Long.parseLong(temp);
-				  
-				  Log.d("*:updateShow", "Link: " + epMediaLink);
-				  Log.d("*:updateShow", "Size: " + epMediaSize);
-				  
+                  String temp2 = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
+				  long epAudioSize = Long.parseLong(temp);
+                Log.e("*:updateShow", "ASDSDSADS: " + temp2);
+                Log.d("*:updateShow", "A Link: " + epAudioLink);
+                Log.d("*:updateShow", "A Size: " + epAudioSize);
+                  long epVideoSize = Long.parseLong(temp2);
+
+                  Log.d("*:updateShow", "V Link: " + epVideoLink);
+                  Log.d("*:updateShow", "V Size: " + epVideoSize);
 				  
 				  epDate = Callisto.sdfRaw.format(Callisto.sdfSource.parse(epDate));
 				  //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
 						  								//isVideo, epMediaLink, epMediaSize))
-					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epMediaLink, epMediaSize, isVideo);
+					  Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
 		    	  Log.v("*:updateShow", "Inserting episode: " + epTitle);
   		  }
   		  

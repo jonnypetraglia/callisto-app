@@ -57,60 +57,110 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:gravity="right|center_vertical" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/LinearLayout1"
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/txtClr" />
+
+    <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" >
-
-            <TextView
-                android:id="@+id/date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/txtClr" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" - "
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/txtClr" />
-
-            <TextView
-                android:id="@+id/size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Size"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/txtClr" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/buttons"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="7dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp" >
+            android:orientation="vertical"
+            android:background="#cccccc">
 
-            <Button
-                android:id="@+id/stream"
+        <LinearLayout
+                android:id="@+id/LinearLayout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#55150305">
+            <TextView
+                android:id="@+id/audio_tab"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:text="@string/stream" />
+                android:layout_height="wrap_content"
+                android:text="Audio"
+                android:textColor="@color/txtClr"
+                android:textSize="17dp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:background="#cccccc"/>
 
-            <Button
-                android:id="@+id/download"
+            <TextView
+                android:id="@+id/video_tab"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:text="@string/download" />
+                android:layout_height="wrap_content"
+                android:text="Video"
+                android:textColor="@color/txtClr"
+                android:textSize="17dp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:background="#999999"/>
+        </LinearLayout>
+
+
+            <LinearLayout
+                    android:id="@+id/LinearLayout1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Size: "
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/txtClr" />
+
+                    <TextView
+                            android:id="@+id/audio_size"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=">9000"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="@color/txtClr" />
+
+                    <TextView
+                            android:id="@+id/video_size"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=">9000"
+                            android:visibility="gone"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="@color/txtClr" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttons"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Button
+                        android:id="@+id/stream"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0"
+                        android:text="@string/stream" />
+
+                    <Button
+                        android:id="@+id/download"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0"
+                        android:text="@string/download" />
+                </LinearLayout>
         </LinearLayout>
 
          <ScrollView

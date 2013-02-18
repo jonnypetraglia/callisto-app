@@ -23,8 +23,16 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class NickList extends ListActivity
 {
+    ArrayList<String> Owners = new ArrayList<String>();         //~ == +q
+    ArrayList<String> Admins = new ArrayList<String>();         //& == +a
+    ArrayList<String> Operators = new ArrayList<String>();      //@ == +o
+    ArrayList<String> HalfOperators = new ArrayList<String>();  //% == +h
+    ArrayList<String> Voices = new ArrayList<String>();         //+ == +v
+
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
 	 */

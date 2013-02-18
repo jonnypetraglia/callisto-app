@@ -20,58 +20,58 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     <string-array name="shows">
     <item>\u0020Active Shows</item>
 		<item>Coder Radio</item>
+        <item>FauxShow</item>
 		<item>Linux Action Show</item>
 		<item>SciByte</item>
 		<item>TechSnap</item>
 		<item>Unfilter</item>
-		<item>FauxShow</item>
 	<item>\u0020Inactive Shows </item>
-		<item>TORKed</item>
-		<item>STOked</item>
+        <item>Beer is Tasty</item>
+        <item>In Depth Look</item>
 		<item>Jupiter@Nite</item>
-		<item>In Depth Look</item>
+        <item>Jupiter Files</item>
+        <item>Legend of the Stoned Owl</item>
 		<item>MMOrgue</item>
-		<item>Jupiter Files</item>
-		<item>Legend of the Stoned Owl</item>
-		<item>Beer is Tasty</item>
+        <item>STOked</item>
+        <item>TORKed</item>
     </string-array>
     
     <string-array name="shows_audio">
 		<item>@null</item>
 		<item>http://feeds.feedburner.com/coderradiomp3</item>
+        <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml</item>
 		<item>http://feeds2.feedburner.com/TheLinuxActionShow</item>
 		<item>http://feeds.feedburner.com/scibyteaudio</item>
 		<item>http://feeds.feedburner.com/techsnapmp3</item>
 		<item>http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml</item>
-		<item>http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml</item>
 		<item>@null</item>
+        <item>http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml</item>
+        <item>http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml</item>
+        <item>http://feeds.feedburner.com/jupiternitemp3</item>
+        <item>http://feeds.feedburner.com/ldf-mp3</item>
+        <item>http://feeds.feedburner.com/lotsomp3</item>
+        <item>http://feeds.feedburner.com/MMOrgueMP3</item>
+        <item>http://feeds.feedburner.com/stoked</item>
 		<item>http://feeds.feedburner.com/TorkedMp3</item>
-		<item>http://feeds.feedburner.com/stoked</item>
-		<item>http://feeds.feedburner.com/jupiternitemp3</item>
-		<item>http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml</item>
-		<item>http://feeds.feedburner.com/MMOrgueMP3</item>
-		<item>http://feeds.feedburner.com/ldf-mp3</item>
-		<item>http://feeds.feedburner.com/lotsomp3</item>
-		<item>http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml</item>
 	</string-array>
 	
     <string-array name="shows_video">
 		<item>@null</item>,
 		<item>http://feeds.feedburner.com/coderradiovideo</item>
+        <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml</item>
 		<item>http://feeds.feedburner.com/linuxactionshowipodvid</item>
 		<item>http://feeds.feedburner.com/scibytemobile</item>
 		<item>http://feeds.feedburner.com/techsnapmobile</item>
 		<item>http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml</item>
-		<item>http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml</item>
-		<item>@null</item>,
+		<item>@null</item>
+        <item>http://feeds2.feedburner.com/BeerIsTasty</item>
+        <item>http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml</item>
+        <item>http://feeds.feedburner.com/jupiterniteivid</item>
+        <item>http://feeds.feedburner.com/ldf-video</item>
+        <item>http://feeds.feedburner.com/lotsovideo</item>
+        <item>http://feeds.feedburner.com/MMOrgueMobile</item>
+        <item>http://feeds.feedburner.com/stokedipod</item>
 		<item>http://feeds.feedburner.com/TorkedMobile</item>
-		<item>http://feeds.feedburner.com/stokedipod</item>
-		<item>http://feeds.feedburner.com/jupiterniteivid</item>
-		<item>http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml</item>
-		<item>http://feeds.feedburner.com/MMOrgueMobile</item>
-		<item>http://feeds.feedburner.com/ldf-video</item>
-		<item>http://feeds.feedburner.com/lotsovideo</item>
-		<item>http://feeds2.feedburner.com/BeerIsTasty</item>
 	</string-array>
     
 </resources>

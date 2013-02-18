@@ -70,9 +70,10 @@ public class DatabaseConnector
 							  String date,
 							  String description,
 							  String link,
-							  String medialink,
-							  long mediasize,
-							  boolean isVideo) 
+							  String audioLink,
+							  long audioSize,
+							  String videoLink,
+                              long videoSize)
 	{
 	   ContentValues newEpisode = new ContentValues();
 	   newEpisode.put("show", show);
@@ -81,8 +82,13 @@ public class DatabaseConnector
 	   newEpisode.put("date", date);
 	   newEpisode.put("description", description);
 	   newEpisode.put("link", link);
-	   newEpisode.put((isVideo ? "vid" : "mp3") + "link", medialink);
-	   newEpisode.put((isVideo ? "vid" : "mp3") + "size", mediasize);
+       newEpisode.put("mp3link", audioLink);
+       newEpisode.put("mp3size", audioSize);
+       if(videoLink!=null)
+       {
+           newEpisode.put("vidlink", videoLink);
+           newEpisode.put("vidsize", videoSize);
+       }
 	
 	   database.insert(DATABASE_TABLE, null, newEpisode);
 	}
@@ -101,22 +107,7 @@ public class DatabaseConnector
 			   " WHERE show='" + show + "'");
 	}
 	
-	/** [DATABASE_TABLE] Updates a an episode entry.
-	 * @return True = an episode was found and updated, False = no episode found */
-	public boolean updateMedia(String show, String title,
-							boolean isVideo, String newLink, long newSize)
-	{
-		Cursor c = database.query(DATABASE_TABLE, new String[] {"_id"},
-				"title='" + title + "' AND show='" + show + "'", null, null, null, null);
-		if(c.getCount()==0)
-			return false;
-		c.moveToFirst();
-		String newType = (isVideo ? "vid" : "mp3");
-		long id = c.getLong(c.getColumnIndex("_id"));
-		database.execSQL("UPDATE " + DATABASE_TABLE  + " SET " + newType + "link='" + newLink + "' WHERE _id='" + id + "'");
-		database.execSQL("UPDATE " + DATABASE_TABLE  + " SET " + newType + "size='" + newLink + "' WHERE _id='" + id + "'");
-		return true;
-	}
+
 	
 	/** [DATABASE_TABLE] Updates the position of an episode entry.
 	 * @param id The ID of the entry to set 
@@ -193,7 +184,7 @@ public class DatabaseConnector
 	{
 		   Cursor things = null;
 		   things = database.query(DATABASE_QUEUE,
-				    new String[] {"_id", "identity", "current", "streaming"},
+				    new String[] {"_id", "identity", "current", "video", "streaming"},
 				    null,
 		        	null,
 		        	null,
@@ -206,7 +197,7 @@ public class DatabaseConnector
 	 * @param identity The identity (note, not ID) of what to be appended
 	 * @param isStreaming True if it is a streaming entry, false otherwise
 	 */
-	public void appendToQueue(long identity, boolean isStreaming)
+	public void appendToQueue(long identity, boolean isStreaming, boolean isVideo)
 	{
 		   if(database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + identity, null, null, null, null).getCount()==0)
 		   {
@@ -214,6 +205,7 @@ public class DatabaseConnector
 			   newEntry.put("identity", identity);
 			   newEntry.put("current", 0);
 			   newEntry.put("streaming", isStreaming ? 1 : 0);
+               newEntry.put("video", isVideo ? 1 : 0);
 			   database.insert(DATABASE_QUEUE, null, newEntry);
 		   } else
 			   Log.w("*:appendToQueue", "Song is already in queue: " + identity);
@@ -225,12 +217,13 @@ public class DatabaseConnector
 	 * @param isCurrent Greater than 0 if it is the current track, 0 otherwise.
 	 * @param streaming Greater than 0 if it is streaming, 0 otherwise.
 	 */
-	private void updateQueue(long id, long identity, int isCurrent, int streaming)
+	private void updateQueue(long id, long identity, int isCurrent, int streaming, int video)
 	{
 	   ContentValues editEpisode = new ContentValues();
 	   editEpisode.put("identity", identity);
 	   editEpisode.put("current", isCurrent);
 	   editEpisode.put("streaming", streaming);
+        editEpisode.put("video", video);
 	
 	   database.update(DATABASE_QUEUE, editEpisode, "_id=" + id, null);
 	}
@@ -243,18 +236,19 @@ public class DatabaseConnector
 	{
 		
 		   //Get the one that is selected
-	       Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id=" + id1, null, null, null, null);
+	       Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id=" + id1, null, null, null, null);
 	       c1.moveToFirst();
 	       long identity1 = c1.getLong(c1.getColumnIndex("identity"));
 	       int current1 = c1.getInt(c1.getColumnIndex("current"));
 	       int streaming1 = c1.getInt(c1.getColumnIndex("streaming"));
+           int video1 = c1.getInt(c1.getColumnIndex("video"));
 		   
 	       //Get the one that it will move with
 	       Cursor c2;
 	       if(dir<0)
-	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id<" + id1, null, null, null, "_id DESC", "1");
+	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id<" + id1, null, null, null, "_id DESC", "1");
 	       else
-	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "streaming"},	"_id>" + id1, null, null, null, "_id ASC", "1");
+	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id>" + id1, null, null, null, "_id ASC", "1");
 	       if(dir==0)
 	    	   deleteQueueItem(id1);
 	       if(c2.getCount()==0)
@@ -264,11 +258,12 @@ public class DatabaseConnector
 	       long identity2 = c2.getLong(c2.getColumnIndex("identity"));
 	       int current2 = c2.getInt(c2.getColumnIndex("current"));
 	       int streaming2 = c2.getInt(c2.getColumnIndex("streaming"));
+           int video2 = c2.getInt(c2.getColumnIndex("video"));
 	       
 	       if(dir!=0)
 	       {
-		       updateQueue(id1, identity2, current2, streaming2);
-		       updateQueue(id2, identity1, current1, streaming1);
+		       updateQueue(id1, identity2, current2, streaming2, video2);
+		       updateQueue(id2, identity1, current1, streaming1, video1);
 	       }
 		   
 	}
@@ -335,9 +330,9 @@ public class DatabaseConnector
 			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=0" + " WHERE _id=" + id + "");
 			//Get the new one and set it to be current
 			if(forward<0)
-				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "_id<" + id, null, null, null, "_id DESC", "1");
+				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "_id<" + id, null, null, null, "_id DESC", "1");
 			else
-				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "_id>" + id, null, null, null, null, "1");
+				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "_id>" + id, null, null, null, null, "1");
 			if(c.moveToFirst())
 			{
 				Log.v("DatabaseConnector:advanceQueue", "A new current was found in the queue");
@@ -353,7 +348,7 @@ public class DatabaseConnector
 	 */
 	public Cursor currentQueue()
 	{
-	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "streaming"}, "current>'0'", null, null, null, null, "1");
+	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "current>'0'", null, null, null, null, "1");
 	   return c;
 		
 	}
@@ -451,7 +446,7 @@ public class DatabaseConnector
 	 	         "(_id integer primary key autoincrement, " +
 	 	         	"identity INTEGER, " + 
 	 	         	"current INTEGER, " + 
-	 	         	//"length INTEGER" + 
+	 	         	"video INTEGER, " +
 	 	         	"streaming INTEGER);";
 	 	      db.execSQL(createQuery2);
 	 	      

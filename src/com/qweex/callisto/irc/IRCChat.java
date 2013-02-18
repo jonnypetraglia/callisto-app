@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
+import com.qweex.callisto.VideoActivity;
 import jerklib.ConnectionManager;
 import jerklib.Profile;
 import jerklib.ServerInformation;
@@ -86,13 +87,13 @@ import android.widget.ViewAnimator;
 
 public class IRCChat extends Activity implements IRCEventListener
 {
-	private static final int LOG_ID=Menu.FIRST+1;
-	private static final int CHANGE_ID=LOG_ID+1;
-	private static final int LOGOUT_ID=CHANGE_ID+1;
-	private static final int NICKLIST_ID=LOGOUT_ID+1;
-	private static final int SAVE_ID=NICKLIST_ID+1;
+	protected static final int LOG_ID=Menu.FIRST+1;
+    protected static final int CHANGE_ID=LOG_ID+1;
+    protected static final int LOGOUT_ID=CHANGE_ID+1;
+    protected static final int NICKLIST_ID=LOGOUT_ID+1;
+    protected static final int SAVE_ID=NICKLIST_ID+1;
 	private final String SERVER_NAME = "irc.geekshed.net";
-	private final String CHANNEL_NAME = "#qweex";
+	private final String CHANNEL_NAME = "#jupiterbroadcasting";
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
@@ -111,7 +112,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				   CLR_PM,
 				   CLR_LINKS;
 	private static ConnectionManager manager;
-	private static Session session;
+	public static Session session;
 	private static NotificationManager mNotificationManager;
 	private static int mentionCount = 0;
 	private static PendingIntent contentIntent;
@@ -167,6 +168,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		        		return;
 		            
 				    View view = (View) Callisto.chatView;
+                        Log.e("AtBottom", view + " " + sv);
 				    boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= 0;
 				    
 		            Callisto.chatView.append(received);
@@ -211,24 +213,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		
 		login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_menu_login), null, null, null);
 		
-		login.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				String profileNick = user.getText().toString();
-				System.out.println("profileNick: " + profileNick);
-				if(profileNick==null || profileNick.trim().equals(""))
-				{
-					Toast.makeText(IRCChat.this, "Dude, you have to enter a nick.", Toast.LENGTH_SHORT).show();
-					return;
-				}
-				String profilePassword = pass.getText().toString();
-				SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
-				e.putString("irc_nick", Rot47(profileNick));
-				e.putString("irc_pass", Rot47(profilePassword));
-				e.commit();
-				initiate();
-			}
-		});
+		login.setOnClickListener(InitiateLogin);
 		
 		//Build the ChangeNickDialog
 		changeNickDialog = new PopupWindow(this);
@@ -271,8 +256,25 @@ public class IRCChat extends Activity implements IRCEventListener
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
 	}
-	
-	
+
+    protected OnClickListener InitiateLogin= new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            profileNick = user.getText().toString();
+            System.out.println("profileNick: " + profileNick);
+            if(profileNick==null || profileNick.trim().equals(""))
+            {
+                Toast.makeText(IRCChat.this, "Dude, you have to enter a nick.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String profilePassword = pass.getText().toString();
+            SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
+            e.putString("irc_nick", Rot47(profileNick));
+            e.putString("irc_pass", Rot47(profilePassword));
+            e.commit();
+            initiate();
+        }
+    };
 
 	/** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
 	 * @param keyCode I dunno
@@ -384,8 +386,11 @@ public class IRCChat extends Activity implements IRCEventListener
     	Nick_MI.setEnabled(session!=null);
 //    	Logout_MI.setEnabled(session!=null);
     	Save_MI.setEnabled(session!=null);
-//    	Nick_MI.setEnabled(session!=null);    	
-    	Change_MI.setTitle(session==null ? "Reconnect" : "Change Nick");
+    	Nick_MI.setEnabled(session!=null);
+
+        Log.d("DERP", session + "");
+
+    	Change_MI.setTitle(this.getClass()== VideoActivity.class ? "Open IRC" : ((session!=null && session.getRetries()>1 ) ? "Reconnect" : "Change Nick"));
     	} catch(Exception e) {}
     }
     
@@ -395,7 +400,7 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
+        switch(item.getItemId())
         {
         case LOG_ID:
         	((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
@@ -470,7 +475,17 @@ public class IRCChat extends Activity implements IRCEventListener
     	isFocused = true;
     	mentionCount = 0;
     	nickColors.put(profileNick, CLR_MYNICK);
-		setContentView(R.layout.irc);
+        if(this.getClass() == VideoActivity.class)
+        {
+            LinearLayout p= ((LinearLayout)findViewById(R.id.mainVideo));
+            View v = p.findViewWithTag("VideoLogin");
+            p.removeView(v);
+            p.findViewById(R.id.videoIrc).setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            setContentView(R.layout.irc);
+        }
 		sv = (ScrollView) findViewById(R.id.scrollView);
 		sv.setVerticalFadingEdgeEnabled(false);
 		sv.setFillViewport(true);
@@ -559,7 +574,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		updateMenu();
     }
     
-    void actuallyConnect()
+    protected void actuallyConnect()
     {
     	Intent notificationIntent = new Intent(this, IRCChat.class);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -1436,6 +1451,8 @@ public class IRCChat extends Activity implements IRCEventListener
 	 */
     public String Rot47(String value)
     {
+        if(value==null)
+            return null;
         int length = value.length();
         StringBuilder result = new StringBuilder();
 

@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import android.view.*;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -45,12 +46,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -70,14 +65,14 @@ public class EpisodeDesc extends Activity
 	//-----Local variables-----
 	private static final int STOP_ID=Menu.FIRST+1;
 	private static final int SHARE_ID=STOP_ID + 1;
-	private String media_link = "";
+	private String mp3_link = "", vid_link = "";
 	private String title = "";
 	private String description = "";
 	private String link = "";
-	private long media_size = 0;
+	private long mp3_size = 0, vid_size = 0;
 	private String date = "";
 	private String show = "";
-	private File file_location;
+	private File file_location_audio, file_location_video;
 	private Button streamButton, downloadButton;
 	private long id = 0;
 	private InputStream is;
@@ -85,6 +80,8 @@ public class EpisodeDesc extends Activity
 	private byte[] buff = null;
 	private boolean isLandscape;
 	private WifiLock Download_wifiLock;
+    private TextView audioSize, videoSize, audioTab, videoTab;
+    private boolean vidSelected = false;
 	
 	//-----Static Variables-----
 	public static final DecimalFormat twoDec = new DecimalFormat("0.00");
@@ -130,8 +127,10 @@ public class EpisodeDesc extends Activity
 		date = c.getString(c.getColumnIndex("date"));
 		description = c.getString(c.getColumnIndex("description"));
 		link = c.getString(c.getColumnIndex("link"));
-		media_size = c.getLong(c.getColumnIndex(AllShows.IS_VIDEO ? "vidsize" : "mp3size"));
-		media_link = c.getString(c.getColumnIndex(AllShows.IS_VIDEO ? "vidlink" : "mp3link"));
+        mp3_size = c.getLong(c.getColumnIndex("mp3size"));
+        mp3_link = c.getString(c.getColumnIndex("mp3link"));
+        vid_size = c.getLong(c.getColumnIndex("vidsize"));
+        vid_link = c.getString(c.getColumnIndex("vidlink"));
 		show = c.getString(c.getColumnIndex("show"));
 		
 		setTitle(title);
@@ -148,7 +147,8 @@ public class EpisodeDesc extends Activity
 			Log.e("EpisodeDesc:ShowListAdapter:ParseException", "(This should never happen).");
 			e1.printStackTrace();
 		}
-		((TextView)this.findViewById(R.id.size)).setText(formatBytes(media_size));
+		((TextView)this.findViewById(R.id.audio_size)).setText(formatBytes(mp3_size));
+        ((TextView)this.findViewById(R.id.video_size)).setText(formatBytes(vid_size));
 		//Convert the date AGAIN into one that is used for the file.
         SimpleDateFormat sdfDestination = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -158,8 +158,14 @@ public class EpisodeDesc extends Activity
 			Log.e("ShowList:ShowListAdapter:ParseException", date);
 			Log.e("ShowList:ShowListAdapter:ParseException", "(This should SERIOUSLY never happen).");
 		}
-		file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-		file_location = new File(file_location, date + "__" + title + getExtension(media_link));
+		file_location_audio = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+		file_location_audio = new File(file_location_audio, date + "__" + title + getExtension(mp3_link));
+        System.out.println(vid_link==null?"Fail":"nope");
+        if(vid_link!=null)
+        {
+            file_location_video = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+            file_location_video = new File(file_location_video, date + "__" + title + getExtension(vid_link));
+        }
 		
 		streamButton = ((Button)this.findViewById(R.id.stream));
 		streamButton.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
@@ -170,9 +176,13 @@ public class EpisodeDesc extends Activity
 		{
 			LinearLayout ll = (LinearLayout) this.findViewById(R.id.mainLin);
 			LinearLayout bb = (LinearLayout) this.findViewById(R.id.buttons);
+            if(bb.getParent()!=null)
+                ((LinearLayout)bb.getParent()).removeView(bb);
 			ll.removeView(bb);
 			LinearLayout hh = (LinearLayout) this.findViewById(R.id.headLin);
 			bb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, Gravity.CENTER_VERTICAL));
+            if(bb.getParent()!=null)
+                ((ViewGroup)bb.getParent()).removeView(bb);
 			hh.addView(bb);
 		}
 	    
@@ -188,6 +198,15 @@ public class EpisodeDesc extends Activity
 	    CheckBox rb = ((CheckBox)findViewById(R.id.newImg));
         rb.setChecked(is_new);
         rb.setOnCheckedChangeListener(toggleNew);
+
+
+        //Set up the tabs
+        audioSize = (TextView) findViewById(R.id.audio_size);
+        videoSize = (TextView) findViewById(R.id.video_size);
+        audioTab = (TextView) findViewById(R.id.audio_tab);
+        videoTab = (TextView) findViewById(R.id.video_tab);
+        audioTab.setOnClickListener(changeTab);
+        videoTab.setOnClickListener(changeTab);
     }
 	
 	/** Finds the file extension of a path.
@@ -264,7 +283,7 @@ public class EpisodeDesc extends Activity
 		 @Override
 		  public void onClick(View v) 
 		  {
-			 Callisto.databaseConnector.appendToQueue(id, false);
+			 Callisto.databaseConnector.appendToQueue(id, false, vidSelected);
 			 if(Callisto.databaseConnector.queueCount()==1)
 			 {
 				 Callisto.playTrack(v.getContext(), 1, true);
@@ -281,7 +300,10 @@ public class EpisodeDesc extends Activity
 		 @Override
 		  public void onClick(View v) 
 		  {
-		 	file_location.delete();
+            if(vidSelected)
+		 	    file_location_video.delete();
+            else
+                file_location_audio.delete();
 		 	int tempId = -1;
 		 	Cursor c = Callisto.databaseConnector.currentQueue();
 		 	if(c.getCount()!=0)
@@ -317,8 +339,8 @@ public class EpisodeDesc extends Activity
 		@Override
 		  public void onClick(View v) 
 		  {
-			Log.i("EpisodeDesc:launchStream","Beginning streaming: " + media_link);
-				 Callisto.databaseConnector.appendToQueue(id, true);
+			Log.i("EpisodeDesc:launchStream","Beginning streaming: " + (vidSelected ? vid_link : mp3_link));
+				 Callisto.databaseConnector.appendToQueue(id, true, vidSelected);
 				 if(Callisto.databaseConnector.queueCount()==1)
 				 {
 					 Callisto.playTrack(v.getContext(), 1, true);
@@ -336,13 +358,16 @@ public class EpisodeDesc extends Activity
 		  {
 			//http://www.androidsnippets.com/download-an-http-file-to-sdcard-with-progress-notification
 			 	Callisto.downloading_count++;
-			 	Callisto.download_queue.add(EpisodeDesc.this.id);
-			 	Log.i("EpisodeDesc:launchDownload", "Adding download: " + media_link);
+			 	Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
+			 	Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
 			 	
 			 	if(!Download_wifiLock.isHeld())
 		            Download_wifiLock.acquire();
 			 	if(Callisto.download_queue.size()==1)
-					new DownloadTask().execute(media_link);
+                 {
+                     Log.i("EpisodeDesc:launchDownload", "Executing downloads");
+					new DownloadTask().execute(vidSelected ? vid_link : mp3_link);
+                 }
 			 	determineButtons(false);
 		}
     };
@@ -364,11 +389,40 @@ public class EpisodeDesc extends Activity
 			 determineButtons(true);
 		  }
     };
-    
+
+    private OnClickListener changeTab = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(view==audioTab)
+            {
+                if(!vidSelected)
+                    return;
+                videoTab.setBackgroundColor(0xff999999);
+                audioTab.setBackgroundColor(0xffcccccc);
+                findViewById(R.id.audio_size).setVisibility(View.VISIBLE);
+                findViewById(R.id.video_size).setVisibility(View.GONE);
+                vidSelected=false;
+            }
+            else
+            {
+                if(vidSelected)
+                    return;
+                videoTab.setBackgroundColor(0xffcccccc);
+                audioTab.setBackgroundColor(0xff999999);
+                findViewById(R.id.audio_size).setVisibility(View.GONE);
+                findViewById(R.id.video_size).setVisibility(View.VISIBLE);
+                vidSelected=true;
+            }
+            determineButtons(false);
+        }
+    };
+
     /** Determines the buttons' text and listeners depending on the status of whether the episode has been downloaded already.
      * @param forceNotThere Set to True to force the function to believe that the file for the episode is not there */
     private void determineButtons(boolean forceNotThere)
     {
+        File curr = (vidSelected ? file_location_video : file_location_audio);
+        long curr_size = (vidSelected ? vid_size : mp3_size);
     	if(Callisto.download_queue.contains(id) && !forceNotThere)
     	{
     		streamButton.setText(Callisto.RESOURCES.getString(R.string.downloading));
@@ -376,9 +430,9 @@ public class EpisodeDesc extends Activity
 			downloadButton.setText(Callisto.RESOURCES.getString(R.string.cancel));
 			downloadButton.setOnClickListener(launchCancel);
     	}
-    	else if(file_location.exists() && !forceNotThere)
+    	else if(curr.exists() && !forceNotThere)
 		{
-    		if(file_location.length()!=media_size)
+    		if(curr.length()!=curr_size)
     		{
         		streamButton.setText(Callisto.RESOURCES.getString(R.string.resume));
         		streamButton.setOnClickListener(launchDownload);
@@ -448,16 +502,26 @@ public class EpisodeDesc extends Activity
     	@Override
     	protected Boolean doInBackground(String... params)
     	{
-    		
+
+            boolean isVideo;
 			Cursor current;
 			while(!Callisto.download_queue.isEmpty())
 			{
 	   			try
 				{
     		   		long id = Callisto.download_queue.get(0);
-					current = Callisto.databaseConnector.getOneEpisode(id);
+                    if(id<=0)
+                    {
+                        isVideo=true;
+                        current = Callisto.databaseConnector.getOneEpisode(id*-1);
+                    }
+                    else
+                    {
+                        isVideo=false;
+                        current = Callisto.databaseConnector.getOneEpisode(id);
+                    }
 					current.moveToFirst();
-					Link = current.getString(current.getColumnIndex(AllShows.IS_VIDEO ? "vidlink" : "mp3link"));
+					Link = current.getString(current.getColumnIndex(isVideo ? "vidlink" : "mp3link"));
 					Title = current.getString(current.getColumnIndex("title"));
 					Date = current.getString(current.getColumnIndex("date"));
 					Show = current.getString(current.getColumnIndex("show"));
@@ -496,8 +560,10 @@ public class EpisodeDesc extends Activity
 					//Here is where the actual downloading happens
 					while ((len = inStream.read(buff)) != -1)
 					{
+                        Log.i("EpisodeDesc:DownloadTask", "DERP: " + downloadedSize);
 						if(Callisto.download_queue.size()==0 || !Callisto.download_queue.get(0).equals(id))
 						{
+                            Log.i("EpisodeDesc:DownloadTask", "DERPDADSADSA");
 							Target.delete();
 							break;
 						}
@@ -508,7 +574,9 @@ public class EpisodeDesc extends Activity
 						if(DownloadList.downloadProgress!=null)
 						{
 							int x = (int)(downloadedSize*100/TotalSize);
-							DownloadList.downloadProgress.setProgress(x);
+							//DownloadList.downloadProgress.setProgress(x);
+                            DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
+                            DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
 						}
 				       	Callisto.notification_download.setLatestEventInfo(getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " + Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": " + perc + "%", Show + ": " + Title, contentIntent);
 				       	mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
@@ -524,7 +592,7 @@ public class EpisodeDesc extends Activity
 						Log.i("EpisodeDesc:DownloadTask", "Successfully downloaded to : " + Target.getPath());
 						boolean queue = PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getBoolean("download_to_queue", false);
 						if(queue)
-							Callisto.databaseConnector.appendToQueue(id, false);
+							Callisto.databaseConnector.appendToQueue(id, false, vidSelected);
 						
 						Callisto.download_queue.remove(0);
 						if(DownloadList.notifyUpdate!=null)

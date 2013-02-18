@@ -157,13 +157,17 @@ public class DownloadList extends ListActivity
 				row=inflater.inflate(R.layout.row, parent, false);
 				(row.findViewById(R.id.img)).setVisibility(View.GONE);
 			}
-	    	
-			Cursor c = Callisto.databaseConnector.getOneEpisode(downloadQueue.get(position));
+
+            long id = downloadQueue.get(position);
+            boolean isVideo = id<0;
+            if(isVideo)
+                id = id*-1;
+			Cursor c = Callisto.databaseConnector.getOneEpisode(id);
 			c.moveToFirst();
 			
 			String title = c.getString(c.getColumnIndex("title"));
 			String show = c.getString(c.getColumnIndex("show"));
-			String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex("mp3size")));	//IDEA: adjust for watch if needed
+			String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));	//IDEA: adjust for watch if needed
 			((TextView)row.findViewById(R.id.hiddenId)).setText(Integer.toString(position));
 			((TextView)row.findViewById(R.id.rowTextView)).setText(title);
 			((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
@@ -182,9 +186,9 @@ public class DownloadList extends ListActivity
 			try {
 				String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
 				File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-					file_location = new File(file_location, date + "__" + title + ".mp3"); //IDEA: Adjust for watch
+					file_location = new File(file_location, date + "__" + title + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
 				ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
-				int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex("mp3size")));
+				int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));
 				progress.setMax(100);
 				progress.setProgress(x);
 			} catch (ParseException e) {

@@ -123,13 +123,19 @@ public class AllShows extends Activity {
 		TextView current_textview = (TextView)current_view.findViewById(R.id.rowTextView);
 		if(current_textview==null)
 			return;
-		
-		
-		String the_current = (String)(current_textview).getText();
-		SharedPreferences showSettings = getSharedPreferences(the_current, 0);
+
+		String the_current_show = (String)(current_textview).getText();
+
+
+        int i = Callisto.databaseConnector.getShow(the_current_show, true).getCount();
+        ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((i>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+        ((TextView)current_view.findViewById(R.id.showUnwatched)).setText(Integer.toString(i));
+
+        //Updated the "last_checked"
+		SharedPreferences showSettings = getSharedPreferences(the_current_show, 0);
 	   	
 	   	String lastChecked = showSettings.getString("last_checked", null);
-		Log.v("AllShows:onResume", "Resuming after:" + the_current + "| " + lastChecked);
+		Log.v("AllShows:onResume", "Resuming after:" + the_current_show + "| " + lastChecked);
 		if(lastChecked!=null)
 			try {
 				lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
@@ -139,10 +145,14 @@ public class AllShows extends Activity {
 				Log.e("AllShows:OnResume:ParseException", lastChecked);
 				Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
 			}
-		if(Callisto.databaseConnector.getShow(the_current, true).getCount()==0)
+
+        //Done away with in favor of numbers
+        /*
+		if(Callisto.databaseConnector.getShow(the_current_show, true).getCount()==0)
 			current_view.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.list_selector_background));
 		else
 			current_view.setBackgroundResource(R.drawable.main_colored);
+        */
 			
 		
 		current_view=null;
@@ -238,7 +248,7 @@ public class AllShows extends Activity {
        		if(SHOW_LIST_AUDIO[i]==null)
        			continue;
        		current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
-			Callisto.updateShow(i, current_showSettings, false);
+			Callisto.updateShow(i, current_showSettings);
 			UpdateHandler.sendEmptyMessage(0);
        	}
        	
@@ -294,22 +304,22 @@ public class AllShows extends Activity {
     		View row = convertView;
     		if(AllShows.SHOW_LIST_AUDIO[position]==null)
     		{
-    			//if(row==null)
-    			//{	
+    			if(row==null || row.findViewById(R.id.showUnwatched)!=null)
+    			{
     				LayoutInflater inflater=getLayoutInflater();
     				row=inflater.inflate(R.layout.main_row_head, parent, false);
-    			//}
+    			}
     			TextView x = ((TextView)row.findViewById(R.id.heading));
     			x.setText(AllShows.SHOW_LIST[position]);
     			x.setFocusable(false);
     			x.setEnabled(false);
     		} else
     		{
-    			//if(row==null)
-    			//{	
+                if(row==null || row.findViewById(R.id.showUnwatched)==null)
+    			{
     				LayoutInflater inflater=getLayoutInflater();
     				row=inflater.inflate(R.layout.main_row, parent, false);
-    			//}
+    			}
     				
     			//Get the show icon
 				String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded 
@@ -330,8 +340,12 @@ public class AllShows extends Activity {
 	    			}
 		    	}
 		    	
-    			
-		    	
+
+                int i = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
+                ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((i>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+		    	((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(i));
+
+
 				((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
 		    	SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
 				String lastChecked = showSettings.getString("last_checked", null);
@@ -348,13 +362,14 @@ public class AllShows extends Activity {
 					((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
 				}
 				
-				
+
+                //Removed; switched to numbering to notify how many are unwatched
+                /*
 				if( Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount()==0 )
 					row.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.list_selector_background));
 				else
 					row.setBackgroundResource(R.drawable.main_colored);
-					
-	
+                */
     		}
     		return row;
     	}

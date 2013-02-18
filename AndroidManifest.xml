@@ -80,6 +80,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         
 		<activity android:name=".bonuses.Bacon"
 		    android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name=".VideoActivity" android:configChanges="orientation|screenSize" />
 
     <service android:name="com.android.vending.billing.BillingService" />
 
@@ -112,8 +113,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 </receiver>
 <activity android:name=".irc.NickList" android:theme="@android:style/Theme.Dialog"></activity>
 
-    
-    
+
     </application>
 
 </manifest>

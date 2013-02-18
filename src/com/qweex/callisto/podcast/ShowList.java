@@ -70,7 +70,6 @@ public class ShowList extends Activity
     public static View current_episode = null;		//This is for adjusting the status of an episode in OnResume
     
     //-----Local Variables-----
-    private String feedURL;
     private ListView mainListView = null;
     private CursorAdapter showAdapter;
 	private static final int STOP_ID=Menu.FIRST+1;
@@ -136,10 +135,6 @@ public class ShowList extends Activity
 	    mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
 	    
 	    setTitle(AllShows.SHOW_LIST[currentShow]);
-	    if(AllShows.IS_VIDEO)
-	    	feedURL = AllShows.SHOW_LIST_VIDEO[currentShow];
-	    else
-	    	feedURL = AllShows.SHOW_LIST_AUDIO[currentShow];	    
 	    
 	    new GetShowTask().execute((Object[]) null);
 	    Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
@@ -197,7 +192,7 @@ public class ShowList extends Activity
     {
     	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
     	menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_menu_refresh);
-    	//menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
+    	menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
     	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(android.R.drawable.ic_menu_zoom);
     	menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_menu_mark);
         return true;
@@ -320,7 +315,7 @@ public class ShowList extends Activity
       @Override
       protected Object doInBackground(Object... params)
       {
-		  return Callisto.updateShow(currentShow, showSettings, AllShows.IS_VIDEO);
+		  return Callisto.updateShow(currentShow, showSettings);
       }
       
       @Override

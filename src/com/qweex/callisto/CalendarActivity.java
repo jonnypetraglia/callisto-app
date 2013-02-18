@@ -468,11 +468,13 @@ public class CalendarActivity extends Activity {
     	   if(result!=null)
     		   Toast.makeText(CalendarActivity.this, (String)(result) + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();
     	   else {
-    		   ((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.load_more));
     		   if(isLandscape)
     			   Tmonth.performClick();
     		   else
+               {
+                   ((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.load_more));
     			   loadMoreAgenda(true);
+               }
     	   }
        }
     }
