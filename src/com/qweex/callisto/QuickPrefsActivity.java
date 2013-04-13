@@ -19,6 +19,7 @@ package com.qweex.callisto;
 
 import java.io.File;
 
+import android.preference.PreferenceScreen;
 import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
 import android.os.Bundle;
@@ -52,7 +53,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	/** Called when the activity is created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {        
-        super.onCreate(savedInstanceState);        
+        super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);
         findPreference("secret").setEnabled(packageExists(DONATION_APP, this));
@@ -61,8 +62,9 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         old_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPauseListener);
-        
-        
+
+        this.getPreferenceScreen().findPreference("irc_settings").setOnPreferenceClickListener(setSubpreferenceBG);
+
         this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener(){
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
@@ -99,6 +101,16 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 			}
         });
     }
+
+    //http://stackoverflow.com/a/3223676/1526210
+    OnPreferenceClickListener setSubpreferenceBG = new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            PreferenceScreen a = (PreferenceScreen) preference;
+            a.getDialog().getWindow().setBackgroundDrawableResource(R.color.backClr);
+            return false;
+        }
+    };
     
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)

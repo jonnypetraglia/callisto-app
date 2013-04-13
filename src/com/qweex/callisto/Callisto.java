@@ -359,6 +359,9 @@ public class Callisto extends Activity {
             //new DownloadTask(Callisto.this).execute();
         }
 
+        if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+            Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
+
 	    if(!(Callisto.appVersion>lastVersion))
 	    	return;
 	    
@@ -510,6 +513,15 @@ public class Callisto extends Activity {
                     EpisodeDesc.getExtension(db.getString(db.getColumnIndex(isVideo?"vidlink":"mp3link"))));
 	        if(!target.exists())
 	        {
+                if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+                {
+                    new AlertDialog.Builder(c)
+                            .setTitle("No SD Card")
+                            .setMessage("There is currently no external storage to write to.")
+                            .setNegativeButton("Ok",null)
+                            .create().show();
+                    return;
+                }
 	        	Log.e("*:playTrack", "File not found: " + target.getPath());
 	        	Toast.makeText(c, RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
 	        	Callisto.databaseConnector.deleteQueueItem(id);

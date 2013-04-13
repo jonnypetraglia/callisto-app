@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
@@ -160,17 +161,6 @@ public class DownloadList extends ListActivity
                 SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
                 e.remove("CompletedDownloads");
                 e.commit();
-                /*
-                for(int i=0; i<headerThings.size(); i++)
-                {
-                    if(headerThings.get(headerThings.size()-1).getClass()==DownloadHeader.class &&
-                            ((DownloadHeader)headerThings.get(headerThings.size()-1)).getText().equals("Completed"))
-                    {
-                        while(i<headerThings.size())
-                            headerThings.remove(i++);
-                    }
-                }
-                */
                 notifyUpdate.sendEmptyMessage(0);
                 item.setEnabled(false);
                 break;
@@ -183,6 +173,15 @@ public class DownloadList extends ListActivity
                     DownloadTask.running = false;
                 } else
                 {
+                    if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+                    {
+                        new AlertDialog.Builder(this)
+                                .setTitle("No SD Card")
+                                .setMessage("There is currently no external storage to write to.")
+                                .setNegativeButton("Ok",null)
+                                .create().show();
+                        return true;
+                    }
                     item.setIcon(R.drawable.ic_action_playback_pause);
                     item.setTitle("Pause");
                     SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(this);

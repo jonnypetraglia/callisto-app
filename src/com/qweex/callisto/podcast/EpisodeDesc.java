@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.view.*;
 import com.qweex.callisto.Callisto;
@@ -71,6 +72,7 @@ public class EpisodeDesc extends Activity
 	//-----Static Variables-----
 	public static final DecimalFormat twoDec = new DecimalFormat("0.00");
 	private static final String[] SUFFIXES = new String[] {"", "K", "M", "G", "T"};
+    public static DownloadTask dltask;
 
 	/** Called when the activity is first created. Sets up the view.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -246,6 +248,8 @@ public class EpisodeDesc extends Activity
         EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
 		Callisto.playerInfo.update(EpisodeDesc.this);
 		determineButtons(false);
+        if(dltask!=null)
+            dltask.context = this;
 	}
 	
 	/** Listener for when the episode's "New" status is toggled. */
@@ -339,17 +343,21 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
+            if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+            {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("No SD Card")
+                        .setMessage("There is currently no external storage to write to.")
+                        .setNegativeButton("Ok",null)
+                        .create().show();
+                return;
+            }
             //http://www.androidsnippets.com/download-an-http-file-to-sdcard-with-progress-notification
             Callisto.downloading_count++;
+            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + Callisto.downloading_count);
 
-            SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
-            String aDownloads = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("ActiveDownloads", "");
-            if(aDownloads.equals(""))
-                aDownloads = "|";
-            aDownloads = aDownloads.concat(Long.toString(EpisodeDesc.this.id * (vidSelected?-1:1)) + "|");
-            Log.i("EpisodeDesc:launchDownload", "Updated download list: " + aDownloads);
-            e.putString("ActiveDownloads", aDownloads);
-            e.commit();
+            DownloadList.addDownload(v.getContext(), DownloadList.ACTIVE, id, vidSelected);
+            DownloadList.removeDownload(v.getContext(), DownloadList.COMPLETED, id, vidSelected);
 
             //Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
             Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
@@ -357,7 +365,8 @@ public class EpisodeDesc extends Activity
             if(!DownloadTask.running)
             {
                 Log.i("EpisodeDesc:launchDownload", "Executing downloads");
-                new DownloadTask(EpisodeDesc.this).execute(vidSelected ? vid_link : mp3_link);
+                dltask = new DownloadTask(EpisodeDesc.this);
+                dltask.execute();
             }
             determineButtons(false);
         }
@@ -369,13 +378,7 @@ public class EpisodeDesc extends Activity
 		 @Override
 		  public void onClick(View v) 
 		  {
-              SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
-              String aDownloads = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("ActiveDownloads", "");
-              aDownloads = aDownloads.replace("|" + Long.toString(id) + "|", "|");
-              if(aDownloads.equals("|"))
-                  aDownloads="";
-              e.putString("ActiveDownloads", aDownloads);
-              e.commit();
+              DownloadList.removeDownload(v.getContext(), DownloadList.ACTIVE,id,vidSelected);
 			  determineButtons(true);
 		  }
     };

@@ -21,8 +21,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.*;
+import android.text.style.ImageSpan;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -49,10 +54,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.util.Linkify;
@@ -86,7 +87,7 @@ public class IRCChat extends Activity implements IRCEventListener
     protected static final int NICKLIST_ID=LOGOUT_ID+1;
     protected static final int SAVE_ID=NICKLIST_ID+1;
 	private final String SERVER_NAME = "irc.geekshed.net";
-	private final String CHANNEL_NAME = "#jupiterbroadcasting";
+	private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
 	private String profileNick;
 	private String profilePass;
 	private boolean SHOW_TIME = true;
@@ -134,8 +135,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private Timer loopTimer = new Timer();
 	private TimerTask loopTask;
 	private String nickSearch = "", lastNickSearched = "";
-    public static boolean showStatusSymbols = true, vibrate = true, vibrateForAll = false;
-	
+
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -522,7 +522,21 @@ public class IRCChat extends Activity implements IRCEventListener
 		if(session!=null && session.getIRCEventListeners().size()==0)
 			session.addIRCEventListener(this);
 		if(Callisto.notification_chat!=null)
+        {
 			Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        if(Callisto.notification_chat!=null)
+        {
+            Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+        }
+        super.onResume();
     }
     
 	/** called to first initiate the IRC chat. Called only when the user has not logged in yet. */
@@ -579,7 +593,7 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	Intent notificationIntent = new Intent(this, IRCChat.class);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-    	Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
+    	Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, "Connecting to IRC", System.currentTimeMillis());
 		Callisto.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
        	Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
        	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
@@ -1101,7 +1115,8 @@ public class IRCChat extends Activity implements IRCEventListener
 		int msgColor = 0xFF000000;
 		try {
 		 titleColor+= (specialColor!=null ? specialColor :	getNickColor(theTitle));
-         if(showStatusSymbols && specialColor==null)
+         if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_modes", false)
+            && specialColor==null)
          {
              if(NickList.Owners.contains(theTitle.toLowerCase()))
                  theTitle = "~" + theTitle;
@@ -1119,16 +1134,18 @@ public class IRCChat extends Activity implements IRCEventListener
 		} catch(NullPointerException e) {
 		}
 		System.out.println("getReceived: " + theMessage);
-		if(theMessage!=null && session!=null && theMessage.contains(session.getNick()))
+		if((theMessage!=null && session!=null && theMessage.contains(session.getNick()))
+            || theTitle.startsWith("->")) //If it's a PM
 		{
 			msgColor = 0xFF000000 + CLR_MENTION;
 			System.out.println("MENTIONED" + isFocused);
 			if(!isFocused)
 			{
 				if(Callisto.notification_chat==null)
-					Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
+					Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, "Connecting to IRC", System.currentTimeMillis());
                 mentionCount++;
-                if(vibrate && (vibrateForAll || mentionCount==0))
+                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", false) &&
+                        (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false) || mentionCount==1))
                     Callisto.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
 				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
 				mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
@@ -1156,7 +1173,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		
 		SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
-		SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
+		SpannableString mes = new SpannableString(theMessage==null ? "" : parseEmoticons(theMessage));
 		try {
 			if(theTitle!=null)
 			{
@@ -1262,14 +1279,14 @@ public class IRCChat extends Activity implements IRCEventListener
 		@Override
         public void run() {
 			String newMessage = input.getText().toString();
-			if(newMessage=="")
+			if(newMessage.length()==0)
 				return;
 			SpannableString st = new SpannableString(session.getNick());
 			int colorBro = 0xFF000000 + CLR_ME;
 			int colorBro2 = 0xFF000000 + CLR_TEXT;
 			
 			
-			SpannableString st2 = new SpannableString(newMessage);
+			SpannableString st2 = new SpannableString(parseEmoticons(newMessage));
 			try {
 			st.setSpan(new ForegroundColorSpan(colorBro), 0, session.getNick().length(), 0);
 			st.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, session.getNick().length(), 0);
@@ -1279,7 +1296,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			
 			if(parseOutgoing(newMessage))
 			{
-				Spanned x = (Spanned) TextUtils.concat(
+ 				Spanned x = (Spanned) TextUtils.concat(
 						"\n",
 						Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
 						st,
@@ -1296,6 +1313,59 @@ public class IRCChat extends Activity implements IRCEventListener
 			input.setText("");
 		}
 	};
+
+    private static HashMap<String, Integer> smilyRegexMap = null;
+    public CharSequence parseEmoticons(String s)
+    {
+        if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_emoticons", false))
+            return s;
+
+        //ORDER HERE MATTERS
+        if(smilyRegexMap==null)
+        {
+            smilyRegexMap = new HashMap<String, Integer>();
+            //smilyRegexMap.put( "<3", R.drawable.ic_action_heart);                  //  <3
+            smilyRegexMap.put( ">:(D|\\))", R.drawable.ic_action_emo_evil);        //  >:D or >:)
+            smilyRegexMap.put( ":-?\\)", R.drawable.ic_action_emo_basic);          //  :-) or :)
+            smilyRegexMap.put( ">:-?(\\(|\\|)", R.drawable.ic_action_emo_angry);   //  >:| or >:( or >:-| or >:-(
+            smilyRegexMap.put( "B-\\)", R.drawable.ic_action_emo_basic);           //  B-)
+            smilyRegexMap.put( ":'-?\\(", R.drawable.ic_action_emo_cry);           //  :'-( or :'(
+            smilyRegexMap.put( ":-?(\\\\|/)", R.drawable.ic_action_emo_err);       //  :\ or :/ or :-\ or :-/
+            smilyRegexMap.put( ":-\\*", R.drawable.ic_action_emo_kiss);            //  :-*
+            smilyRegexMap.put( ":-?D", R.drawable.ic_action_emo_laugh);            //  :-D or :D
+            smilyRegexMap.put( "(x|X)D", R.drawable.ic_action_emo_laugh);          //  XD or xD
+            smilyRegexMap.put( ":-?(\\(|\\[)", R.drawable.ic_action_emo_sad);      //  :( or :-( or :[ or :-[
+            smilyRegexMap.put( ":-?S", R.drawable.ic_action_emo_shame);            //  :S or :-S
+            smilyRegexMap.put( "(:|X|x)-?P", R.drawable.ic_action_emo_tongue);     //  :P or :-P or xP or XP or X-P or x-P
+            smilyRegexMap.put( ";-?\\)", R.drawable.ic_action_emo_wink);           //  ;-) or ;)
+
+            smilyRegexMap.put( ":-?(O|o)", R.drawable.ic_action_emo_wonder);       //  :O or :o or :-O or :-o
+        }
+        SpannableStringBuilder builder = new SpannableStringBuilder(s);
+
+        @SuppressWarnings("rawtypes")
+        Iterator it = smilyRegexMap.entrySet().iterator();
+        while (it.hasNext())
+        {
+            @SuppressWarnings("rawtypes")
+            Map.Entry pairs = (Map.Entry) it.next();
+            Pattern mPattern = Pattern.compile((String) pairs.getKey(),Pattern.CASE_INSENSITIVE);
+            Matcher matcher = mPattern.matcher(s);
+
+            while (matcher.find())
+            {
+                Bitmap smiley = BitmapFactory.decodeResource(Callisto.RESOURCES, ((Integer) pairs.getValue()));
+                Object[] spans = builder.getSpans(matcher.start(), matcher.end(), ImageSpan.class);
+                if (spans == null || spans.length == 0)
+                {
+                    builder.setSpan(new ImageSpan(smiley), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+        }
+        return builder;
+    }
+
+
 	
 	/** Parses the outgoing message to determine its type.
 	 * @param msg The message to be sent

@@ -1,17 +1,43 @@
-This minor version update introduces several bugfixes. 
+This semi-major version update is one step closer to a stable 1.0 release.
 It includes several fixes to issues submitted to Callisto's Google Code page, but please remember that the 'Protostar' means 'Beta'.
 
-	Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
-	Fix: Timezone -- Should be fixed for timezone translation for the calendar.
-	Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
-	Fix: Crash on rotate -- Fixed crashing when rotating with a progress dialog open.
-	Fix: IRC Background -- Fixed the background not sticking; other color settings should better as well.
-	Fix: Calendar days misalign -- Calendar days in landscape should now be all the same height.
+    Feature: Brand new looks! -- That's right! A brand new, color coordinated, skin!
+    Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
+    Fix: Timezone -- Should be fixed for timezone translation for the calendar.
+    Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
+    Fix: Crash on rotate -- Fixed crashing when rotating with a progress dialog open.
+    Fix: IRC Background -- Fixed the background not sticking; other color settings should better as well.
+    Fix: Calendar days misalign -- Calendar days in landscape should now be all the same height.
 	Feature: IRC timeout -- Will try to connect until a specified time.
 	Feature: IRC retries -- Upon given an issue, will retry multiple times.
 	Fix: IRC message discrenpencies -- Fixed messages being skipped, going to the wrong screen, or duplicating.
 	Fix: IRC auto-identify -- This should now work flawlessly, assuming you enter the right password.
 	Feature: IRC obfusication -- Encryption is impossible for locally stored passwords, but obfusication is now done on nicks & passwords.
+	Feature: IRC Change Nick -- Added a dialog to easily change your nick.
+	Feature: IRC Links color -- Added ability to change the color of URLs.
+	Feature: IRC Reset Colors -- Added ability to reset the colors. Because my default choices RULE!
+	Fix: Linux Action Show icon -- Made a temporary workaround to supply a different icon for LAS.
+	Feature: Pretty Contact -- Prettified the contact form.
+    Feature: Unwatched Count -- Switched from background to unwatched count in all shows view.
+    FEATURE: Video support! -- Unstable, but ability to have video!
+    Fix: Reordered shows -- Switch from "random" to "alphabetical".
+    Fix: Dialog crash -- Fixed an issue where a dialog would crash the app if you leave the app before it tries to dismiss.
+    Feature: IRC Modes -- Added option to display the special characters before nicks with certain modes (e.g. '@' for Operators).
+    Feature: Better Header! -- Revamped way of handling the headers in "All Shows"; should now be more smooth of an experience.
+    Feature: Show completed downloads -- That's right! Now you can see your completed downloads!
+    Feature: Better download handling -- Now downloading will not burn through your CPU if you have a network problem or if the file doesn't exist. It will try a certain number of times, then give up and go on to the next file.
+    Feature: Persistent downloads -- Downloads are now saved across app boots, and can be paused and resumed.
+    Feature: Download Speed -- Rudimentary at this point, but now you can see how fast you are currently downloading.
+    Feature: Pretty progress meter -- Now for things like the Queue and Downloads, the progress meter is behind the view!
+    Fix: Local file detection -- Browsing the episodes of a show should now show bold for something that has been downloaded, and italic for something that has been downloaded incomplete.
+    Feature: Remaining time in queue -- Each item in the queue uses the new prettified progress bar to show how much has been watched.
+    Fix: IRC sticky keyboard -- Keyboard should no longer autohide after sending EVERY SINGLE MESSAGE.
+    Feature: Loading BACON! -- Made the loading dialog far more appealing.
+    Feature: Force refresh -- Added ability to clear all episodes of a show and refresh from scratch.
+    Feature: IRC Vibrate -- Added ability to vibrate on mention(s).
+    Feature: Skip Updating Inactive -- Added option to only update the active shows.
+    Feature: IRC Emoticons -- Added option to have emoticons in the chat.
+    Fix: Lack of SD -- Now detects when there is no SD or external storage.
 	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.

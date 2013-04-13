@@ -69,7 +69,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:launchMode="singleTop"
             ></activity>
         <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
-        <activity android:name="QuickPrefsActivity" android:theme="@android:style/Theme.Light"></activity>
+        <activity android:name="QuickPrefsActivity" android:theme="@android:style/Theme.Light" android:windowBackground="@color/backClr"></activity>
         <activity android:name=".LiveStream"
             android:configChanges="orientation"></activity>
         <activity android:name=".donate.Donate"

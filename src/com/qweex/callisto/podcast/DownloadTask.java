@@ -17,16 +17,16 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.podcast;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Button;
@@ -83,7 +83,6 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         boolean isVideo;
         Cursor current;
 
-
         Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
                 Callisto.RESOURCES.getString(R.string.downloading) + "...",
                 "", contentIntent);
@@ -97,7 +96,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             if(isCancelled())
             {
                 mNotificationManager.cancel(NOTIFICATION_ID);
-                return null;
+                return false;
             }
             try
             {
@@ -205,7 +204,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                     if(isCancelled())
                     {
                         mNotificationManager.cancel(NOTIFICATION_ID);
-                        return null;
+                        return false;
                     }
 
                     try

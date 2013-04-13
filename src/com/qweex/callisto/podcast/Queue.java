@@ -17,6 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.podcast;
 
+import com.andrefy.ddviewlist.DDListView;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -43,7 +44,7 @@ import android.widget.ImageButton;
 
 public class Queue extends ListActivity
 {
-	private ListView mainListView;
+	private DDListView mainListView;
 	NowPlayingAdapter listAdapter;
 	Cursor queue;
 	
@@ -54,7 +55,13 @@ public class Queue extends ListActivity
     public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		mainListView = getListView();
+        mainListView = new DDListView(this, null);
+        mainListView.setId(android.R.id.list);
+        mainListView.setDropListener(mDropListener, R.id.grabber);
+        setContentView(mainListView);
+
+
+		//mainListView = getListView();
 		mainListView.setBackgroundColor(getResources().getColor(R.color.backClr));
 		TextView noResults = new TextView(this);
 			noResults.setBackgroundColor(getResources().getColor(R.color.backClr));
@@ -218,10 +225,25 @@ public class Queue extends ListActivity
 	
 		public View getView(int pos, View inView, ViewGroup parent) {
 	       View v = inView;
+
+
 	       if (v == null) {
 	            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	            v = inflater.inflate(R.layout.row, null);
+	            v = inflater.inflate(R.layout.row, parent, false);
 	       }
+
+           if(mainListView.mItemHeightNormal==-1)
+           {
+               try {
+               v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+               mainListView.mItemHeightNormal = v.getMeasuredHeight();
+               mainListView.mItemHeightHalf = mainListView.mItemHeightNormal / 2;
+               mainListView.mItemHeightExpanded = mainListView.mItemHeightNormal * 2;
+               mainListView.mItemColor = Callisto.RESOURCES.getColor(R.color.backClr);
+               Log.d(":", "MEASURED");
+               }catch(NullPointerException e){}
+           }
+
     	   this.c = getCursor();
     	   if(this.c.getCount()==0)
     		   return v;
@@ -273,7 +295,9 @@ public class Queue extends ListActivity
 		   down.setOnClickListener(moveDown);
 		   ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
 		   remove.setOnClickListener(removeItem);
-		   
+
+           up.setVisibility(View.GONE);
+           down.setVisibility(View.GONE);
 		   for(int i=0; i<Hide.length; i++)
 			   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);
 	       return(v);
@@ -281,4 +305,14 @@ public class Queue extends ListActivity
 	}
 	
 	}
+
+    //Drop Listener
+    private DDListView.DropListener mDropListener = new DDListView.DropListener() {
+        public void drop(int from, int to)
+        {
+            //to-=(from<to?1:0);
+            //derp.add(to, derp.remove(from));
+            //mAdapter.notifyDataSetChanged();
+        }
+    };
 }

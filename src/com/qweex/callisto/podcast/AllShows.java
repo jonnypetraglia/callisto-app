@@ -249,17 +249,24 @@ public class AllShows extends Activity {
        @Override
        protected Object doInBackground(Object... params)
        {
-       	for(int i=0; i<SHOW_LIST_AUDIO.length; i++)
-       	{
-       		current_view = mainListView.getChildAt(i);
-       		if(SHOW_LIST_AUDIO[i]==null)
-       			continue;
-       		current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
-			Callisto.updateShow(i, current_showSettings);
-			UpdateHandler.sendEmptyMessage(0);
-       	}
-       	
-       	return null;
+           boolean done = false,
+                   skip_inactive = PreferenceManager.getDefaultSharedPreferences(AllShows.this).getBoolean("download_to_queue", false);
+            for(int i=0; i<SHOW_LIST_AUDIO.length; i++)
+            {
+                current_view = mainListView.getChildAt(i);
+                if(SHOW_LIST_AUDIO[i]==null)
+                {
+                    if(done && skip_inactive)
+                        break;
+                    done = true;
+                    continue;
+                }
+                current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
+                Callisto.updateShow(i, current_showSettings);
+                UpdateHandler.sendEmptyMessage(0);
+            }
+
+            return null;
         }
        
        Handler UpdateHandler = new Handler() {

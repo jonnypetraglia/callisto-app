@@ -41,14 +41,21 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        android:key="download_to_queue"
 	        android:title="Append downloads to queue"
 	        />
+        <CheckBoxPreference
+            android:key="skip_inactive"
+            android:title="'Update All' skips inactive"
+            />
 	    
-	    <!-- <CheckBoxPreference android:title="Video instead of audio" android:key="is_video"/> -->
-	    <PreferenceScreen android:title="IRC Settings">
+	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
 	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
 	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps"/>
+            <CheckBoxPreference android:key="irc_modes" android:title="Show modes" android:summary="Prepends symbols for OPs and such"/>
 	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display" android:defaultValue="500"/>
+            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on mention" android:summary="When you receive an unread mention." android:defaultValue="true"/>
+            <CheckBoxPreference android:key="irc_vibrate_all" android:title="Vibrate on EVERY mention" android:summary="When anyone mentions you at all"/>
+            <CheckBoxPreference android:key="irc_emoticons" android:title="Use Emoticons" android:summary="May slow performance, bu shiny"/>
 	        
 	        <PreferenceCategory android:title="Colors">
 	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true"/>
