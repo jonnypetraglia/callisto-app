@@ -21,7 +21,12 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -51,12 +56,15 @@ public class DownloadList extends ListActivity
 	/** Contains the ProgressBar of the current download, for use with updating. */
 	public static ProgressBar downloadProgress = null;
 	private ListView mainListView;
-	private static DownloadsAdapter listAdapter ;
+	private static HeaderAdapter listAdapter ;
 	public static Handler notifyUpdate;
-	
-	/** Called when the activity is first created. Sets up the view.
-	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
-	 */
+    List<Long> activeDownloads = new ArrayList<Long>(), completedDownloads = new ArrayList<Long>();
+    public static WifiManager.WifiLock Download_wifiLock;
+    List<HeaderAdapter.Item> headerThings;
+
+    /** Called when the activity is first created. Sets up the view.
+     * @param savedInstanceState Um I don't even know. Read the Android documentation.
+     */
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
@@ -74,8 +82,47 @@ public class DownloadList extends ListActivity
 			noResults.setPadding(10,20,10,20);
 		((ViewGroup)mainListView.getParent()).addView(noResults);
 		mainListView.setEmptyView(noResults);
-		
-		listAdapter = new DownloadsAdapter(this, R.layout.row, Callisto.download_queue);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        for(String s : sp.getString("ActiveDownloads", "").split("\\|"))
+        {
+            Log.e("ActiveDownloads:", "s: " + s);
+            if(s.equals(""))
+                continue;
+            try{
+            activeDownloads.add(Long.parseLong(s));
+            }catch(Exception e){}
+        }
+        for(String s : sp.getString("CompletedDownloads", "").split("\\|"))
+        {
+            Log.e("CompletedDownloads:", "s: " + s);
+            if(s.equals(""))
+                continue;
+            try{
+                completedDownloads.add(Long.parseLong(s));
+            }catch(Exception e){}
+        }
+
+
+        headerThings = new ArrayList<HeaderAdapter.Item>();
+        if(activeDownloads.size()>0)
+        {
+            headerThings.add(new DownloadHeader("Active"));
+            for(int i=0; i<activeDownloads.size(); i++)
+                headerThings.add(new DownloadRow());
+        }
+        if(completedDownloads.size()>0)
+        {
+            headerThings.add(new DownloadHeader("Completed"));
+            for(int i=0; i<completedDownloads.size(); i++)
+                headerThings.add(new DownloadRow());
+        }
+        listAdapter = new HeaderAdapter(this, headerThings);
+
+
+
+		//listAdapter = new DownloadsAdapter(this, R.layout.row, Callisto.download_queue);
 		
 		mainListView.setAdapter(listAdapter);
 		mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
@@ -102,7 +149,8 @@ public class DownloadList extends ListActivity
 			 int num = Integer.parseInt((String) tv.getText());
 			 if(num==0 || num==1)
 				 return;
-			 Collections.swap(Callisto.download_queue,num,num-1);
+			 Collections.swap(activeDownloads,num,num-1);
+             writeActiveQueue();
 			 listAdapter.notifyDataSetChanged();
 		  }
     };
@@ -115,9 +163,10 @@ public class DownloadList extends ListActivity
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
 			 int num = Integer.parseInt((String) tv.getText());
-			 if(num==0 || num==Callisto.download_queue.size()-1)
+			 if(num==0 || num==activeDownloads.size()-1)
 				 return;
-			 Collections.swap(Callisto.download_queue,num,num+1);
+			 Collections.swap(activeDownloads,num,num+1);
+             writeActiveQueue();
 			 listAdapter.notifyDataSetChanged();
 		  }
     };
@@ -128,73 +177,170 @@ public class DownloadList extends ListActivity
 		 @Override
 		  public void onClick(View v) 
 		  {
-			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
+             View parent = (View)(v.getParent());
+			 TextView tv = (TextView) parent.findViewById(R.id.hiddenId);
 			 int num = Integer.parseInt((String) tv.getText());
-			 Callisto.download_queue.remove(num);
+             if(parent.findViewById(R.id.moveUp).getVisibility()==View.GONE) //It's a completed download
+             {
+                completedDownloads.remove(num);
+                headerThings.remove(activeDownloads.size()+num+1);
+                if(completedDownloads.size()==0)
+                    headerThings.remove(headerThings.size()-1);
+                writeCompletedQueue();
+             } else
+             {
+                activeDownloads.remove(num);
+                headerThings.remove(num+1);
+                if(activeDownloads.size()==0)
+                    headerThings.remove(0);
+                writeActiveQueue();
+             }
 			 listAdapter.notifyDataSetChanged();
 			 Callisto.downloading_count--;
 		  }
     };
-	
-    /** Adapter for the downloads view; extended because we need to format the date */
-    public class DownloadsAdapter extends BaseAdapter
-    {
-    	ArrayList<Long> downloadQueue;
-    	public DownloadsAdapter(Context context, int textViewResourceId, ArrayList<Long> objects)
-    	{
-			super();
-			downloadQueue = objects;
-		}
-    	
-    	@Override
-    	public View getView(int position, View convertView, ViewGroup parent)
-    	{
-    		View row = convertView;
-    		
-			if(row==null)
-			{	
-				LayoutInflater inflater=getLayoutInflater();
-				row=inflater.inflate(R.layout.row, parent, false);
-				(row.findViewById(R.id.img)).setVisibility(View.GONE);
-			}
 
-            long id = downloadQueue.get(position);
+    public void writeActiveQueue()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append('|');
+        for(long s: activeDownloads) {
+            sb.append(s).append('|');
+        }
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+        e.putString("ActiveDownloads", sb.toString());
+        e.commit();
+    }
+
+    public void writeCompletedQueue()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append('|');
+        for(long s: completedDownloads) {
+            sb.append(s).append('|');
+        }
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+        e.putString("CompletedDownloads", sb.toString());
+        e.commit();
+    }
+
+
+
+    public class DownloadHeader implements HeaderAdapter.Item
+    {
+        private String name;
+
+        public DownloadHeader(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        public int getViewType()
+        {
+            return HeaderAdapter.RowType.HEADER_ITEM.ordinal();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            View row = convertView;
+            if(row == null)
+            {
+                LayoutInflater inflater=getLayoutInflater();
+                row = (View) inflater.inflate(R.layout.main_row_head, parent, false);
+            }
+
+            TextView x = ((TextView)row.findViewById(R.id.heading));
+            x.setText(name);
+            x.setFocusable(false);
+            x.setEnabled(false);
+            return row;
+        }
+    }
+
+    public class DownloadRow implements HeaderAdapter.Item
+    {
+        @Override
+        public int getViewType()
+        {
+            return HeaderAdapter.RowType.LIST_ITEM.ordinal();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            View row = convertView;
+
+            if(row==null)
+            {
+                LayoutInflater inflater=getLayoutInflater();
+                row=inflater.inflate(R.layout.row, parent, false);
+                (row.findViewById(R.id.img)).setVisibility(View.GONE);
+            }
+
+            boolean completed = false;
+            long id;
+            position--;
+            Log.e("Derpy", position + " vs " + completedDownloads.size() + " ( - " + activeDownloads.size());
+            if(position>=activeDownloads.size())
+            {
+                completed = true;
+                position = position - activeDownloads.size();
+                if(activeDownloads.size()>0)
+                    position--;     //To adjust for the "Active" header
+                id = completedDownloads.get(position);
+            }
+            else
+                id = activeDownloads.get(position);
+
             boolean isVideo = id<0;
             if(isVideo)
                 id = id*-1;
-			Cursor c = Callisto.databaseConnector.getOneEpisode(id);
-			c.moveToFirst();
-			
-			String title = c.getString(c.getColumnIndex("title"));
-			String show = c.getString(c.getColumnIndex("show"));
-			String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));	//IDEA: adjust for watch if needed
-			((TextView)row.findViewById(R.id.hiddenId)).setText(Integer.toString(position));
-			((TextView)row.findViewById(R.id.rowTextView)).setText(title);
-			((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
-			((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
-			
-			
-		    ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));
-		    up.setOnClickListener(moveUp);
-		    ImageButton down = ((ImageButton)row.findViewById(R.id.moveDown));
-		    down.setOnClickListener(moveDown);
-		    ImageButton remove = ((ImageButton)row.findViewById(R.id.remove));
-		    remove.setOnClickListener(removeItem);
-			up.setEnabled(position>0);
-			down.setEnabled(position>0);
-			
-			try {
-				String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
-				File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
-					file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
-				ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
-				int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));
-				progress.setMax(100);
-				progress.setProgress(x);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            Log.e(":", "Requested id:" + id);
+            Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+            c.moveToFirst();
+
+            String title = c.getString(c.getColumnIndex("title"));
+            String show = c.getString(c.getColumnIndex("show"));
+            String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));	//IDEA: adjust for watch if needed
+            ((TextView)row.findViewById(R.id.hiddenId)).setText(Integer.toString(position));
+            ((TextView)row.findViewById(R.id.rowTextView)).setText(title);
+            ((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
+            ((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
+
+
+            ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));
+            ImageButton down = ((ImageButton)row.findViewById(R.id.moveDown));
+            up.setOnClickListener(moveUp);
+            down.setOnClickListener(moveDown);
+            if(completed)
+            {
+                up.setVisibility(View.GONE);
+                down.setVisibility(View.GONE);
+            }
+            else
+            {
+                up.setVisibility(View.VISIBLE);
+                down.setVisibility(View.VISIBLE);
+                up.setEnabled(position>0);
+                down.setEnabled(position>0);
+            }
+            ImageButton remove = ((ImageButton)row.findViewById(R.id.remove));
+            remove.setOnClickListener(removeItem);
+
+            try {
+                String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
+                File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+                file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
+                ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
+                int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));
+                progress.setMax(100);
+                progress.setProgress(x);
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             (row.findViewById(R.id.row)).measure(0,0);
             int x =(row.findViewById(R.id.row)).getMeasuredHeight();
@@ -203,30 +349,15 @@ public class DownloadList extends ListActivity
             ((ProgressBar)row.findViewById(R.id.progress)).setMinimumHeight(x);
             ((ProgressBar)row.findViewById(R.id.progress)).invalidate();
 
-			if(position==0)
-				downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
-			
-    		return row;
-    	}
+            if(position==0)
+                downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
 
-		@Override
-		public int getCount() {
-			return downloadQueue.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return downloadQueue.get(arg0);
-		}
-
-		/** Not current used. */
-		@Override
-		public long getItemId(int arg0) {
-			return 0;
-		}
-
-
+            return row;
+        }
     }
+
+
+    //Integer.MAX_VALUE
 
     public static String makeFileFriendly(String input)
     {

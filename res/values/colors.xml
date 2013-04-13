@@ -37,11 +37,23 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     <color name="splashBg">#ff343434</color>
     <color name="calHdrClr">@color/white</color>
     <color name="calWeekClr">@color/black</color>
-    <color name="calDayClr">@color/white</color>
+    <color name="calDayClr">@color/kuler_2</color> <!-- @color/white -->
     <color name="calTodayClr">@color/red</color>
     <color name="backClr">@color/white</color>
     <color name="txtClr">@color/black</color>
-    <color name="ctrlClr">@color/dkgray</color>
-    <color name="liveClr">#ee63DA89</color>
-    <color name="releaseClr">#ee5B9FF4</color>
+    <color name="ctrlClr">@color/kuler_4</color>
+    <color name="liveClr">@color/kuler_3</color> <!-- #ee63DA89 -->
+    <color name="releaseClr">@color/kuler_4</color> <!-- #ee5B9FF4 -->
+
+    <color name="icons_color">#0099CC</color>
+    <color name="jb_blue">#68A5C1</color>
+
+    <color name="kuler_1">#ABC1CB</color>
+    <color name="kuler_2">#233841</color>
+    <color name="kuler_3">@color/jb_blue</color>
+    <color name="kuler_4">#373E41</color>
+    <color name="kuler_5">#4C798D</color>
+    <!-- Powder Blue = B0E0E6 -->
+
+    <color name="main_txt">@color/black</color>
 </resources>

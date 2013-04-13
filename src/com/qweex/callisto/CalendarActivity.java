@@ -244,7 +244,7 @@ public class CalendarActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
-    	menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, Callisto.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_menu_refresh);
+    	menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, Callisto.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_action_reload);
     	return true;
     }
     
@@ -804,18 +804,18 @@ public class CalendarActivity extends Activity {
 			Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
 			if(isLandscape)
 			{
-				popUp.getContentView().setBackgroundDrawable(popup_above);
+				popUp.getContentView().findViewById(R.id.thing).setBackgroundDrawable(getResources().getDrawable(R.drawable.spinner_ab_focused_holo_light_none));
 				int y = getWindowManager().getDefaultDisplay().getHeight()/2;
 				popUp.showAsDropDown(findViewById(R.id.linearLayout1), 0, (y-TheHeightOfTheFreakingPopup)/2);
 			}
 			else if(isLowerHalf)
 			{
-				popUp.getContentView().setBackgroundDrawable(popup_above);
+				popUp.getContentView().findViewById(R.id.thing).setBackgroundDrawable(getResources().getDrawable(R.drawable.spinner_ab_focused_holo_light));
 				popUp.showAsDropDown(v, 0, -1*v.getHeight() - TheHeightOfTheFreakingPopup - (isLowerHalf ? 0 : 40));
 			}
 			else
 			{
-				popUp.getContentView().setBackgroundDrawable(getResources().getDrawable(R.drawable.popup_inline_error));
+				popUp.getContentView().findViewById(R.id.thing).setBackgroundDrawable(getResources().getDrawable(R.drawable.spinner_ab_focused_holo_light_flip));
 				popUp.showAsDropDown(v, 0, -5);
 			}
 		  }

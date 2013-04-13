@@ -59,6 +59,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_media_play" />
+        android:src="@drawable/ic_action_playback_play" />
 
 </LinearLayout>

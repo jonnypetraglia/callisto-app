@@ -73,12 +73,12 @@ public class ContactForm extends Activity
 		
 		/*
 		setContentView(R.layout.contact2);
-		setTitle(R.string.contact);
 		wv = (WebView) findViewById(R.id.form);
 		//*/
 		
 		wv = new WebView(this);
 		setContentView(wv);
+        setTitle(R.string.contact);
 		//*/
 
 		Handler mHandler = new Handler();
@@ -96,7 +96,7 @@ public class ContactForm extends Activity
  	   protected void onPreExecute()
  	   {
  	      super.onPreExecute();
- 	      pd = ProgressDialog.show(ContactForm.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+          pd = Callisto.BaconDialog(ContactForm.this, Callisto.RESOURCES.getString(R.string.loading)  + "...", null);
  	      pd.setOnCancelListener(new OnCancelListener(){
 			@Override
 			public void onCancel(DialogInterface dialog) {

@@ -20,14 +20,7 @@ package com.qweex.callisto.irc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import com.qweex.callisto.Callisto;
@@ -141,6 +134,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	private Timer loopTimer = new Timer();
 	private TimerTask loopTask;
 	private String nickSearch = "", lastNickSearched = "";
+    public static boolean showStatusSymbols = true, vibrate = true, vibrateForAll = false;
 	
 	
 	/** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
@@ -211,7 +205,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				  getWindowManager().getDefaultDisplay().getHeight()/10,
 				  0);
 		
-		login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_menu_login), null, null, null);
+		login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_action_key), null, null, null);
 		
 		login.setOnClickListener(InitiateLogin);
 		
@@ -249,7 +243,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		});
 		changeNickDialog.setOutsideTouchable(true);
 		changeNickDialog.setWidth(getWindowManager().getDefaultDisplay().getWidth()*8/10);
-		changeNickDialog.setHeight(getWindowManager().getDefaultDisplay().getHeight()*8/10);
+		changeNickDialog.setHeight(getWindowManager().getDefaultDisplay().getHeight()*4/10);
 		changeNickDialog.setAnimationStyle(android.R.style.Animation_Dialog);
 		
 		
@@ -275,6 +269,13 @@ public class IRCChat extends Activity implements IRCEventListener
             initiate();
         }
     };
+
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        isFocused = false;
+    }
 
 	/** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
 	 * @param keyCode I dunno
@@ -369,11 +370,11 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_menu_chat_dashboard);
-    	Change_MI = menu.add(0, CHANGE_ID, 0, "Change Nick").setIcon(android.R.drawable.ic_menu_set_as);
-    	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_menu_friendslist);
-    	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(android.R.drawable.ic_menu_save);
-    	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+    	Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_action_import);
+    	Change_MI = menu.add(0, CHANGE_ID, 0, "Change Nick").setIcon(R.drawable.ic_action_tag);
+    	Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_action_list);
+    	Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(R.drawable.ic_action_inbox);
+    	Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_action_goleft);
 		updateMenu();
         return true;
     }
@@ -507,10 +508,10 @@ public class IRCChat extends Activity implements IRCEventListener
 			@Override
 			public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
 				input.post(sendMessage);
-				return false;
+				return true;
 			}
 		});
-		
+
 		System.out.println("CLR: " + Integer.toHexString(CLR_LINKS));
 		Callisto.chatView.setBackgroundColor(CLR_BACK);
 		Callisto.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
@@ -760,6 +761,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			case JOIN_COMPLETE:
 				//JoinCompleteEvent jce = (JoinCompleteEvent) e;
 				chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
+                session.sayRaw("NAMES " + CHANNEL_NAME);
 				if(profilePass!=null && profilePass!="")
 					parseOutgoing("/MSG NickServ identify " + profilePass);
 				System.out.println("Decrypted password: " + profilePass);
@@ -886,9 +888,11 @@ public class IRCChat extends Activity implements IRCEventListener
 				logQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
 				ircHandler.post(chatUpdater);
 				ircHandler.post(logUpdater);
+                /*
 				manager.quit();
 				manager = null;
 				session = null;
+				*/
 				updateMenu();
 				break;
 				
@@ -1018,8 +1022,39 @@ public class IRCChat extends Activity implements IRCEventListener
 					ircHandler.post(chatUpdater);
 				}
 				//Nicklist? something else? MOTD
-				else if(realType.equals("353") || realType.equals("329") || realType.equals("332"))
+				else if(realType.equals("329") || realType.equals("332"))
 					break;
+                //Names
+                else if(realType.equals("353"))
+                {
+                    realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
+                    int symbol = -1;
+                    int endOfNick = 0;
+                    String a_nick;
+                    char symbols[] = new char[] {'~', '&', '@', '%', '+'};
+                    HashSet<String>[] arrays = new HashSet[] { NickList.Admins, NickList.Owners, NickList.Operators, NickList.HalfOperators, NickList.Voices};
+
+                    for(int index=0; index<symbols.length; index++)
+                    {
+                        while(symbol<realmsg.length())
+                        {
+                            symbol = realmsg.indexOf(symbols[index], symbol+1);
+                            if(symbol==-1)
+                                break;
+                            endOfNick = realmsg.indexOf(' ', symbol+1);
+                            if(endOfNick==-1)
+                                endOfNick=realmsg.length()-1;
+                            a_nick = realmsg.substring(symbol+1,endOfNick);
+                            arrays[index].add(a_nick.toLowerCase());
+                            //NickList.Operators.add(a_nick);
+                            symbol = endOfNick+1;
+                        }
+                    }
+
+                    //TODO: Adjust NAMES so it works for manual commands too
+                    //chatQueue.add(getReceived("[NAMES]", realmsg, CLR_TOPIC));
+                    //ircHandler.post(chatUpdater);
+                }
 				//etc
 				else
 				{
@@ -1066,6 +1101,19 @@ public class IRCChat extends Activity implements IRCEventListener
 		int msgColor = 0xFF000000;
 		try {
 		 titleColor+= (specialColor!=null ? specialColor :	getNickColor(theTitle));
+         if(showStatusSymbols && specialColor==null)
+         {
+             if(NickList.Owners.contains(theTitle.toLowerCase()))
+                 theTitle = "~" + theTitle;
+             else if(NickList.Admins.contains(theTitle.toLowerCase()))
+                 theTitle = "&" + theTitle;
+             else if(NickList.Operators.contains(theTitle.toLowerCase()))
+                 theTitle = "@" + theTitle;
+             else if(NickList.HalfOperators.contains(theTitle.toLowerCase()))
+                 theTitle = "%" + theTitle;
+             else if(NickList.Voices.contains(theTitle.toLowerCase()))
+                 theTitle = "+" + theTitle;
+         }
 		 if(theMessage!=null)
 			 msgColor+= specialColor;
 		} catch(NullPointerException e) {
@@ -1079,13 +1127,11 @@ public class IRCChat extends Activity implements IRCEventListener
 			{
 				if(Callisto.notification_chat==null)
 					Callisto.notification_chat = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
-				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  ++mentionCount + " new mentions", contentIntent);
+                mentionCount++;
+                if(vibrate && (vibrateForAll || mentionCount==0))
+                    Callisto.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
+				Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
 				mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
-				if(mentionCount==1)//TODO: Fix the notification to be sent for the first mention
-				{
-					mNotificationManager.notify(Callisto.NOTIFICATION_ID-1, new Notification(R.drawable.callisto, "New mentions!", System.currentTimeMillis()));
-					//mNotificationManager.cancel(Callisto.NOTIFICATION_ID-1);
-				}
 			}
 		}
 		else

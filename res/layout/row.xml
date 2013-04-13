@@ -23,11 +23,11 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
                 android:layout_height="fill_parent"
         >
 
-    <!-- android:progressDrawable="@drawable/test_drawable" -->
+    <!-- android:progressDrawable="@drawable/progress_bg" -->
     <ProgressBar
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progressDrawable="@drawable/test_drawable"
+            android:progressDrawable="@drawable/progress_bg"
             android:minHeight="30dp"
             android:layout_width="fill_parent"
             android:progress="50"
@@ -102,7 +102,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="3dp"
-        android:layout_marginRight="7dp"
+        android:layout_marginRight="3dp"
         android:button="@drawable/is_new"
         android:checked="true"
         android:clickable="true"
@@ -127,7 +127,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:padding="2dp"
-        android:src="@android:drawable/ic_delete" />
+        android:src="@drawable/ic_action_cancel" />
 
 </LinearLayout>
 

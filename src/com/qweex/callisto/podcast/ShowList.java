@@ -160,8 +160,38 @@ public class ShowList extends Activity
 				);
 		Cursor c = Callisto.databaseConnector.getOneEpisode(id);
 		c.moveToFirst();
+
+        //New marker
 		boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
 		((CheckBox)((View) current_episode).findViewById(R.id.img)).setChecked(is_new);
+
+        try {
+            Date tempDate = Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date")));
+            String title = c.getString(c.getColumnIndex("title")),
+                   mp3_link = c.getString(c.getColumnIndex("mp3link")),
+                   vid_link = c.getString(c.getColumnIndex("vidlink"));
+            File file_location1 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            file_location1 = new File(file_location1, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+            File file_location2 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            file_location2 = new File(file_location2, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+            if(file_location1.exists() || file_location2.exists())
+            {
+                if(file_location1.length()==c.getLong(c.getColumnIndex("mp3size")) ||
+                        file_location2.length()==c.getLong(c.getColumnIndex("vidsize")))
+                {
+                    ((TextView) current_episode.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
+                    ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                }
+                else
+                {
+                    ((TextView) current_episode.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
+                    ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
+                }
+            }
+        }catch(Exception e){
+            Log.e("ShowList:onResume", "ERR: " + e.getClass() + " - " + e.getMessage());
+        }
+
 		current_episode=null;
 	}
 	
@@ -190,11 +220,11 @@ public class ShowList extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
-    	menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_menu_refresh);
-    	menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_menu_clear_playlist);
-    	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(android.R.drawable.ic_menu_zoom);
-    	menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_menu_mark);
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+    	menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_action_reload);
+    	menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
+    	menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_action_filter);
+    	menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_action_tick);
         return true;
     }
     
@@ -413,7 +443,7 @@ public class ShowList extends Activity
            String date = this.c.getString(this.c.getColumnIndex("date"));
            String title = this.c.getString(this.c.getColumnIndex("title"));
            String mp3_link = this.c.getString(this.c.getColumnIndex("mp3link"));
-           String vid_link = this.c.getString(this.c.getColumnIndex("mp3link"));
+           String vid_link = this.c.getString(this.c.getColumnIndex("vidlink"));
     	   
     	   //_id
     	   ((TextView) v.findViewById(R.id.hiddenId)).setText(Long.toString(id));

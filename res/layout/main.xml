@@ -16,51 +16,39 @@ You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
 <!-- This is the layout for the main Callisto activity-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/naub" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:background="@color/backClr">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/naub"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:background="@color/backClr">
 
-    <TableLayout android:id="@+id/mainMenu" android:layout_width="fill_parent" android:layout_height="0dip" android:padding="10dp" android:layout_weight="1.0">
+    <TableLayout android:id="@+id/mainMenu" android:layout_width="fill_parent" android:layout_height="0dip" android:padding="5dp" android:layout_weight="1.0">
 
         <TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:padding="0dp">
 
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/listen"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_play_clip"
+                android:drawable="@drawable/ic_action_playback_play_lg"
                 android:paddingTop="10dp"
                 android:text="@string/play"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp" />
 
-<!-- 
-            <Button
-                android:id="@+id/watch"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_view"
-                android:paddingTop="10dp"
-                android:text="@string/watch"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="20sp"
-                android:visibility="gone" />
-             -->
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/live"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/access_point"
+                android:drawable="@drawable/ic_action_signal"
                 android:paddingTop="10dp"
                 android:text="@string/live"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp"/>
 
         </TableRow>
@@ -68,31 +56,29 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <TableRow android:id="@+id/tableRow2"
             android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
 
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/plan"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@android:drawable/ic_menu_today"
+                android:drawable="@drawable/ic_action_calendar_day"
                 android:paddingTop="10dp"
                 android:text="@string/plan"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp"
                 android:visibility="visible"/>
 
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/chat"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/ic_menu_allfriends"
+                android:drawable="@drawable/ic_action_dialog"
                 android:paddingTop="10dp"
                 android:text="@string/chat"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp"
                 android:visibility="visible"/>
 
@@ -100,31 +86,29 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
 
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/contact"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@android:drawable/ic_menu_send"
+                android:drawable="@drawable/ic_action_mail"
                 android:paddingTop="10dp"
                 android:text="@string/contact"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
-            <Button
+            <com.qweex.utils.ImgTxtButton
                 android:id="@+id/donate"
+                style="@style/btnStyleBreakerBay"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_margin="5dp"
                 android:layout_weight="1.0"
-                android:drawablePadding="-10dp"
-                android:drawableTop="@drawable/heart"
+                android:drawable="@drawable/ic_action_heart"
                 android:paddingTop="10dp"
                 android:text="@string/donate"
-                android:textColor="@android:color/primary_text_light"
+                android:textColor="@color/main_txt"
                 android:textSize="20sp"
                 android:visibility="visible" />
 

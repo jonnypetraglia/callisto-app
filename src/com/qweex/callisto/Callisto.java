@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.graphics.drawable.AnimationDrawable;
+import android.util.TypedValue;
 import android.widget.*;
+import com.qweex.utils.ImgTxtButton;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -121,8 +124,6 @@ public class Callisto extends Activity {
 	public static int downloading_count = 0;
 		/** The current download number. */
 	public static int current_download = 1;
-		/** An ArrayList containing a list of IDs of what to download. Note that this is NOT saved when the app is shut down. */
-	public static ArrayList<Long> download_queue = new ArrayList<Long>();
 		/** One of the various date formats used across various Activities. The usage for most should be self-documenting from the name. */
 	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss"),
 										 sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd"),
@@ -187,8 +188,6 @@ public class Callisto extends Activity {
 
     private static TimerRunnable clock;
 
-    //Owner, Admin, Op, Voice
-
 	
 	/** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -227,30 +226,32 @@ public class Callisto extends Activity {
 		
 		//This loop sets the onClickListeners and adjusts the button settings if the view is landscape
 		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
-		int [] graphics = {R.drawable.ic_menu_play_clip, R.drawable.access_point, android.R.drawable.ic_menu_today, R.drawable.ic_menu_allfriends, android.R.drawable.ic_menu_send, R.drawable.heart};
+		int [] graphics = {R.drawable.ic_action_playback_play_lg, R.drawable.ic_action_signal, R.drawable.ic_action_calendar_day, R.drawable.ic_action_dialog, R.drawable.ic_action_mail, R.drawable.ic_action_heart};
 		
-		Button temp;
+		ImgTxtButton temp;
 		for(int i=0; i<buttons.length; i++)
 		{
-			temp = (Button)findViewById(buttons[i]);
+			temp = (ImgTxtButton)findViewById(buttons[i]);
 			temp.setOnClickListener(startAct);
 			
 			
 			if(isLandscape)
-			{
+			{/*
 				ViewGroup.LayoutParams tr = temp.getLayoutParams();
 				((MarginLayoutParams) tr).setMargins(0, 0, 0, 0);
 				temp.setPadding((int) (10*DP), 0, 0, 0);
 				temp.setLayoutParams(tr);
 				temp.setCompoundDrawablesWithIntrinsicBounds(graphics[i], 0, 0, 0);
+				*/
+                temp.setOrientation(LinearLayout.HORIZONTAL);
 			}
 			
 		}
-		((Button) findViewById(R.id.live)).setOnClickListener(LIVE_PlayButton);
+		((ImgTxtButton) findViewById(R.id.live)).setOnClickListener(LIVE_PlayButton);
 		
 		//Initialization of (some of the) static variables
-		Callisto.playDrawable = RESOURCES.getDrawable(android.R.drawable.ic_media_play);
-		Callisto.pauseDrawable = RESOURCES.getDrawable(android.R.drawable.ic_media_pause);
+		Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
+		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
 		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
 		Callisto.databaseConnector.open();
 		if(Callisto.playerInfo==null)
@@ -692,7 +693,8 @@ public class Callisto extends Activity {
 				else
 					play.setImageDrawable(Callisto.pauseDrawable);
     	    }
-        	
+
+            Log.e("AHAB", Callisto.live_player + " ");
         	if(((Activity)c).findViewById(R.id.seek)!=null)
         		((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
         	if(((Activity)c).findViewById(R.id.previous)!=null)
@@ -1382,8 +1384,10 @@ public class Callisto extends Activity {
 		        	whatWhat = "???";
 		        	return true;
 		        }
+                try{
 		    	if(dg!=null)
 		    		dg.show();
+                }catch(Exception e){}
 
 		    	System.out.println(whatWhat);
 		    	LIVE_SendErrorReport(whatWhat);
@@ -1392,6 +1396,27 @@ public class Callisto extends Activity {
 		});
 		Log.d("LiveStream:liveInit", "Initiating the live player.");
 	}
+
+    static public ProgressDialog BaconDialog(Context c, String title, String message)
+    {
+        if(message==null)
+            message=Callisto.RESOURCES.getString(R.string.loading_msg);
+        ProgressDialog pDialog = new ProgressDialog(c);
+        pDialog.setCancelable(false);
+        pDialog.setTitle(title);
+        pDialog.setMessage(message);
+        pDialog.setIcon(R.drawable.ic_action_gear);
+        pDialog.show();
+
+        //((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress).getParent().getParent().getParent().getParent().getParent()).setBackgroundDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        ((View)(pDialog.getWindow().findViewById(android.R.id.progress)).getParent()).setBackgroundColor(0xFFFFFFFF);
+        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextColor(0xff000000);
+        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);
+        ((View) pDialog.getWindow().findViewById(android.R.id.message)).setPadding(15, 5, 5, 5);
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setLayoutParams(new LayoutParams(96, 96));
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        return pDialog;
+    }
 	
 	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
 	static public void LIVE_Prepare(Context c)
@@ -1399,7 +1424,17 @@ public class Callisto extends Activity {
 		Log.d("LiveStream:LIVE_Prepare", "Preparing the live player.");
 		if(c!=null)
 		{
-			LIVE_PreparedListener.pd = ProgressDialog.show(c, "Buffering", Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+            LIVE_PreparedListener.pd = BaconDialog(c, "Buffering...", null);
+
+            /*
+            final AnimationDrawable d = (AnimationDrawable) ((ProgressBar) LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress)).getIndeterminateDrawable();
+            ((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress)).post(new Runnable() {
+                @Override
+                public void run() {
+                    d.start();
+                }
+            });
+            //*/
 			LIVE_PreparedListener.pd.setOnDismissListener(new OnDismissListener()
 			{
 				@Override
@@ -1411,8 +1446,9 @@ public class Callisto extends Activity {
 			});
 			LIVE_PreparedListener.pd.setCancelable(true);
 		}
-		Callisto.live_player.prepareAsync();
+		//Callisto.live_player.prepareAsync();
 	}
+
 	
 	/** Listener for the live player in only the LiveStream activity. Starts it playing or displays an error message. */
 	static OnPreparedListenerWithContext LIVE_PreparedListener = new OnPreparedListenerWithContext()
@@ -1495,9 +1531,9 @@ public class Callisto extends Activity {
 			            Live_wifiLock.acquire();
 					LIVE_Prepare(Callisto.this);
 				} catch (Exception e) {
-					dg.show();
+					//dg.show();
+                    e.printStackTrace();
 					LIVE_SendErrorReport("EXCEPTION");
-					e.printStackTrace();
 				}
 			}
 			else
@@ -1634,10 +1670,10 @@ public class Callisto extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {    	
-    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
-    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(android.R.drawable.ic_menu_preferences);
-    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(android.R.drawable.ic_menu_more);
-    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(android.R.drawable.ic_menu_info_details);
+    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
+    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
+    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
     	
     	if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
     	{
@@ -1650,7 +1686,7 @@ public class Callisto extends Activity {
     	}
     	
     	
-    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
         return true;
     }
     

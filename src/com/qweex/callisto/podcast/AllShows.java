@@ -19,6 +19,8 @@ package com.qweex.callisto.podcast;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
@@ -75,7 +77,7 @@ public class AllShows extends Activity {
 	private final int DOWNLOADS_ID = STOP_ID+1;
 	private final int UPDATE_ID = DOWNLOADS_ID+1;
 	private static ListView mainListView; 		 //Static so that it can be used in a static handler
-	private static AllShowsAdapter listAdapter ; //Static so that it can be used in a static handler
+	private static HeaderAdapter listAdapter ; //Static so that it can be used in a static handler
 	private View current_view = null;			 //This is for adjusting the date on a show in OnResume
 	private SharedPreferences current_showSettings;
 	
@@ -96,8 +98,18 @@ public class AllShows extends Activity {
 	    loading.setGravity(Gravity.CENTER_HORIZONTAL);
 	    mainListView.setEmptyView(loading);
 		mainListView.setOnItemClickListener(selectShow);
-		listAdapter = new AllShowsAdapter(this, R.layout.main_row, SHOW_LIST);
-		mainListView.setAdapter(listAdapter);
+
+        List<HeaderAdapter.Item> headerThings = new ArrayList<HeaderAdapter.Item>();
+        for(int i=0; i<SHOW_LIST.length; i++)
+        {
+            if(SHOW_LIST[i].startsWith(" "))
+                headerThings.add(new AllShowsHeader());
+            else
+                headerThings.add(new AllShowsRow());
+        }
+
+        listAdapter = new HeaderAdapter(this, headerThings);
+        mainListView.setAdapter(listAdapter);
 		mainListView.setBackgroundColor(getResources().getColor(R.color.backClr));
 		mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
 
@@ -183,19 +195,14 @@ public class AllShows extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_media_stop);
+    	menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
     	//android.graphics.drawable.Drawable DownloadIcon = getResources().getDrawable(R.drawable.ic_menu_forward);
     	
-    	Bitmap bmpOriginal = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_menu_forward);
-    	Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
-    	android.graphics.Canvas tempCanvas = new android.graphics.Canvas(bmResult); 
-    	tempCanvas.rotate(90, bmpOriginal.getWidth()/2, bmpOriginal.getHeight()/2);
-    	tempCanvas.drawBitmap(bmpOriginal, 0, 0, null);
-    	android.graphics.drawable.Drawable DownloadIcon = new android.graphics.drawable.BitmapDrawable(getResources(), bmResult);
+    	android.graphics.drawable.Drawable DownloadIcon = getResources().getDrawable(R.drawable.ic_action_download);
 	
     	
     	menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(DownloadIcon);
-    	menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_menu_refresh);
+    	menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_action_reload);
         return true;
     }
     
@@ -289,90 +296,98 @@ public class AllShows extends Activity {
     	  }
       }
     };
-    
-    /** Adapter for this class's ListView. Extended because the date needs to be formatted. */
-    public class AllShowsAdapter extends ArrayAdapter<String>
+
+
+
+    /***************************** Header *****************************/
+    public class AllShowsHeader implements HeaderAdapter.Item
     {
-    	public AllShowsAdapter(Context context, int textViewResourceId, String[] objects)
-    	{
-			super(context, textViewResourceId, objects);
-		}
-    	
-    	@Override
-    	public View getView(int position, View convertView, ViewGroup parent)
-    	{
-    		View row = convertView;
-    		if(AllShows.SHOW_LIST_AUDIO[position]==null)
-    		{
-    			if(row==null || row.findViewById(R.id.showUnwatched)!=null)
-    			{
-    				LayoutInflater inflater=getLayoutInflater();
-    				row=inflater.inflate(R.layout.main_row_head, parent, false);
-    			}
-    			TextView x = ((TextView)row.findViewById(R.id.heading));
-    			x.setText(AllShows.SHOW_LIST[position]);
-    			x.setFocusable(false);
-    			x.setEnabled(false);
-    		} else
-    		{
-                if(row==null || row.findViewById(R.id.showUnwatched)==null)
-    			{
-    				LayoutInflater inflater=getLayoutInflater();
-    				row=inflater.inflate(R.layout.main_row, parent, false);
-    			}
-    				
-    			//Get the show icon
-				String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded 
-		    	File f;
-		    	
-		    	
-		    	for(String ext : exts)
-		    	{
-	    			f = new File(Environment.getExternalStorageDirectory() + File.separator + 
-	    							  Callisto.storage_path + File.separator +
-	    							  AllShows.SHOW_LIST[position] + ext);
-	    			if(f.exists())
-	    			{
-	    				Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-	    				ImageView img = (ImageView) row.findViewById(R.id.img);
-	    		        img.setImageBitmap(bitmap);
-	    		        break;
-	    			}
-		    	}
-		    	
+        @Override
+        public int getViewType()
+        {
+            return HeaderAdapter.RowType.HEADER_ITEM.ordinal();
+        }
 
-                int i = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
-                ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((i>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
-		    	((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(i));
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            View row = convertView;
+            if(row == null)
+            {
+                LayoutInflater inflater=getLayoutInflater();
+                row = (View) inflater.inflate(R.layout.main_row_head, parent, false);
+            }
 
-
-				((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
-		    	SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
-				String lastChecked = showSettings.getString("last_checked", null);
-				if(lastChecked!=null)
-				{
-					try {
-						lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
-					} catch (ParseException e) {
-						Log.e("AllShows:AllShowsAdapter:ParseException", "Error parsing a date from the SharedPreferences..");
-						Log.e("AllShows:AllShowsAdapter:ParseException", lastChecked);
-						Log.e("AllShows:AllShowsAdapter:ParseException", "(This should never happen).");
-						e.printStackTrace();
-					}
-					((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
-				}
-				
-
-                //Removed; switched to numbering to notify how many are unwatched
-                /*
-				if( Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount()==0 )
-					row.setBackgroundDrawable(Callisto.RESOURCES.getDrawable(android.R.drawable.list_selector_background));
-				else
-					row.setBackgroundResource(R.drawable.main_colored);
-                */
-    		}
-    		return row;
-    	}
+            TextView x = ((TextView)row.findViewById(R.id.heading));
+            x.setText(AllShows.SHOW_LIST[position]);
+            x.setFocusable(false);
+            x.setEnabled(false);
+            return row;
+        }
     }
-    
+
+    public class AllShowsRow implements HeaderAdapter.Item
+    {
+        @Override
+        public int getViewType()
+        {
+            return HeaderAdapter.RowType.LIST_ITEM.ordinal();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            View row = convertView;
+            if(row == null)
+            {
+                LayoutInflater inflater=getLayoutInflater();
+                row = (View) inflater.inflate(R.layout.main_row_head, parent, false);
+            }
+
+            if(row==null || row.findViewById(R.id.showUnwatched)==null)
+            {
+                LayoutInflater inflater=getLayoutInflater();
+                row=inflater.inflate(R.layout.main_row, parent, false);
+            }
+
+            //Get the show icon
+            String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded
+            File f;
+
+            for(String ext : exts)
+            {
+                f = new File(Environment.getExternalStorageDirectory() + File.separator +
+                        Callisto.storage_path + File.separator +
+                        AllShows.SHOW_LIST[position] + ext);
+                if(f.exists())
+                {
+                    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+                    ImageView img = (ImageView) row.findViewById(R.id.img);
+                    img.setImageBitmap(bitmap);
+                    break;
+                }
+            }
+
+            int i = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
+            ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((i>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(i));
+
+            ((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
+            SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
+            String lastChecked = showSettings.getString("last_checked", null);
+            if(lastChecked!=null)
+            {
+                try {
+                    lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
+                } catch (ParseException e) {
+                    Log.e("AllShows:AllShowsAdapter:ParseException", "Error parsing a date from the SharedPreferences..");
+                    Log.e("AllShows:AllShowsAdapter:ParseException", lastChecked);
+                    Log.e("AllShows:AllShowsAdapter:ParseException", "(This should never happen).");
+                    e.printStackTrace();
+                }
+                ((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);
+            }
+            return row;
+        }
+    }
 }

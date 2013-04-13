@@ -1,5 +1,6 @@
 package com.qweex.callisto;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaPlayer.OnPreparedListener;

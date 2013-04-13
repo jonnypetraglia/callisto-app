@@ -262,8 +262,7 @@ public class Donate extends ListActivity
 				}
 			}
 		};
-		pd = ProgressDialog.show(Donate.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-		pd.setCancelable(true);
+        pd = Callisto.BaconDialog(Donate.this, Callisto.RESOURCES.getString(R.string.loading), null);
 		pd.setOnCancelListener(new OnCancelListener(){
 			@Override
 			public void onCancel(DialogInterface dialog) {

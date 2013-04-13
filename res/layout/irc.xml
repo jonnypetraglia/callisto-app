@@ -53,6 +53,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:singleLine="true"
             android:inputType="textCapSentences"
             android:focusable="true"
+            android:imeOptions="actionSend|flagNavigateNext"
              />
 
     </LinearLayout>

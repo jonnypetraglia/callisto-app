@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-Copyright (C) 2012-2013 Qweex
+<!-- 
+Copyright (C) 2012 Qweex
 This file is a part of Callisto.
 
 Callisto is free software; you can redistribute it and/or
@@ -15,21 +15,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
--->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:id="@android:id/background">
-        <shape>
-            <solid android:color="@color/backClr" />
-        </shape>
-    </item>
-
-    <item android:id="@android:id/progress">
-        <clip>
-            <shape>
-                <solid android:color="@color/PowderBlue" />
-            </shape>
-        </clip>
-    </item>
-
-</layer-list>
+ -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+            android:angle="90"
+            android:startColor="@color/kuler_1"
+            android:endColor="#B0E0E6"
+            android:type="linear" />
+</shape>

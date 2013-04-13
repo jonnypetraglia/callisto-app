@@ -74,10 +74,10 @@ public class CallistoWidget extends AppWidgetProvider {
     	  System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
       if((Callisto.live_player!=null && !Callisto.live_isPlaying) ||
     		  (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
-    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_play);
+    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
     	  //views.setImageViewBitmap(R.id.widgetButton, playIcon);
       else
-    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_media_pause);
+    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_pause);
     	  //views.setImageViewBitmap(R.id.widgetButton, pauseIcon);
    
       

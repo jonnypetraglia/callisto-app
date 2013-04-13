@@ -26,7 +26,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:id="@+id/user"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:color="@color/txtClr"
+        android:textColor="@color/txtClr"
         android:hint="Nick"
         android:ems="10"
         android:maxLines="1"
@@ -36,7 +36,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:id="@+id/pass"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:color="@color/txtClr"
+        android:textColor="@color/txtClr"
         android:hint="Password (Optional)"
         android:inputType="textPassword"
         android:ems="10" />
@@ -47,6 +47,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Login"
-        android:color="@color/txtClr" />
+        android:textColor="@color/txtClr" />
 
 </LinearLayout>

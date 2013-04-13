@@ -23,7 +23,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:fillViewport="true"
-    android:background="@drawable/search_plate"
+    android:background="@drawable/calendar_day"
     android:scrollbars="none"
      >
 

@@ -29,7 +29,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/bottom_bar"
+        android:background="@drawable/calendar_hdr"
         android:orientation="horizontal" >
 
         <Button
@@ -39,31 +39,32 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:background="@android:color/transparent"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:padding="5dp"
             android:text="&lt;&lt;"
             android:textColor="@color/calHdrClr"
-            android:textSize="30dp" />
+            android:textSize="25dp" />
 
         <TextView
             android:id="@+id/Tmonth"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="50"
             android:gravity="right|center_vertical"
             android:paddingRight="5dp"
             android:text="Month"
             android:textColor="@color/calHdrClr"
-            android:textSize="30dp" />
+            android:textSize="25dp" />
 
         <TextView
             android:id="@+id/Tyear"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="50"
             android:gravity="left|center_vertical"
             android:paddingLeft="5dp"
             android:text="Year"
             android:textColor="@color/calHdrClr"
-            android:textSize="30dp" />
+            android:textSize="25dp" />
 
         <Button
             android:id="@+id/Bnext"
@@ -72,9 +73,10 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:background="@android:color/transparent"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:padding="5dp"
             android:text=">>"
             android:textColor="@color/calHdrClr"
-            android:textSize="30dp" />
+            android:textSize="25dp" />
     </LinearLayout>
 
     <LinearLayout
