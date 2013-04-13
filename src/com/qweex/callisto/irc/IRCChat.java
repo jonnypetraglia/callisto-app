@@ -216,11 +216,13 @@ public class IRCChat extends Activity implements IRCEventListener
 		changeNickDialog.setTouchable(true);
 		Button l = (Button) fl.findViewById(R.id.login);
 		l.setText("Change");
+        l.setSingleLine();
 		l.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				String nick = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.user)).getText().toString();
 				String pass = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.pass)).getText().toString();
+                Log.e("ADS", nick + "!");
 				if(nick.equals(""))
 				{
 					changeNickDialog.dismiss();
@@ -235,6 +237,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				}
 				profilePass = pass;
 				parseOutgoing("/msg nickserv identify " + profilePass);
+                changeNickDialog.dismiss();
 				return;
 			}
 		});
@@ -509,7 +512,6 @@ public class IRCChat extends Activity implements IRCEventListener
 			}
 		});
 
-		System.out.println("CLR: " + Integer.toHexString(CLR_LINKS));
 		Callisto.chatView.setBackgroundColor(CLR_BACK);
 		Callisto.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
 		Callisto.logView.setBackgroundColor(CLR_BACK);
@@ -590,7 +592,7 @@ public class IRCChat extends Activity implements IRCEventListener
     {
     	Intent notificationIntent = new Intent(this, IRCChat.class);
 		contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-    	Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, "Connecting to IRC", System.currentTimeMillis());
+    	Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
 		Callisto.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
        	Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
        	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
@@ -678,6 +680,7 @@ public class IRCChat extends Activity implements IRCEventListener
     	new QuitPlz().execute(null);
     	System.out.println(2);
 		mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
+        Callisto.notification_chat = null;
 		isFocused = false;
 		System.out.println(3);
 		if(IRC_wifiLock!=null && IRC_wifiLock.isHeld())
@@ -1388,7 +1391,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			if(!isFocused)
 			{
 				if(Callisto.notification_chat==null)
-					Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, "Connecting to IRC", System.currentTimeMillis());
+					Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
                 mentionCount++;
                 if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", false) &&
                         (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false) || mentionCount==1))

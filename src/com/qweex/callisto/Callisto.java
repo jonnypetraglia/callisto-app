@@ -542,7 +542,7 @@ public class Callisto extends Activity {
 		Intent notificationIntent = new Intent(c, EpisodeDesc.class);
 		notificationIntent.putExtra("id", identity);
 		PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-    	Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+    	Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
 		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
        	Callisto.notification_playing.setLatestEventInfo(c,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
        	

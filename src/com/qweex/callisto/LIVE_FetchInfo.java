@@ -77,7 +77,7 @@ public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
 	PendingIntent contentIntent = PendingIntent.getActivity(Callisto.LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 	if(Callisto.notification_playing==null)
 	{
-		Callisto.notification_playing = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.playing), System.currentTimeMillis());
+		Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
 		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
 	}
 	Callisto.notification_playing.setLatestEventInfo(Callisto.LIVE_PreparedListener.c, Callisto.playerInfo.title,  "JB Radio", contentIntent);

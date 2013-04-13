@@ -41,6 +41,8 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     Note: Disabled reordering downloads -- Temporarily removed the ability to reorder downloads. I'll put it back in after this release, it's just a pain with the drag-and-drop and all the changes made.
     Fix: Scrolling gap thing -- On the Episode Description view there used to be a little gap between the scrollview and the controls, and uh...now there isn't. I can't believe you're still reading all these notes, good on you.
     Fix: Calendar OCD -- Put in a quick hack to fix the differing "Linux Action Show" and "The Linux Action Show!" because it was driving me crazy and the latter was way too long.
+    Fix: Less annoying notifications -- Notifications such as playing and IRC no longer notify you when launching, they just start.
+    Fix: Nick Change dialog -- Fixed where it does not display correctly and does not dismiss.
 	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
