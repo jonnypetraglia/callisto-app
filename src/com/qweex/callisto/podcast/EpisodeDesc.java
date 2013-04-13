@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.view.*;
+import android.widget.*;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -37,13 +38,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 //This activity is for displaying specific information about an episode
@@ -161,16 +156,30 @@ public class EpisodeDesc extends Activity
 		
 		if(isLandscape)
 		{
-			LinearLayout ll = (LinearLayout) this.findViewById(R.id.mainLin);
-			LinearLayout bb = (LinearLayout) this.findViewById(R.id.buttons);
-            if(bb.getParent()!=null)
-                ((LinearLayout)bb.getParent()).removeView(bb);
-			ll.removeView(bb);
-			LinearLayout hh = (LinearLayout) this.findViewById(R.id.headLin);
-			bb.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, Gravity.CENTER_VERTICAL));
-            if(bb.getParent()!=null)
-                ((ViewGroup)bb.getParent()).removeView(bb);
-			hh.addView(bb);
+            //1. Rotate it so the orientation is now horizontal
+            ((LinearLayout)this.findViewById(R.id.thatWhichIsRotated)).getLayoutParams().width = LayoutParams.FILL_PARENT;
+            ((LinearLayout)this.findViewById(R.id.thatWhichIsRotated)).setOrientation(LinearLayout.HORIZONTAL);
+
+            //2. Rotate the buttons too
+            ((LinearLayout)this.findViewById(R.id.buttons)).setOrientation(LinearLayout.VERTICAL);
+            ((LinearLayout)this.findViewById(R.id.buttons)).findViewById(R.id.stream).getLayoutParams().width = LayoutParams.FILL_PARENT;
+            ((LinearLayout)this.findViewById(R.id.buttons)).findViewById(R.id.download).getLayoutParams().width = LayoutParams.FILL_PARENT;
+
+            //3. Move the description to be below the title (instead of below both the title and the MediaBox
+            ScrollView desc = (ScrollView) this.findViewById(R.id.scrollView1);
+            ((LinearLayout)this.findViewById(R.id.episodeLayout)).removeView(desc);
+            ((LinearLayout)this.findViewById(R.id.thatWhichHoldsTheTitle)).addView(desc);
+
+            //4. Set the gravity so that the title and description are greedy
+            ((LinearLayout)this.findViewById(R.id.thatWhichHoldsTheTitle)).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f));
+            ((LinearLayout)this.findViewById(R.id.mediaBox)).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0.0f));
+
+            //5. Set so the MediaBox takes up ALL the space!
+            ((LinearLayout)this.findViewById(R.id.mediaBox)).getLayoutParams().height = LayoutParams.FILL_PARENT;
+            ((LinearLayout)this.findViewById(R.id.thatWhichIsRotated)).getLayoutParams().height = LayoutParams.FILL_PARENT;
+
+            //6. Adjust the padding so there is more space
+            this.findViewById(R.id.headLin).setPadding(0,0,0,0);
 		}
 	    
 		Callisto.nextTrack.setRunnable(new Runnable(){

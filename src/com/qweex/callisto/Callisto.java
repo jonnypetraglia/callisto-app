@@ -404,29 +404,37 @@ public class Callisto extends Activity {
     public static void build_layout(Context c, View mainView)
     {
     	Log.v("*:build_layout", "Building the layout");
+
+        // Inflate the controls and the empty view
 		View controls = ((LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.controls, null, false);
 		TextView empty = new TextView(c);
 		empty.setId(android.R.id.empty);
 		empty.setBackgroundColor(c.getResources().getColor(R.color.backClr));
 		empty.setTextColor(c.getResources().getColor(R.color.txtClr));
 		
-		
+		//Create what will be the total layout
 		LinearLayout layout = new LinearLayout(c);
 		layout.setOrientation(LinearLayout.VERTICAL);
-		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams
-				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f);
-		LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams
+		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams   //main params
+				(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f);
+		LinearLayout.LayoutParams cParams = new LinearLayout.LayoutParams   //child params
 				(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f);
-		
+        LinearLayout.LayoutParams xParams = new LinearLayout.LayoutParams   //main params
+                (LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 0f);
+
+        //Build a horizontal view for holding the mainView and the empty view
 		LinearLayout horl = new LinearLayout(c);
 		horl.setOrientation(LinearLayout.HORIZONTAL);
-		horl.addView(mainView, cParams);
+		horl.addView(mainView, xParams);
 		horl.addView(empty, cParams);
 		horl.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
+
+        //Add the views to the total layout
 		layout.addView(horl, mParams);
 		layout.addView(controls, cParams);
-		
 		((Activity)c).setContentView(layout);
+
+        //Set the control listeners
 		controls.findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
 		controls.findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
 		controls.findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
