@@ -795,6 +795,17 @@ public class Callisto extends Activity {
 			timeProgress.setProgress(current);
 			timeView.setText(formatTimeFromSeconds(current));
             Log.i("Callisto:TimerMethod", "Timer mon " + Callisto.playerInfo.position);
+
+            Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
+            if(Queue.currentProgress!=null)
+            {
+                Log.i("currentprogress", current + "/" + Callisto.playerInfo.length);
+                double xy = (current*100.0) / Callisto.playerInfo.length;
+                Log.i("currentprogress", xy + " !");
+                Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
+            }
+
+
 			if(i==Callisto.SAVE_POSITION_EVERY)
 			{
 				i=0;

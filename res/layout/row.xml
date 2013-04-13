@@ -28,11 +28,16 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@drawable/progress_bg"
-            android:minHeight="30dp"
             android:layout_width="fill_parent"
             android:progress="50"
             android:background="#ff000000"
-            android:layout_height="fill_parent" />
+            android:layout_height="1dp"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignTop="@+id/row"
+            android:layout_alignBottom="@+id/row"
+            android:layout_alignLeft="@+id/row"
+            android:layout_alignRight="@+id/row"/>
 
 
 <LinearLayout
@@ -43,54 +48,64 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     android:cacheColorHint="@android:color/transparent"
     android:orientation="horizontal" >
 
-    <ImageView
-            android:layout_width="32dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/smallImg"
-            android:src="@drawable/ic_action_signal"
-            android:background="@android:color/transparent"
-            android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/linearLayout1337"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:orientation="vertical" android:layout_weight="1.0">
 
-        <TextView
-            android:id="@+id/hiddenId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-        <TextView
-            android:id="@+id/rowTextView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1.0"
-            android:ellipsize="end"
-            android:paddingBottom="1dp"
-            android:paddingTop="10dp"
-            android:singleLine="true"
-            android:text="Row"
-            android:textColor="@color/txtClr"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/hiddenId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
-        <!-- Main text (e.g. Episode title) -->
+            <TextView
+                android:id="@+id/rowTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:ellipsize="end"
+                android:paddingBottom="1dp"
+                android:paddingTop="10dp"
+                android:singleLine="true"
+                android:text="Row"
+                android:textColor="@color/txtClr"
+                android:textSize="16sp"
+                android:paddingLeft="15dp"/>
 
-        <!-- Sub text (e.g. Episode date, show, etc) -->
-        <TextView
-            android:id="@+id/rowSubTextView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1.0"
-            android:paddingBottom="10dp"
-            android:paddingTop="1dp"
-            android:text="Subrow"
-            android:textColor="@color/txtClr"
-            android:textSize="13sp" />
+            <!-- Main text (e.g. Episode title) -->
+
+            <!-- Sub text (e.g. Episode date, show, etc) -->
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/rowSubTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1.0"
+                android:paddingBottom="10dp"
+                android:paddingTop="1dp"
+                android:text="Subrow"
+                android:textColor="@color/txtClr"
+                android:textSize="13sp" />
+            <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/mediaType"
+                    android:src="@drawable/ic_action_music_1"
+                    android:visibility="gone"/>
+            <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/streamingIcon"
+                    android:src="@drawable/ic_action_signal"
+                    android:visibility="gone"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Right text (e.g. time) -->
@@ -102,6 +117,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:text="00:00"
         android:textColor="@color/txtClr"
         android:textSize="12sp" />
+
+
 
     <!-- Seen/unseen -->
     <CheckBox

@@ -44,6 +44,7 @@ public class Queue extends ListActivity
 	NowPlayingAdapter listAdapter;
 	Cursor queue;
     static int FromID = -1;
+    public static ProgressBar currentProgress;
 	
 	/** Called when the activity is first created. Sets up the view.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -77,7 +78,7 @@ public class Queue extends ListActivity
 		
 		String[] from = new String[] {"_id", "identity"};
 		int[] to = new int[] { R.id.hiddenId, R.id.rowTextView, R.id.rowSubTextView };
-		int[] hide = new int[] { R.id.img };
+		int[] hide = new int[] { R.id.rightTextView, R.id.img };
 		listAdapter = new NowPlayingAdapter(this, R.layout.row, queue, from, to, hide); 
 		mainListView.setAdapter(listAdapter);
 	}
@@ -192,7 +193,7 @@ public class Queue extends ListActivity
 						 Log.d("Queue:removeItem", "Track is playing");
 					    Callisto.playerInfo.isPaused = true;
 					 }
-					 
+
 				 }
 			 }
 			 Callisto.databaseConnector.move(id, 0);
@@ -249,10 +250,11 @@ public class Queue extends ListActivity
 	       
 	       Long _id = this.c.getLong(c.getColumnIndex("_id"));
 	       boolean isCurrent = this.c.getLong(c.getColumnIndex("current"))>0;
+           boolean isStreaming = this.c.getLong(c.getColumnIndex("streaming"))>0;
+           boolean isVideo = this.c.getLong(c.getColumnIndex("video"))>0;
 	       Long identity = this.c.getLong(c.getColumnIndex("identity"));
             (v.findViewById(R.id.row)).measure(0,0);
             int x =(v.findViewById(R.id.row)).getMeasuredHeight();
-            Log.e("DERP", "IS: " + x);
 
             //Update the progressbar height
             try {
@@ -288,11 +290,29 @@ public class Queue extends ListActivity
 		   ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
 		   remove.setOnClickListener(removeItem);
 
+           v.findViewById(R.id.streamingIcon).setVisibility(isStreaming ? View.VISIBLE : View.GONE);
+           if(isVideo)
+           {
+               v.findViewById(R.id.mediaType).setVisibility(View.VISIBLE);
+               ((ImageView)v.findViewById(R.id.mediaType)).setImageResource(R.drawable.ic_action_movie);
+           }
+           else
+           {
+               v.findViewById(R.id.mediaType).setVisibility(View.GONE);
+               ((ImageView)v.findViewById(R.id.mediaType)).setImageResource(R.drawable.ic_action_music_1);
+           }
+
+           if(isCurrent)
+               currentProgress = ((ProgressBar)v.findViewById(R.id.progress));
+            else if(((ProgressBar)v.findViewById(R.id.progress))==currentProgress)
+               currentProgress=null;
+            Log.i("isCurrent", "IS: " + isCurrent + " / " + currentProgress);
+
+
            up.setVisibility(View.GONE);
            down.setVisibility(View.GONE);
 		   for(int i=0; i<Hide.length; i++)
 			   ((View) v.findViewById(Hide[i])).setVisibility(View.GONE);
-            v.findViewById(R.id.smallImg).setVisibility(View.VISIBLE);
 	       return(v);
 	     
 	}
