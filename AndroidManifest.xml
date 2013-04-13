@@ -17,7 +17,10 @@ You should have received a copy of the GNU General Public License
 along with Callisto; If not, see <http://www.gnu.org/licenses/>.
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qweex.callisto" android:versionName='@string/version_name' android:versionCode="4">
+    package="com.qweex.callisto"
+    android:versionName='@string/version_name'
+    android:theme="@style/Default"
+    android:versionCode="4">
 
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15" />
     
@@ -82,7 +85,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 		    android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".VideoActivity" android:configChanges="orientation|screenSize" />
 
-    <service android:name="com.android.vending.billing.BillingService" />
+    <!--<service android:name="com.android.vending.billing.BillingService" />-->
 
 
     <receiver android:name=".AlarmNotificationReceiver" android:enabled="true" />
@@ -96,7 +99,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     </receiver>
     
  
-    
+    <!--
     <receiver android:name="com.android.vending.billing.BillingReceiver">
       <intent-filter>
         <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
@@ -104,6 +107,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
       </intent-filter>
     </receiver>
+    -->
         
 <receiver android:name=".widgets.CallistoWidget" android:label="Callisto">
   <intent-filter>

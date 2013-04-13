@@ -27,39 +27,50 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         android:key="storage_path"
         android:defaultValue="callisto" />
 	    <ListPreference 
-	        android:title="Live quality"
+	        android:title="Live audio quality"
 	        android:key="live_url"
             android:entries="@array/live_quality"
             android:entryValues="@array/live_sources"
             android:defaultValue="http://jbradio.out.airtime.pro:8000/jbradio_b"
 	        />
+        <ListPreference
+                android:title="Live video quality"
+                android:key="live_video"
+                android:entries="@array/live_video"
+                android:entryValues="@array/live_video_source"
+                android:defaultValue="rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream"
+                />
 	    <CheckBoxPreference 
 	        android:key="completion_delete"
 	        android:title="Delete upon completion"
+            android:layout="@layout/smaller_preference"
 	        />
 	    <CheckBoxPreference 
 	        android:key="download_to_queue"
+            android:textSize="20px"
 	        android:title="Append downloads to queue"
+            android:layout="@layout/smaller_preference"
 	        />
         <CheckBoxPreference
             android:key="skip_inactive"
             android:title="'Update All' skips inactive"
+            android:layout="@layout/smaller_preference"
             />
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
 	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
-	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps"/>
-            <CheckBoxPreference android:key="irc_modes" android:title="Show modes" android:summary="Prepends symbols for OPs and such"/>
+	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_modes" android:title="Show modes" android:summary="Prepends symbols for OPs and such" android:widgetLayout="@layout/smaller_preference_check"/>
 	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display" android:defaultValue="500"/>
-            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on mention" android:summary="When you receive an unread mention." android:defaultValue="true"/>
-            <CheckBoxPreference android:key="irc_vibrate_all" android:title="Vibrate on EVERY mention" android:summary="When anyone mentions you at all"/>
-            <CheckBoxPreference android:key="irc_emoticons" android:title="Use Emoticons" android:summary="May slow performance, bu shiny"/>
+            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_vibrate_all" android:title="Vibrate on EVERY mention" android:summary="When anyone mentions you at all" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_emoticons" android:title="Use Emoticons" android:summary="May slow performance, bu shiny" android:widgetLayout="@layout/smaller_preference_check"/>
 	        
 	        <PreferenceCategory android:title="Colors">
-	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true"/>
-	            <CheckBoxPreference android:key="nick_colors" android:title="Random nick colors" android:defaultValue="true" android:summary="Generate a random color for each nick." android:disableDependentsState="true" android:dependency="irc_irssi"/>
+	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true" android:widgetLayout="@layout/smaller_preference_check"/>
+	            <CheckBoxPreference android:key="nick_colors" android:title="Random nick colors" android:defaultValue="true" android:summary="Generate a random color for each nick." android:disableDependentsState="true" android:dependency="irc_irssi" android:widgetLayout="@layout/smaller_preference_check"/>
 	            <net.margaritov.preference.colorpicker.ColorPickerPreference
 	            	android:key="irc_color_etcnick" android:title="Other nick color" android:defaultValue="#2E8B91"  alphaSlider="false" android:dependency="nick_colors"/>
 				
@@ -100,7 +111,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	        <CheckBoxPreference
 	            android:key="splash_show"
 	            android:summary="The wonderful feature that you got for donating to Qweex!"
-	            android:title="@string/show_splash" 
+	            android:title="@string/show_splash"
+                android:widgetLayout="@layout/smaller_preference_check"
 	            android:defaultValue="true" />
 	        <CheckBoxPreference
 	            android:key="splash_quote"
@@ -108,10 +120,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 	            android:title="@string/splash_quote" 
 	            android:defaultValue="true"
 	            android:dependency="splash_show"
+                android:widgetLayout="@layout/smaller_preference_check"
 	             />
 	    </PreferenceCategory>
-	    
-	    
-	    
-    
+
 </PreferenceScreen>

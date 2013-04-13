@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/backClr">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+
+    <com.qweex.utils.ImgTxtButton
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/audio"
+          android:text="Audio"
+          android:padding="20dp"
+          android:drawable="@drawable/ic_action_music_1"
+          android:layout_gravity="left|center_vertical" android:background="@drawable/blue_button"
+          android:layout_weight="1"/>
+    <com.qweex.utils.ImgTxtButton
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/video"
+          android:text="Video"
+          android:padding="20dp"
+          android:drawable="@drawable/ic_action_movie"
+          android:layout_gravity="right|center_vertical" android:background="@drawable/blue_button"
+          android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Video support is VERY untested. Please do not 1-star the app if it is wonky. If you do I will personally hunt you down and make you wear a sock monkey costume for a month as punishment."
+            android:textColor="#aa000000"
+            android:padding="3dp"
+            />
+</LinearLayout>

@@ -19,16 +19,13 @@ package com.qweex.callisto;
 
 import java.io.File;
 
-import android.preference.PreferenceScreen;
+import android.preference.*;
 import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;

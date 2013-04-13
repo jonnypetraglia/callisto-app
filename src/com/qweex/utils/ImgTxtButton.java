@@ -36,14 +36,12 @@ public class ImgTxtButton extends LinearLayout
 
     public ImgTxtButton(Context ctx) {
         super(ctx);
-        Log.e("Deeeeeeeeeeeeerp", "Derping");
         init();
     }
 
     public ImgTxtButton(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        Log.e("Deeeeeeeeeeeeerp", "Derping");
         init();
         try {
             txt.setText(getResources().getString(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "text", 0)));
@@ -121,7 +119,7 @@ public class ImgTxtButton extends LinearLayout
         else
         {
             super.setOrientation(LinearLayout.HORIZONTAL);
-            txt.setGravity(Gravity.LEFT);
+            txt.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             txt.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f));
             img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f));
         }

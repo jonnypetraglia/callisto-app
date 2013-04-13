@@ -180,7 +180,7 @@ public class Callisto extends Activity {
 	//Live stuff
 	public static WifiLock Live_wifiLock;
 	private static ProgressDialog pd;
-    private static Dialog dg;
+    private static Dialog dg, liveDg;
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
 	private static LIVE_FetchInfo LIVE_update = null;
 
@@ -318,6 +318,11 @@ public class Callisto extends Activity {
 		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		if(Live_wifiLock==null || !Live_wifiLock.isHeld())
 			Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+            //Create the dialog for live selection
+        liveDg = new AlertDialog.Builder(this)
+                .setTitle("Switch from playlist to live?")
+                .setView(((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
+                .create();
 	    
 	    
 	    PhoneStateListener phoneStateListener = new PhoneStateListener() {
@@ -1547,54 +1552,77 @@ public class Callisto extends Activity {
 				dg.show();
 				return;
 			}
-			
-			
-			
-			if(Callisto.live_player == null || !Callisto.live_isPlaying)
-			{
-				Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
-				if(Callisto.mplayer!=null)
-					Callisto.mplayer.reset();
-				Callisto.mplayer=null;
-				LIVE_Init();
-				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-				Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
-				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-				LIVE_PreparedListener.setContext(v.getContext());
-				Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-				String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
-				Log.d("LiveStream:playButton", "Alright so getting url");
-				try {
-					Callisto.live_player.setDataSource(live_url);
-					if(!Live_wifiLock.isHeld())
-			            Live_wifiLock.acquire();
-					LIVE_Prepare(Callisto.this);
-				} catch (Exception e) {
-					//dg.show();
-                    e.printStackTrace();
-					LIVE_SendErrorReport("EXCEPTION");
-				}
-			}
-			else
-			{
-				Log.d("LiveStream:playButton", "Live player does exist.");
-				if(Callisto.live_isPlaying)
-				{
-					Log.d("LiveStream:playButton", "Pausing.");
-					Callisto.live_player.pause();
-				}
-				else
-				{
-					if(!Live_wifiLock.isHeld())
-			            Live_wifiLock.acquire();
-					Log.d("LiveStream:playButton", "Playing.");
-					Callisto.live_player.start();
-				}
-				Callisto.live_isPlaying = !Callisto.live_isPlaying;
-			}
-			Log.d("LiveStream:playButton", "Done");
+            liveDg.show();
+            liveDg.getWindow().findViewById(R.id.audio).setOnClickListener(launchAudio);
+            liveDg.getWindow().findViewById(R.id.video).setOnClickListener(launchVideo);
 		}
 	};
+
+    OnClickListener launchVideo = new OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            liveDg.dismiss();
+            String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
+            Intent intent= new Intent(v.getContext(), VideoActivity.class);
+            intent.putExtra("uri", "");
+            Callisto.playerInfo.update(v.getContext());
+            v.getContext().startActivity(intent);
+            return;
+        }
+    };
+
+    OnClickListener launchAudio = new OnClickListener()
+    {
+        @Override
+        public void onClick(View v) {
+            liveDg.dismiss();
+            if(Callisto.live_player == null || !Callisto.live_isPlaying)
+            {
+                Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
+                if(Callisto.mplayer!=null)
+                    Callisto.mplayer.reset();
+                Callisto.mplayer=null;
+                LIVE_Init();
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                LIVE_PreparedListener.setContext(v.getContext());
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+                Log.d("LiveStream:playButton", "Alright so getting url");
+                try {
+                    Callisto.live_player.setDataSource(live_url);
+                    if(!Live_wifiLock.isHeld())
+                        Live_wifiLock.acquire();
+                    LIVE_Prepare(Callisto.this);
+                } catch (Exception e) {
+                    //dg.show();
+                    e.printStackTrace();
+                    LIVE_SendErrorReport("EXCEPTION");
+                }
+            }
+            else
+            {
+                Log.d("LiveStream:playButton", "Live player does exist.");
+                if(Callisto.live_isPlaying)
+                {
+                    Log.d("LiveStream:playButton", "Pausing.");
+                    Callisto.live_player.pause();
+                }
+                else
+                {
+                    if(!Live_wifiLock.isHeld())
+                        Live_wifiLock.acquire();
+                    Log.d("LiveStream:playButton", "Playing.");
+                    Callisto.live_player.start();
+                }
+                Callisto.live_isPlaying = !Callisto.live_isPlaying;
+            }
+            Log.d("LiveStream:playButton", "Done");
+        }
+    };
 	
 	/** Sends an error report to the folks at Qweex. COMPLETELY anonymous. The only information that is sent is the version of Callisto and the version of Android. */
 	public static void LIVE_SendErrorReport(String msg)
