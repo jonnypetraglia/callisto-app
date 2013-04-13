@@ -47,7 +47,7 @@ import android.view.View.OnClickListener;
 public class DownloadList extends ListActivity
 {
 	/** Contains the ProgressBar of the current download, for use with updating. */
-    private static final int CLEAR_ID=Menu.FIRST+1, PAUSE_ID=CLEAR_ID+1;
+    private static final int CLEAR_ID=Menu.FIRST+1, CLEAR_ID2 = CLEAR_ID+1, PAUSE_ID=CLEAR_ID2+1;
 	public static ProgressBar downloadProgress = null;
 	private ListView mainListView;
 	public static HeaderAdapter listAdapter ;
@@ -93,20 +93,46 @@ public class DownloadList extends ListActivity
 
 
         headerThings = new ArrayList<HeaderAdapter.Item>();
-        int tempInt = getDownloadCount(this, ACTIVE);
+        //Cleanse the lists
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+        String active = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(ACTIVE, "|").replaceAll("x", "").replaceAll("//|0", "");
+        while(active.contains("||"))
+            active = active.replace("||","|");
+        //if(active.endsWith("|"))
+           // active = active.substring(0, active.length()-2);
+        e.putString(ACTIVE, active);
+        String completed = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(COMPLETED,"|").replaceAll("x","").replaceAll("//|0","");
+        while(completed.contains("||"))
+            completed = completed.replace("||","|");
+        //if(completed.endsWith("|"))
+           // completed = completed.substring(0, completed.length()-2);
+        e.putString(COMPLETED, completed);
+        e.commit();
+
+        //START
+        int tempInt = getDownloadCount(DownloadList.this, ACTIVE);
+        Log.d(":", "REBUILDING HEADER THIGNS");
         if(tempInt>0)
         {
             headerThings.add(new DownloadHeader("Active"));
             for(int i=0; i<tempInt; i++)
+            {
+                Log.d(":", "Adding act");
                 headerThings.add(new DownloadRow());
+            }
         }
-        tempInt = getDownloadCount(this, COMPLETED);
+        tempInt = getDownloadCount(DownloadList.this, COMPLETED);
         if(tempInt>0)
         {
             headerThings.add(new DownloadHeader("Completed"));
             for(int i=0; i<tempInt; i++)
+            {
+                Log.d(":", "Adding comp");
                 headerThings.add(new DownloadRow());
+            }
         }
+        //END
+        Log.d("DownloadList:onCreate", "Total: " + tempInt + " " + getDownloadCount(this,ACTIVE));
         listAdapter = new HeaderAdapter(this, headerThings);
 
 
@@ -124,23 +150,29 @@ public class DownloadList extends ListActivity
 	        {
                 headerThings.clear();
                 int tempInt = getDownloadCount(DownloadList.this, ACTIVE);
+                String active = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(ACTIVE, "|").replaceAll("x","");
                 Log.d(":", "REBUILDING HEADER THIGNS");
                 if(tempInt>0)
                 {
                     headerThings.add(new DownloadHeader("Active"));
-                    for(int i=0; i<tempInt; i++)
+                    for(String s : active.split("\\|"))
                     {
-                        Log.d(":", "Adding act");
+                        if(s.length()==0 || s.equals("0"))
+                            continue;
+                        Log.d(":", "Adding act " + s);
                         headerThings.add(new DownloadRow());
                     }
                 }
                 tempInt = getDownloadCount(DownloadList.this, COMPLETED);
+                String completed = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(COMPLETED, "|").replaceAll("x","");
                 if(tempInt>0)
                 {
                     headerThings.add(new DownloadHeader("Completed"));
-                    for(int i=0; i<tempInt; i++)
+                    for(String s : completed.split("\\|"))
                     {
-                        Log.d(":", "Adding comp");
+                        if(s.length()==0 || s.equals("0"))
+                            continue;
+                        Log.d(":", "Adding comp " + s);
                         headerThings.add(new DownloadRow());
                     }
                 }
@@ -156,17 +188,29 @@ public class DownloadList extends ListActivity
         boolean paoosay = (DownloadTask.running || getDownloadCount(this, ACTIVE)==0);
         menu.add(0, PAUSE_ID, 0, paoosay ? "PAUSE" : "RESUME").setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
         menu.add(0, CLEAR_ID, 0, "Clear Completed").setIcon(R.drawable.ic_action_trash).setEnabled(getDownloadCount(this, COMPLETED)>0);
+        menu.add(0, CLEAR_ID2, 0, "Cancel Active").setIcon(R.drawable.ic_action_trash).setEnabled(getDownloadCount(this, ACTIVE)>0);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        SharedPreferences.Editor e;
         switch (item.getItemId())
         {
             case CLEAR_ID:
-                SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
-                e.remove("CompletedDownloads");
+                e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+                e.remove(COMPLETED);
+                e.commit();
+                notifyUpdate.sendEmptyMessage(0);
+                item.setEnabled(false);
+                headerThings.remove(0);
+                for(int i=0; i<PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(COMPLETED,"|").replaceAll("x","").split("\\|").length; i++)
+                    headerThings.remove(0);
+                break;
+            case CLEAR_ID2:
+                e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+                e.remove(ACTIVE);
                 e.commit();
                 notifyUpdate.sendEmptyMessage(0);
                 item.setEnabled(false);
@@ -423,7 +467,7 @@ public class DownloadList extends ListActivity
     {
         num++;
         String[] derp = PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","").split("\\|");
-        Log.e("PARSING:", PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","") + "      at " + num);
+        Log.e("PARSING:", PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","") + "      at " + num + " with size " + derp.length);
         Log.e("PARSING:", derp[num] + " ");
         return Long.parseLong( derp[num] );
     }

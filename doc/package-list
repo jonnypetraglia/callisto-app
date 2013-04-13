@@ -1,3 +1,4 @@
+com.andrefy.ddviewlist
 com.paypal.android.simpledemo
 com.qweex.callisto
 com.qweex.callisto.bonuses
@@ -6,4 +7,11 @@ com.qweex.callisto.irc
 com.qweex.callisto.podcast
 com.qweex.callisto.widgets
 com.qweex.utils
+jerklib
+jerklib.events
+jerklib.examples
+jerklib.listeners
+jerklib.parsers
+jerklib.tasks
+jerklib.util
 net.margaritov.preference.colorpicker

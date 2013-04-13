@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_TEST_SOURCES" value="false" />
+    <option name="SCOPE_TYPE" value="8" />
+    <option name="CUSTOM_SCOPE_NAME" value="Project Files" />
+  </component>
   <component name="AndroidConfiguredLogFilters">
     <filters>
       <filter>
@@ -34,30 +39,138 @@
       </GlobalState>
     </option>
   </component>
-  <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="DownloadList" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/AlarmActivity.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/AlarmActivity.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/AlarmActivity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/AlarmNotificationReceiver.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/AlarmNotificationReceiver.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/AllShows.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/AllShows.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/AlphaPatternDrawable.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/AlphaPatternDrawable.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/Bacon.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/Bacon.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/BootNotificationReceiver.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/BootNotificationReceiver.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/CalendarActivity.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/CalendarActivity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.PlayerInfo.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.PlayerInfo.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.downloadExtras.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.downloadExtras.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/Callisto.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/CallistoWidget.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/CallistoWidget.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerDialog.OnColorChangedListener.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerDialog.OnColorChangedListener.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerDialog.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerDialog.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerPanelView.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerPanelView.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerPreference.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerPreference.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerView.OnColorChangedListener.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerView.OnColorChangedListener.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerView.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/ColorPickerView.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/ContactForm.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/ContactForm.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/DatabaseConnector.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/DatabaseConnector.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/Donate.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/Donate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/Donate.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/Donate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/DownloadList.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/DownloadList.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/EpisodeDesc.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/EpisodeDesc.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/IRCChat.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/IRCChat.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/LIVE_FetchInfo.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/LIVE_FetchInfo.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/LiveStream.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/LiveStream.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/NickList.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/NickList.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/utils/NumberPicker.html" afterPath="$PROJECT_DIR$/doc/com/qweex/utils/NumberPicker.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/OnCompletionListenerWithContext.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/OnCompletionListenerWithContext.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/OnCompletionListenerWithContext.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/OnCompletionListenerWithContext.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/OnErrorListenerWithContext.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/OnErrorListenerWithContext.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/OnErrorListenerWithContext.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/OnErrorListenerWithContext.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/OnPreparedListenerWithContext.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/OnPreparedListenerWithContext.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/Queue.NowPlayingAdapter.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/Queue.NowPlayingAdapter.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/Queue.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/Queue.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/QuickPrefsActivity.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/QuickPrefsActivity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/ResultDelegate.html" afterPath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/ResultDelegate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/ResultDelegate.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/ResultDelegate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/ResultDelegate.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/ResultDelegate.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/SearchResultsActivity.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/SearchResultsActivity.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/ShowList.ShowListCursorAdapter.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/ShowList.ShowListCursorAdapter.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/ShowList.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/ShowList.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/Soundboard.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/Soundboard.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/SplashScreen.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/SplashScreen.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/utils/UnfinishedParseException.html" afterPath="$PROJECT_DIR$/doc/com/qweex/utils/UnfinishedParseException.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/allclasses-frame.html" afterPath="$PROJECT_DIR$/doc/allclasses-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/allclasses-noframe.html" afterPath="$PROJECT_DIR$/doc/allclasses-noframe.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/constant-values.html" afterPath="$PROJECT_DIR$/doc/constant-values.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/deprecated-list.html" afterPath="$PROJECT_DIR$/doc/deprecated-list.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/help-doc.html" afterPath="$PROJECT_DIR$/doc/help-doc.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-1.html" afterPath="$PROJECT_DIR$/doc/index-files/index-1.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-10.html" afterPath="$PROJECT_DIR$/doc/index-files/index-10.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-11.html" afterPath="$PROJECT_DIR$/doc/index-files/index-11.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-12.html" afterPath="$PROJECT_DIR$/doc/index-files/index-12.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-13.html" afterPath="$PROJECT_DIR$/doc/index-files/index-13.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-14.html" afterPath="$PROJECT_DIR$/doc/index-files/index-14.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-15.html" afterPath="$PROJECT_DIR$/doc/index-files/index-15.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-16.html" afterPath="$PROJECT_DIR$/doc/index-files/index-16.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-17.html" afterPath="$PROJECT_DIR$/doc/index-files/index-17.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-18.html" afterPath="$PROJECT_DIR$/doc/index-files/index-18.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-19.html" afterPath="$PROJECT_DIR$/doc/index-files/index-19.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-2.html" afterPath="$PROJECT_DIR$/doc/index-files/index-2.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-3.html" afterPath="$PROJECT_DIR$/doc/index-files/index-3.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-4.html" afterPath="$PROJECT_DIR$/doc/index-files/index-4.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-5.html" afterPath="$PROJECT_DIR$/doc/index-files/index-5.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-6.html" afterPath="$PROJECT_DIR$/doc/index-files/index-6.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-7.html" afterPath="$PROJECT_DIR$/doc/index-files/index-7.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-8.html" afterPath="$PROJECT_DIR$/doc/index-files/index-8.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index-files/index-9.html" afterPath="$PROJECT_DIR$/doc/index-files/index-9.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/index.html" afterPath="$PROJECT_DIR$/doc/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/overview-frame.html" afterPath="$PROJECT_DIR$/doc/overview-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/overview-summary.html" afterPath="$PROJECT_DIR$/doc/overview-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/overview-tree.html" afterPath="$PROJECT_DIR$/doc/overview-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/utils/package-frame.html" afterPath="$PROJECT_DIR$/doc/com/qweex/utils/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-frame.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-frame.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/package-list" afterPath="$PROJECT_DIR$/doc/package-list" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/utils/package-summary.html" afterPath="$PROJECT_DIR$/doc/com/qweex/utils/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-summary.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-summary.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/paypal/android/simpledemo/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/bonuses/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/donate/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/irc/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/widgets/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/utils/package-tree.html" afterPath="$PROJECT_DIR$/doc/com/qweex/utils/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-tree.html" afterPath="$PROJECT_DIR$/doc/net/margaritov/preference/colorpicker/package-tree.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/serialized-form.html" afterPath="$PROJECT_DIR$/doc/serialized-form.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365362118132" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365377066658" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364146262554" ignored="false" />
-    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365362618494" ignored="false" />
+    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365391269835" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364154401407" ignored="false" />
     <file path="/smaller_preference.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364152507691" ignored="false" />
     <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364154133349" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364154673167" ignored="false" />
-    <file path="/DownloadList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365364030367" ignored="false" />
+    <file path="/DownloadList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365371299990" ignored="false" />
     <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365364743042" ignored="false" />
     <file path="/ShowList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365366816693" ignored="false" />
+    <file path="/AlarmNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385729850" ignored="false" />
+    <file path="/BootNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385796427" ignored="false" />
+    <file path="/CalendarActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365399730008" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +185,7 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -106,7 +220,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -128,54 +241,183 @@
       <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="123" column="38" selection-start="4596" selection-end="4612" vertical-scroll-proportion="-11.04">
+            <state line="233" column="63" selection-start="10547" selection-end="10547" vertical-scroll-proportion="0.0">
               <folding>
+                <element signature="docComment;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#mplayer#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#databaseConnector#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#notification_download#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#storage_path#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#downloading_count#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#current_download#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#sdfRaw#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#playDrawable#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#playerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#RESOURCES#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#DP#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#chatView#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#europeanDates#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#live_isPlaying#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#appVersion#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#is_widget#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#news#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#Live_wifiLock#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#errorReportURL#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#onCreate#0;class#Callisto#0" expanded="true" />
-                <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
-                <element signature="docComment;method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="true" />
-                <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
+                <element signature="e#14761#16305#0" expanded="true" />
+                <element signature="e#16297#16298#0" expanded="true" />
+                <element signature="docComment;method#onDestroy#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#onResume#0;class#Callisto#0" expanded="true" />
+                <element signature="method#onCreateOptionsMenu#0;class#Callisto#0" expanded="false" />
+                <element signature="method#onOptionsItemSelected#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
+                <element signature="method#build_layout#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="class#PlayerInfo#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;field#player#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#title#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#position#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#isPaused#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#PlayerInfo#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#update#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="e#29766#29932#0" expanded="true" />
+                <element signature="e#29913#29914#0" expanded="true" />
+                <element signature="docComment;method#clear#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#TimerMethod#0;class#Callisto#0" expanded="true" />
+                <element signature="method#TimerMethod#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;class#TimerRunnable#0;class#Callisto#0" expanded="true" />
+                <element signature="class#TimerRunnable#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;field#next#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#previous#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#changeToTrack#0;class#Callisto#0" expanded="true" />
+                <element signature="e#41030#41190#0" expanded="true" />
+                <element signature="e#41183#41184#0" expanded="true" />
+                <element signature="docComment;method#playPause#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;field#playPauseListener#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#stop#0;class#Callisto#0" expanded="true" />
+                <element signature="method#stop#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;field#playlist#0;class#Callisto#0" expanded="true" />
+                <element signature="e#45284#45671#0" expanded="true" />
+                <element signature="e#45664#45665#0" expanded="true" />
+                <element signature="e#45704#45856#0" expanded="true" />
+                <element signature="e#45849#45850#0" expanded="true" />
+                <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
+                <element signature="e#46155#46870#0" expanded="true" />
+                <element signature="e#46863#46864#0" expanded="true" />
+                <element signature="docComment;field#seekDialog#0;class#Callisto#0" expanded="true" />
+                <element signature="e#47039#48571#0" expanded="true" />
+                <element signature="e#47782#47928#0" expanded="true" />
+                <element signature="e#47919#47920#0" expanded="true" />
+                <element signature="e#48564#48565#0" expanded="true" />
+                <element signature="e#48608#49176#0" expanded="true" />
+                <element signature="e#49169#49170#0" expanded="true" />
+                <element signature="e#49213#51476#0" expanded="true" />
+                <element signature="e#51469#51470#0" expanded="true" />
+                <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#updateShow#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#LIVE_Init#0;class#Callisto#0" expanded="true" />
+                <element signature="e#65886#66842#0" expanded="true" />
+                <element signature="e#66837#66838#0" expanded="true" />
+                <element signature="docComment;method#LIVE_Prepare#0;class#Callisto#0" expanded="true" />
+                <element signature="e#67747#67933#0" expanded="true" />
+                <element signature="e#67924#67925#0" expanded="true" />
+                <element signature="docComment;field#LIVE_PreparedListener#0;class#Callisto#0" expanded="true" />
+                <element signature="e#68214#68702#0" expanded="true" />
+                <element signature="e#68698#68699#0" expanded="true" />
+                <element signature="docComment;field#LIVE_PlayButton#0;class#Callisto#0" expanded="true" />
+                <element signature="e#68787#69789#0" expanded="true" />
+                <element signature="e#69090#69349#0" expanded="true" />
+                <element signature="e#69342#69343#0" expanded="true" />
+                <element signature="e#69382#69534#0" expanded="true" />
+                <element signature="e#69527#69528#0" expanded="true" />
+                <element signature="e#69785#69786#0" expanded="true" />
+                <element signature="docComment;method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="true" />
+                <element signature="method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="false" />
+                <element signature="class#downloadExtras#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
+                <element signature="method#showUpdateNews#0;class#Callisto#0" expanded="false" />
+                <element signature="e#72807#72838#0" expanded="true" />
+                <element signature="e#72937#72984#0" expanded="true" />
+                <element signature="e#74572#74588#0" expanded="true" />
+                <element signature="e#74686#74717#0" expanded="true" />
+                <element signature="e#75209#75225#0" expanded="true" />
+                <element signature="method#BaconDialog#0;class#Callisto#0" expanded="false" />
+                <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
+                <element signature="method#formatTimeFromSeconds#0;class#Callisto#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ShowList.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java">
+      <file leaf-file-name="CalendarActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="466" column="96" selection-start="18988" selection-end="18988" vertical-scroll-proportion="0.33274958">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DownloadList.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="332" column="63" selection-start="12185" selection-end="12191" vertical-scroll-proportion="-6.24">
+            <state line="1017" column="70" selection-start="45744" selection-end="45744" vertical-scroll-proportion="0.9831461">
               <folding>
-                <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#current_cal#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#REFRESH_MENU_ID#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#CALENDAR_FEED_URL#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#MILLISECONDS_IN_A_DAY#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#Tmonth#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#Bnext#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#months#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#days#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#dayViews#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#createEventDialog#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#popUp#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#isLandscape#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#popUp_title#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#progressDialog#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#fetchTask#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#agenda#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#stupidBug#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#TheHeightOfTheFreakingPopup#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;method#onCreate#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#6936#7157#0" expanded="true" />
+                <element signature="e#7142#7143#0" expanded="true" />
+                <element signature="e#7373#7822#0" expanded="true" />
+                <element signature="e#7806#7807#0" expanded="true" />
+                <element signature="docComment;method#onKeyDown#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;method#onResume#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#10203#10374#0" expanded="true" />
+                <element signature="e#10359#10360#0" expanded="true" />
+                <element signature="docComment;method#onCreateOptionsMenu#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;method#onOptionsItemSelected#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#nextWeek#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#11385#11557#0" expanded="true" />
+                <element signature="e#11550#11551#0" expanded="true" />
+                <element signature="docComment;field#prevWeek#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#11665#11838#0" expanded="true" />
+                <element signature="e#11831#11832#0" expanded="true" />
+                <element signature="docComment;field#resetCalender#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#11948#12123#0" expanded="true" />
+                <element signature="e#12116#12117#0" expanded="true" />
+                <element signature="docComment;method#timezoneDifference#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;class#FetchEventsTask#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;method#updateCalendar#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="docComment;field#editEvent#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#26668#33893#0" expanded="true" />
+                <element signature="e#30870#33875#0" expanded="true" />
+                <element signature="e#33860#33861#0" expanded="true" />
+                <element signature="e#33886#33887#0" expanded="true" />
+                <element signature="docComment;field#clickEvent#0;class#CalendarActivity#0" expanded="true" />
+                <element signature="e#33991#41478#0" expanded="true" />
+                <element signature="e#41471#41472#0" expanded="true" />
+                <element signature="docComment;method#loadMoreAgenda#0;class#CalendarActivity#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EpisodeDesc.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
+      <file leaf-file-name="AlarmNotificationReceiver.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="300" column="16" selection-start="12460" selection-end="12460" vertical-scroll-proportion="-5.8">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DownloadTask.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="0" selection-start="3480" selection-end="3480" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="31" column="0" selection-start="1037" selection-end="1102" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="docComment;class#AlarmNotificationReceiver#0" expanded="true" />
+                <element signature="docComment;method#onReceive#0;class#AlarmNotificationReceiver#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -210,9 +452,12 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
         <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
       </list>
     </option>
   </component>
@@ -249,7 +494,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -347,40 +591,11 @@
               <option name="myItemId" value="com" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="qweex" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="podcast" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -395,8 +610,8 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="restartRequiresConfirmation" value="true" />
     <property name="AndroidTargetDevices" value="581174f1" />
+    <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
   </component>
@@ -432,19 +647,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -471,6 +673,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -596,7 +811,11 @@
       <created>1364154700937</created>
       <updated>1364154700937</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fixed the Italic/Bold issue in the ShowList.&#10;&#10;It should now highlight Italic if the file exists yet is incomplete OR if it just in the Download Queue.">
+      <created>1365366944803</created>
+      <updated>1365366944803</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -606,7 +825,7 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297414" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -615,21 +834,21 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67133623" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3286638" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67096776" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32795697" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -671,7 +890,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Skinned the preferences. I AM A SKINNING GOD." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the Italic/Bold issue in the ShowList.&#10;&#10;It should now highlight Italic if the file exists yet is incomplete OR if it just in the Download Queue." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -685,6 +904,7 @@
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="Skinned the preferences. I AM A SKINNING GOD." />
+    <MESSAGE value="Fixed the Italic/Bold issue in the ShowList.&#10;&#10;It should now highlight Italic if the file exists yet is incomplete OR if it just in the Download Queue." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -694,45 +914,9 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/values/html_colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.3567839">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/values/final_strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.0603015">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/live_select.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="485" selection-end="485" vertical-scroll-proportion="-3.5">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/smaller_preference.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="39" selection-end="706" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/values/styles.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="46" selection-start="2689" selection-end="2689" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="60" column="46" selection-start="2689" selection-end="2689" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/smaller_preference_check.xml">
@@ -740,9 +924,7 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="52" selection-start="1097" selection-end="1097" vertical-scroll-proportion="0.6567426">
-          <folding />
-        </state>
+        <state line="25" column="52" selection-start="1097" selection-end="1097" vertical-scroll-proportion="0.6567426" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
@@ -764,16 +946,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="31" selection-start="817" selection-end="817" vertical-scroll-proportion="-1.9280822">
-          <folding />
-        </state>
+        <state line="19" column="31" selection-start="817" selection-end="817" vertical-scroll-proportion="-1.9280822" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="36" selection-start="5216" selection-end="5216" vertical-scroll-proportion="1.7286432">
-          <folding />
-        </state>
+        <state line="122" column="36" selection-start="5216" selection-end="5216" vertical-scroll-proportion="1.7286432" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java">
@@ -783,48 +961,223 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="123" column="38" selection-start="4596" selection-end="4612" vertical-scroll-proportion="-11.04">
-          <folding>
-            <element signature="docComment;method#onCreate#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#stop#0;class#Callisto#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="300" column="16" selection-start="12460" selection-end="12460" vertical-scroll-proportion="-5.8">
+        <state line="299" column="16" selection-start="12422" selection-end="12422" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/HeaderAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="0" selection-start="1525" selection-end="1525" vertical-scroll-proportion="0.8305369" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="0" selection-start="3480" selection-end="3480" vertical-scroll-proportion="0.0">
+        <state line="205" column="69" selection-start="9304" selection-end="9304" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="332" column="63" selection-start="12185" selection-end="12191" vertical-scroll-proportion="-6.24">
-          <folding>
-            <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
-          </folding>
+        <state line="199" column="9" selection-start="8057" selection-end="8057" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="466" column="96" selection-start="18988" selection-end="18988" vertical-scroll-proportion="0.33274958">
+        <state line="476" column="59" selection-start="19651" selection-end="19651" vertical-scroll-proportion="6.4950166">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="0" selection-start="1037" selection-end="1102" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="docComment;class#AlarmNotificationReceiver#0" expanded="true" />
+            <element signature="docComment;method#onReceive#0;class#AlarmNotificationReceiver#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="9" selection-start="1734" selection-end="1734" vertical-scroll-proportion="0.33222592">
+          <folding>
+            <element signature="docComment;class#BootNotificationReceiver#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="233" column="63" selection-start="10547" selection-end="10547" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="docComment;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#mplayer#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#databaseConnector#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#notification_download#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#storage_path#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#downloading_count#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#current_download#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#sdfRaw#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#playDrawable#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#playerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#RESOURCES#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#DP#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#chatView#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#europeanDates#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#live_isPlaying#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#appVersion#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#is_widget#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#news#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#Live_wifiLock#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#errorReportURL#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#Callisto#0" expanded="true" />
+            <element signature="e#14761#16305#0" expanded="true" />
+            <element signature="e#16297#16298#0" expanded="true" />
+            <element signature="docComment;method#onDestroy#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#onResume#0;class#Callisto#0" expanded="true" />
+            <element signature="method#onCreateOptionsMenu#0;class#Callisto#0" expanded="false" />
+            <element signature="method#onOptionsItemSelected#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
+            <element signature="method#build_layout#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="class#PlayerInfo#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;field#player#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#title#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#position#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#isPaused#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#PlayerInfo#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#update#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="e#29766#29932#0" expanded="true" />
+            <element signature="e#29913#29914#0" expanded="true" />
+            <element signature="docComment;method#clear#0;class#PlayerInfo#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#TimerMethod#0;class#Callisto#0" expanded="true" />
+            <element signature="method#TimerMethod#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;class#TimerRunnable#0;class#Callisto#0" expanded="true" />
+            <element signature="class#TimerRunnable#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;field#next#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#previous#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#changeToTrack#0;class#Callisto#0" expanded="true" />
+            <element signature="e#41030#41190#0" expanded="true" />
+            <element signature="e#41183#41184#0" expanded="true" />
+            <element signature="docComment;method#playPause#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#playPauseListener#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#stop#0;class#Callisto#0" expanded="true" />
+            <element signature="method#stop#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;field#playlist#0;class#Callisto#0" expanded="true" />
+            <element signature="e#45284#45671#0" expanded="true" />
+            <element signature="e#45664#45665#0" expanded="true" />
+            <element signature="e#45704#45856#0" expanded="true" />
+            <element signature="e#45849#45850#0" expanded="true" />
+            <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
+            <element signature="e#46155#46870#0" expanded="true" />
+            <element signature="e#46863#46864#0" expanded="true" />
+            <element signature="docComment;field#seekDialog#0;class#Callisto#0" expanded="true" />
+            <element signature="e#47039#48571#0" expanded="true" />
+            <element signature="e#47782#47928#0" expanded="true" />
+            <element signature="e#47919#47920#0" expanded="true" />
+            <element signature="e#48564#48565#0" expanded="true" />
+            <element signature="e#48608#49176#0" expanded="true" />
+            <element signature="e#49169#49170#0" expanded="true" />
+            <element signature="e#49213#51476#0" expanded="true" />
+            <element signature="e#51469#51470#0" expanded="true" />
+            <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#updateShow#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#LIVE_Init#0;class#Callisto#0" expanded="true" />
+            <element signature="e#65886#66842#0" expanded="true" />
+            <element signature="e#66837#66838#0" expanded="true" />
+            <element signature="docComment;method#LIVE_Prepare#0;class#Callisto#0" expanded="true" />
+            <element signature="e#67747#67933#0" expanded="true" />
+            <element signature="e#67924#67925#0" expanded="true" />
+            <element signature="docComment;field#LIVE_PreparedListener#0;class#Callisto#0" expanded="true" />
+            <element signature="e#68214#68702#0" expanded="true" />
+            <element signature="e#68698#68699#0" expanded="true" />
+            <element signature="docComment;field#LIVE_PlayButton#0;class#Callisto#0" expanded="true" />
+            <element signature="e#68787#69789#0" expanded="true" />
+            <element signature="e#69090#69349#0" expanded="true" />
+            <element signature="e#69342#69343#0" expanded="true" />
+            <element signature="e#69382#69534#0" expanded="true" />
+            <element signature="e#69527#69528#0" expanded="true" />
+            <element signature="e#69785#69786#0" expanded="true" />
+            <element signature="docComment;method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="true" />
+            <element signature="method#LIVE_SendErrorReport#0;class#Callisto#0" expanded="false" />
+            <element signature="class#downloadExtras#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
+            <element signature="method#showUpdateNews#0;class#Callisto#0" expanded="false" />
+            <element signature="e#72807#72838#0" expanded="true" />
+            <element signature="e#72937#72984#0" expanded="true" />
+            <element signature="e#74572#74588#0" expanded="true" />
+            <element signature="e#74686#74717#0" expanded="true" />
+            <element signature="e#75209#75225#0" expanded="true" />
+            <element signature="method#BaconDialog#0;class#Callisto#0" expanded="false" />
+            <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
+            <element signature="method#formatTimeFromSeconds#0;class#Callisto#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1017" column="70" selection-start="45744" selection-end="45744" vertical-scroll-proportion="0.9831461">
+          <folding>
+            <element signature="docComment;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#current_cal#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#REFRESH_MENU_ID#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#CALENDAR_FEED_URL#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#MILLISECONDS_IN_A_DAY#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#Tmonth#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#Bnext#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#months#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#days#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#dayViews#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#createEventDialog#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#popUp#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#isLandscape#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#popUp_title#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#progressDialog#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#fetchTask#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#agenda#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#stupidBug#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#TheHeightOfTheFreakingPopup#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#6936#7157#0" expanded="true" />
+            <element signature="e#7142#7143#0" expanded="true" />
+            <element signature="e#7373#7822#0" expanded="true" />
+            <element signature="e#7806#7807#0" expanded="true" />
+            <element signature="docComment;method#onKeyDown#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;method#onResume#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#10203#10374#0" expanded="true" />
+            <element signature="e#10359#10360#0" expanded="true" />
+            <element signature="docComment;method#onCreateOptionsMenu#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;method#onOptionsItemSelected#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#nextWeek#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#11385#11557#0" expanded="true" />
+            <element signature="e#11550#11551#0" expanded="true" />
+            <element signature="docComment;field#prevWeek#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#11665#11838#0" expanded="true" />
+            <element signature="e#11831#11832#0" expanded="true" />
+            <element signature="docComment;field#resetCalender#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#11948#12123#0" expanded="true" />
+            <element signature="e#12116#12117#0" expanded="true" />
+            <element signature="docComment;method#timezoneDifference#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;class#FetchEventsTask#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;method#updateCalendar#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="docComment;field#editEvent#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#26668#33893#0" expanded="true" />
+            <element signature="e#30870#33875#0" expanded="true" />
+            <element signature="e#33860#33861#0" expanded="true" />
+            <element signature="e#33886#33887#0" expanded="true" />
+            <element signature="docComment;field#clickEvent#0;class#CalendarActivity#0" expanded="true" />
+            <element signature="e#33991#41478#0" expanded="true" />
+            <element signature="e#41471#41472#0" expanded="true" />
+            <element signature="docComment;method#loadMoreAgenda#0;class#CalendarActivity#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

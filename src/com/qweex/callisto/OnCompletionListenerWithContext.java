@@ -46,6 +46,6 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 		long id = c.getLong(c.getColumnIndex("identity"));
 		Callisto.databaseConnector.updatePosition(id, 0);
 		
-		Callisto.playTrack(this.c, 1, true);
+		Callisto.changeToTrack(this.c, 1, true);
 	}
 }

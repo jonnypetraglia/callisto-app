@@ -41,39 +41,44 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
         Bundle extras = intent.getExtras();
         if (extras != null)
         {
+            //Get info about the event from the Extras
         	String show = extras.getString("show");
             String tone = extras.getString("tone");
             int min = extras.getInt("min");
 			int isAlarm = extras.getInt("isAlarm"); 
 			int vibrate = extras.getInt("vibrate");
 			String key = extras.getString("key");
-            
-			Uri notification;
+
+            //Create the notification
+			Uri notification_sound;
 			try {
-				notification = Uri.parse(tone);
+				notification_sound = Uri.parse(tone);
 			} catch(Exception e)
 			{
-				notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+				notification_sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 			}
             NotificationManager mNotificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             Intent notificationIntent = new Intent(context, Callisto.class);
     		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            Callisto.notification_alarm = new Notification(R.drawable.callisto, "Connecting to IRC", System.currentTimeMillis());
-            
+            Callisto.notification_alarm = new Notification(R.drawable.callisto, "JupiterBroadcasting alarm!", System.currentTimeMillis());
+
+            //Set the notification options
             if(isAlarm>0)
             	Callisto.notification_alarm.flags |= Notification.FLAG_INSISTENT;
             else
             	Callisto.notification_alarm.flags |= Notification.FLAG_AUTO_CANCEL;
             if(vibrate>0)
             	Callisto.notification_alarm.vibrate = new long[] {300, 200, 100, 200};
-            Callisto.notification_alarm.sound = notification;
-    		
+            Callisto.notification_alarm.sound = notification_sound;
+
+            //Show the notification
             if(min==0)
             	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is on right now!", contentIntent);
             else
             	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
             mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_alarm);
-            
+
+            //Remove the alarm
             SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
             SharedPreferences.Editor edit = alarmPrefs.edit();
             edit.remove(key);

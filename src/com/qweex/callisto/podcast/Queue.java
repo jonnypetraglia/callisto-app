@@ -187,7 +187,7 @@ public class Queue extends ListActivity
 				 {
 					 Log.d("Queue:removeItem", "Removing the current item; advancing to next");
 					 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-					 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+					 Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 					 if(isPlaying)
 					 {
 						 Log.d("Queue:removeItem", "Track is playing");

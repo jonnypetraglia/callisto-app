@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+/** Receives the boot-up message; re-creates the alarms. */
 public class BootNotificationReceiver extends BroadcastReceiver
 {
 	public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");

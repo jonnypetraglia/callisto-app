@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.graphics.drawable.AnimationDrawable;
 import android.util.TypedValue;
 import android.widget.*;
 import com.qweex.callisto.podcast.*;
@@ -90,8 +89,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -101,9 +98,8 @@ import android.widget.LinearLayout.LayoutParams;
 //CLEAN: Rename IDs in layout XML
 //CLEAN: Strings.xml
 
-/** This is the main activity/class for the app.
-    It contains the main screen, and also some static elements
-    that are globally used across multiple activities
+/** This class is the main activity, but also houses all of the static variables needed for the app.
+    Things like the MediaPlayer, the Notifications, and the player Listeners are all here.
     @author MrQweex
  */
 public class Callisto extends Activity {
@@ -146,10 +142,16 @@ public class Callisto extends Activity {
 	public static boolean europeanDates;
 	
 	//------Local variables-----
+    //TODO: wtf
 	static TextView timeView;
+    //TODO: wtf
 	static int current;
+    //TODO: wtf
 	static ProgressBar timeProgress;
-	
+    //TODO: wtf
+    private Timer timeTimer = null;
+
+    // Menu ID for this activity
 	private static final int STOP_ID=Menu.FIRST+1;
 	private static final int SETTINGS_ID=STOP_ID+1;
 	private static final int MORE_ID=SETTINGS_ID+1;
@@ -159,11 +161,10 @@ public class Callisto extends Activity {
 							 CHRISROLL_ID=QUIT_ID+1;
 	private static final int SAVE_POSITION_EVERY = 40,
 						     CHECK_LIVE_EVERY = 400;	//Cycles, not necessarily seconds
-	private Timer timeTimer = null;
 	
 	public static OnCompletionListenerWithContext nextTrack;
 	public static OnErrorListenerWithContext nextTrackBug;
-	public static OnPreparedListenerWithContext okNowPlay;
+	public static OnPreparedListenerWithContext mplayerPrepared;
 	public static final int NOTIFICATION_ID = 1337;
 	private static NotificationManager mNotificationManager;
 	public static SharedPreferences alarmPrefs;
@@ -173,17 +174,23 @@ public class Callisto extends Activity {
 	public static boolean live_isPlaying = false;
 		/** The Version of Callisto. Set to -1 if it cannot be determined. */
 	public static int appVersion = -1;
+        /** Contains whether or not the activity has been launched via the widget. **/
 	public static boolean is_widget;
+        /** The Dialog for displaying what is new in this version **/
 	private Dialog news;
 	
 	
 	//Live stuff
+        /** Locks the wifi when downloading or streaming **/
 	public static WifiLock Live_wifiLock;
-	private static ProgressDialog pd;
-    private static Dialog dg, liveDg;
+    //TODO: wtf
+    private static Dialog errorDialog, liveDg;
+        /** The url that is used to report statistics -completely anonymous- to the developer when the live fails. **/
 	private final static String errorReportURL = "http://software.qweex.com/error_report.php";
+    //TODO: wtf
 	private static LIVE_FetchInfo LIVE_update = null;
 
+    //TODO: wtf
     private static TimerRunnable clock;
 
 	
@@ -194,44 +201,103 @@ public class Callisto extends Activity {
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
+        //**********************Do the app creation stuff - The stuff that is done because the app is initializing for the first time**********************************//
+        //Get the main app settings (static variables)
+        RESOURCES = getResources();
 		europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
 		sdfDestination = new SimpleDateFormat(europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
-		
-		RESOURCES = getResources();
 		DP = RESOURCES.getDisplayMetrics().density;
-		mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
 		try {
-			Callisto.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (NameNotFoundException e) {}
-		
-		//This is the most reliable way I've found to determine if it is landscape
-		boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
+			Callisto.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (NameNotFoundException e) {}
+            //This is the most reliable way I've found to determine if it is landscape
+        boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
+
+        //Initialize some static variables
+        mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
-		
-		
+        Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
+        Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
+        Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
+        Callisto.databaseConnector.open();
+        if(Callisto.playerInfo==null)
+            Callisto.playerInfo = new PlayerInfo(Callisto.this);
+        else
+            Callisto.playerInfo.update(Callisto.this);
+
+        //Create the views for the the IRC
+        chatView = new TextView(this);
+        chatView.setGravity(Gravity.BOTTOM);
+        String irc_scrollback=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
+        chatView.setMaxLines(Integer.parseInt(irc_scrollback));
+        logView = new TextView(this);
+        logView.setGravity(Gravity.BOTTOM);
+        logView.setMaxLines(Integer.parseInt(irc_scrollback));
+
+        //Creates the dialog for live error
+        errorDialog = new Dialog(this);
+        TextView t = new TextView(this);
+        t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
+        errorDialog.setContentView(t);
+        errorDialog.setTitle("By the beard of Zeus!");
+
+        //Create the wifi lock
+        WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        if(Live_wifiLock==null || !Live_wifiLock.isHeld())
+            Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+
+        //Create the dialog for live selection
+        liveDg = new AlertDialog.Builder(this)
+                .setTitle("Switch from playlist to live?")
+                .setView(((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
+                .create();
+
+        //Create the phone state listener.
+        // i.e., that which is able to pause when a phone call is received
+        PhoneStateListener phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                if (state == TelephonyManager.CALL_STATE_RINGING) {
+                    if(Callisto.live_isPlaying
+                            || !Callisto.playerInfo.isPaused)
+                    {
+                        playPause(Callisto.this, null);
+                    }
+                    //Incoming call: Pause music
+                } else if(state == TelephonyManager.CALL_STATE_IDLE) {
+                    //Not in call: Play music
+                } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                    if(Callisto.live_isPlaying
+                            || !Callisto.playerInfo.isPaused)
+                    {
+                        playPause(Callisto.this, null);
+                    }
+                }
+                super.onCallStateChanged(state, incomingNumber);
+            }
+        };
+        TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        if(mgr != null) {
+            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
+
+        //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
+		//Set the content view
 		boolean isTablet=false; //TODO
 		if(isTablet)
 			setContentView(R.layout.main_tablet);
 		else
 			setContentView(R.layout.main);
-		
-		findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
-		findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
-		findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
-		findViewById(R.id.next).setOnClickListener(Callisto.next);
-		findViewById(R.id.previous).setOnClickListener(Callisto.previous);
-		
+
 		//This loop sets the onClickListeners and adjusts the button settings if the view is landscape
 		int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
-		int [] graphics = {R.drawable.ic_action_playback_play_lg, R.drawable.ic_action_signal, R.drawable.ic_action_calendar_day, R.drawable.ic_action_dialog, R.drawable.ic_action_mail, R.drawable.ic_action_heart};
-		
 		ImgTxtButton temp;
 		for(int i=0; i<buttons.length; i++)
 		{
 			temp = (ImgTxtButton)findViewById(buttons[i]);
 			temp.setOnClickListener(startAct);
-			
 			
 			if(isLandscape)
 			{/*
@@ -243,24 +309,19 @@ public class Callisto extends Activity {
 				*/
                 temp.setOrientation(LinearLayout.HORIZONTAL);
 			}
-			
 		}
-		((ImgTxtButton) findViewById(R.id.live)).setOnClickListener(LIVE_PlayButton);
-		
-		//Initialization of (some of the) static variables
-		Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
-		Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
-		Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
-		Callisto.databaseConnector.open();
-		if(Callisto.playerInfo==null)
-			Callisto.playerInfo = new PlayerInfo(Callisto.this);
-		else
-			Callisto.playerInfo.update(Callisto.this);
-		
-		System.out.println("Creating listeners");
+
+        //Set the player on click listeners; this is usually done by the PlayerInfo object, when switching activities.
+        findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
+        findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
+        findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
+        findViewById(R.id.next).setOnClickListener(Callisto.next);
+        findViewById(R.id.previous).setOnClickListener(Callisto.previous);
+        findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
+        //Sets the player error and completion errors
 		nextTrack = new OnCompletionListenerWithContext();
 		nextTrackBug = new OnErrorListenerWithContext();
-	    okNowPlay = new OnPreparedListenerWithContext()
+	    mplayerPrepared = new OnPreparedListenerWithContext()
 	    {
 	    	@Override
 	    	public void onPrepared(MediaPlayer arg0) {
@@ -298,65 +359,11 @@ public class Callisto extends Activity {
 	    	}
 	    };
 	    
-	    System.out.println("Create IRC stuff");
-	    	//Create the views for the the IRC
-	    chatView = new TextView(this);
-	    chatView.setGravity(Gravity.BOTTOM);
-	    String i=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
-	    chatView.setMaxLines(Integer.parseInt(i));
-	    logView = new TextView(this);
-	    logView.setGravity(Gravity.BOTTOM);
-	    logView.setMaxLines(Integer.parseInt(i));
-	    
-	    System.out.println("Create live stuff");
-	    	//Creates the dialog for live error
-		dg = new Dialog(this);
-		TextView t = new TextView(this);
-		t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
-		dg.setContentView(t);
-		dg.setTitle("By the beard of Zeus!");
-		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		if(Live_wifiLock==null || !Live_wifiLock.isHeld())
-			Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
-            //Create the dialog for live selection
-        liveDg = new AlertDialog.Builder(this)
-                .setTitle("Switch from playlist to live?")
-                .setView(((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
-                .create();
-	    
-	    
-	    PhoneStateListener phoneStateListener = new PhoneStateListener() {
-	        @Override
-	        public void onCallStateChanged(int state, String incomingNumber) {
-	            if (state == TelephonyManager.CALL_STATE_RINGING) {
-	            	if(Callisto.live_isPlaying
-	            			|| !Callisto.playerInfo.isPaused)
-	            	{
-	            		playPause(Callisto.this, null);	            		
-	            	}
-	                //Incoming call: Pause music
-	            } else if(state == TelephonyManager.CALL_STATE_IDLE) {
-	                //Not in call: Play music
-	            } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
-	            	if(Callisto.live_isPlaying
-	            			|| !Callisto.playerInfo.isPaused)
-	            	{
-	            		playPause(Callisto.this, null);	            		
-	            	}
-	            }
-	            super.onCallStateChanged(state, incomingNumber);
-	        }
-	    };
-	    TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-	    if(mgr != null) {
-	        mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
-	    }
-	    
 	    //Update shows
 	    SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(this);
 	    int lastVersion = pf.getInt("appVersion", 0);
 
-        Log.e("DERP", "" + pf.getString("ActiveDownloads", "").equals(""));
+        //Check for pending downloads. If there are any.....um, do something.
         if(!pf.getString(DownloadList.ACTIVE, "").equals("") && !pf.getString(DownloadList.ACTIVE, "").equals("|"))
         {
             //TODO: Display message
@@ -364,30 +371,33 @@ public class Callisto extends Activity {
             //new DownloadTask(Callisto.this).execute();
         }
 
+        //Check to see if there is any external storage to write to
         if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
 
-	    if(!(Callisto.appVersion>lastVersion))
-	    	return;
-	    
-	    showUpdateNews();
-	    SharedPreferences.Editor editor = pf.edit();
-	    editor.putInt("appVersion", Callisto.appVersion);
-	    editor.commit();
+        //Display the release notes if recently updated
+	    if((Callisto.appVersion>lastVersion))
+        {
+            showUpdateNews();
+            SharedPreferences.Editor editor = pf.edit();
+            editor.putInt("appVersion", Callisto.appVersion);
+            editor.commit();
+        }
 	}
 	
 	
-	/** Called when the activity is going to be destroyed. Currently unused. */
+	/** Called when the activity is going to be destroyed. */
 	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();
 		if(news!=null)
 			news.dismiss();
-		if(dg!=null)
-			dg.dismiss();
-		if(pd!=null)
-			pd.dismiss();
+        Log.v("Callisto:onResume", "Destroying main activity");
+		if(errorDialog !=null)
+			errorDialog.dismiss();
+		if(LIVE_PreparedListener.pd!=null)
+            LIVE_PreparedListener.pd.dismiss();
 	}
 	
 	/** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
@@ -395,12 +405,75 @@ public class Callisto extends Activity {
 	public void onResume()
 	{
 		super.onResume();
-		if(pd!=null)
-			pd.show();
+		if(LIVE_PreparedListener.pd!=null)
+            LIVE_PreparedListener.pd.show();
 		Log.v("Callisto:onResume", "Resuming main activity");
         if(Callisto.playerInfo!=null)
 		    Callisto.playerInfo.update(Callisto.this);
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
+        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
+        theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
+
+        //Stuffs for the donations stuffs
+        if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
+        {
+            String baconString = "Get Bacon";
+            File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+            if(target.exists())
+                baconString = RESOURCES.getString(R.string.bacon);
+            theSubMenu.add(0, BACON_ID, 0, baconString).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+            theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+        }
+
+        menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case STOP_ID:
+                Callisto.stop(this);
+                return true;
+            case SETTINGS_ID:
+                startActivity(new Intent(this, QuickPrefsActivity.class));
+                return true;
+            case RELEASE_ID:
+                showUpdateNews();
+                return true;
+            case BACON_ID:
+                File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+                if(!target.exists())
+                {
+                    new downloadExtras().execute((Void[])null);
+                    return true;
+                }
+                Intent i = new Intent(Callisto.this, Bacon.class);
+                startActivity(i);
+                return true;
+            case CHRISROLL_ID:
+                Uri uri = Uri.parse("http://www.youtube.com/watch?v=98E2hfxF8oE");
+                uri = Uri.parse("vnd.youtube:"  + uri.getQueryParameter("v"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                return true;
+            case QUIT_ID:
+                finish();
+                mNotificationManager.cancelAll();
+                android.os.Process.killProcess(android.os.Process.myPid());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 	
 	/** Creates the layout for various activities, adding the Player Controls.
 	 *  It essentially takes whatever "mainView" is and wraps it and the Controls in a vertical LinearLayout.
@@ -448,13 +521,262 @@ public class Callisto extends Activity {
 		controls.findViewById(R.id.previous).setOnClickListener(Callisto.previous);
 		Log.v("*:build_layout", "Finished building the layout");
     }
-    
+
+
+    //*********************************** Things for updating the player info ***********************************//
+
+    /** Essentially a struct with a few functions to handle the player, particularly updating it when switching activities. */
+    public class PlayerInfo
+    {
+        /** A reference to the MediaPlayer currently in use; either the main one or the live one. **/
+        public MediaPlayer player;
+        /** Data of the currently playing track **/
+        public String title, show, date;
+        /** Track information of the currently playing track **/
+        public int position = 0, length = 0;
+        /** Holds whether or not the player is paused. **/
+        public boolean isPaused = true;
+
+        /** Constructor for the PlayerInfo class. Good to call when first creating the player controls, to set then to something.
+         *  @param c The context for the current Activity.
+         */
+        public PlayerInfo(Context c)
+        {
+            TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
+            Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" +  Callisto.databaseConnector.queueCount());
+            titleView.setText(RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
+        }
+
+        /** Updates the player controls, like the title and times. Used excessively when changing Activities.
+         * @param c The context for the current Activity.
+         */
+        public void update(Context c)
+        {
+            //If it's a widget there is no need to update the controls.
+            if(is_widget)
+            {
+                is_widget = false;
+                return;
+            }
+
+            Callisto.nextTrack.setContext(c);
+
+            //Retrieve the length & position, depending on if it is video or audio
+            if(VideoActivity.videoView!=null)
+            {
+                length = VideoActivity.videoView.getDuration()/1000;
+                position = VideoActivity.videoView.getCurrentPosition()/1000;
+            }
+            else if(Callisto.mplayer!=null)
+            {
+                length = Callisto.mplayer.getDuration()/1000;
+                position = Callisto.mplayer.getCurrentPosition()/1000;
+            }
+
+            Log.v("*:update", "Update - Title: " + title);
+
+            //titleView
+            TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
+            if(titleView==null)
+                Log.w("Callisto:update", "Could not find view: " + "titleView");
+            else
+            if(title==null && Callisto.live_player==null)
+                titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
+            else if(Callisto.live_player==null)
+                titleView.setText(title + " - " + show);
+            else
+                titleView.setText(title + " - JB Radio");
+
+            //timeView
+            Callisto.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
+            if(Callisto.timeView==null)
+                Log.w("Callisto:update", "Could not find view: " + "TimeView");
+            else if(Callisto.live_player!=null)
+            {
+                timeView.setText("Next ");
+                timeView.setEnabled(false);
+            }
+            else
+            {
+                timeView.setText(formatTimeFromSeconds(title==null ? 0 : position));
+                timeView.setEnabled(true);
+            }
+
+            //lengthView
+            TextView lengthView = (TextView) ((Activity)c).findViewById(R.id.length);
+            if(lengthView==null)
+                Log.w("Callisto:update", "Could not find view: " + "lengthView");
+            else if(Callisto.live_player!=null)
+            {
+                lengthView.setText(show);
+                lengthView.setEnabled(false);
+            }
+            else
+            {
+                lengthView.setText(formatTimeFromSeconds(title==null ? 0 : length));
+                lengthView.setEnabled(true);
+            }
+
+            //timeProgress
+            Callisto.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
+            if(Callisto.timeProgress==null)
+                Log.w("Callisto:update", "Could not find view: " + "timeProgress");
+            else if(Callisto.live_player!=null)
+            {
+                timeProgress.setMax(1);
+                timeProgress.setProgress(0);
+                timeProgress.setEnabled(false);
+            }
+            else
+            {
+                timeProgress.setMax(length);
+                timeProgress.setProgress(title==null ? 0 : position);
+                timeProgress.setEnabled(true);
+            }
+
+
+            ImageButton play = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
+            if(play==null)
+                Log.w("Callisto:update", "Could not find view: " + "playPause");
+            else if(Callisto.live_player!=null)
+            {
+                if(Callisto.live_isPlaying)
+                    play.setImageDrawable(Callisto.pauseDrawable);
+                else
+                    play.setImageDrawable(Callisto.playDrawable);
+            } else
+            {
+                if(Callisto.playerInfo.isPaused)
+                    play.setImageDrawable(Callisto.playDrawable);
+                else
+                    play.setImageDrawable(Callisto.pauseDrawable);
+            }
+
+            //Disables views if it is live
+            if(((Activity)c).findViewById(R.id.seek)!=null)
+                ((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
+            if(((Activity)c).findViewById(R.id.previous)!=null)
+                ((Activity)c).findViewById(R.id.previous).setEnabled(Callisto.live_player==null);
+            if(((Activity)c).findViewById(R.id.next)!=null)
+                ((Activity)c).findViewById(R.id.next).setEnabled(Callisto.live_player==null);
+
+            if(timeTimer==null)
+            {
+                Log.i("Callisto:PlayerInfo:update","Starting timer");
+                timeTimer = new Timer();
+                timeTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        TimerMethod();
+                    }
+                }, 0, 250);
+            }
+        }
+
+        /** Clears all internal values to their respective blank values (i.e. null or 0). */
+        public void clear()
+        {
+            title = show = date = null;
+            position = length = 0;
+            isPaused = true;
+        }
+    }
+
+    /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
+    private void TimerMethod()
+    {
+        if(clock==null)
+            clock = new TimerRunnable();
+        TimerHandler.post(clock);
+//		Callisto.this.runOnUiThread(TimerRunnable);
+    }
+
+    private Handler TimerHandler = new Handler();
+
+    /** A runnable to be used in conjunction with the update() function. Updates the player time every set amount of time. */
+    class TimerRunnable implements Runnable
+            //Runnable TimerRunnable = new Runnable()
+    {
+        public int i=0;
+        public void run()
+        {
+            i++;
+            if(Callisto.live_player!=null && Callisto.live_isPlaying)
+            {
+                if(i==Callisto.CHECK_LIVE_EVERY)
+                {
+                    LIVE_update = new LIVE_FetchInfo();
+                    Callisto.LIVE_update.execute((Void [])null);
+                    i=0;
+                }
+                return;
+            }
+            if((Callisto.mplayer==null || !Callisto.mplayer.isPlaying()) &&
+                    (VideoActivity.videoView==null || !VideoActivity.videoView.isPlaying()))
+            {
+                i=0;
+                return;
+            }
+            try {
+                if(VideoActivity.videoView!=null)
+                    Callisto.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
+                else
+                    Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
+                current = Callisto.playerInfo.position/1000;
+                timeProgress.setProgress(current);
+                timeView.setText(formatTimeFromSeconds(current));
+                Log.i("Callisto:TimerMethod", "Timer mon " + Callisto.playerInfo.position);
+
+                Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
+                if(Queue.currentProgress!=null)
+                {
+                    Log.i("currentprogress", current + "/" + Callisto.playerInfo.length);
+                    double xy = (current*100.0) / Callisto.playerInfo.length;
+                    Log.i("currentprogress", xy + " !");
+                    Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
+                }
+
+
+                if(i==Callisto.SAVE_POSITION_EVERY)
+                {
+                    i=0;
+                    try {
+                        Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
+                        Cursor queue = Callisto.databaseConnector.currentQueue();
+                        queue.moveToFirst();
+                        Long identity = queue.getLong(queue.getColumnIndex("identity"));
+                        Callisto.databaseConnector.updatePosition(identity, Callisto.playerInfo.position);
+                    } catch(NullPointerException e)
+                    {
+                        Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
+                    }
+                }
+
+            } catch(Exception e)
+            {
+                System.out.println("HERP!!!");
+            }
+        }
+    };
+
+    static public Handler updateHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if(Callisto.LIVE_PreparedListener.c!=null)
+                playerInfo.update(Callisto.LIVE_PreparedListener.c);
+        }
+    };
+
+    //*********************************** Listeners and methods for controlling the players ***********************************//
+
     /** Listener for the Next (">") button. Proceeds to the next track, if there is one. */
     public static OnClickListener next = new OnClickListener()
     {
     	@Override public void onClick(View v)
     	{
-    		playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+    		changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 		}
 	};
 	/** Listener for the Previous ("<") button. Goes back to the previous track, if there is one. */
@@ -462,22 +784,23 @@ public class Callisto extends Activity {
     {
     	@Override public void onClick(View v)
     	{
-    		playTrack(v.getContext(), -1, !Callisto.playerInfo.isPaused);
+    		changeToTrack(v.getContext(), -1, !Callisto.playerInfo.isPaused);
 		}
 	};
     
-	/** This method plays the next song in the queue, if there is one.
+	/** Changes position in queue to another song and optionally starts playing it.
 	 * @param c The context of the current activity.
 	 * @param previousOrNext >0 if it should play the next track, <0 for the previous, and 0 for the current
 	 * @param sp true if the player should start playing when it changes tracks, false otherwise
 	 */
-    public static void playTrack(Context c, int previousOrNext, boolean sp)
+    public static void changeToTrack(Context c, int previousOrNext, boolean sp)
     {    	
 		Cursor queue = Callisto.databaseConnector.advanceQueue(previousOrNext);
+
     	//If there are no items in the queue, stop the player
     	if(queue==null || queue.getCount()==0)
     	{
-    		Log.v("*:playTrack", "Queue is empty. Pausing.");
+    		Log.v("*:changeToTrack", "Queue is empty. Pausing.");
 	    	ImageButton x = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
 	    	if(x!=null)
 	    		x.setImageDrawable(Callisto.pauseDrawable);
@@ -486,7 +809,7 @@ public class Callisto extends Activity {
     		return;
     	}
     	
-    	Log.v("*:playTrack", "Queue Size: " + queue.getCount());
+    	Log.v("*:changeToTrack", "Queue Size: " + queue.getCount());
     	queue.moveToFirst();
     		//The queue merely stores the identity (_id) of the entrie's position in the main SQL
     		//After obtaining it, we can get all the information about it
@@ -494,37 +817,41 @@ public class Callisto extends Activity {
     	Long identity = queue.getLong(queue.getColumnIndex("identity"));
     	boolean isStreaming = queue.getInt(queue.getColumnIndex("streaming"))>0;
         boolean isVideo = queue.getInt(queue.getColumnIndex("video"))>0;
-        Cursor db = Callisto.databaseConnector.getOneEpisode(identity);
-	    db.moveToFirst();
-	    
+        Cursor theTargetTrack = Callisto.databaseConnector.getOneEpisode(identity);
+	    theTargetTrack.moveToFirst();
+
+        //Retrieve all of the playerInfo about the new track
 	    String media_location;
-	    Callisto.playerInfo.title = db.getString(db.getColumnIndex("title"));
-	    Callisto.playerInfo.position = db.getInt(db.getColumnIndex("position"));
-	    System.out.println("Position1=" + Callisto.playerInfo.position);
-	    Callisto.playerInfo.date = db.getString(db.getColumnIndex("date"));
-	    Callisto.playerInfo.show = db.getString(db.getColumnIndex("show"));
-	    Log.i("*:playTrack", "Loading info: " + Callisto.playerInfo.title);
+	    Callisto.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
+	    Callisto.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
+	    Callisto.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));
+	    Callisto.playerInfo.show = theTargetTrack.getString(theTargetTrack.getColumnIndex("show"));
+	    Log.i("*:changeToTrack", "Loading info: " + Callisto.playerInfo.title);
+        //Retrieve the location of the new track
 	    if(isStreaming)
 	    {
-	    	media_location = db.getString(db.getColumnIndex(isVideo?"vidlink":"mp3link"));
+	    	media_location = theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo?"vidlink":"mp3link"));
 	    }
 	    else
 	    {
+            //Get the date from the info retrieved from SQL. If it is malformed we have a SERIOUS problem and must halt.
 		    try {
 	        	Callisto.playerInfo.date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(playerInfo.date));
 			} catch (ParseException e) {
-				Log.e("*playTrack:ParseException", "Error parsing a date from the SQLite db:");
-				Log.e("*playTrack:ParseException", playerInfo.date);
-				Log.e("*playTrack:ParseException", "(This should never happen).");
+				Log.e("*changeToTrack:ParseException", "Error parsing a date from the SQLite db:");
+				Log.e("*changeToTrack:ParseException", playerInfo.date);
+				Log.e("*changeToTrack:ParseException", "(This should never happen).");
 				e.printStackTrace();
 				Toast.makeText(c, RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
 				Callisto.databaseConnector.deleteQueueItem(id);
 				return;
 			}
-		    
+
+            //Here we actually get the path
 	        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
 	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title +
-                    EpisodeDesc.getExtension(db.getString(db.getColumnIndex(isVideo?"vidlink":"mp3link"))));
+                    EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
+            //If it doesn't exist, we must halt.
 	        if(!target.exists())
 	        {
                 if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
@@ -536,53 +863,56 @@ public class Callisto extends Activity {
                             .create().show();
                     return;
                 }
-	        	Log.e("*:playTrack", "File not found: " + target.getPath());
+	        	Log.e("*:changeToTrack", "File not found: " + target.getPath());
 	        	Toast.makeText(c, RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
 	        	Callisto.databaseConnector.deleteQueueItem(id);
 				return;
 	        }
+            //Here we FINALLY get the path.
 	        media_location = target.getPath();
 	    }
-        System.out.println("Position2=" + Callisto.playerInfo.position);
-	    
+
+        //Create the notification for this new track
+        //TODO: must we create the intents and whatnot every time?
 		Intent notificationIntent = new Intent(c, EpisodeDesc.class);
 		notificationIntent.putExtra("id", identity);
 		PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     	Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
 		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
        	Callisto.notification_playing.setLatestEventInfo(c,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
-       	
        	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
 
-        System.out.println("Position3=" + Callisto.playerInfo.position);
+
+        //Here is where we FINALLY actually play the track.
        	if(isVideo)
            {
+               Log.i("*:changeToTrack", "New track is a video, creating intent");
                Intent intent= new Intent(c, VideoActivity.class);
                intent.putExtra("uri", media_location);
                intent.putExtra("seek", Callisto.playerInfo.position);
-               System.out.println("Position0=" + Callisto.playerInfo.position);
                Callisto.playerInfo.update(c);
-               System.out.println("Position0=" + Callisto.playerInfo.position);
                c.startActivity(intent);
                 return;
            }
 		try {
+            Log.i("*:changeToTrack", "New track is an audio, doing MediaPlayer things");
 			if(Callisto.mplayer==null)
 				Callisto.mplayer = new MediaPlayer(); //This could be a problem
 			Callisto.mplayer.reset();
-			Callisto.okNowPlay.setContext(c);
+			Callisto.mplayerPrepared.setContext(c);
 			Callisto.mplayer.setDataSource(media_location);
-            Log.i("*:playTrack", "Setting source: " + media_location);
+            Log.i("*:changeToTrack", "Setting source: " + media_location);
 			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
 			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-			okNowPlay.startPlaying = sp;
-			Callisto.mplayer.setOnPreparedListener(okNowPlay);
-			Log.i("*:playTrack", "Preparing..." + sp);
+			mplayerPrepared.startPlaying = sp;
+			Callisto.mplayer.setOnPreparedListener(mplayerPrepared);
+			Log.i("*:changeToTrack", "Preparing..." + sp);
+            //Streaming requires a dialog
 			if(isStreaming)
 			{
-				okNowPlay.pd = ProgressDialog.show(c, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-				okNowPlay.pd.setCancelable(true);
-				okNowPlay.pd.setOnDismissListener(new OnDismissListener() {
+				mplayerPrepared.pd = ProgressDialog.show(c, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+				mplayerPrepared.pd.setCancelable(true);
+				mplayerPrepared.pd.setOnDismissListener(new OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						Callisto.mplayer.stop();
@@ -591,250 +921,27 @@ public class Callisto extends Activity {
 				});
 			}
 			Callisto.mplayer.prepareAsync();
-			//FIXME: EXCEPTIONS
+			//Picks up at the mplayerPrepared listener
 		} catch (IllegalArgumentException e) {
-			Log.e("*playTrack:IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
-			Log.e("*playTrack:IllegalArgumentException", media_location);
+			Log.e("*changeToTrack:IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
+			Log.e("*changeToTrack:IllegalArgumentException", media_location);
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			Log.e("*playTrack:IllegalStateException", "Error in State for MediaPlayer:");
+			Log.e("*changeToTrack:IllegalStateException", "Error in State for MediaPlayer:");
 		} catch (IOException e) {
-			Log.e("*playTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
+			Log.e("*changeToTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
 			e.printStackTrace();
 		}
-		
+
+        //Update the widgets
 		CallistoWidget.updateAllWidgets(c);
     }
-    
-    
-	/** Essentially a struct with a few functions to handle the player, particularly updating it when switching activities. */ 
-    public class PlayerInfo
-    {
-    	public MediaPlayer player;
-    	public String title, show, date;
-    	public int position = 0, length = 0;
-    	public boolean isPaused = true;
-    	
-    	/** Constructor for the PlayerInfo class. Good to call when first creating the player controls, to set then to something.
-    	 *  @param c The context for the current Activity. 
-    	 */
-    	public PlayerInfo(Context c)
-    	{
-    		TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
-    		Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" +  Callisto.databaseConnector.queueCount());
-			titleView.setText(RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
-    	}
-    	
-    	/** Updates the player controls, like the title and times. Used excessively when changing Activities.
-    	 * @param c The context for the current Activity.
-    	 */
-    	public void update(Context c)
-    	{
-    		if(is_widget)
-    		{
-    			is_widget = false;
-    			return;
-    		}
-    		Callisto.nextTrack.setContext(c);
-            if(VideoActivity.videoView!=null)
-            {
-                length = VideoActivity.videoView.getDuration()/1000;
-                position = VideoActivity.videoView.getCurrentPosition()/1000;
-            }
-    		else if(Callisto.mplayer!=null)
-    		{
-    			length = Callisto.mplayer.getDuration()/1000;
-    			position = Callisto.mplayer.getCurrentPosition()/1000;
-    		}
-    		
-    		Log.v("*:update", "Update - Title: " + title);
-    		
-    		//titleView
-    	    TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
-    	    if(titleView==null)
-    	    	Log.w("Callisto:update", "Could not find view: " + "titleView");
-    	    else
-    	    	if(title==null && Callisto.live_player==null)
-        	    	titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
-        	    else if(Callisto.live_player==null)
-        	    	titleView.setText(title + " - " + show);
-        	    else
-        	    	titleView.setText(title + " - JB Radio");
-    	    
-    	    //timeView
-	    	Callisto.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
-	    	if(Callisto.timeView==null)
-    	    	Log.w("Callisto:update", "Could not find view: " + "TimeView");
-    	    else if(Callisto.live_player!=null)
-    	    {
-    	    	timeView.setText("Next ");
-    	    	timeView.setEnabled(false);
-    	    }
-    	    else
-    	    {
-	    		timeView.setText(formatTimeFromSeconds(title==null ? 0 : position));
-	    		timeView.setEnabled(true);
-    	    }
-    	    
-	    	//lengthView
-    	    TextView lengthView = (TextView) ((Activity)c).findViewById(R.id.length);
-    	    if(lengthView==null)
-    	    	Log.w("Callisto:update", "Could not find view: " + "lengthView");
-    	    else if(Callisto.live_player!=null)
-    	    {
-    	    	lengthView.setText(show);
-    	    	lengthView.setEnabled(false);
-    	    }
-    	    else
-    	    {
-    	    	lengthView.setText(formatTimeFromSeconds(title==null ? 0 : length));
-    	    	lengthView.setEnabled(true);
-    	    }
-    	    
-    	    //timeProgress
-    	    Callisto.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
-    	    if(Callisto.timeProgress==null)
-    	    	Log.w("Callisto:update", "Could not find view: " + "timeProgress");
-    	    else if(Callisto.live_player!=null)
-    	    {
-	    	    timeProgress.setMax(1);
-	    	    timeProgress.setProgress(0);
-	    	    timeProgress.setEnabled(false);
-    	    }
-    	    else
-    	    {
-	    	    timeProgress.setMax(length);
-	    	    timeProgress.setProgress(title==null ? 0 : position);
-	    	    timeProgress.setEnabled(true);
-    	    }
-        	
-        	
-        	ImageButton play = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
-        	if(play==null)
-    	    	Log.w("Callisto:update", "Could not find view: " + "playPause");
-    	    else if(Callisto.live_player!=null)
-    	    {
-				if(Callisto.live_isPlaying)
-					play.setImageDrawable(Callisto.pauseDrawable);
-				else
-					play.setImageDrawable(Callisto.playDrawable);
-    	    } else
-    	    {
-				if(Callisto.playerInfo.isPaused)
-					play.setImageDrawable(Callisto.playDrawable);
-				else
-					play.setImageDrawable(Callisto.pauseDrawable);
-    	    }
-
-            Log.e("AHAB", Callisto.live_player + " ");
-        	if(((Activity)c).findViewById(R.id.seek)!=null)
-        		((Activity)c).findViewById(R.id.seek).setEnabled(Callisto.live_player==null);
-        	if(((Activity)c).findViewById(R.id.previous)!=null)
-        		((Activity)c).findViewById(R.id.previous).setEnabled(Callisto.live_player==null);
-        	if(((Activity)c).findViewById(R.id.next)!=null)
-        		((Activity)c).findViewById(R.id.next).setEnabled(Callisto.live_player==null);
-        	
-        	if(timeTimer==null)
-        	{
-        		Log.i("Callisto:PlayerInfo:update","Starting timer");
-        		timeTimer = new Timer();
-        		timeTimer.schedule(new TimerTask() {			
-    			@Override
-    			public void run() {
-    				TimerMethod();
-    			}
-        		}, 0, 250);
-        	}
-    	}
-    	
-    	/** Clears all internal values to their respective blank values (i.e. null or 0). */
-    	public void clear()
-    	{
-    		title = show = date = null;
-    		position = length = 0;
-    		isPaused = true;
-    	}
-    }
-
-    /** A simple menthod to run TimerRunnable in the UI Thread to allow it to update Views. */
-	private void TimerMethod()
-	{
-        if(clock==null)
-            clock = new TimerRunnable();
-        TimerHandler.post(clock);
-//		Callisto.this.runOnUiThread(TimerRunnable);
-	}
-
-    private Handler TimerHandler = new Handler();
-
-	/** A runnable to be used in conjunction with the update() function. Updates the player time every set amount of time. */
-    class TimerRunnable implements Runnable
-	//Runnable TimerRunnable = new Runnable()
-	{
-		public int i=0;
-		public void run()
-		{
-			i++;
-			if(Callisto.live_player!=null && Callisto.live_isPlaying)
-			{
-				if(i==Callisto.CHECK_LIVE_EVERY)
-				{
-					LIVE_update = new LIVE_FetchInfo();
-					Callisto.LIVE_update.execute((Void [])null);
-					i=0;
-				}
-				return;
-			}
-			if((Callisto.mplayer==null || !Callisto.mplayer.isPlaying()) &&
-                    (VideoActivity.videoView==null || !VideoActivity.videoView.isPlaying()))
-			{
-				i=0;
-				return;
-			}
-			try {
-            if(VideoActivity.videoView!=null)
-                Callisto.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
-            else
-			    Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
-			current = Callisto.playerInfo.position/1000;
-			timeProgress.setProgress(current);
-			timeView.setText(formatTimeFromSeconds(current));
-            Log.i("Callisto:TimerMethod", "Timer mon " + Callisto.playerInfo.position);
-
-            Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
-            if(Queue.currentProgress!=null)
-            {
-                Log.i("currentprogress", current + "/" + Callisto.playerInfo.length);
-                double xy = (current*100.0) / Callisto.playerInfo.length;
-                Log.i("currentprogress", xy + " !");
-                Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
-            }
 
 
-			if(i==Callisto.SAVE_POSITION_EVERY)
-			{
-				i=0;
-				try {
-				Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
-		    	Cursor queue = Callisto.databaseConnector.currentQueue();
-		    	queue.moveToFirst();
-		    	Long identity = queue.getLong(queue.getColumnIndex("identity"));
-				Callisto.databaseConnector.updatePosition(identity, Callisto.playerInfo.position);
-				} catch(NullPointerException e)
-				{
-					Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
-				}
-			}
-			
-			} catch(Exception e)
-			{
-				System.out.println("HERP!!!");
-			}
-		}
-	};
-	
-	public static void playPause(Context c, View v)
+    /** Plays or pauses the currently playing track; does not adjust what is the current track **/
+    //TODO: More comments
+    public static void playPause(Context c, View v)
 	{
 		String live_url = "";
 		try {
@@ -877,7 +984,7 @@ public class Callisto extends Activity {
 			Callisto.mplayer = new MediaPlayer();
 			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
 			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
-			Callisto.playTrack(c, 0, true);
+			Callisto.changeToTrack(c, 0, true);
 		}
 		else
 		{
@@ -909,28 +1016,28 @@ public class Callisto extends Activity {
 			Callisto.playPause(v.getContext(), v);
 		  }
     };
-    
-	/** Converts a time in seconds to a human readable format.
-	 *  @param seconds The raw number of seconds to format.
-	 *  @return A string formatted in either HH:mm:ss or mm:ss, depending on how many hours are calculated.
-	 */ 
-    public static String formatTimeFromSeconds(int seconds)
+
+    /** Stops the player. Clears the notifications, releases resources, etc. */
+    public static void stop(Context c)
     {
-  	  int minutes = seconds / 60;
-  	  seconds %= 60;
-  	  if(minutes>=60)
-  	  {
-  		  int hours = minutes / 60;
-  		  minutes %= 60;
-  		  return ((Integer.toString(hours) + ":" + 
-  				 (minutes<10?"0":"") + Integer.toString(minutes) + ":" + 
-  				 (seconds<10?"0":"") + Integer.toString(seconds)));
-  	  }
-  	  else
-  		  return ((Integer.toString(minutes) + ":" + 
-  				 (seconds<10?"0":"") + Integer.toString(seconds)));
+        if(Callisto.playerInfo!=null)
+            Callisto.playerInfo.clear();
+        if(Callisto.mplayer!=null) {
+            Callisto.mplayer.reset();
+            Callisto.mplayer = null;
+        }
+        if(Callisto.live_player!=null) {
+            Callisto.live_player.reset();
+            Callisto.live_player = null;
+        }
+        playerInfo.title = null;
+        playerInfo.update(c);
+        mNotificationManager.cancel(NOTIFICATION_ID);
+        CallistoWidget.updateAllWidgets(c);
     }
-    
+
+    //*********************************** On Click Listeners ***********************************//
+
     /** Listener for the playlist button; displays the queue. */
     public static OnClickListener playlist = new OnClickListener() 
     {
@@ -1043,6 +1150,75 @@ public class Callisto extends Activity {
 	        });
 		  }
     };
+
+    OnClickListener launchVideo = new OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            liveDg.dismiss();
+            String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
+            Intent intent= new Intent(v.getContext(), VideoActivity.class);
+            intent.putExtra("uri", "");
+            Callisto.playerInfo.update(v.getContext());
+            v.getContext().startActivity(intent);
+            return;
+        }
+    };
+
+    OnClickListener launchAudio = new OnClickListener()
+    {
+        @Override
+        public void onClick(View v) {
+            liveDg.dismiss();
+            if(Callisto.live_player == null || !Callisto.live_isPlaying)
+            {
+                Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
+                if(Callisto.mplayer!=null)
+                    Callisto.mplayer.reset();
+                Callisto.mplayer=null;
+                LIVE_Init();
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                LIVE_PreparedListener.setContext(v.getContext());
+                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
+                String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
+                Log.d("LiveStream:playButton", "Alright so getting url");
+                try {
+                    Callisto.live_player.setDataSource(live_url);
+                    if(!Live_wifiLock.isHeld())
+                        Live_wifiLock.acquire();
+                    LIVE_Prepare(Callisto.this);
+                } catch (Exception e) {
+                    //errorDialog.show();
+                    e.printStackTrace();
+                    LIVE_SendErrorReport("EXCEPTION");
+                }
+            }
+            else
+            {
+                Log.d("LiveStream:playButton", "Live player does exist.");
+                if(Callisto.live_isPlaying)
+                {
+                    Log.d("LiveStream:playButton", "Pausing.");
+                    Callisto.live_player.pause();
+                }
+                else
+                {
+                    if(!Live_wifiLock.isHeld())
+                        Live_wifiLock.acquire();
+                    Log.d("LiveStream:playButton", "Playing.");
+                    Callisto.live_player.start();
+                }
+                Callisto.live_isPlaying = !Callisto.live_isPlaying;
+            }
+            Log.d("LiveStream:playButton", "Done");
+        }
+    };
+
+
+    //*********************************** Update a show ***********************************//
     
     
     /** Downloads and resizes a show's logo image.
@@ -1099,8 +1275,8 @@ public class Callisto extends Activity {
     }
     }
 
-    
-    
+
+
 	/** Updates a show by checking to see if there are any new episodes available.
 	 * 
 	 * @param currentShow The number of the current show in relation to the AllShows.SHOW_LIST array
@@ -1382,24 +1558,9 @@ public class Callisto extends Activity {
  	   return m;
 	}
 
-	
-	
-	
-	
-	
-	
-    
 
-    
-	static public Handler updateHandler = new Handler()
-	{
-        @Override
-        public void handleMessage(Message msg)
-        {
-        	if(Callisto.LIVE_PreparedListener.c!=null)
-        		playerInfo.update(Callisto.LIVE_PreparedListener.c);
-        }
-	};
+    //*********************************** Live Stuff ***********************************//
+    //TODO: rename this shit?
     
 	/** Initiates the live player. Can be called across activities. */
 	static public void LIVE_Init()
@@ -1411,8 +1572,8 @@ public class Callisto extends Activity {
 		Log.d("LiveStream:liveInit", "Initiating the live player.");
 		Callisto.live_player.setOnErrorListener(new OnErrorListener() {
 		    public boolean onError(MediaPlayer mp, int what, int extra) {
-		    	if(pd!=null)
-		    		pd.hide();
+		    	if(LIVE_PreparedListener.pd!=null)
+                    LIVE_PreparedListener.pd.hide();
 		    	String whatWhat="";
 		    	switch (what) {
 		        case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
@@ -1429,8 +1590,8 @@ public class Callisto extends Activity {
 		        	return true;
 		        }
                 try{
-		    	if(dg!=null)
-		    		dg.show();
+		    	if(errorDialog !=null)
+		    		errorDialog.show();
                 }catch(Exception e){}
 
 		    	System.out.println(whatWhat);
@@ -1441,27 +1602,7 @@ public class Callisto extends Activity {
 		Log.d("LiveStream:liveInit", "Initiating the live player.");
 	}
 
-    static public ProgressDialog BaconDialog(Context c, String title, String message)
-    {
-        if(message==null)
-            message=Callisto.RESOURCES.getString(R.string.loading_msg);
-        ProgressDialog pDialog = new ProgressDialog(c);
-        pDialog.setCancelable(false);
-        pDialog.setTitle(title);
-        pDialog.setMessage(message);
-        pDialog.setIcon(R.drawable.ic_action_gear);
-        pDialog.show();
 
-        //((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress).getParent().getParent().getParent().getParent().getParent()).setBackgroundDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
-        ((View)(pDialog.getWindow().findViewById(android.R.id.progress)).getParent()).setBackgroundColor(0xFFFFFFFF);
-        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextColor(0xff000000);
-        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);
-        ((View) pDialog.getWindow().findViewById(android.R.id.message)).setPadding(15, 5, 5, 5);
-        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setLayoutParams(new LayoutParams(96, 96));
-        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
-        return pDialog;
-    }
-	
 	/** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
 	static public void LIVE_Prepare(Context c)
 	{
@@ -1516,7 +1657,7 @@ public class Callisto extends Activity {
 			}
 			catch(Exception e)
 			{
-				dg.show();
+				errorDialog.show();
 				e.printStackTrace();
 			}
 		}
@@ -1558,72 +1699,6 @@ public class Callisto extends Activity {
             liveDg.getWindow().findViewById(R.id.video).setOnClickListener(launchVideo);
 		}
 	};
-
-    OnClickListener launchVideo = new OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            liveDg.dismiss();
-            String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
-            Intent intent= new Intent(v.getContext(), VideoActivity.class);
-            intent.putExtra("uri", "");
-            Callisto.playerInfo.update(v.getContext());
-            v.getContext().startActivity(intent);
-            return;
-        }
-    };
-
-    OnClickListener launchAudio = new OnClickListener()
-    {
-        @Override
-        public void onClick(View v) {
-            liveDg.dismiss();
-            if(Callisto.live_player == null || !Callisto.live_isPlaying)
-            {
-                Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
-                if(Callisto.mplayer!=null)
-                    Callisto.mplayer.reset();
-                Callisto.mplayer=null;
-                LIVE_Init();
-                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-                Callisto.live_player.setOnPreparedListener(LIVE_PreparedListener);
-                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-                LIVE_PreparedListener.setContext(v.getContext());
-                Log.d("LiveStream:playButton", "Would you like a falafel with that?");
-                String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
-                Log.d("LiveStream:playButton", "Alright so getting url");
-                try {
-                    Callisto.live_player.setDataSource(live_url);
-                    if(!Live_wifiLock.isHeld())
-                        Live_wifiLock.acquire();
-                    LIVE_Prepare(Callisto.this);
-                } catch (Exception e) {
-                    //dg.show();
-                    e.printStackTrace();
-                    LIVE_SendErrorReport("EXCEPTION");
-                }
-            }
-            else
-            {
-                Log.d("LiveStream:playButton", "Live player does exist.");
-                if(Callisto.live_isPlaying)
-                {
-                    Log.d("LiveStream:playButton", "Pausing.");
-                    Callisto.live_player.pause();
-                }
-                else
-                {
-                    if(!Live_wifiLock.isHeld())
-                        Live_wifiLock.acquire();
-                    Log.d("LiveStream:playButton", "Playing.");
-                    Callisto.live_player.start();
-                }
-                Callisto.live_isPlaying = !Callisto.live_isPlaying;
-            }
-            Log.d("LiveStream:playButton", "Done");
-        }
-    };
 	
 	/** Sends an error report to the folks at Qweex. COMPLETELY anonymous. The only information that is sent is the version of Callisto and the version of Android. */
 	public static void LIVE_SendErrorReport(String msg)
@@ -1636,79 +1711,126 @@ public class Callisto extends Activity {
 	    httpClient.execute(httpGet, localContext);
 	    }catch(Exception e){}
 	}
-	
-	
-    
-    /** Shows the update news for the current version */
-	public void showUpdateNews()
-	{
-	    TextView newsHeader = new TextView(this);
-	    newsHeader.setPadding(5, 5, 5, 5);
-	    TextView newsFooter = new TextView(this);
-	    newsFooter.setPadding(5, 5, 5, 5);
-		
-	    android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
-	    java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
+
+
+    //*********************************** Misc stuffs ***********************************//
+
+    //TODO: Remove this shit
+    public class downloadExtras extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... c)
+        {
+            final String FILELOC = "http://www.qweex.com/qweexware/callisto/extras/";
+            String[] files = {"baconlove.gif", "bryan.mp3", "gangnam.mid", "gangnam.gif"};
+            File f = new File(Environment.getExternalStorageDirectory() + File.separator +
+                    storage_path + File.separator +
+                    "extras");
+            f.mkdir();
+            for(int i=0; i<files.length; i++)
+            {
+                f = new File(Environment.getExternalStorageDirectory() + File.separator +
+                        storage_path + File.separator +
+                        "extras" + File.separator + files[i]);
+                if(f.exists())
+                    continue;
+                try {
+                    URL url = new URL (FILELOC + files[i]);
+                    InputStream input = url.openStream();
+                    try {
+                        OutputStream output = new FileOutputStream (f.getPath());
+                        try {
+                            byte[] buffer = new byte[5 * 1024];
+                            int bytesRead = 0;
+                            while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+                                output.write(buffer, 0, bytesRead);
+                            }
+                        } finally {
+                            output.close();
+                        }
+                    } finally {
+                        input.close();
+                    }
+                } catch(Exception e) {e.printStackTrace();}
+            }
+            return null;
+        }
+    };
+
+    /** Builds & shows the update news for the current version */
+    public void showUpdateNews()
+    {
+        //Build and Footer
+        TextView newsHeader = new TextView(this);
+        newsHeader.setPadding(5, 5, 5, 5);
+        TextView newsFooter = new TextView(this);
+        newsFooter.setPadding(5, 5, 5, 5);
+
+        //Create the listview & data for it
+        android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
+        java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
         java.util.List<java.util.List<java.util.Map<String, String>>> childData = new ArrayList<java.util.List<java.util.Map<String, String>>>();
+
+        //Read the file; halt if there's an error
         java.io.BufferedReader bufReader;
         try {
-         bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
+            bufReader = new java.io.BufferedReader(new java.io.InputStreamReader(getAssets().open("UpdateNotes")));
         } catch(Exception e) { return; }
+
+        //Read the file line by line & process it
         String line=null;
-        int place = 111;
+        int place = 111;    //The placing that the current item is; numbers are a stupid way to do it. Stop judging me.
         try {
-        while( (line=bufReader.readLine()) != null )
-        {
-        	//Header
-        	switch(place)
-        	{
-        	//header
-        	case 111:
-        	case 1:
-            	if("".equals(line))
-            	{
-            		place--;
-            		continue;
-            	}
-            	newsHeader.setText(newsHeader.getText() + (place==111?"":"\n") + line);
-            	if(place==111) place=1;
-            	break;
-        	case -1:
-        		newsFooter.setText(newsFooter.getText() + "\n" + line);
-        		break;
-        	case 0:
-            	if("".equals(line))
-            	{
-            		place--;
-            		continue;
-            	}
-	        	java.util.Map<String, String> curGroupMap = new java.util.HashMap<String, String>();
-	        	java.util.List<java.util.Map<String, String>> children = new ArrayList<java.util.Map<String, String>>();
-	        	groupData.add(curGroupMap);
-	
-	        	int x = line.indexOf("--",1);
-	        	int y = line.indexOf("--", x+2);;
-	        	curGroupMap.put("TITLE", line.substring(0, x).trim());
-	        	while(true)
-	        	{
-	        		if(y==-1)
-	        			y = line.length();
-		        	java.util.Map<String, String> curChildMap = new java.util.HashMap<String, String>();
-		            children.add(curChildMap);
-		            curChildMap.put("DESCRIPTION", line.substring(x+2, y).trim());
-		            if(y==line.length())
-		            	break;
-	        		x = line.indexOf("--", x+2);
-	        		y = line.indexOf("--", x+2);
-	        	}
-	            childData.add(children);
-	            break;
-        	}
-        }
+            while( (line=bufReader.readLine()) != null )
+            {
+                switch(place)
+                {
+                    case 111:   //The starting state; Does not require a new line for the first line of the header
+                    case 1:     //The header
+                        if("".equals(line))
+                        {
+                            place--;
+                            continue;
+                        }
+                        newsHeader.setText(newsHeader.getText() + (place==111?"":"\n") + line);
+                        if(place==111) place=1;
+                        break;
+                    case -1:    //The footer
+                        newsFooter.setText(newsFooter.getText() + "\n" + line);
+                        break;
+                    case 0:     //An item with expandable subpoints
+                        if("".equals(line))
+                        {
+                            place--;
+                            continue;
+                        }
+                        java.util.Map<String, String> curGroupMap = new java.util.HashMap<String, String>();
+                        java.util.List<java.util.Map<String, String>> children = new ArrayList<java.util.Map<String, String>>();
+                        groupData.add(curGroupMap);
+
+                        int x = line.indexOf("--",1);
+                        int y = line.indexOf("--", x+2);;
+                        curGroupMap.put("TITLE", line.substring(0, x).trim());
+                        while(true)
+                        {
+                            if(y==-1)
+                                y = line.length();
+                            java.util.Map<String, String> curChildMap = new java.util.HashMap<String, String>();
+                            children.add(curChildMap);
+                            curChildMap.put("DESCRIPTION", line.substring(x+2, y).trim());
+                            if(y==line.length())
+                                break;
+                            x = line.indexOf("--", x+2);
+                            y = line.indexOf("--", x+2);
+                        }
+                        childData.add(children);
+                        break;
+                }
+            }
         } catch(Exception e) {}
-	    
-	    
-	    android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
+
+        //Yeaaah create the adapter! Yeah!
+        android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
                 this,
                 groupData,
                 R.layout.news_listitem1,
@@ -1718,143 +1840,62 @@ public class Callisto extends Activity {
                 R.layout.news_listitem2,
                 new String[] { "DESCRIPTION" },
                 new int[] { android.R.id.text1 }
-                );
-	    elv.addHeaderView(newsHeader);
-	    elv.addFooterView(newsFooter);
+        );
+        elv.addHeaderView(newsHeader);
+        elv.addFooterView(newsFooter);
         elv.setAdapter(mAdapter);
         elv.setGroupIndicator(null);
-	    news = new Dialog(this);
-	    try {
-	    	news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-	    } catch(Exception e) {
-	    	news.setTitle("Update notes");
-	    }
-	    news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-	    news.show();
-	}
-	
-    
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {    	
-    	menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-    	menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
-    	SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
-    	theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
-    	
-    	if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
-    	{
-	    	String baconString = "Get Bacon";
-	    	File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
-	    	if(target.exists())
-	    		baconString = RESOURCES.getString(R.string.bacon);
-	    	theSubMenu.add(0, BACON_ID, 0, baconString).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
-	    	theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
-    	}
-    	
-    	
-    	menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
-        return true;
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-        case STOP_ID:
-        	Callisto.stop(this);
-        	return true;
-        case SETTINGS_ID:
-        	startActivity(new Intent(this, QuickPrefsActivity.class));
-        	return true;
-        case RELEASE_ID:
-        	showUpdateNews();
-            return true;
-        case BACON_ID:
-        	File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
-	    	if(!target.exists())
-	    	{
-	    		new downloadExtras().execute((Void[])null);
-	    		return true;
-	    	}
-        	Intent i = new Intent(Callisto.this, Bacon.class);
-            startActivity(i);
-        	return true;
-        case CHRISROLL_ID:
-	    	Uri uri = Uri.parse("http://www.youtube.com/watch?v=98E2hfxF8oE");
-	    	uri = Uri.parse("vnd.youtube:"  + uri.getQueryParameter("v"));
-	    	Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-	    	startActivity(intent);
-	    	return true;
-        case QUIT_ID:
-        	finish();
-        	mNotificationManager.cancelAll();
-        	android.os.Process.killProcess(android.os.Process.myPid());
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+        news = new Dialog(this);
+        //Set the title with the version number if possible
+        try {
+            news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+        } catch(Exception e) {
+            news.setTitle("Update notes");
         }
+        //Show it!
+        news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        news.show();
     }
-    
-    public class downloadExtras extends AsyncTask<Void, Void, Void>
-    {	
-    	@Override
-        protected Void doInBackground(Void... c)
-    	{
-        	final String FILELOC = "http://www.qweex.com/qweexware/callisto/extras/";
-        	String[] files = {"baconlove.gif", "bryan.mp3", "gangnam.mid", "gangnam.gif"};
-        	File f = new File(Environment.getExternalStorageDirectory() + File.separator + 
-				      storage_path + File.separator +
-				      "extras");
-        	f.mkdir();
-        	for(int i=0; i<files.length; i++)
-        	{
-    	    	f = new File(Environment.getExternalStorageDirectory() + File.separator + 
-    	    				      storage_path + File.separator +
-    	    				      "extras" + File.separator + files[i]);
-    	    	if(f.exists())
-    	    		continue;
-    	    	try {
-    		    URL url = new URL (FILELOC + files[i]);
-    		    InputStream input = url.openStream();
-    		    try {
-    		        OutputStream output = new FileOutputStream (f.getPath());
-    		        try {
-    		            byte[] buffer = new byte[5 * 1024];
-    		            int bytesRead = 0;
-    		            while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
-    		                output.write(buffer, 0, bytesRead);
-    		            }
-    		        } finally {
-    		            output.close();
-    		        }
-    		    } finally {
-    		        input.close();
-    		    }
-    	    	} catch(Exception e) {e.printStackTrace();}
-        	}
-        	return null;
-    	}
-    };
-    
-    /** Stops the player. Clears the notifications, releases resources, etc. */
-    public static void stop(Context c)
+
+    static public ProgressDialog BaconDialog(Context c, String title, String message)
     {
-    	if(Callisto.playerInfo!=null)
-    		Callisto.playerInfo.clear();
-    	if(Callisto.mplayer!=null) {
-    		Callisto.mplayer.reset();
-    		Callisto.mplayer = null;
-    	}
-    	if(Callisto.live_player!=null) {
-    		Callisto.live_player.reset();
-    		Callisto.live_player = null;
-    	}
-    	playerInfo.title = null;
-    	playerInfo.update(c);
-    	mNotificationManager.cancel(NOTIFICATION_ID);
-    	CallistoWidget.updateAllWidgets(c);
+        if(message==null)
+            message=Callisto.RESOURCES.getString(R.string.loading_msg);
+        ProgressDialog pDialog = new ProgressDialog(c);
+        pDialog.setCancelable(false);
+        pDialog.setTitle(title);
+        pDialog.setMessage(message);
+        pDialog.setIcon(R.drawable.ic_action_gear);
+        pDialog.show();
+
+        //((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress).getParent().getParent().getParent().getParent().getParent()).setBackgroundDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        ((View)(pDialog.getWindow().findViewById(android.R.id.progress)).getParent()).setBackgroundColor(0xFFFFFFFF);
+        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextColor(0xff000000);
+        ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);
+        ((View) pDialog.getWindow().findViewById(android.R.id.message)).setPadding(15, 5, 5, 5);
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setLayoutParams(new LayoutParams(96, 96));
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        return pDialog;
+    }
+
+    /** Converts a time in seconds to a human readable format.
+     *  @param seconds The raw number of seconds to format.
+     *  @return A string formatted in either HH:mm:ss or mm:ss, depending on how many hours are calculated.
+     */
+    public static String formatTimeFromSeconds(int seconds)
+    {
+        int minutes = seconds / 60;
+        seconds %= 60;
+        if(minutes>=60)
+        {
+            int hours = minutes / 60;
+            minutes %= 60;
+            return ((Integer.toString(hours) + ":" +
+                    (minutes<10?"0":"") + Integer.toString(minutes) + ":" +
+                    (seconds<10?"0":"") + Integer.toString(seconds)));
+        }
+        else
+            return ((Integer.toString(minutes) + ":" +
+                    (seconds<10?"0":"") + Integer.toString(seconds)));
     }
 }

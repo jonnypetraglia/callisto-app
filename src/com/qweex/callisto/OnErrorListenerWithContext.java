@@ -18,7 +18,7 @@ public class OnErrorListenerWithContext implements OnErrorListener
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
 		System.out.println("Next Track Bug");
-		//Callisto.playTrack(this.c);
+		//Callisto.changeToTrack(this.c);
 		return true;
 	}
 	

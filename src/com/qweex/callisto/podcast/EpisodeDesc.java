@@ -23,7 +23,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import android.app.AlertDialog;
-import android.content.SharedPreferences;
 import android.view.*;
 import android.widget.*;
 import com.qweex.callisto.Callisto;
@@ -282,7 +281,7 @@ public class EpisodeDesc extends Activity
 			 Callisto.databaseConnector.appendToQueue(id, false, vidSelected);
 			 if(Callisto.databaseConnector.queueCount()==1)
 			 {
-				 Callisto.playTrack(v.getContext(), 1, true);
+				 Callisto.changeToTrack(v.getContext(), 1, true);
 			 }
 			 ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
 			 ((Button)v).setEnabled(false);
@@ -309,10 +308,10 @@ public class EpisodeDesc extends Activity
 		 	}
 		 	if(id==tempId)
 		 	{
-		 		Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+		 		Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 		 		Callisto.databaseConnector.advanceQueue(1);
 				 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-				 Callisto.playTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+				 Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
 				 if(isPlaying)
 				 {
 				    Callisto.playerInfo.isPaused = true;
@@ -339,7 +338,7 @@ public class EpisodeDesc extends Activity
 				 Callisto.databaseConnector.appendToQueue(id, true, vidSelected);
 				 if(Callisto.databaseConnector.queueCount()==1)
 				 {
-					 Callisto.playTrack(v.getContext(), 1, true);
+					 Callisto.changeToTrack(v.getContext(), 1, true);
 				 }
 				 ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
 				 ((Button)v).setEnabled(false);
