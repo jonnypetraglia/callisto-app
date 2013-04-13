@@ -13,10 +13,7 @@
  */
 package com.qweex.callisto.donate;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.Date;
 
 /*import com.android.vending.billing.BillingService;
 import com.android.vending.billing.Consts;
@@ -31,9 +28,6 @@ import com.android.vending.billing.ResponseHandler;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalPayment;
-import com.paypal.android.MEP.PayPalResultDelegate;
-import com.qweex.callisto.Callisto;
-import com.qweex.callisto.R;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -42,32 +36,28 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.Html;
-import android.text.InputType;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
-//import android.widget.Button;
+import com.qweex.callisto.Callisto;
+import com.qweex.callisto.R;
 
 //FEATURE: Use the developer payload to write a note to Chris
 
@@ -77,427 +67,419 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class Donate extends ListActivity
 {
-
-	private ListView itemsList;
-	private Resources RESOURCES;
-	public CheckoutButton GiveChrisSomeHardEarnedMoney; //Button for billing
-	private CatalogAdapter mCatalogAdapter;
-	public final String DONATION_APP_ID = "com.qweex.donation";
-	LinearLayout ll;
-	RadioButton lastChecked = null;
-    private static final int NAME_ID = 1234;
-    private static final int RADIO_ID = 4321;
-    RadioButton CustomRadio;
-    TextView msgView;
-    EditText CustomAmount, UserMemo;
-    public static Context ctxt;
-	//Contains the SKU for Google Wallet or amount for Paypal
-	private static String donationChoice;
+    /** The listview containing the rows for the amounts */
+    private ListView itemsList;
+    /** The Paypal Button to submit the donation */
+    private CheckoutButton GiveChrisSomeHardEarnedMoney;
+    /** An adapter for the prices in the ListView */
+    private PricesAdapter mPricesAdapter;
+    /** The id for the Qweex donation app in the market */
+    public final String DONATION_APP_ID = "com.qweex.donation";
+    /** A linearLayout for containing the ListView and buttons and notes and stuff*/
+    private LinearLayout contentLayout;
+    /** A MenuItem id */
+    private static final int NAME_ID = 1234, RADIO_ID = 4321;
+    /** The last checked button that is used to fetch the price when pressing the button */
+    private RadioButton lastChecked = null;
+    /** The RadioButton view that is the custom amount; used to get the amount from the EditText instead of a TextView. */
+    private RadioButton CustomRadio;
+    /** A control for user input. Self explanatory names you silly. */
+    private EditText CustomAmount, UserMemo;
+    /** The message below the button */
+    private TextView msgView;
+    /** The price that is selected for PayPal*/
+    private static String donationChoice;   //Contains the SKU for Google Wallet or amount for Paypal????
 	
 	
 /*-------Paypal--------*/
-	private static String memo = "";
-	private static String IpnUrl = "";
-	private final static String paypalEmail = "tophfisher@gmail.com";
-	ProgressDialog pd;
-	
-	// The PayPal server to be used - can also be ENV_NONE and ENV_LIVE
-	private static final int server = PayPal.ENV_LIVE;
-	// The ID of your application that you received from PayPal
-	private static final String appID = "APP-62639580KU117961E";
-	// This is passed in for the startActivityForResult() android function, the value used is up to you
-	private static final int request = 1;
-	public static final int INITIALIZE_SUCCESS = 0, PAYMENT_SUCCESS = 0;
-	public static final int INITIALIZE_FAILURE = 1, PAYMENT_FAILURE = 1;
-	// This handler will allow us to properly update the UI. You cannot touch Views from a non-UI thread.
-	Handler hRefresh = new Handler(){
-		@Override
-		public void handleMessage(Message msg) {
-			switch(msg.what){
-		    	case INITIALIZE_SUCCESS:
-		    		PayPal pp = PayPal.getInstance();
-		    		// Get the CheckoutButton. There are five different sizes. The text on the button can either be of type TEXT_PAY or TEXT_DONATE.
-		    		GiveChrisSomeHardEarnedMoney = pp.getCheckoutButton(Donate.this, PayPal.BUTTON_194x37, CheckoutButton.TEXT_DONATE);
-		    		GiveChrisSomeHardEarnedMoney.setPadding(20, 20, 20, 20);
-		    		GiveChrisSomeHardEarnedMoney.setOnClickListener(clickPaypal);
-		    		ll.addView(GiveChrisSomeHardEarnedMoney);
-		    		ll.addView(msgView);
-		            break;
-		    	case INITIALIZE_FAILURE:
-		    		finish();
-		    		break;
-			}
-		}
-	};
+    /** [Paypal] The memo? */
+    private static String memo = "";
+    /** [Paypal] What is this I don't even */ //TODO: what
+    private static String IpnUrl = "";
+    /** [Paypal] The paymentID to JB */
+    private static String paymentID = "8873482296";
+    /** [Paypal] The email for JB */
+    private final static String paypalEmail = "tophfisher@gmail.com";
+    /** ProgressDialog to be shown while fetching PayPal */
+    private ProgressDialog baconPDialog;
+
+    /** The PayPal server to be used - can also be ENV_NONE and ENV_LIVE */
+    private static final int server = PayPal.ENV_NONE;
+    /** The ID of your application that you received from PayPal */
+    private static final String appID = "APP-80W284485P519543T";
+    /** This is passed in for the startActivityForResult() android function, the value used is up to you */
+    private static final int request = 1;
+    /** Constants */
+    protected static final int INITIALIZE_SUCCESS = 0, INITIALIZE_FAILURE = 1;
+    /** This handler will allow us to properly update the UI. You cannot touch Views from a non-UI thread. */
+    Handler hRefresh = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch(msg.what){
+                case INITIALIZE_SUCCESS:
+                    PayPal pp = PayPal.getInstance();
+                    // Get the CheckoutButton. There are five different sizes. The text on the button can either be of type TEXT_PAY or TEXT_DONATE.
+                    GiveChrisSomeHardEarnedMoney = pp.getCheckoutButton(Donate.this, PayPal.BUTTON_194x37, CheckoutButton.TEXT_DONATE);
+                    GiveChrisSomeHardEarnedMoney.setPadding(20, 20, 20, 20);
+                    GiveChrisSomeHardEarnedMoney.setOnClickListener(clickPaypal);
+                    contentLayout.addView(GiveChrisSomeHardEarnedMoney);
+                    contentLayout.addView(msgView);
+                    break;
+                case INITIALIZE_FAILURE:
+                    finish();
+                    break;
+            }
+        }
+    };
 /*------End----------*/
-	
-	
-	
-	/** Called when the activity is first created. Sets up the view and whatnot.
-	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setTitle("Donate");
-		Donate.ctxt = this;
-		if(Callisto.RESOURCES!=null)
-			RESOURCES = Callisto.RESOURCES;
-		else
-			RESOURCES = getResources();
-		
-		//Prepare the listview's appearance
-		itemsList = getListView();
-		itemsList.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
-		
-		//Prepare the header's appearance
-		TextView header = new TextView(this);
-		header.setText("Choose amount (USD)");
-		
-		ll = new LinearLayout(this);
-		ll.setOrientation(LinearLayout.VERTICAL);
-		
-		LinearLayout customView = new LinearLayout(this);
-		customView.setPadding(50, 0, 50, 0);
-		LinearLayout v2 = new LinearLayout(this);
-		v2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
-		TextView dollarsign = new TextView(this);
-		dollarsign.setTextSize(20f);
-		dollarsign.setText("$");
-		dollarsign.setTextColor(this.getResources().getColor(R.color.txtClr));
-    	CustomAmount = new EditText(this);
-    	CustomAmount.setId(NAME_ID);
-    	CustomAmount.setTextSize(20f);
-    	CustomAmount.setHint("Custom");
-    	CustomRadio = new RadioButton(this);
-    	CustomRadio.setId(RADIO_ID);
-    	CustomRadio.setClickable(true);
-    	CustomRadio.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
-    	CustomRadio.setOnClickListener(selectRadio);
-    	v2.addView(dollarsign);
-    	v2.addView(CustomAmount);
-    	customView.addView(v2);
-    	customView.addView(CustomRadio);
-    	ll.addView(customView);
-		
-		UserMemo = new EditText(this);
-		UserMemo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-		UserMemo.setHint("Message to Jupiter Broadcasting");
-		UserMemo.setMinLines(4);
-		UserMemo.setGravity(Gravity.TOP);
-		LinearLayout.LayoutParams x = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-		x.setMargins(10, 10, 10, 10);
-		ll.addView(UserMemo, x);
-    	
-    	
-    	CustomAmount.addTextChangedListener(new TextWatcher() {
 
-    		
-			@Override
-			public void afterTextChanged(Editable arg0) {
-			}
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-			}
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-	            if(!s.toString().matches("^\\\\d{1,3}(\\,\\d{3})*|(\\d+)(\\.\\d{2})?$"))
-	            {
-	                String userInput= ""+s.toString().replaceAll("[^\\d]", "");
-	                StringBuilder cashAmountBuilder = new StringBuilder(userInput);
+    /** Called when the activity is first created. Sets up the view and whatnot.
+     * @param savedInstanceState Um I don't even know. Read the Android documentation.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setTitle("Donate");
+        if(Callisto.RESOURCES==null)
+            Callisto.RESOURCES = getResources();
 
-	                while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-	                    cashAmountBuilder.deleteCharAt(0);
-	                }
-	                while (cashAmountBuilder.length() < 3) {
-	                    cashAmountBuilder.insert(0, '0');
-	                }
-	                cashAmountBuilder.insert(cashAmountBuilder.length()-2, '.');
-	                //cashAmountBuilder.insert(0, '$');
+        //Prepare the listview's appearance
+        itemsList = getListView();
+        itemsList.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
 
-	                CustomAmount.setText(cashAmountBuilder.toString());
-	                // keeps the cursor always to the right
-	                Selection.setSelection(CustomAmount.getText(), cashAmountBuilder.toString().length());
+        //Prepare the header's appearance
+        TextView header = new TextView(this);
+        header.setText("Choose amount (USD)");
 
-	            }
+        //Blaaaargh, build the rest of the layout
+        contentLayout = new LinearLayout(this);
+        contentLayout.setOrientation(LinearLayout.VERTICAL);
 
-			}
-    	});
+        LinearLayout customView = new LinearLayout(this);
+        customView.setPadding(50, 0, 50, 0);
+        LinearLayout v2 = new LinearLayout(this);
+        v2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
+        TextView dollarsign = new TextView(this);
+        dollarsign.setTextSize(20f);
+        dollarsign.setText("$");
+        dollarsign.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        CustomAmount = new EditText(this);
+        CustomAmount.setId(NAME_ID);
+        CustomAmount.setTextSize(20f);
+        CustomAmount.setHint("Custom");
+        CustomRadio = new RadioButton(this);
+        CustomRadio.setId(RADIO_ID);
+        CustomRadio.setClickable(true);
+        CustomRadio.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
+        CustomRadio.setOnClickListener(selectRadio);
+        v2.addView(dollarsign);
+        v2.addView(CustomAmount);
+        customView.addView(v2);
+        customView.addView(CustomRadio);
+        contentLayout.addView(customView);
 
-    	
-		
-    	//Prepare the message & button's appearance
-		msgView = new TextView(this);
-		msgView.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-		msgView.setTextSize(12f);
-		msgView.setText(Html.fromHtml("100% of your donation will go "
-								 + "<i>directly</i>"
-							 	 + " to Jupiter Broadcasting. Afterwards, if you want to donate to the app developer, buy the "
-							 	 + "<a href=\"market://details?id=" + DONATION_APP_ID + "\">donation app in the market</a>"
-								 + "."));
-		msgView.setMovementMethod(LinkMovementMethod.getInstance());
-		msgView.setPadding(30, 0, 30, 15);
+        UserMemo = new EditText(this);
+        UserMemo.setHint("Message to Jupiter Broadcasting");
+        UserMemo.setMinLines(4);
+        UserMemo.setGravity(Gravity.TOP);
+        LinearLayout.LayoutParams x = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+        x.setMargins(10, 10, 10, 10);
+        contentLayout.addView(UserMemo, x);
+
+        //A text changed listener, I don't bloody know.
+        CustomAmount.addTextChangedListener(new TextWatcher() {
+
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!s.toString().matches("^\\\\d{1,3}(\\,\\d{3})*|(\\d+)(\\.\\d{2})?$"))
+                {
+                    String userInput= ""+s.toString().replaceAll("[^\\d]", "");
+                    StringBuilder cashAmountBuilder = new StringBuilder(userInput);
+
+                    while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
+                        cashAmountBuilder.deleteCharAt(0);
+                    }
+                    while (cashAmountBuilder.length() < 3) {
+                        cashAmountBuilder.insert(0, '0');
+                    }
+                    cashAmountBuilder.insert(cashAmountBuilder.length()-2, '.');
+                    //cashAmountBuilder.insert(0, '$');
+
+                    CustomAmount.setText(cashAmountBuilder.toString());
+                    // keeps the cursor always to the right
+                    Selection.setSelection(CustomAmount.getText(), cashAmountBuilder.toString().length());
+                }
+
+            }
+        });
+
+        //Prepare the message & button's appearance
+        msgView = new TextView(this);
+        msgView.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        msgView.setTextSize(12f);
+        msgView.setText(Html.fromHtml("100% of your donation will go "
+                + "<i>directly</i>"
+                + " to Jupiter Broadcasting. Afterwards, if you want to donate to the app developer, buy the "
+                + "<a href=\"market://details?id=" + DONATION_APP_ID + "\">donation app in the market</a>"
+                + "."));
+        msgView.setMovementMethod(LinkMovementMethod.getInstance());
+        msgView.setPadding(30, 0, 30, 15);
 		
 		
 		/*------Paypal------*/
-		Thread libraryInitializationThread = new Thread() {
-			public void run() {
-				initLibrary();
-				pd.dismiss();
-				
-				// The library is initialized so let's create our CheckoutButton and update the UI.
-				if (PayPal.getInstance().isLibraryInitialized()) {
-					hRefresh.sendEmptyMessage(INITIALIZE_SUCCESS);
-				}
-				else {
-					hRefresh.sendEmptyMessage(INITIALIZE_FAILURE);
-				}
-			}
-		};
-        pd = Callisto.BaconDialog(Donate.this, Callisto.RESOURCES.getString(R.string.loading), null);
-		pd.setOnCancelListener(new OnCancelListener(){
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				finish();
-			}
-		});
-		pd.show();
-		libraryInitializationThread.start();
-		
-		
-		/*------Billing------*/
-		//billingInit();
-		//GiveChrisSomeHardEarnedMoney = new Button(this);
-		//GiveChrisSomeHardEarnedMoney.setText("Donate");
-		//ll.addView(GiveChrisSomeHardEarnedMoney);
-		/*-------------------*/
-		
-		
-		
-		itemsList.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
-		itemsList.setCacheColorHint(RESOURCES.getColor(R.color.backClr));
-		header.setTextColor(RESOURCES.getColor(R.color.txtClr));
-		header.setTextSize(25f);
-		itemsList.addHeaderView(header);
-		itemsList.addFooterView(ll);
-		
-		
-		mCatalogAdapter = new CatalogAdapter(this, CATALOG);
-		itemsList.setAdapter(mCatalogAdapter);
-		itemsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		
-	}
-	
-	
-	   /** An adapter to update the donation options to the listview */
-	   private class CatalogAdapter extends ArrayAdapter<String> {
-	        private CatalogEntry[] mCatalog;
-	        private Context context;
+        Thread libraryInitializationThread = new Thread() {
+            public void run() {
+                initLibrary();
+                if(baconPDialog !=null)
+                    baconPDialog.hide();
 
-	        public CatalogAdapter(Context context, CatalogEntry[] catalog) {
-	            super(context, android.R.layout.simple_spinner_item);
-	            mCatalog = catalog;
-	            this.context = context;
-	            
-	            for (CatalogEntry element : catalog) {
-	                add(element.name);
-	            }
-	            //*/
-	        }
-	        
-	        @Override
-	    	public View getView(int pos, View inView, ViewGroup parent) {
-	            View v = inView;
-	            TextView name = null;
-	            RadioButton select;
-	            if (v == null) {
-	                 //CREATE NEW ROW
-	            	name = new TextView(this.context);
-	            	name.setId(NAME_ID);
-	            	name.setTextSize(20f);
-	            	name.setTextColor(this.context.getResources().getColor(R.color.txtClr));
-	            	name.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
-	            	select = new RadioButton(this.context);
-	            	select.setId(RADIO_ID);
-	            	select.setClickable(true);
-	            	select.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
-	            	select.setOnClickListener(selectRadio);
-	            	v = new LinearLayout(this.context);
-	            	((LinearLayout) v).setPadding(50, 0, 50, 0);
-	            	((LinearLayout) v).addView(name);
-	            	((LinearLayout) v).addView(select);
-		            if(lastChecked==null)
-		            {
-		            	lastChecked = select;
-		            	donationChoice = mCatalog[pos].name.substring(1);
-		            }
-	            } else {
-	            	name = (TextView) v.findViewById(NAME_ID);
-	            	select = (RadioButton) v.findViewById(RADIO_ID);
-	            }
-	            name.setText(mCatalog[pos].name);
-	            name.setContentDescription(mCatalog[pos].sku);
-	            String s =((String) ((TextView)(v.findViewById(NAME_ID))).getText()).substring(1);
-	            if(s.equals(donationChoice))
-	            	select.setChecked(true);
-	            else
-	            	select.setChecked(false);
-	            return v;
-	    }
-	        
-	        
-   }
-	   
- 	   OnClickListener selectRadio = new OnClickListener() {
-			@Override
-			public void onClick(View newRadio) {
-				if(newRadio==lastChecked)
-					return;
-				if(lastChecked!=null)
-					lastChecked.setChecked(false);
-				((RadioButton)newRadio).setChecked(true);
-				lastChecked = (RadioButton) newRadio;
-				//donationChoice = (String) (((LinearLayout)newRadio.getParent()).findViewById(NAME_ID)).getContentDescription();
-				if(CustomRadio==newRadio)
-					donationChoice=null;
-				else
-					donationChoice = ((String) ((TextView)(((LinearLayout)newRadio.getParent()).findViewById(NAME_ID))).getText()).substring(1);
-			}
-   	};
-	   
-	   
-	   
-	   private static final CatalogEntry[] CATALOG = new CatalogEntry[] {
-	        new CatalogEntry("dollar", "$1.00"),
-	        new CatalogEntry("three_dollar", "$3.00"),
-	        new CatalogEntry("pi_dollar", "$3.14"),
-	        new CatalogEntry("five_dollar", "$5.00"),
-	        new CatalogEntry("ten_dollar", "$10.00"),
-	        new CatalogEntry("leet_dollar", "$13.37"),
-	        new CatalogEntry("twenty_dollar", "$20.00")
-	    };
-	   
-	private static class CatalogEntry {
-	    public String sku;
-	    public String name;
-	
-	    public CatalogEntry(String sku, String name) {
-	        this.sku = sku;
-	        this.name = name;
-	    }
-	}
+                // The library is initialized so let's create our CheckoutButton and update the UI.
+                if (PayPal.getInstance().isLibraryInitialized()) {
+                    hRefresh.sendEmptyMessage(INITIALIZE_SUCCESS);
+                }
+                else {
+                    hRefresh.sendEmptyMessage(INITIALIZE_FAILURE);
+                }
+            }
+        };
+        baconPDialog = ProgressDialog.show(Donate.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+        baconPDialog.setCancelable(true);
+        baconPDialog.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        });
+        baconPDialog.show();
+        libraryInitializationThread.start();
+
+		/*------Billing------*/
+        //billingInit();
+        //GiveChrisSomeHardEarnedMoney = new Button(this);
+        //GiveChrisSomeHardEarnedMoney.setText("Donate");
+        //contentLayout.addView(GiveChrisSomeHardEarnedMoney);
+		/*-------------------*/
+
+        itemsList.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+        itemsList.setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
+        header.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        header.setTextSize(25f);
+        itemsList.addHeaderView(header);
+        itemsList.addFooterView(contentLayout);
+
+
+        mPricesAdapter = new PricesAdapter(this, CATALOG);
+        itemsList.setAdapter(mPricesAdapter);
+        itemsList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+    }
+
+
+    /** An adapter to update the donation options to the listview */
+    private class PricesAdapter extends ArrayAdapter<String>
+    {
+        private PriceListEntry[] priceCatalog;
+        private Context context;
+
+        public PricesAdapter(Context context, PriceListEntry[] catalog)
+        {
+            super(context, android.R.layout.simple_spinner_item);
+            priceCatalog = catalog;
+            this.context = context;
+
+            for (PriceListEntry element : catalog)
+                add(element.name);
+        }
+
+        @Override
+        public View getView(int pos, View inView, ViewGroup parent) {
+            View v = inView;
+            TextView name;
+            RadioButton select;
+
+            if(v == null)
+            {
+                //CREATE NEW ROW
+                //Create da name
+                name = new TextView(this.context);
+                name.setId(NAME_ID);
+                name.setTextSize(20f);
+                name.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+                name.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
+                //Create da radio
+                select = new RadioButton(this.context);
+                select.setId(RADIO_ID);
+                select.setClickable(true);
+                select.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
+                select.setOnClickListener(selectRadio);
+                //Create da Layout to wrap da name and radio
+                v = new LinearLayout(this.context);
+                v.setPadding(50, 0, 50, 0);
+                ((LinearLayout) v).addView(name);
+                ((LinearLayout) v).addView(select);
+                if(lastChecked==null)
+                {
+                    lastChecked = select;
+                    donationChoice = priceCatalog[pos].name.substring(1);
+                }
+            } else {
+                name = (TextView) v.findViewById(NAME_ID);
+                select = (RadioButton) v.findViewById(RADIO_ID);
+            }
+            name.setText(priceCatalog[pos].name);
+            name.setContentDescription(priceCatalog[pos].sku);
+
+            //s  will be the NAME_ID, that is the identified in the prices list
+            String s =((String) ((TextView)(v.findViewById(NAME_ID))).getText()).substring(1);
+            if(s.equals(donationChoice))
+                select.setChecked(true);
+            else
+                select.setChecked(false);
+            return v;
+        }
+    }
+    /** Listener for when a radio is selected; updates the current selection variables */
+    OnClickListener selectRadio = new OnClickListener()
+    {
+        @Override
+        public void onClick(View newRadio) {
+            if(newRadio==lastChecked)
+                return;
+            if(lastChecked!=null)
+                lastChecked.setChecked(false);
+            ((RadioButton)newRadio).setChecked(true);
+            lastChecked = (RadioButton) newRadio;
+            // What
+            //donationChoice = (String) (((LinearLayout)newRadio.getParent()).findViewById(NAME_ID)).getContentDescription();
+            if(CustomRadio==newRadio)
+                donationChoice=null;
+            else
+                donationChoice = ((String) ((TextView)(((LinearLayout)newRadio.getParent()).findViewById(NAME_ID))).getText()).substring(1);
+        }
+    };
+
+    /** An array containing identifiers and prices */
+    private static final PriceListEntry[] CATALOG = new PriceListEntry[] {
+            new PriceListEntry("dollar", "$1.00"),
+            new PriceListEntry("three_dollar", "$3.00"),
+            new PriceListEntry("pi_dollar", "$3.14"),
+            new PriceListEntry("five_dollar", "$5.00"),
+            new PriceListEntry("ten_dollar", "$10.00"),
+            new PriceListEntry("leet_dollar", "$13.37"),
+            new PriceListEntry("twenty_dollar", "$20.00")
+    };
+
+    /** A class for the Google Billing service; sku is name on the Google Play side, name is the price? */
+    private static class PriceListEntry {
+        public String sku;
+        public String name;
+
+        public PriceListEntry(String sku, String name) {
+            this.sku = sku;
+            this.name = name;
+        }
+    }
 
 /*---------------------This is for Paypal----------------*/
-	
-	public static Handler getResponse = new Handler()
-	{
-		@Override
-		public void handleMessage(Message msg)
-		{
-			switch(msg.what)
-			{
-			case PAYMENT_SUCCESS:
-				Toast.makeText(Donate.ctxt, Callisto.RESOURCES.getString(R.string.payment_success), Toast.LENGTH_LONG).show();
-				break;
-			default:
-				Toast.makeText(Donate.ctxt, Callisto.RESOURCES.getString(R.string.payment_failed), Toast.LENGTH_LONG).show();
-			}
-		}
-	};
-	
-	private void initLibrary() {
-		
-		PayPal pp = PayPal.getInstance();
-		// If the library is already initialized, then we don't need to initialize it again.
-		if(pp == null) {
-			// This is the main initialization call that takes in your Context, the Application ID, and the server you would like to connect to.
-			pp = PayPal.initWithAppID(this, appID, server);
-   			
-			// -- These are required settings.
-        	pp.setLanguage("en_US"); // Sets the language for the library.
-        	// --
-        	
-        	// -- These are a few of the optional settings.
-        	// Sets the fees payer. If there are fees for the transaction, this person will pay for them. Possible values are FEEPAYER_SENDER,
-        	// FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and FEEPAYER_SECONDARYONLY.
-        	pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER); 
-        	// Set to true if the transaction will require shipping.
-        	pp.setShippingEnabled(false);
-        	// Dynamic Amount Calculation allows you to set tax and shipping amounts based on the user's shipping address. Shipping must be
-        	// enabled for Dynamic Amount Calculation. This also requires you to create a class that implements PaymentAdjuster and Serializable.
-        	pp.setDynamicAmountCalculationEnabled(false);
-        	// --
-		}
-	}
-	
-	OnClickListener clickPaypal = new OnClickListener()
+
+    private void initLibrary()
     {
-		public void onClick(View v)
-		{
-			/**
-			 * For each call to checkout() and preapprove(), we pass in a ResultDelegate. If you want your application
-			 * to be notified as soon as a payment is completed, then you need to create a delegate for your application.
-			 * The delegate will need to implement PayPalResultDelegate and Serializable. See our ResultDelegate for
-			 * more details.
-			 */
-			
-			((CheckoutButton) v).updateButton();
-			if(CustomRadio.isChecked())
-				try {
-					new BigDecimal(CustomAmount.getText().toString());
-				} catch(NumberFormatException e){
-					Toast.makeText(v.getContext(), "The amount you entered is not a valid number, you silly goose.", Toast.LENGTH_SHORT).show();
-					//((CheckoutButton) v).updateButton();
-					return;
-				}
-			
-			memo = UserMemo.getText().toString();
-			if(memo=="")
-				memo = "-Sent from Callisto";
-			PayPalPayment payment = createPayment();
-			Donate.ctxt = v.getContext();
-			
-			Intent checkoutIntent = PayPal.getInstance().checkout(payment, v.getContext(), new ResultDelegate());
-	    	((Activity) v.getContext()).startActivityForResult(checkoutIntent, request);
-	    	//((CheckoutButton) v).updateButton();
-		}
+        PayPal pp = PayPal.getInstance();
+        // If the library is already initialized, then we don't need to initialize it again.
+        if(pp == null) {
+            // This is the main initialization call that takes in your Context, the Application ID, and the server you would like to connect to.
+            pp = PayPal.initWithAppID(this, appID, server);
+
+            // -- These are required settings.
+            pp.setLanguage("en_US"); // Sets the language for the library.
+            // --
+
+            // -- These are a few of the optional settings.
+            // Sets the fees payer. If there are fees for the transaction, this person will pay for them. Possible values are FEEPAYER_SENDER,
+            // FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and FEEPAYER_SECONDARYONLY.
+            pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER);
+            // Set to true if the transaction will require shipping.
+            pp.setShippingEnabled(false);
+            // Dynamic Amount Calculation allows you to set tax and shipping amounts based on the user's shipping address. Shipping must be
+            // enabled for Dynamic Amount Calculation. This also requires you to create a class that implements PaymentAdjuster and Serializable.
+            pp.setDynamicAmountCalculationEnabled(false);
+            // --
+        }
+    }
+
+    OnClickListener clickPaypal = new OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            /**
+             * For each call to checkout() and preapprove(), we pass in a ResultDelegate. If you want your application
+             * to be notified as soon as a payment is completed, then you need to create a delegate for your application.
+             * The delegate will need to implement PayPalResultDelegate and Serializable. See our ResultDelegate for
+             * more details.
+             */
+
+            ((CheckoutButton) v).updateButton();
+            if(CustomRadio.isChecked())
+                try {
+                    new BigDecimal(CustomAmount.getText().toString());
+                } catch(NumberFormatException e){
+                    Toast.makeText(v.getContext(), "The amount you entered is not a valid number, you silly goose.", Toast.LENGTH_SHORT).show();
+                    //((CheckoutButton) v).updateButton();
+                    return;
+                }
+
+            memo = UserMemo.getText().toString();
+            if(memo=="")
+                memo = "-Sent from Callisto";
+            PayPalPayment payment = createPayment();
+            Intent checkoutIntent = PayPal.getInstance().checkout(payment, v.getContext(), new ResultDelegate());
+            ((Activity) v.getContext()).startActivityForResult(checkoutIntent, request);
+            //((CheckoutButton) v).updateButton();
+        }
     };
-    
-    
-	
-    
-	private PayPalPayment createPayment() {
-		// Create a basic PayPalPayment.
-		PayPalPayment payment = new PayPalPayment();
-		// Sets the currency type for this payment.
-    	payment.setCurrencyType("USD");
-    	// Sets the recipient for the payment. This can also be a phone number.
-    	payment.setRecipient(paypalEmail);
-    	// Sets the amount of the payment, not including tax and shipping amounts.
-    	if(donationChoice==null)
-    		payment.setSubtotal(new BigDecimal(CustomAmount.getText().toString()));
-		else
-			payment.setSubtotal(new BigDecimal(donationChoice));
-    	// Sets the payment type. This can be PAYMENT_TYPE_GOODS, PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE.
-    	payment.setPaymentType(PayPal.PAYMENT_TYPE_GOODS);
-    	
-    	// Sets the merchant name. This is the name of your Application or Company.
-    	payment.setMerchantName("Jupiter Broadcasting");
-    	// Sets the Custom ID. This is any ID that you would like to have associated with the payment.
-    	String donationID = Callisto.sdfRaw.format(new Date());
-    	donationID = "8";
-    	payment.setCustomID(donationID);
-    	// Sets the Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
-    	payment.setIpnUrl(IpnUrl);
-    	// Sets the memo. This memo will be part of the notification sent by PayPal to the necessary parties.
-    	payment.setMemo(memo);
-    	
-    	return payment;
-	}
+
+
+
+
+    private PayPalPayment createPayment() {
+        // Create a basic PayPalPayment.
+        PayPalPayment payment = new PayPalPayment();
+        // Sets the currency type for this payment.
+        payment.setCurrencyType("USD");
+        // Sets the recipient for the payment. This can also be a phone number.
+        payment.setRecipient(paypalEmail);
+        // Sets the amount of the payment, not including tax and shipping amounts.
+        if(donationChoice==null)
+            payment.setSubtotal(new BigDecimal(CustomAmount.getText().toString()));
+        else
+            payment.setSubtotal(new BigDecimal(donationChoice));
+        // Sets the payment type. This can be PAYMENT_TYPE_GOODS, PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE.
+        payment.setPaymentType(PayPal.PAYMENT_TYPE_GOODS);
+
+        // Sets the merchant name. This is the name of your Application or Company.
+        payment.setMerchantName("Jupiter Broadcasting");
+        // Sets the Custom ID. This is any ID that you would like to have associated with the payment.
+        payment.setCustomID(paymentID);
+        // Sets the Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
+        payment.setIpnUrl(IpnUrl);
+        // Sets the memo. This memo will be part of the notification sent by PayPal to the necessary parties.
+        payment.setMemo(memo);
+
+        return payment;
+    }
     
 	
 	
@@ -527,9 +509,9 @@ public class Donate extends ListActivity
 		}
 	};
 	*/
-	
-	//Everything below this  line is pulled from the Android Dev example
-	/**********************************/
+
+    //Everything below this  line is pulled from the Android Dev example
+    /**********************************/
     /** Called when this activity becomes visible. */
 	   /*
     @Override
@@ -592,7 +574,7 @@ public class Donate extends ListActivity
         public void onRequestPurchaseResponse(RequestPurchase request,
                 ResponseCode responseCode)
         {
-        	String TAG = "DEBUG";
+        	String TAG = "butts";
             if (Consts.DEBUG) {
                 Log.d(TAG, request.mProductId + ": " + responseCode);
             }
@@ -624,7 +606,7 @@ public class Donate extends ListActivity
                 edit.commit();
             } else {
                 if (Consts.DEBUG) {
-                    Log.d("DEBUG", "RestoreTransactions error: " + responseCode);
+                    Log.d("butts", "RestoreTransactions error: " + responseCode);
                 }
             }
         }

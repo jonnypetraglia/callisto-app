@@ -35,63 +35,63 @@ import android.content.SharedPreferences;
  */
 
 public class SplashScreen extends Activity {
-	private int bryantime = 2000;		//This is initialized to 2 seconds but it will
-										//become the length of the sound file
-	private boolean dudeJustQuit = true;
-	private MediaPlayer player;
-	
-	/** Called when the activity is created. Sets the view, starts playing the audio, and starts a timer. */
+    private int bryantime = 2000;		//This is initialized to 2 seconds but it will
+    //become the length of the sound file
+    private boolean dudeJustQuit = true;
+    private MediaPlayer player;
+
+    /** Called when the activity is created. Sets the view, starts playing the audio, and starts a timer. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(!QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
         {
-        	launchApp();
-        	return;
+            launchApp();
+            return;
         }
-        
+
         setContentView(R.layout.splash);
 
         SharedPreferences appSettings = PreferenceManager.getDefaultSharedPreferences(this);
-		if(!appSettings.getBoolean("splash_show", true))
-		{
-			Intent i = new Intent(SplashScreen.this, Callisto.class);
+        if(!appSettings.getBoolean("splash_show", true))
+        {
+            Intent i = new Intent(SplashScreen.this, Callisto.class);
             startActivity(i);
             dudeJustQuit = false;
             finish();
             return;
-		}
-        
-	        if(appSettings.getBoolean("splash_quote", true))
-	        {
-	        	try {
-        		File target = new File(Environment.getExternalStorageDirectory(), PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto")
-        				+ File.separator + "extras" + File.separator + "bryan.mp3");
-        		System.out.println(target.getAbsolutePath());
-		        player = new MediaPlayer();
-		        player.setDataSource(target.getAbsolutePath());
-	            player.prepare();
-	            player.start();
-	            bryantime = player.getDuration();
-	        	} catch (Exception e) {}
-	        }
-            t.start();  
+        }
+
+        if(appSettings.getBoolean("splash_quote", true))
+        {
+            try {
+                File target = new File(Environment.getExternalStorageDirectory(), PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto")
+                        + File.separator + "extras" + File.separator + "bryan.mp3");
+                System.out.println(target.getAbsolutePath());
+                player = new MediaPlayer();
+                player.setDataSource(target.getAbsolutePath());
+                player.prepare();
+                player.start();
+                bryantime = player.getDuration();
+            } catch (Exception e) {}
+        }
+        t.start();
     }
-    
+
     /** Called when the activity is done. */
     @Override
     public void onDestroy()
     {
-    	super.onDestroy();
-    	if(dudeJustQuit)
-    	{
-    		if(player!=null)
-    			player.reset();
-	    	t.interrupt();
-    	}
-    	finish();
+        super.onDestroy();
+        if(dudeJustQuit)
+        {
+            if(player!=null)
+                player.reset();
+            t.interrupt();
+        }
+        finish();
     }
-    
+
     /** Launches the main activity of the app. */
     private void launchApp()
     {
@@ -99,22 +99,20 @@ public class SplashScreen extends Activity {
         startActivity(i);
         finish();
     }
-    
-	private Thread t = new Thread() {
+
+    private Thread t = new Thread() {
         public void run() {
             int time = 100;
             while (time < SplashScreen.this.bryantime+100)
             {
-               try {
-				sleep(100);
-				time += 100;
-               } catch (InterruptedException e) { break; } 
+                try {
+                    sleep(100);
+                    time += 100;
+                } catch (InterruptedException e) { break; }
             }
             dudeJustQuit = isFinishing();
             if(!dudeJustQuit)
-            	launchApp();
-    }
-	};
-    
-
+                launchApp();
+        }
+    };
 }

@@ -170,7 +170,7 @@ public class Queue extends ListActivity
 			 long id = Long.parseLong((String) tv.getText());
 			 long current_id = id;
 			 
-			 Cursor c = Callisto.databaseConnector.currentQueue();
+			 Cursor c = Callisto.databaseConnector.currentQueueItem();
 			 
 			 if(c.getCount()==0)
 				 updateNowPlaying(0);

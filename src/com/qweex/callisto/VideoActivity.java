@@ -22,20 +22,28 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
-public class VideoActivity extends IRCChat {
+/** A class to view live video and back-catalog video.
+ * Extends IRCChat because (ideally) it will have IRC display either beside or below the video.
+ */
+public class VideoActivity extends IRCChat
+{
+    /** VideoView to contain the video, Duh. */
     static VideoView videoView;
+    /* The login info for the IRC */
     View login;
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
+        //Do some create things
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video);
-
         boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
         if(isLandscape)
             ((LinearLayout)findViewById(R.id.mainVideo)).setOrientation(LinearLayout.HORIZONTAL);
 
+        //Create the IRC stuff
         if(IRCChat.session==null)
         {
             login = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.irc_login, null, false);
@@ -47,24 +55,25 @@ public class VideoActivity extends IRCChat {
             ((LinearLayout)findViewById(R.id.mainVideo)).addView(login);
             findViewById(R.id.videoIrc).setVisibility(View.GONE);
 
-            ((Button)findViewById(R.id.login)).setOnClickListener(InitiateLogin);
+            findViewById(R.id.login).setOnClickListener(InitiateLogin);
         }
         else
         {
             try {
-            if(Callisto.chatView.getParent()!=null)
-                ((ScrollView)Callisto.chatView.getParent()).removeView(Callisto.chatView);
-            ((ScrollView) findViewById(R.id.scrollView)).addView(Callisto.chatView);
-            if(Callisto.logView.getParent()!=null)
-                ((ScrollView)Callisto.logView.getParent()).removeView(Callisto.logView);
-            ((ScrollView) findViewById(R.id.scrollView2)).addView(Callisto.logView);
+                //Remove existing parent & add it for chat
+                if(Callisto.chatView.getParent()!=null)
+                    ((ScrollView)Callisto.chatView.getParent()).removeView(Callisto.chatView);
+                ((ScrollView) findViewById(R.id.scrollView)).addView(Callisto.chatView);
+                //Remove existing parent & add it for log
+                if(Callisto.logView.getParent()!=null)
+                    ((ScrollView)Callisto.logView.getParent()).removeView(Callisto.logView);
+                ((ScrollView) findViewById(R.id.scrollView2)).addView(Callisto.logView);
             } catch(Exception e) {}
         }
 
-
         videoView = (VideoView) findViewById(R.id.videoView);
 
-        // to specify which video to play (from raw resources)
+        // Getting the path to the video (either URL or local path)
         Bundle b = getIntent().getExtras();
         if(b==null)
         {
@@ -80,17 +89,17 @@ public class VideoActivity extends IRCChat {
         }
 
         try {
-        Log.d("VideoActivity:onCreate", path);
-        Uri pathToVideo = Uri.parse(path);
-        videoView.setVideoURI(pathToVideo);
+            Log.d("VideoActivity:onCreate", path);
+            Uri pathToVideo = Uri.parse(path);
+            videoView.setVideoURI(pathToVideo);
 
-        // to start it
-        videoView.requestFocus();
-        videoView.setMediaController(new MediaController(this));
-        Log.d("VideoActivity:onCreate", "Seeking to " + seekto);
-        //if(seekto<videoView.getDuration())
-        //    videoView.seekTo(seekto);
-        videoView.start();
+            // to start it
+            videoView.requestFocus();
+            videoView.setMediaController(new MediaController(this));
+            Log.d("VideoActivity:onCreate", "Seeking to " + seekto);
+            //if(seekto<videoView.getDuration())
+            //    videoView.seekTo(seekto);
+            videoView.start();
         } catch(Exception e)
         {
             finish();
@@ -111,10 +120,11 @@ public class VideoActivity extends IRCChat {
         switch(item.getItemId())
         {
             case NICKLIST_ID:
+                //TODO: show the nicklist
                 //Need to show popup window instead of creating activity for result
                 return true;
             case CHANGE_ID:
-                System.out.println("Herpaderp");
+                //TODO: WHAT
                 if("Open IRC".equals(item.getTitle().toString()))
                 {
                     //Show the IRC controls
@@ -134,13 +144,13 @@ public class VideoActivity extends IRCChat {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        System.out.println("HERP");
 //        if(getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight())
 //            ((LinearLayout)findViewById(R.id.mainVideo)).setOrientation(LinearLayout.HORIZONTAL);
 //        else
 //            ((LinearLayout)findViewById(R.id.mainVideo)).setOrientation(LinearLayout.VERTICAL);
     }
 
+    /** Called when the activity is destroyed; set the videoView to null so the time updater knows that it's not playing. */
     @Override
     public void onDestroy()
     {

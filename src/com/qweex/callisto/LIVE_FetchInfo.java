@@ -34,70 +34,72 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 
-/** Updates the current and next track information. */
+/** Updates the current and next track information when listening to the live stream. */
 public class LIVE_FetchInfo extends AsyncTask<Void, Void, Void>
 {
-	private static final String infoURL = "http://jbradio.airtime.pro/api/live-info";
-	private static Matcher liveMatcher = null;
-	
-	@Override
+    /** The address of the info to fetch */
+    private static final String infoURL = "http://jbradio.airtime.pro/api/live-info";
+    /** A Regex matcher to extract the info */
+    private static Matcher liveMatcher = null;
+
+    @Override
     protected Void doInBackground(Void... c)
-	{
-    HttpClient httpClient = new DefaultHttpClient();
-    HttpContext localContext = new BasicHttpContext();
-    HttpGet httpGet = new HttpGet(infoURL);
-    HttpResponse response;
-    try
-	{
-		response = httpClient.execute(httpGet, localContext);
-	    BufferedReader reader = new BufferedReader(
-		        new InputStreamReader(
-		          response.getEntity().getContent()
-		        )
-		      );
-	    
-	    String line = null, result = "";
-	    while ((line = reader.readLine()) != null){
-	      result += line + "\n";
-	    }
-	    
-	    //if(liveMatcher==null)
-	    	liveMatcher = (Pattern.compile(".*?\"currentShow\".*?"
-	    					+ "\"name\":\"(.*?)\""
-	    					+ ".*"
-							+ "\"name\":\"(.*?)\""
-	    					+ ".*?")
-	    					).matcher(result);
-	    if(liveMatcher.find())
-	    	Callisto.playerInfo.title = liveMatcher.group(1);
-	    if(liveMatcher.groupCount()>1)
-	    	Callisto.playerInfo.show = liveMatcher.group(2);
-	    
-	    Callisto.updateHandler.sendEmptyMessage(0);
-	    //CallistoWidget.updateAllWidgets(Callisto.LIVE_PreparedListener.c);
-	    
-	} catch (ClientProtocolException e) {
-		// TODO EXCEPTION
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	} catch (IllegalStateException e) {
-		e.printStackTrace();
-	};
-    
-    
-    Intent notificationIntent = new Intent(Callisto.LIVE_PreparedListener.c, Callisto.class);
-	PendingIntent contentIntent = PendingIntent.getActivity(Callisto.LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-	if(Callisto.notification_playing==null)
-	{
-		Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
-		Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-	}
-	Callisto.notification_playing.setLatestEventInfo(Callisto.LIVE_PreparedListener.c, Callisto.playerInfo.title,  "JB Radio", contentIntent);
-   	NotificationManager mNotificationManager =  (NotificationManager) Callisto.LIVE_PreparedListener.c.getSystemService(Context.NOTIFICATION_SERVICE);
-   	mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
-	//*/
-    
-    return null;
-	}
+    {
+        //Prepare HTTP stuffs
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpContext localContext = new BasicHttpContext();
+        HttpGet httpGet = new HttpGet(infoURL);
+        HttpResponse response;
+        try
+        {
+            //Read the data into a variable
+            response = httpClient.execute(httpGet, localContext);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            response.getEntity().getContent()
+                    )
+            );
+            String line, result = "";
+            while ((line = reader.readLine()) != null)
+                result += line + "\n";
+
+            //Extract the title and show
+            liveMatcher = (Pattern.compile(".*?\"currentShow\".*?"
+                    + "\"name\":\"(.*?)\""
+                    + ".*"
+                    + "\"name\":\"(.*?)\""
+                    + ".*?")
+            ).matcher(result);
+            if(liveMatcher.find())
+                Callisto.playerInfo.title = liveMatcher.group(1);
+            if(liveMatcher.groupCount()>1)
+                Callisto.playerInfo.show = liveMatcher.group(2);
+
+            //Send a message to update the player controls
+            Callisto.updateHandler.sendEmptyMessage(0);
+            //CallistoWidget.updateAllWidgets(Callisto.LIVE_PreparedListener.c);
+
+        } catch (ClientProtocolException e) {
+            // TODO EXCEPTION
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        };
+
+        //Update the notification
+        Intent notificationIntent = new Intent(Callisto.LIVE_PreparedListener.c, Callisto.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(Callisto.LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        if(Callisto.notification_playing==null)
+        {
+            Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
+            Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+        }
+        Callisto.notification_playing.setLatestEventInfo(Callisto.LIVE_PreparedListener.c, Callisto.playerInfo.title,  "JB Radio", contentIntent);
+        NotificationManager mNotificationManager =  (NotificationManager) Callisto.LIVE_PreparedListener.c.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+
+        return null;
+    }
 }

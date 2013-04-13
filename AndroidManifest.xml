@@ -69,8 +69,6 @@
             ></activity>
         <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
         <activity android:name="QuickPrefsActivity" android:theme="@android:style/Theme.Light" android:windowBackground="@color/backClr"></activity>
-        <activity android:name=".LiveStream"
-            android:configChanges="orientation"></activity>
         <activity android:name=".donate.Donate"
             android:configChanges="keyboardHidden|orientation"></activity>
 		<activity android:name="com.paypal.android.MEP.PayPalActivity"

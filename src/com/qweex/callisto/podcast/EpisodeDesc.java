@@ -296,7 +296,7 @@ public class EpisodeDesc extends Activity
             else
                 file_location_audio.delete();
 		 	int tempId = -1;
-		 	Cursor c = Callisto.databaseConnector.currentQueue();
+		 	Cursor c = Callisto.databaseConnector.currentQueueItem();
 		 	if(c.getCount()!=0)
 		 	{
 		 		c.moveToFirst();

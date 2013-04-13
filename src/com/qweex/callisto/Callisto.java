@@ -523,7 +523,7 @@ public class Callisto extends Activity {
         public MediaPlayer player;
         /** Data of the currently playing track **/
         public String title, show, date;
-        /** Track information of the currently playing track **/
+        /** Track information of the currently playing track, measured in seconds **/
         public int position = 0, length = 0;
         /** Holds whether or not the player is paused. **/
         public boolean isPaused = true;
@@ -734,7 +734,7 @@ public class Callisto extends Activity {
                     i=0;
                     try {
                         Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
-                        Cursor queue = Callisto.databaseConnector.currentQueue();
+                        Cursor queue = Callisto.databaseConnector.currentQueueItem();
                         queue.moveToFirst();
                         Long identity = queue.getLong(queue.getColumnIndex("identity"));
                         Callisto.databaseConnector.updatePosition(identity, Callisto.playerInfo.position);
@@ -1079,9 +1079,6 @@ public class Callisto extends Activity {
 			Intent newIntent;
 			switch(v.getId())
 			{
-			case R.id.live:
-				newIntent = new Intent(Callisto.this, LiveStream.class);
-				break;
 			case R.id.plan:
 				newIntent = new Intent(Callisto.this, CalendarActivity.class);
 				break;
@@ -1094,6 +1091,8 @@ public class Callisto extends Activity {
 			case R.id.donate:
 				newIntent = new Intent(Callisto.this, Donate.class);
 				break;
+            case R.id.live:
+                //Not used
 			default:
 				newIntent = new Intent(Callisto.this, AllShows.class);
 				break;
@@ -1214,13 +1213,14 @@ public class Callisto extends Activity {
     
     
     /** Downloads and resizes a show's logo image.
-     * @param img_url The URL for the image to download.
-     * @param show The name of the show. (The path is calculated from this.)
      * @throws IOException
      * @throws NullPointerException
      */
     public static class downloadImage extends AsyncTask<String, Void, Void>
-    {	
+    {
+        /** Do the thing stuff
+         * @param s The values, split up into img_url and show. img_url is the image to download, show is the name of the show (to calculate the path)
+         */
     	@Override
         protected Void doInBackground(String... s)
     	{
@@ -1604,8 +1604,8 @@ public class Callisto extends Activity {
             LIVE_PreparedListener.pd = BaconDialog(c, "Buffering...", null);
 
             /*
-            final AnimationDrawable d = (AnimationDrawable) ((ProgressBar) LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress)).getIndeterminateDrawable();
-            ((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress)).post(new Runnable() {
+            final AnimationDrawable d = (AnimationDrawable) ((ProgressBar) LIVE_PreparedListener.baconPDialog.getWindow().findViewById(android.R.id.progress)).getIndeterminateDrawable();
+            ((View)LIVE_PreparedListener.baconPDialog.getWindow().findViewById(android.R.id.progress)).post(new Runnable() {
                 @Override
                 public void run() {
                     d.start();
@@ -1874,7 +1874,7 @@ public class Callisto extends Activity {
         pDialog.setIcon(R.drawable.ic_action_gear);
         pDialog.show();
 
-        //((View)LIVE_PreparedListener.pd.getWindow().findViewById(android.R.id.progress).getParent().getParent().getParent().getParent().getParent()).setBackgroundDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        //((View)LIVE_PreparedListener.baconPDialog.getWindow().findViewById(android.R.id.progress).getParent().getParent().getParent().getParent().getParent()).setBackgroundDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
         ((View)(pDialog.getWindow().findViewById(android.R.id.progress)).getParent()).setBackgroundColor(0xFFFFFFFF);
         ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextColor(0xff000000);
         ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);

@@ -16,7 +16,6 @@ package com.qweex.callisto;
 import java.io.File;
 
 import android.preference.*;
-import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,27 +37,33 @@ import android.content.pm.PackageManager.NameNotFoundException;
  */
 
 public class QuickPrefsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener
-{    
+{
+    /** Donation app id for Qweex */
 	public final static String DONATION_APP = "com.qweex.donation";
-	private String old_radio;
+
+    /** Used to determine if the livestream should be stopped and started */
+	private String oldRadioForLiveQuality;
+    /** A button to do the play/pausing; essentially calls methods already in place rather than trying to do it from scratch. */
 	private ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it is defined as such in Callisto.playPause
 	
 	/** Called when the activity is created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {        
         super.onCreate(savedInstanceState);
+        //Deprecated functions ftw!
         addPreferencesFromResource(R.xml.preferences);
-        findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);
-        findPreference("secret").setEnabled(packageExists(DONATION_APP, this));
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);    //Set listener for assuring that it is just a number
+        findPreference("secret").setEnabled(packageExists(DONATION_APP, this));                     //Enable secret features if donation app exists
         
-        old_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
+        oldRadioForLiveQuality = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPauseListener);
 
         this.getPreferenceScreen().findPreference("irc_settings").setOnPreferenceClickListener(setSubpreferenceBG);
 
-        this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener(){
+        //Show a dialog when the user presses th reset IRC colors
+        this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener()
+        {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 		       	 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -93,9 +98,11 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 		       		return true;
 			}
         });
+
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
-    //http://stackoverflow.com/a/3223676/1526210
+    /** Sets the preference background color for theming. http://stackoverflow.com/a/3223676/1526210 */
     OnPreferenceClickListener setSubpreferenceBG = new OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
@@ -108,6 +115,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
+        //Move files to new storage_path
     	if("storage_path".equals(key))
     	{
     		//Move folder for storage dir
@@ -126,19 +134,20 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	    	}
 		    Callisto.storage_path = new_path;
     	}
+        //Restart stream if live quality changes
     	else if("live_url".equals(key) && Callisto.live_isPlaying)
     	{
     		String new_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
-    		if(!new_radio.equals(old_radio))
+    		if(!new_radio.equals(oldRadioForLiveQuality))
     		{
 				MagicButtonThatDoesAbsolutelyNothing.performClick();
 				MagicButtonThatDoesAbsolutelyNothing.performClick();
-    			old_radio=new_radio;
+    			oldRadioForLiveQuality =new_radio;
     		}
     	}
+        //Change the IRC scrollback
     	else if(key=="irc_max_scrollback")
     		Callisto.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
-	    
     }
     
     /** Determines if a package (i.e. application) is installed on the device.

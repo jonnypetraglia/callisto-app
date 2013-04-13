@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+/** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener
 {
 	Context c;
@@ -53,7 +54,7 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
 	        target.delete();
 		}
-		Cursor c = Callisto.databaseConnector.currentQueue();
+		Cursor c = Callisto.databaseConnector.currentQueueItem();
 		if(c.getCount()==0)
 			return;
 		c.moveToFirst();
