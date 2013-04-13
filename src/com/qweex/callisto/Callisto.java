@@ -34,7 +34,7 @@ import java.util.TimerTask;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.TypedValue;
 import android.widget.*;
-import com.qweex.callisto.podcast.DownloadTask;
+import com.qweex.callisto.podcast.*;
 import com.qweex.utils.ImgTxtButton;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -48,9 +48,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import com.qweex.callisto.bonuses.Bacon;
 import com.qweex.callisto.donate.Donate;
 import com.qweex.callisto.irc.IRCChat;
-import com.qweex.callisto.podcast.AllShows;
-import com.qweex.callisto.podcast.EpisodeDesc;
-import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.widgets.CallistoWidget;
 import com.qweex.utils.UnfinishedParseException;
 
@@ -355,11 +352,11 @@ public class Callisto extends Activity {
 	    int lastVersion = pf.getInt("appVersion", 0);
 
         Log.e("DERP", "" + pf.getString("ActiveDownloads", "").equals(""));
-        if(!pf.getString("ActiveDownloads", "").equals("") && !pf.getString("ActiveDownloads", "").equals("|"))
+        if(!pf.getString(DownloadList.ACTIVE, "").equals("") && !pf.getString(DownloadList.ACTIVE, "").equals("|"))
         {
             //TODO: Display message
-            Callisto.downloading_count = pf.getString("ActiveDownloads", "").length() - pf.getString("ActiveDownloads", "").replaceAll("\\|", "").length() - 1;
-            new DownloadTask(Callisto.this).execute();
+            //Callisto.downloading_count = pf.getString("ActiveDownloads", "").length() - pf.getString("ActiveDownloads", "").replaceAll("\\|", "").length() - 1;
+            //new DownloadTask(Callisto.this).execute();
         }
 
 	    if(!(Callisto.appVersion>lastVersion))

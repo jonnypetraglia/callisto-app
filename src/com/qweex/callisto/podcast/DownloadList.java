@@ -20,13 +20,13 @@ package com.qweex.callisto.podcast;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.*;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -37,12 +37,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -54,13 +49,15 @@ import android.widget.TextView;
 public class DownloadList extends ListActivity
 {
 	/** Contains the ProgressBar of the current download, for use with updating. */
+    private static final int CLEAR_ID=Menu.FIRST+1, PAUSE_ID=CLEAR_ID+1;
 	public static ProgressBar downloadProgress = null;
 	private ListView mainListView;
-	private static HeaderAdapter listAdapter ;
+	public static HeaderAdapter listAdapter ;
 	public static Handler notifyUpdate;
-    List<Long> activeDownloads = new ArrayList<Long>(), completedDownloads = new ArrayList<Long>();
     public static WifiManager.WifiLock Download_wifiLock;
-    List<HeaderAdapter.Item> headerThings;
+    public List<HeaderAdapter.Item> headerThings;
+
+    final static public String ACTIVE = "ActiveDownloads", COMPLETED = "CompletedDownloads";
 
     /** Called when the activity is first created. Sets up the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -85,37 +82,21 @@ public class DownloadList extends ListActivity
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 
-        for(String s : sp.getString("ActiveDownloads", "").split("\\|"))
-        {
-            Log.e("ActiveDownloads:", "s: " + s);
-            if(s.equals(""))
-                continue;
-            try{
-            activeDownloads.add(Long.parseLong(s));
-            }catch(Exception e){}
-        }
-        for(String s : sp.getString("CompletedDownloads", "").split("\\|"))
-        {
-            Log.e("CompletedDownloads:", "s: " + s);
-            if(s.equals(""))
-                continue;
-            try{
-                completedDownloads.add(Long.parseLong(s));
-            }catch(Exception e){}
-        }
 
 
         headerThings = new ArrayList<HeaderAdapter.Item>();
-        if(activeDownloads.size()>0)
+        int tempInt = getDownloadCount(this, ACTIVE);
+        if(tempInt>0)
         {
             headerThings.add(new DownloadHeader("Active"));
-            for(int i=0; i<activeDownloads.size(); i++)
+            for(int i=0; i<tempInt; i++)
                 headerThings.add(new DownloadRow());
         }
-        if(completedDownloads.size()>0)
+        tempInt = getDownloadCount(this, COMPLETED);
+        if(tempInt>0)
         {
             headerThings.add(new DownloadHeader("Completed"));
-            for(int i=0; i<completedDownloads.size(); i++)
+            for(int i=0; i<tempInt; i++)
                 headerThings.add(new DownloadRow());
         }
         listAdapter = new HeaderAdapter(this, headerThings);
@@ -133,13 +114,89 @@ public class DownloadList extends ListActivity
 	        @Override
 	        public void handleMessage(Message msg)
 	        {
+                headerThings.clear();
+                int tempInt = getDownloadCount(DownloadList.this, ACTIVE);
+                Log.d(":", "REBUILDING HEADER THIGNS");
+                if(tempInt>0)
+                {
+                    headerThings.add(new DownloadHeader("Active"));
+                    for(int i=0; i<tempInt; i++)
+                    {
+                        Log.d(":", "Adding act");
+                        headerThings.add(new DownloadRow());
+                    }
+                }
+                tempInt = getDownloadCount(DownloadList.this, COMPLETED);
+                if(tempInt>0)
+                {
+                    headerThings.add(new DownloadHeader("Completed"));
+                    for(int i=0; i<tempInt; i++)
+                    {
+                        Log.d(":", "Adding comp");
+                        headerThings.add(new DownloadRow());
+                    }
+                }
 	        	if(listAdapter!=null)
 	        		listAdapter.notifyDataSetChanged();
 	        }
 	    };
 	}
-	
-	/** Listener for the up button ("^"). Moves a download up in the list. */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        boolean paoosay = (DownloadTask.running || getDownloadCount(this, ACTIVE)==0);
+        menu.add(0, PAUSE_ID, 0, paoosay ? "PAUSE" : "RESUME").setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
+        menu.add(0, CLEAR_ID, 0, "Clear Completed").setIcon(R.drawable.ic_action_trash).setEnabled(getDownloadCount(this, COMPLETED)>0);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case CLEAR_ID:
+                SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
+                e.remove("CompletedDownloads");
+                e.commit();
+                /*
+                for(int i=0; i<headerThings.size(); i++)
+                {
+                    if(headerThings.get(headerThings.size()-1).getClass()==DownloadHeader.class &&
+                            ((DownloadHeader)headerThings.get(headerThings.size()-1)).getText().equals("Completed"))
+                    {
+                        while(i<headerThings.size())
+                            headerThings.remove(i++);
+                    }
+                }
+                */
+                notifyUpdate.sendEmptyMessage(0);
+                item.setEnabled(false);
+                break;
+            case PAUSE_ID:
+                if(DownloadTask.running)
+                {
+                    item.setIcon(R.drawable.ic_action_playback_play);
+                    item.setTitle("Resume");
+                    EpisodeDesc.dltask.cancel(true);
+                    DownloadTask.running = false;
+                } else
+                {
+                    item.setIcon(R.drawable.ic_action_playback_pause);
+                    item.setTitle("Pause");
+                    SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(this);
+                    Callisto.downloading_count = getDownloadCount(this, ACTIVE);
+                    EpisodeDesc.dltask = new DownloadTask(DownloadList.this);
+                    DownloadTask.running = true;
+                    EpisodeDesc.dltask.execute();
+                }
+                break;
+        }
+        return true;
+    }
+
+        /** Listener for the up button ("^"). Moves a download up in the list. */
 	OnClickListener moveUp = new OnClickListener() 
     {
 		 @Override
@@ -149,8 +206,7 @@ public class DownloadList extends ListActivity
 			 int num = Integer.parseInt((String) tv.getText());
 			 if(num==0 || num==1)
 				 return;
-			 Collections.swap(activeDownloads,num,num-1);
-             writeActiveQueue();
+			 //Collections.swap(activeDownloads,num,num-1);
 			 listAdapter.notifyDataSetChanged();
 		  }
     };
@@ -163,10 +219,10 @@ public class DownloadList extends ListActivity
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
 			 int num = Integer.parseInt((String) tv.getText());
-			 if(num==0 || num>=activeDownloads.size()-1)
+			 if(num==0 || num>=getDownloadCount(v.getContext(),ACTIVE))
 				 return;
-			 Collections.swap(activeDownloads,num,num+1);
-             writeActiveQueue();
+              moveDownload(v.getContext(),ACTIVE,num,false,false);
+			 //Collections.swap(activeDownloads,num,num+1);
 			 listAdapter.notifyDataSetChanged();
 		  }
     };
@@ -182,47 +238,21 @@ public class DownloadList extends ListActivity
 			 int num = Integer.parseInt((String) tv.getText());
              if(parent.findViewById(R.id.moveUp).getVisibility()==View.GONE) //It's a completed download
              {
-                completedDownloads.remove(num);
-                headerThings.remove(activeDownloads.size()+num+1);
-                if(completedDownloads.size()==0)
+                 removeDownloadAt(v.getContext(), COMPLETED, num);
+                headerThings.remove(getDownloadCount(v.getContext(), ACTIVE)+num+1);
+                if(getDownloadCount(v.getContext(),COMPLETED)==0)
                     headerThings.remove(headerThings.size()-1);
-                writeCompletedQueue();
              } else
              {
-                activeDownloads.remove(num);
+                 removeDownloadAt(v.getContext(), ACTIVE, num);
                 headerThings.remove(num+1);
-                if(activeDownloads.size()==0)
+                if(getDownloadCount(v.getContext(), ACTIVE)==0)
                     headerThings.remove(0);
-                writeActiveQueue();
              }
 			 listAdapter.notifyDataSetChanged();
 			 Callisto.downloading_count--;
 		  }
     };
-
-    public void writeActiveQueue()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append('|');
-        for(long s: activeDownloads) {
-            sb.append(s).append('|');
-        }
-        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
-        e.putString("ActiveDownloads", sb.toString());
-        e.commit();
-    }
-
-    public void writeCompletedQueue()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append('|');
-        for(long s: completedDownloads) {
-            sb.append(s).append('|');
-        }
-        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).edit();
-        e.putString("CompletedDownloads", sb.toString());
-        e.commit();
-    }
 
 
 
@@ -234,6 +264,8 @@ public class DownloadList extends ListActivity
         {
             this.name = name;
         }
+
+        public String getText(){ return name;}
 
         @Override
         public int getViewType()
@@ -282,17 +314,16 @@ public class DownloadList extends ListActivity
             boolean completed = false;
             long id;
             position--;
-            Log.e("Derpy", position + " vs " + completedDownloads.size() + " ( - " + activeDownloads.size());
-            if(position>=activeDownloads.size())
+            if(position>=getDownloadCount(parent.getContext(), ACTIVE))
             {
                 completed = true;
-                position = position - activeDownloads.size();
-                if(activeDownloads.size()>0)
-                    position--;     //To adjust for the "Active" header
-                id = completedDownloads.get(position);
+                position = position - getDownloadCount(parent.getContext(), ACTIVE);
+                if(getDownloadCount(parent.getContext(), ACTIVE)>0)
+                    position=position-1;     //To adjust for the "Active" header
+                id = getDownloadAt(parent.getContext(), COMPLETED, position);
             }
             else
-                id = activeDownloads.get(position);
+                id = getDownloadAt(parent.getContext(), ACTIVE, position);
 
             boolean isVideo = id<0;
             if(isVideo)
@@ -364,11 +395,77 @@ public class DownloadList extends ListActivity
 
 
     //Integer.MAX_VALUE
-
-    public static String makeFileFriendly(String input)
+    public static String makeFileFriendly(String burt)
     {
-        String output = input;
+        return burt.replaceAll("[\\?]", "_"); //[\\?:;\*"<>\|]
+        //return burt;
+    }
 
-        return output;
+
+    public static long getDownloadAt(Context c, String pref, int num)
+    {
+        num++;
+        String[] derp = PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","").split("\\|");
+        Log.e("PARSING:", PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","") + "      at " + num);
+        Log.e("PARSING:", derp[num] + " ");
+        return Long.parseLong( derp[num] );
+    }
+
+    public static int getDownloadCount(Context c, String pref)
+    {
+        return PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").split("\\|").length-1;
+    }
+
+    public static void addDownload(Context c, String pref, Long idToAdd, boolean isVid)
+    {
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(c).edit();
+        String aDownloads = PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "");
+        if(aDownloads.equals(""))
+            aDownloads = "|";
+        if(pref.equals(ACTIVE))
+            aDownloads = aDownloads.concat(Long.toString(idToAdd * (isVid?-1:1)) + "|");
+        else
+            aDownloads = "|" + Long.toString(idToAdd * (isVid?-1:1)) + aDownloads;
+        Log.i("EpisodeDesc:addDownload", "Updated " + pref + " list: " + aDownloads);
+        e.putString(pref, aDownloads);
+        e.commit();
+    }
+
+    public static void removeDownloadAt(Context c, String pref, int position)
+    {
+        removeDownload(c, pref, PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "").substring(1).split("\\|")[position], false);
+    }
+    public static void removeDownload(Context c, String pref, Long idToRemove, boolean isVid) { removeDownload(c, pref, Long.toString(idToRemove), isVid);}
+    public static void removeDownload(Context c, String pref, String idToRemove, boolean isVid)
+    {
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(c).edit();
+        String cDownloads = PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "");
+        Log.i("EpisodeDesc:removeDownload", "pre-up " + pref + " list: " + cDownloads + " [ " + idToRemove + " ] ");
+        cDownloads = cDownloads.replace("|" + idToRemove + "|", "|");
+        if(cDownloads.equals("|"))
+            cDownloads="";
+        e.putString(pref, cDownloads);
+        e.commit();
+        Log.i("EpisodeDesc:removeDownload", "Updated " + pref + " list: " + cDownloads);
+    }
+
+    public static void moveDownload(Context c, String pref, int idToMove, boolean isVid, boolean down)
+    {
+        Long realId = getDownloadAt(c, pref, idToMove);
+
+        SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(c).edit();
+        String aDownloads = PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "");
+        Log.e("OLD:aDOWNLOAD", aDownloads + " -> " + realId);
+        aDownloads = aDownloads.replace("|" + realId + "|","||");
+        int A = aDownloads.indexOf("||");
+        int B = aDownloads.indexOf("|", A+2);
+        Log.e("A:aDOWNLOAD",                                        " " +  B);
+        Log.e("A:aDOWNLOAD", aDownloads.substring(1,A) + "( " + A);
+        Log.e("B:aDOWNLOAD", aDownloads.substring(A+2,B-1) + "( " + B);
+        Log.e("C:aDOWNLOAD", aDownloads.substring(B+1) + "( " + B+1);
+        aDownloads = aDownloads.substring(0,A+1) + aDownloads.substring(A+2, B+1) + Long.toString(realId) + "|" + aDownloads.substring(B+1);
+        Log.e("NEW:aDOWNLOAD", aDownloads);
+        //e.putString(pref,aDownloads);
+        //e.commit();
     }
 }

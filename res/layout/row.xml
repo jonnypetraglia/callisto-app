@@ -59,7 +59,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <!-- Main text (e.g. Episode title) -->
         <TextView
             android:id="@+id/rowTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_weight="1.0"
@@ -74,7 +74,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <!-- Sub text (e.g. Episode date, show, etc) -->
         <TextView
             android:id="@+id/rowSubTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_weight="1.0"

@@ -52,7 +52,9 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     private NotificationManager mNotificationManager;
     private PendingIntent contentIntent;
     public static boolean running = false;
-    private Context context;
+    public Context context;
+    private int outer_failures = 0, failed = 0, inner_failures;
+    private final int INNER_LIMIT=5, OUTER_LIMIT=10;
 
     public DownloadTask(Context c)
     {
@@ -87,17 +89,23 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 "", contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
 
-
+        long id = 0;
         Log.e("YO DAWG:", "Preparing to do sum dlinng");
-        Log.e("YO DAWGz:", PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", ""));
-        while(!PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "").equals("") &&
-                !PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "|").equals("|"))
+        while(DownloadList.getDownloadCount(context, DownloadList.ACTIVE)>0)
         {
+
+            if(isCancelled())
+            {
+                mNotificationManager.cancel(NOTIFICATION_ID);
+                return null;
+            }
             try
             {
                 String dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
                 Log.e("YO DAWG:", "DL LIST: " + dlList);
-                long id = Long.parseLong(dlList.substring(1, dlList.indexOf('|', 1)));
+                //id = Long.parseLong(dlList.substring(1, dlList.indexOf('|', 1)));
+
+                id = DownloadList.getDownloadAt(context, DownloadList.ACTIVE, 0);
                 if(id<=0)
                 {
                     isVideo=true;
@@ -124,6 +132,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Title=Title.trim();
                 Target = new File(Target, Date + "__" + DownloadList.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
 
+                Log.i("EpisodeDesc:DownloadTask", "Path: " + Target.getPath());
                 URL url = new URL(Link);
                 Log.i("EpisodeDesc:DownloadTask", "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -136,6 +145,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 }
                 ucon.setReadTimeout(TIMEOUT_CONNECTION);
                 ucon.setConnectTimeout(TIMEOUT_SOCKET);
+                ucon.connect();
 
 
                 Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
@@ -180,6 +190,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 if(!DownloadList.Download_wifiLock.isHeld())
                     DownloadList.Download_wifiLock.acquire();
 
+                inner_failures = 0;
                 //Here is where the actual downloading happens
                 while (len != -1)
                 {
@@ -191,8 +202,14 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         Target.delete();
                         break;
                     }
+                    if(isCancelled())
+                    {
+                        mNotificationManager.cancel(NOTIFICATION_ID);
+                        return null;
+                    }
 
-                    try {
+                    try
+                    {
                         len = inStream.read(buff);
                         if(len==-1)
                             break;
@@ -210,18 +227,38 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         {
                             temp_spd= len*100/time_diff;
                             dli++;
+                            all_spds += temp_spd;
+                            lastTime = (new java.util.Date()).getTime();
                         }
 
-                        all_spds += temp_spd;
-                        lastTime = (new java.util.Date()).getTime();
+                        } catch (IOException e) {
+                            Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon - " + inner_failures);
+                            inner_failures++;
+                            if(inner_failures==INNER_LIMIT)
+                                break;
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e1) {}
+                            //Add failure to average
+                            dli++;
+                            lastTime = (new java.util.Date()).getTime();
+
+                        } catch (Exception e) {
+                            Log.e("EpisodeDesc:DownloadTask:??Exception", e.getClass() + " : " + e.getMessage());
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e1) {}
+                            //Add failure to average
+                            dli++;
+                            lastTime = (new java.util.Date()).getTime();
+                        }
 
                         //If the time is right, do it!
-                        if(dli==SPD_COUNT)
+                        if(dli>=SPD_COUNT)
                         {
-                            dli = 0;
-                            avg_speed = all_spds*1.0/SPD_COUNT/100;
-                            Log.e("BACON", temp_spd + "->" + all_spds + " == " + avg_speed);
+                            avg_speed = all_spds*1.0/dli/100;
                             all_spds = 0;
+                            dli = 0;
 
                             if(DownloadList.downloadProgress!=null)
                             {
@@ -238,75 +275,90 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                                     Show + ": " + Title, contentIntent);
                             mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
                         }
-                    } catch (IOException e) {
-                        Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon");
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e1) {}
-                    } catch (Exception e) {
-                        Log.e("EpisodeDesc:DownloadTask:??Exception", e.getClass() + " : " + e.getMessage());
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e1) {}
-                    }
                 }
 
+
+
+                outStream.flush();
+                outStream.close();
+                inStream.close();
                 dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
+                if(inner_failures==INNER_LIMIT)
+                {
+
+                    throw new Exception("Inner exception has passed " + INNER_LIMIT);
+                }
                 if(!dlList.equals("") && (Long.parseLong(dlList.substring(1,dlList.indexOf('|',1)))==id))
                 {
-                    Callisto.current_download++;
+                    Log.i("EpisodeDesc:DownloadTask", "Trying to finish with " + Target.length() + "==" + TotalSize);
+                    if(Target.length()==TotalSize)
+                    {
+                        Callisto.current_download++;
 
-                    outStream.flush();
-                    outStream.close();
-                    inStream.close();
-                    Log.i("EpisodeDesc:DownloadTask", "Successfully downloaded to : " + Target.getPath());
-                    boolean queue = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("download_to_queue", false);
-                    if(queue)
-                        Callisto.databaseConnector.appendToQueue(id, false, true==true);//vidSelected);
+                        Log.i("EpisodeDesc:DownloadTask", (inner_failures<INNER_LIMIT?"Successfully":"FAILED") + " downloaded to : " + Target.getPath());
 
-                    //Move the download from active to completed.
-                    SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(context).edit();
-                    String aDownloads = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
-                    aDownloads = aDownloads.replace("|" + Long.toString(id) + "|", "|");
-                    if(aDownloads.equals("|"))
-                        aDownloads="";
-                    e.putString("ActiveDownloads", aDownloads);
-                    String cDownloads = PreferenceManager.getDefaultSharedPreferences(context).getString("CompletedDownloads", "");
-                    if(cDownloads.equals(""))
-                        cDownloads = "|";
-                    cDownloads = "|" + Long.toString(id) + cDownloads;
-                    e.putString("CompletedDownloads", cDownloads);
-                    e.commit();
+                         //Move the download from active to completed.
+                        DownloadList.removeDownload(context, DownloadList.ACTIVE, id, isVideo);
+                        DownloadList.addDownload(context, DownloadList.COMPLETED, id, isVideo);
 
-                    if(DownloadList.notifyUpdate!=null)
-                        DownloadList.notifyUpdate.sendEmptyMessage(0);
-                }
+                        Log.i("EpisodeDesc:DownloadTask", " " + DownloadList.notifyUpdate);
+                        if(DownloadList.notifyUpdate!=null)
+                            DownloadList.notifyUpdate.sendEmptyMessage(0);
+
+                        boolean queue = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("download_to_queue", false);
+                        if(queue)
+                            Callisto.databaseConnector.appendToQueue(id, false, isVideo);
+                    }
+                } else
+                    Target.delete();
             }catch (ParseException e) {
                 Log.e("EpisodeDesc:DownloadTask:ParseException", "Error parsing a date from the SQLite db: ");
                 Log.e("EpisodeDesc:DownloadTask:ParseException", Date);
                 Log.e("EpisodeDesc:DownloadTask:ParseException", "(This should never happen).");
+                outer_failures++;
                 e.printStackTrace();
             } catch(Exception e) {
-                Log.e("EEEEEEEE " + e.getClass(), "Msg: " + e.getMessage());
+                outer_failures++;
+                Log.e("EEEEEEEE " + e.getClass(), "[" + outer_failures + "] Msg: " + e.getMessage());
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {}
             }
-        }
-			/*//IDEA: Change intent upon download completion?
-			notificationIntent = new Intent(null, Callisto.class);
-			contentIntent = PendingIntent.getActivity(EpisodeDesc.this, 0, notificationIntent, 0);
-			*/
+            if(outer_failures==OUTER_LIMIT)
+            {
+                //Add to end of active, but with x signifier to show it failed
+                SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                String aDownloads = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
+                aDownloads = aDownloads.replace("|" + Long.toString(id) + "|", "|");
+                aDownloads = aDownloads.concat("x" + Long.toString(id) + "|");
+                if(aDownloads.equals("|"))
+                    aDownloads="";
+                boolean quit = false;
+                if(quit = aDownloads.charAt(1)=='x')
+                    aDownloads = aDownloads.replaceAll("x","");
+                e.putString("ActiveDownloads", aDownloads);
+                e.commit();
+                Log.i("EpisodeDesc:DownloadTask", "New aDownloads: " + aDownloads);
+                if(DownloadList.notifyUpdate!=null)
+                    DownloadList.notifyUpdate.sendEmptyMessage(0);
+                failed++;
+                outer_failures=0;
 
-        if(DownloadList.Download_wifiLock.isHeld())
+                if(quit)
+                    break;
+            }
+        }
+
+
+        if(DownloadList.Download_wifiLock!=null && DownloadList.Download_wifiLock.isHeld())
             DownloadList.Download_wifiLock.release();
         Log.i("EpisodeDesc:DownloadTask", "Finished Downloading");
         mNotificationManager.cancel(NOTIFICATION_ID);
         if(Callisto.downloading_count>0)
         {
             Callisto.notification_download = new Notification(R.drawable.ic_action_download, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
-            Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", null, contentIntent);
+            Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", failed>0 ? (failed + " failed, try them again later") : null, contentIntent);
             Callisto.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
             mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
             Callisto.current_download=1;
