@@ -23,10 +23,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/** A dialog to display the people (nicks) in the IRC. Used in StartActivityForResult, so result is important; requires IRCChat.nickList */
 public class NickList extends ListActivity
 {
     public static HashSet<String> Owners = new HashSet<String>(),         //~ == +q
@@ -54,24 +54,28 @@ public class NickList extends ListActivity
 		finish();
 	}
 
+    /** An adapter for the nicks */
     class NickListAdapter extends ArrayAdapter<String>
     {
-        int resID;
-        List<String> content;
-        public NickListAdapter(Context context, int textViewResourceId, List<String> objects) {
+        private int layoutResourceID;
+        private List<String> content;
+        public NickListAdapter(Context context, int textViewResourceId, List<String> objects)
+        {
             super(context, textViewResourceId, objects);
-            resID = textViewResourceId;
+            layoutResourceID = textViewResourceId;
             content = objects;
         }
 
         @Override
-        public View getView(int pos, View convertView, ViewGroup parent){
+        public View getView(int pos, View convertView, ViewGroup parent)
+        {
             View v = convertView;
             if(v==null) {
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v=vi.inflate(resID, null);
+                v=vi.inflate(layoutResourceID, null);
             }
             String pre = "";
+            //Special characters for special people
             if(Owners.contains(content.get(pos).toLowerCase()))
                 pre = "~";
             else if(Admins.contains(content.get(pos).toLowerCase()))

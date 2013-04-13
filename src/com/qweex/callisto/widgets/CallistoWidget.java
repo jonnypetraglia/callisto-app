@@ -30,92 +30,82 @@ import android.widget.RemoteViews;
 /**  Manages the widgets for the Callisto app.
  * @author MrQweex */
 
-public class CallistoWidget extends AppWidgetProvider {
-	//Bitmap playIcon, pauseIcon;
-	
-	
-	/** Called when the widgets have been notified that they need to be updated
-	 * @param context Check the Android docs
-	 * @param appWidgetManager Check the Android docs
-	 * @param appWidgetIds Check the Android docs
-	 */
-  public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-    final int N = appWidgetIds.length;
-    /*
-    if(playIcon==null)
+public class CallistoWidget extends AppWidgetProvider
+{
+    /** Called when the widgets have been notified that they need to be updated
+     * @param context Check the Android docs
+     * @param appWidgetManager Check the Android docs
+     * @param appWidgetIds Check the Android docs
+     */
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
     {
-    	playIcon = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_media_play);
+        final int N = appWidgetIds.length;
+
+        Log.v("CallistoWidget:onUpdate",  "Updating widgets " + Arrays.asList(appWidgetIds));
+        for (int i = 0; i < N; i++)
+        {
+            int appWidgetId = appWidgetIds[i];
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+            //views.setImageViewBitmap(R.id.widgetButton, playIcon);
+
+            PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, Callisto.class), PendingIntent.FLAG_CANCEL_CURRENT);
+            views.setOnClickPendingIntent(R.id.widget, pi);
+
+            Intent intent = new Intent(context, CallistoWidget.class);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+            views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
+
+            if(Callisto.playerInfo!=null)
+                System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
+            if((Callisto.live_player!=null && !Callisto.live_isPlaying) ||
+                    (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
+                views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
+                //views.setImageViewBitmap(R.id.widgetButton, playIcon);
+            else
+                views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_pause);
+            //views.setImageViewBitmap(R.id.widgetButton, pauseIcon);
+
+
+            // Updates the text and button
+            if(Callisto.playerInfo!=null && Callisto.playerInfo.title!=null)
+            {
+                views.setTextViewText(R.id.widgetTitle, Callisto.playerInfo.title);
+                views.setTextViewText(R.id.widgetShow, Callisto.playerInfo.show);
+            }
+            else
+            {
+                views.setTextViewText(R.id.widgetTitle, "Callisto");
+                views.setTextViewText(R.id.widgetShow, "(Press to enqueue episodes)");
+            }
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
     }
-    if(pauseIcon==null)
+
+    /** Produces a call to update all the widgets.
+     * @param c The context, used for getApplicationContext()*/
+    public static void updateAllWidgets(Context c)
     {
-    	pauseIcon = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_media_pause);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(c.getApplicationContext());
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(c, CallistoWidget.class));
+        if (appWidgetIds.length > 0)
+            new CallistoWidget().onUpdate(c, appWidgetManager, appWidgetIds);
     }
-    */
-    
-    Log.v("CallistoWidget:onUpdate",  "Updating widgets " + Arrays.asList(appWidgetIds));
-    for (int i = 0; i < N; i++) {
-      int appWidgetId = appWidgetIds[i];
-      RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-      //views.setImageViewBitmap(R.id.widgetButton, playIcon);
-      
-      PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, Callisto.class), PendingIntent.FLAG_CANCEL_CURRENT);
-      views.setOnClickPendingIntent(R.id.widget, pi);
-      
-      Intent intent = new Intent(context, CallistoWidget.class);
-      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-      PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-      views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
-      
-      if(Callisto.playerInfo!=null)
-    	  System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
-      if((Callisto.live_player!=null && !Callisto.live_isPlaying) ||
-    		  (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
-    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
-    	  //views.setImageViewBitmap(R.id.widgetButton, playIcon);
-      else
-    	  views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_pause);
-    	  //views.setImageViewBitmap(R.id.widgetButton, pauseIcon);
-   
-      
-      // Updates the text and button
-      if(Callisto.playerInfo!=null && Callisto.playerInfo.title!=null)
-      {
-	      views.setTextViewText(R.id.widgetTitle, Callisto.playerInfo.title);
-	      views.setTextViewText(R.id.widgetShow, Callisto.playerInfo.show);
-      }
-      else
-      {
-    	  views.setTextViewText(R.id.widgetTitle, "Callisto");
-	      views.setTextViewText(R.id.widgetShow, "(Press to enqueue episodes)");
-      }
-      appWidgetManager.updateAppWidget(appWidgetId, views);
+
+
+    /** Called when the user presses a button on the widget. Calls the Callisto static method to play or pause.
+     * @param context The...uh....context....
+     * @param intent The...uh....intent....
+     */
+    @Override
+    public void onReceive(Context context, Intent intent)
+    {
+        super.onReceive(context, intent);
+        if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction()))
+            return;
+        Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget");
+        Callisto.is_widget = true;
+        Callisto.playPause(context, null);
     }
-  }
-
-  /** Produces a call to update all the widgets. 
-   * @param c The context, used for getApplicationContext()*/
-  public static void updateAllWidgets(Context c){
-      AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(c.getApplicationContext());
-      int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(c, CallistoWidget.class));
-      if (appWidgetIds.length > 0) {
-          new CallistoWidget().onUpdate(c, appWidgetManager, appWidgetIds);
-      }
-  }
-
-  
-  /** Called when the user presses a button on the widget.
-   * @param context The...uh....context....
-   * @param intent The...uh....intent....
-   */
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction()))
-			return;
-		System.out.println("Action: " + intent.getAction());
-		Callisto.is_widget = true;
-		System.out.println("HEY");
-		Callisto.playPause(context, null);
-	}
 
 }
