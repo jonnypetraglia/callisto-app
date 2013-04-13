@@ -436,10 +436,14 @@ public class CalendarActivity extends Activity {
 	   			
 				evDate = Callisto.sdfRaw.format(tempDate.getTime());
    				
-	   			  String evTime =evDate.substring(8).trim();
-	   			  evDate =  evDate.substring(0,8).trim();
+	   			String evTime =evDate.substring(8).trim();
+	   			evDate =  evDate.substring(0,8).trim();
 	   			  
 	   			System.out.println("TZD: " + tempDate.get(Calendar.DAY_OF_WEEK) + " " + evType.trim());
+
+                 //Chriiiiiiis fix this
+                 if(evShow.equals("The Linux Action Show!"))
+                     evShow = "Linux Action Show";
 	   				
 	   			Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_WEEK) : -1);
 	   		  }

@@ -67,23 +67,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="756d750a-f333-4bab-a97b-5b4ec63491d0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/spinner.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/btn_check_buttonless_on.png" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/res/drawable/number_picker_down.xml" afterPath="$PROJECT_DIR$/res/drawable/numberpicker_up.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/res/drawable/number_picker_up.xml" afterPath="$PROJECT_DIR$/res/drawable/numberpicker_down.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/utils/NumberPicker.java" afterPath="$PROJECT_DIR$/src/com/qweex/utils/NumberPicker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/edit_alarm.xml" afterPath="$PROJECT_DIR$/res/layout/edit_alarm.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/event_info.xml" afterPath="$PROJECT_DIR$/res/layout/event_info.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/row.xml" afterPath="$PROJECT_DIR$/res/layout/row.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/styles.xml" afterPath="$PROJECT_DIR$/res/values/styles.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364016349478" ignored="false" />
+    <file path="/Dummy.txt" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364034214650" ignored="false" />
     <file path="/fragment.java" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364016029459" ignored="false" />
     <file path="/episode.xml" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364014817796" ignored="false" />
     <file path="/EpisodeDesc.java" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364015030539" ignored="false" />
@@ -108,7 +97,7 @@
     <file path="/DownloadTask.java" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1361665653261" ignored="false" />
     <file path="/a.dummy" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1361376457027" ignored="false" />
     <file path="/main.xml" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1361820380215" ignored="false" />
-    <file path="/CalendarActivity.java" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364033350360" ignored="false" />
+    <file path="/CalendarActivity.java" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364034421940" ignored="false" />
     <file path="/controls.xml" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1361378826323" ignored="false" />
     <file path="/styles.xml" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1364016800892" ignored="false" />
     <file path="/is_new.xml" changelist="756d750a-f333-4bab-a97b-5b4ec63491d0" time="1361382725564" ignored="false" />
@@ -213,57 +202,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Callisto.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1799" column="5" selection-start="69884" selection-end="69884" vertical-scroll-proportion="-16.0">
+            <state line="1783" column="25" selection-start="69392" selection-end="69392" vertical-scroll-proportion="0.2790347">
               <folding>
                 <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
               </folding>
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CalendarActivity.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="720" column="26" selection-start="25946" selection-end="25946" vertical-scroll-proportion="0.30618402">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#5568#5726#0" expanded="true" />
-                <element signature="e#5720#5721#0" expanded="true" />
-                <element signature="e#5869#6212#0" expanded="true" />
-                <element signature="e#6189#6190#0" expanded="true" />
-                <element signature="e#9100#9259#0" expanded="true" />
-                <element signature="e#9252#9253#0" expanded="true" />
-                <element signature="e#9355#9515#0" expanded="true" />
-                <element signature="e#9508#9509#0" expanded="true" />
-                <element signature="e#9617#9797#0" expanded="true" />
-                <element signature="e#9785#9786#0" expanded="true" />
-                <element signature="docComment;field#editEvent#0;class#CalendarActivity#0" expanded="true" />
-                <element signature="e#19961#24806#0" expanded="true" />
-                <element signature="e#22717#24790#0" expanded="true" />
-                <element signature="e#24781#24782#0" expanded="true" />
-                <element signature="e#24799#24800#0" expanded="true" />
-                <element signature="docComment;field#clickEvent#0;class#CalendarActivity#0" expanded="true" />
-                <element signature="e#24893#30284#0" expanded="true" />
-                <element signature="e#30277#30278#0" expanded="true" />
-                <element signature="docComment;method#loadMoreAgenda#0;class#CalendarActivity#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="event_info.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/event_info.xml">
-          <provider editor-type-id="text-editor">
-            <state line="93" column="37" selection-start="3402" selection-end="3402" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-          <provider selected="true" editor-type-id="android-designer">
-            <state />
           </provider>
         </entry>
       </file>
@@ -319,10 +266,10 @@
         <option value="$PROJECT_DIR$/res/drawable/spinner.xml" />
         <option value="$PROJECT_DIR$/res/values/styles.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/utils/NumberPicker.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/res/layout/edit_alarm.xml" />
         <option value="$PROJECT_DIR$/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/res/layout/event_info.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
       </list>
     </option>
   </component>
@@ -817,7 +764,11 @@
       <created>1364016370159</created>
       <updated>1364016370159</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Skinned some of the controls such as numberpicker and spinner. Hooray.">
+      <created>1364034225761</created>
+      <updated>1364034225761</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -912,7 +863,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Overhauled the view for the Episode Description landscape. Aw yeah, it looks badass. Though that may be the rum talking." />
+    <option name="LAST_COMMIT_MESSAGE" value="Skinned some of the controls such as numberpicker and spinner. Hooray." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -938,6 +889,7 @@
     <MESSAGE value="For the love of all that is crispy and chicken, why the FUCK did my drawables get corrupted and blown up to 1.7MB" />
     <MESSAGE value="Awwwwwwww yeah, Drag-and-drop for the queue is now fully operational, though largely untested." />
     <MESSAGE value="Overhauled the view for the Episode Description landscape. Aw yeah, it looks badass. Though that may be the rum talking." />
+    <MESSAGE value="Skinned some of the controls such as numberpicker and spinner. Hooray." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1074,19 +1026,9 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1799" column="5" selection-start="69884" selection-end="69884" vertical-scroll-proportion="-16.0">
-          <folding>
-            <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="720" column="26" selection-start="25946" selection-end="25946" vertical-scroll-proportion="0.30618402">
+        <state line="429" column="57" selection-start="14602" selection-end="14602" vertical-scroll-proportion="1.86727">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#5568#5726#0" expanded="true" />
@@ -1099,15 +1041,26 @@
             <element signature="e#9508#9509#0" expanded="true" />
             <element signature="e#9617#9797#0" expanded="true" />
             <element signature="e#9785#9786#0" expanded="true" />
+            <element signature="docComment;method#updateCalendar#0;class#CalendarActivity#0" expanded="true" />
             <element signature="docComment;field#editEvent#0;class#CalendarActivity#0" expanded="true" />
-            <element signature="e#19961#24806#0" expanded="true" />
-            <element signature="e#22717#24790#0" expanded="true" />
-            <element signature="e#24781#24782#0" expanded="true" />
-            <element signature="e#24799#24800#0" expanded="true" />
+            <element signature="e#20110#24955#0" expanded="true" />
+            <element signature="e#22866#24939#0" expanded="true" />
+            <element signature="e#24930#24931#0" expanded="true" />
+            <element signature="e#24948#24949#0" expanded="true" />
             <element signature="docComment;field#clickEvent#0;class#CalendarActivity#0" expanded="true" />
-            <element signature="e#24893#30284#0" expanded="true" />
-            <element signature="e#30277#30278#0" expanded="true" />
+            <element signature="e#25042#30433#0" expanded="true" />
+            <element signature="e#30426#30427#0" expanded="true" />
             <element signature="docComment;method#loadMoreAgenda#0;class#CalendarActivity#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1783" column="25" selection-start="69392" selection-end="69392" vertical-scroll-proportion="0.2790347">
+          <folding>
+            <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;class#downloadImage#0;class#Callisto#0" expanded="true" />
           </folding>
         </state>
       </provider>
