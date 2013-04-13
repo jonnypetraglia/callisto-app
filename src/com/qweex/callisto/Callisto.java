@@ -34,6 +34,7 @@ import java.util.TimerTask;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.TypedValue;
 import android.widget.*;
+import com.qweex.callisto.podcast.DownloadTask;
 import com.qweex.utils.ImgTxtButton;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -352,6 +353,15 @@ public class Callisto extends Activity {
 	    //Update shows
 	    SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(this);
 	    int lastVersion = pf.getInt("appVersion", 0);
+
+        Log.e("DERP", "" + pf.getString("ActiveDownloads", "").equals(""));
+        if(!pf.getString("ActiveDownloads", "").equals("") && !pf.getString("ActiveDownloads", "").equals("|"))
+        {
+            //TODO: Display message
+            Callisto.downloading_count = pf.getString("ActiveDownloads", "").length() - pf.getString("ActiveDownloads", "").replaceAll("\\|", "").length() - 1;
+            new DownloadTask(Callisto.this).execute();
+        }
+
 	    if(!(Callisto.appVersion>lastVersion))
 	    	return;
 	    

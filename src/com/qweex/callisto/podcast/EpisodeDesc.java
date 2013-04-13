@@ -17,13 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.podcast;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,15 +28,9 @@ import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -76,7 +64,6 @@ public class EpisodeDesc extends Activity
 	private File file_location_audio, file_location_video;
 	private Button streamButton, downloadButton;
 	private long id = 0;
-	private byte[] buff = null;
 	private boolean isLandscape;
     private TextView audioSize, videoSize, audioTab, videoTab;
     private boolean vidSelected = false;
@@ -189,10 +176,6 @@ public class EpisodeDesc extends Activity
 				determineButtons(false);
 			}
 		});
-		
-		WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        if(DownloadList.Download_wifiLock==null)
-		    DownloadList.Download_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_download");
 		
 	    CheckBox rb = ((CheckBox)findViewById(R.id.newImg));
         rb.setChecked(is_new);
@@ -361,7 +344,6 @@ public class EpisodeDesc extends Activity
 
             SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
             String aDownloads = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("ActiveDownloads", "");
-            aDownloads = "";
             if(aDownloads.equals(""))
                 aDownloads = "|";
             aDownloads = aDownloads.concat(Long.toString(EpisodeDesc.this.id * (vidSelected?-1:1)) + "|");
@@ -372,8 +354,6 @@ public class EpisodeDesc extends Activity
             //Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
             Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
 
-            if(!DownloadList.Download_wifiLock.isHeld())
-            DownloadList.Download_wifiLock.acquire();
             if(!DownloadTask.running)
             {
                 Log.i("EpisodeDesc:launchDownload", "Executing downloads");

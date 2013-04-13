@@ -163,7 +163,7 @@ public class DownloadList extends ListActivity
 		  {
 			 TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
 			 int num = Integer.parseInt((String) tv.getText());
-			 if(num==0 || num==activeDownloads.size()-1)
+			 if(num==0 || num>=activeDownloads.size()-1)
 				 return;
 			 Collections.swap(activeDownloads,num,num+1);
              writeActiveQueue();
@@ -306,6 +306,7 @@ public class DownloadList extends ListActivity
             String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));	//IDEA: adjust for watch if needed
             ((TextView)row.findViewById(R.id.hiddenId)).setText(Integer.toString(position));
             ((TextView)row.findViewById(R.id.rowTextView)).setText(title);
+            ((TextView)row.findViewById(R.id.rowTextView)).setTag(Integer.toString(position));
             ((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
             ((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
 
@@ -349,8 +350,13 @@ public class DownloadList extends ListActivity
             ((ProgressBar)row.findViewById(R.id.progress)).setMinimumHeight(x);
             ((ProgressBar)row.findViewById(R.id.progress)).invalidate();
 
-            if(position==0)
-                downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
+            if(downloadProgress==null || downloadProgress == (ProgressBar) row.findViewById(R.id.progress))
+            {
+                if(position==0)
+                    downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
+                else
+                    downloadProgress = null;
+            }
 
             return row;
         }

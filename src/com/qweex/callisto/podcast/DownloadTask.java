@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -51,9 +52,9 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     private NotificationManager mNotificationManager;
     private PendingIntent contentIntent;
     public static boolean running = false;
-    private EpisodeDesc context;
+    private Context context;
 
-    public DownloadTask(EpisodeDesc c)
+    public DownloadTask(Context c)
     {
         super();
         context = c;
@@ -66,7 +67,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         Log.i("EpisodeDesc:DownloadTask", "Beginning downloads");
         Intent notificationIntent = new Intent(context, DownloadList.class);
         contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        Callisto.notification_download = new Notification(R.drawable.callisto, Callisto.RESOURCES.getString(R.string.beginning_download), System.currentTimeMillis());
+        Callisto.notification_download = new Notification(R.drawable.ic_action_download, Callisto.RESOURCES.getString(R.string.beginning_download), System.currentTimeMillis());
         Callisto.notification_download.flags = Notification.FLAG_ONGOING_EVENT;
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " +  Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
@@ -89,7 +90,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
         Log.e("YO DAWG:", "Preparing to do sum dlinng");
         Log.e("YO DAWGz:", PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", ""));
-        while(!PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "").equals(""))
+        while(!PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "").equals("") &&
+                !PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "|").equals("|"))
         {
             try
             {
@@ -123,24 +125,43 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Target = new File(Target, Date + "__" + DownloadList.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
 
                 URL url = new URL(Link);
+                Log.i("EpisodeDesc:DownloadTask", "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
+                String lastModified = ucon.getHeaderField("Last-Modified");
+                ucon = (HttpURLConnection) url.openConnection();
+                if(Target.exists())
+                {
+                    ucon.setRequestProperty("Range", "bytes=" + Target.length() + "-");
+                    ucon.setRequestProperty("If-Range", lastModified);
+                }
                 ucon.setReadTimeout(TIMEOUT_CONNECTION);
                 ucon.setConnectTimeout(TIMEOUT_SOCKET);
 
 
+                Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
+                        Callisto.RESOURCES.getString(R.string.downloading) + " " +
+                                Callisto.current_download + " " +
+                                Callisto.RESOURCES.getString(R.string.of) + " " +
+                                Callisto.downloading_count + " (contd.)",
+                        Show + ": " + Title, contentIntent);
+                mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+
                 InputStream is = ucon.getInputStream();
+                TotalSize = ucon.getContentLength() + Target.length();
                 BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
                 FileOutputStream outStream;
                 byte buff[];
+                Log.i("EpisodeDesc:DownloadTask", "mmk skipping the downloaded..." + Target.length() + " of " + TotalSize);
                 if(Target.exists())
                 {
-                    inStream.skip(Target.length());
+                    //inStream.skip(Target.length());
+
                     outStream = new FileOutputStream(Target, true);
                 }
                 else
                     outStream = new FileOutputStream(Target);
                 buff = new byte[5 * 1024];
-                TotalSize = ucon.getContentLength();
+                Log.i("EpisodeDesc:DownloadTask", "Getting content length (size)");
                 int len = 0;
                 long downloadedSize = Target.length(),
                         perc = 0;
@@ -151,6 +172,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         all_spds = 0;
                 double avg_speed = 0;
                 DecimalFormat df = new DecimalFormat("#.##");
+
+                Log.i("EpisodeDesc:DownloadTask", "FINALLY starting the download");
+                WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+                if(DownloadList.Download_wifiLock==null)
+                    DownloadList.Download_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_download");
+                if(!DownloadList.Download_wifiLock.isHeld())
+                    DownloadList.Download_wifiLock.acquire();
 
                 //Here is where the actual downloading happens
                 while (len != -1)
@@ -260,6 +288,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 e.printStackTrace();
             } catch(Exception e) {
                 Log.e("EEEEEEEE " + e.getClass(), "Msg: " + e.getMessage());
+                e.printStackTrace();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {}
@@ -276,7 +305,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         mNotificationManager.cancel(NOTIFICATION_ID);
         if(Callisto.downloading_count>0)
         {
-            Callisto.notification_download = new Notification(R.drawable.callisto, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
+            Callisto.notification_download = new Notification(R.drawable.ic_action_download, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
             Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", null, contentIntent);
             Callisto.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
             mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
@@ -298,18 +327,20 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         running = false;
         Button streamButton = ((Button)((android.app.Activity)context).findViewById(R.id.stream)),
                downloadButton = ((Button)((android.app.Activity)context).findViewById(R.id.download));
+        if(streamButton==null || downloadButton==null)
+            return;
         if(result)
         {
             streamButton.setText(Callisto.RESOURCES.getString(R.string.play));
-            streamButton.setOnClickListener(context.launchPlay);
+            streamButton.setOnClickListener(((EpisodeDesc)context).launchPlay);
             downloadButton.setText(Callisto.RESOURCES.getString(R.string.delete));
-            downloadButton.setOnClickListener(context.launchDelete);
+            downloadButton.setOnClickListener(((EpisodeDesc)context).launchDelete);
         } else
         {
             streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
-            streamButton.setOnClickListener(context.launchStream);
+            streamButton.setOnClickListener(((EpisodeDesc)context).launchStream);
             downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
-            downloadButton.setOnClickListener(context.launchDownload);
+            downloadButton.setOnClickListener(((EpisodeDesc)context).launchDownload);
         }
     }
 }
