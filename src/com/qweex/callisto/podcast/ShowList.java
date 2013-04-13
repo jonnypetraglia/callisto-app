@@ -465,8 +465,6 @@ public class ShowList extends Activity
 				e.printStackTrace();
 			}
 		    ((TextView) v.findViewById(R.id.rowSubTextView)).setText(d);
-		    //new
-		    ((TextView) v.findViewById(R.id.rightTextView)).setText(this.c.getString(this.c.getColumnIndex("new")));
            
 		    
 		    
@@ -498,7 +496,7 @@ public class ShowList extends Activity
 		    }
 		    
            //Hide the specific views
-	       int[] hide = new int[] { R.id.rightTextView, R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress, R.id.grabber};
+	       int[] hide = new int[] { R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress, R.id.grabber};
            for(int i=0; i<hide.length; i++)
         	   ((View) v.findViewById(hide[i])).setVisibility(View.GONE);
            

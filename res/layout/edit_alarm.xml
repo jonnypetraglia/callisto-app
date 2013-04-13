@@ -32,16 +32,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 
         <com.qweex.utils.NumberPicker
             android:id="@+id/minutesBefore"
-            android:layout_width="fill_parent"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal" >
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:padding="10dp">
 
         </com.qweex.utils.NumberPicker>
 
         <LinearLayout
             android:id="@+id/fasfefgea"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:padding="10dp"
             android:orientation="vertical" >
 
             <RadioGroup
@@ -68,16 +70,18 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             </RadioGroup>
 
             <Spinner
-                android:prompt="@string/listen"
+                android:prompt="@string/ringtone_prompt"
                 android:id="@+id/spinner1"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/spinner" />
 
             <CheckBox
                 android:id="@+id/vibrate"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Vibrate"
+                android:layout_margin="10dp"
                 android:textColor="@color/txtClr" />
 
         </LinearLayout>

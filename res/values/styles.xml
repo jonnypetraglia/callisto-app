@@ -32,8 +32,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
         <item name="android:checkboxStyle">@style/chxbox</item>
         <item name="android:progressBarStyleHorizontal">@style/pgress</item>
         <item name="android:dropDownSpinnerStyle">@style/ddl</item>
-        <item name="android:overScrollHeader">@drawable/overscroll_edge</item>
-        <item name="android:overScrollFooter">@drawable/overscroll_edge</item>
+        <item name="android:cacheColorHint">#ff45ab35</item>
     </style>
 
     <style name="ddl" parent="@android:style/Widget.Spinner">

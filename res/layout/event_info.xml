@@ -66,7 +66,7 @@
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="15dp"
                 android:text="Time"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/txtClr" />
@@ -78,13 +78,13 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp" >
+        android:layout_marginLeft="10dp" >
 
         <ImageView
             android:id="@+id/hasAlarm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/btn_check_buttonless_on" />
+            android:layout_height="fill_parent"
+            android:src="@drawable/btn_check_buttonless_on" android:paddingRight="5dp"/>
 
         <TextView
             android:id="@+id/alarmInfo"
@@ -94,11 +94,11 @@
             android:layout_weight="1"
             android:text="No Alarm Set"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/txtClr" />
+            android:textColor="@color/txtClr" android:textSize="12sp"/>
 
         <Button
             android:id="@+id/editEvent"
-            android:padding="10dp"
+            android:padding="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"

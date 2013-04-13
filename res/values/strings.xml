@@ -117,6 +117,7 @@
         <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
     </string-array>
     <string name="stop">Stop</string>
-    
+
+    <string name="ringtone_prompt">Choose alarm tone</string>
 </resources>
 

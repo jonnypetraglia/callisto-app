@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.qweex.utils;
 
+import android.util.TypedValue;
 import com.qweex.callisto.R;	//TODO: Fix so that this is not needed
 import android.content.Context;
 import android.text.InputFilter;
@@ -120,7 +121,7 @@ public class NumberPicker extends LinearLayout
     	this.setOrientation(LinearLayout.VERTICAL);
     	LinearLayout.LayoutParams ll = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
 	    Button up = new Button(getContext());
-	    up.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_up));
+	    up.setBackgroundDrawable(getResources().getDrawable(R.drawable.numberpicker_up));
 	    up.setOnClickListener(increase);
 	    edit = new EditText(getContext());
 	    edit.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -162,13 +163,17 @@ public class NumberPicker extends LinearLayout
             }
         });
 
+
 	    Button down = new Button(getContext());
-    	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.number_picker_down));
+    	down.setBackgroundDrawable(getResources().getDrawable(R.drawable.numberpicker_down));
     	down.setOnClickListener(decrease);
+
 	    addView(up, ll);
 	    addView(edit, ll);
 	    addView(down, ll);
-	    refresh();
+
+
+	    //refresh();
     }
     
     /** Refreshes the NumberPicker to the current value with the prefix and suffix. */

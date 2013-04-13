@@ -43,6 +43,14 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     android:cacheColorHint="@android:color/transparent"
     android:orientation="horizontal" >
 
+    <ImageView
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/smallImg"
+            android:src="@drawable/ic_action_signal"
+            android:background="@android:color/transparent"
+            android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/linearLayout1337"
         android:layout_width="wrap_content"
@@ -55,8 +63,6 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone" />
-
-        <!-- Main text (e.g. Episode title) -->
         <TextView
             android:id="@+id/rowTextView"
             android:layout_width="fill_parent"
@@ -70,6 +76,8 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
             android:text="Row"
             android:textColor="@color/txtClr"
             android:textSize="16sp" />
+
+        <!-- Main text (e.g. Episode title) -->
 
         <!-- Sub text (e.g. Episode date, show, etc) -->
         <TextView
@@ -111,7 +119,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
     <ImageView
         android:id="@+id/grabber"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:padding="2dp"
         android:src="@drawable/ic_action_drag" />
 
