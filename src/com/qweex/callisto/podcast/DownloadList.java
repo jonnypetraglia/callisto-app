@@ -28,6 +28,7 @@ import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
+import android.widget.*;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -39,10 +40,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /** An activity to display all the current downloads. 
  * @author MrQweex */
@@ -68,7 +65,17 @@ public class DownloadList extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 		mainListView = getListView();
-		mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+        try {
+		    mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+        } catch(NullPointerException e)
+        {
+            if(mainListView==null)
+                Log.e("DownloadList:onCreate", "mainListView is null for some dumb reason");
+            if(Callisto.RESOURCES==null)
+                Log.e("DownloadList:onCreate", "RESOURCES is null for some dumb reason");
+            finish();
+            return;
+        }
 		setTitle("Downloads");
 		
 		TextView noResults = new TextView(this);
@@ -235,7 +242,8 @@ public class DownloadList extends ListActivity
              View parent = (View)(v.getParent());
 			 TextView tv = (TextView) parent.findViewById(R.id.hiddenId);
 			 int num = Integer.parseInt((String) tv.getText());
-             if(parent.findViewById(R.id.moveUp).getVisibility()==View.GONE) //It's a completed download
+              Log.d("DownloadList:remoteItem", "Removing item at: " + num);
+             if(parent.findViewById(R.id.moveUp).isEnabled()==false) //It's a completed download
              {
                  removeDownloadAt(v.getContext(), COMPLETED, num);
                 headerThings.remove(getDownloadCount(v.getContext(), ACTIVE)+num+1);
@@ -318,16 +326,20 @@ public class DownloadList extends ListActivity
             boolean completed = false;
             long id;
             position--;
-            if(position>=getDownloadCount(parent.getContext(), ACTIVE))
+            if(position>=getDownloadCount(parent.getContext(), ACTIVE))     //It's completed
             {
                 completed = true;
                 position = position - getDownloadCount(parent.getContext(), ACTIVE);
                 if(getDownloadCount(parent.getContext(), ACTIVE)>0)
                     position=position-1;     //To adjust for the "Active" header
                 id = getDownloadAt(parent.getContext(), COMPLETED, position);
+                row.findViewById(R.id.moveUp).setEnabled(false);
             }
             else
+            {
                 id = getDownloadAt(parent.getContext(), ACTIVE, position);
+                row.findViewById(R.id.moveUp).setEnabled(true);
+            }
 
             boolean isVideo = id<0;
             if(isVideo)
@@ -438,7 +450,13 @@ public class DownloadList extends ListActivity
 
     public static void removeDownloadAt(Context c, String pref, int position)
     {
-        removeDownload(c, pref, PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "").substring(1).split("\\|")[position], false);
+        String s = PreferenceManager.getDefaultSharedPreferences(c).getString(pref, "");
+        try {
+        removeDownload(c, pref, s.substring(1).split("\\|")[position], false);
+        } catch(Exception e)
+        {
+            Toast.makeText(c, "An error occurred whilst trying to remove. But I used the word 'whilst' so please don't hate me. [" + s + "]", Toast.LENGTH_SHORT).show();
+        }
     }
     public static void removeDownload(Context c, String pref, Long idToRemove, boolean isVid) { removeDownload(c, pref, Long.toString(idToRemove), isVid);}
     public static void removeDownload(Context c, String pref, String idToRemove, boolean isVid)

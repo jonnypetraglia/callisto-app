@@ -21,6 +21,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 
+import android.preference.PreferenceManager;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
@@ -174,10 +175,12 @@ public class ShowList extends Activity
             file_location1 = new File(file_location1, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
             File file_location2 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
             file_location2 = new File(file_location2, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
-            if(file_location1.exists() || file_location2.exists())
+            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+            if(inDLQueue || file_location1.exists() || file_location2.exists())
             {
-                if(file_location1.length()==c.getLong(c.getColumnIndex("mp3size")) ||
-                        file_location2.length()==c.getLong(c.getColumnIndex("vidsize")))
+                if(!inDLQueue && (
+                        file_location1.length()==c.getLong(c.getColumnIndex("mp3size")) ||
+                        file_location2.length()==c.getLong(c.getColumnIndex("vidsize"))))
                 {
                     ((TextView) current_episode.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
                     ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
@@ -472,13 +475,13 @@ public class ShowList extends Activity
 	   		file_location1 = new File(file_location1, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
             File file_location2 = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
             file_location2 = new File(file_location2, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
-		    
-		    if(file_location1.exists() || file_location2.exists())
+            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+		    if(inDLQueue || file_location1.exists() || file_location2.exists())
             {
                 Log.e("DERERERERERE", file_location1.length() + " == " + this.c.getLong(this.c.getColumnIndex("mp3size")));
                 Log.e("DERERERERERE", file_location2.length() + " == " + this.c.getLong(this.c.getColumnIndex("vidsize")));
-                if(file_location1.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
-                   file_location2.length()==this.c.getLong(this.c.getColumnIndex("vidsize")))
+                if(!inDLQueue && (file_location1.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
+                   file_location2.length()==this.c.getLong(this.c.getColumnIndex("vidsize"))))
                 {
                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);

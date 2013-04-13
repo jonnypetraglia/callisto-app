@@ -398,7 +398,8 @@ public class Callisto extends Activity {
 		if(pd!=null)
 			pd.show();
 		Log.v("Callisto:onResume", "Resuming main activity");
-		Callisto.playerInfo.update(Callisto.this);
+        if(Callisto.playerInfo!=null)
+		    Callisto.playerInfo.update(Callisto.this);
 	}
 	
 	/** Creates the layout for various activities, adding the Player Controls.
