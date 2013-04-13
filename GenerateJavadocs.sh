@@ -1,0 +1,1 @@
+/usr/lib/jvm/java-7-oracle/bin/javadoc -overview doc/overview.html -public -splitindex -author -version -classpath /mnt/Tera/notbryant/android-sdk-linux/tools/support/annotations.jar:/mnt/Tera/notbryant/ownCloud/Documents/Programming/Android/Callisto/libs/PayPal_MPL.jar -d doc @/tmp/javadoc2140673031107868073args.txt

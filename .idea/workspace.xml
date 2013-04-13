@@ -43,38 +43,10 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="E" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/LICENSE_ICONS.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/OSL3_0.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/Soundboard.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/COPYING" afterPath="$PROJECT_DIR$/LICENSE.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/AlarmNotificationReceiver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/Bacon.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/Bacon.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/BootNotificationReceiver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Donate.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Donate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/LIVE_FetchInfo.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/LIVE_FetchInfo.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/LiveStream.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/LiveStream.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/OnCompletionListenerWithContext.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/OnCompletionListenerWithContext.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/OnErrorListenerWithContext.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/OnErrorListenerWithContext.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/OnPreparedListenerWithContext.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/OnPreparedListenerWithContext.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/ResultDelegate.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/ResultDelegate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/SplashScreen.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/SplashScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/UpdateNotes" afterPath="$PROJECT_DIR$/assets/UpdateNotes" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="" />
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365825354213" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365826950757" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364146262554" ignored="false" />
     <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365408770957" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
@@ -93,6 +65,7 @@
     <file path="/UpdateNotes" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365409264192" ignored="false" />
     <file path="/LICENSE.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365825903905" ignored="false" />
     <file path="/LICENSE_ICONS.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365826870422" ignored="false" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365827927740" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -169,22 +142,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Donate.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Donate.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="110" column="38" selection-start="4032" selection-end="4032" vertical-scroll-proportion="0.0">
+            <state line="110" column="38" selection-start="4032" selection-end="4032" vertical-scroll-proportion="0.9156493">
               <folding>
                 <element signature="e#0#23566#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LICENSE_ICONS.txt" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/LICENSE_ICONS.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="61" selection-start="1393" selection-end="1393" vertical-scroll-proportion="0.3986711">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -527,14 +491,18 @@
       <created>1365399901255</created>
       <updated>1365399901255</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
+      <created>1365827801639</created>
+      <updated>1365827801639</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="33" width="1920" height="1045" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297414" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -545,13 +513,14 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32795697" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67133623" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67025864" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3275862" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -560,7 +529,6 @@
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -602,7 +570,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring the code to make it more logical.&#10;&#10;Renaming variables, re-ordering functions, adding comments and Javadoc.&#10;&#10;Also Javadoc is being retarded." />
+    <option name="LAST_COMMIT_MESSAGE" value="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -618,6 +586,7 @@
     <MESSAGE value="Skinned the preferences. I AM A SKINNING GOD." />
     <MESSAGE value="Fixed the Italic/Bold issue in the ShowList.&#10;&#10;It should now highlight Italic if the file exists yet is incomplete OR if it just in the Download Queue." />
     <MESSAGE value="Refactoring the code to make it more logical.&#10;&#10;Renaming variables, re-ordering functions, adding comments and Javadoc.&#10;&#10;Also Javadoc is being retarded." />
+    <MESSAGE value="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -667,7 +636,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="35" selection-start="835" selection-end="835" vertical-scroll-proportion="0.33296338" />
+        <state line="20" column="35" selection-start="835" selection-end="835" vertical-scroll-proportion="0.33296338">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java">
@@ -711,7 +682,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/assets/UpdateNotes">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="105" selection-start="5094" selection-end="5094" vertical-scroll-proportion="0.0" />
+        <state line="46" column="105" selection-start="5094" selection-end="5094" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
@@ -728,19 +701,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
+    <entry file="file://$PROJECT_DIR$/LICENSE_ICONS.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="110" column="38" selection-start="4032" selection-end="4032" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#23566#0" expanded="true" />
-          </folding>
+        <state line="24" column="61" selection-start="1393" selection-end="1393" vertical-scroll-proportion="0.39955604">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LICENSE_ICONS.txt">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="61" selection-start="1393" selection-end="1393" vertical-scroll-proportion="0.3986711">
-          <folding />
+        <state line="110" column="38" selection-start="4032" selection-end="4032" vertical-scroll-proportion="0.9156493">
+          <folding>
+            <element signature="e#0#23566#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
