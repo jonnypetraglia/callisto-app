@@ -307,7 +307,12 @@ public class DownloadList extends ListActivity
             {
                 LayoutInflater inflater=getLayoutInflater();
                 row=inflater.inflate(R.layout.row, parent, false);
-                (row.findViewById(R.id.img)).setVisibility(View.GONE);
+
+                int[] hide = new int[] {R.id.grabber, R.id.moveUp, R.id.moveDown, R.id.img};
+                for(int i=0; i<hide.length; i++)
+                {
+                    (row.findViewById(hide[i])).setVisibility(View.GONE);
+                }
             }
 
             boolean completed = false;
@@ -341,7 +346,7 @@ public class DownloadList extends ListActivity
             ((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
 
 
-            ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));
+            /*ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));
             ImageButton down = ((ImageButton)row.findViewById(R.id.moveDown));
             up.setOnClickListener(moveUp);
             down.setOnClickListener(moveDown);
@@ -357,6 +362,7 @@ public class DownloadList extends ListActivity
                 up.setEnabled(position>0);
                 down.setEnabled(position>0);
             }
+            */
             ImageButton remove = ((ImageButton)row.findViewById(R.id.remove));
             remove.setOnClickListener(removeItem);
 

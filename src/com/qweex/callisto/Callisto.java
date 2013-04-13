@@ -1465,7 +1465,7 @@ public class Callisto extends Activity {
 			});
 			LIVE_PreparedListener.pd.setCancelable(true);
 		}
-		//Callisto.live_player.prepareAsync();
+		Callisto.live_player.prepareAsync();
 	}
 
 	
@@ -1474,7 +1474,8 @@ public class Callisto extends Activity {
 	{
 		@Override
 		public void onPrepared(MediaPlayer arg0) {
-			
+
+            Log.e("LLLLLLLL:", "PREPARED!");
 			if(pd!=null)
 			{
 				if(!pd.isShowing())

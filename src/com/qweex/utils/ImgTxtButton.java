@@ -36,12 +36,14 @@ public class ImgTxtButton extends LinearLayout
 
     public ImgTxtButton(Context ctx) {
         super(ctx);
+        Log.e("Deeeeeeeeeeeeerp", "Derping");
         init();
     }
 
     public ImgTxtButton(Context context, AttributeSet attrs)
     {
         super(context, attrs);
+        Log.e("Deeeeeeeeeeeeerp", "Derping");
         init();
         try {
             txt.setText(getResources().getString(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "text", 0)));

@@ -17,6 +17,7 @@ along with Callisto; If not, see <http://www.gnu.org/licenses/>.
 */
 package com.qweex.callisto.podcast;
 
+import android.widget.*;
 import com.andrefy.ddviewlist.DDListView;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
@@ -33,11 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.ImageButton;
 
 /** An activity for showing the queued episodes.
  * @author MrQweex */
@@ -47,6 +43,7 @@ public class Queue extends ListActivity
 	private DDListView mainListView;
 	NowPlayingAdapter listAdapter;
 	Cursor queue;
+    static int FromID = -1;
 	
 	/** Called when the activity is first created. Sets up the view.
 	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -58,6 +55,7 @@ public class Queue extends ListActivity
         mainListView = new DDListView(this, null);
         mainListView.setId(android.R.id.list);
         mainListView.setDropListener(mDropListener, R.id.grabber);
+        mainListView.setDragListener(mDragListener);
         setContentView(mainListView);
 
 
@@ -306,13 +304,41 @@ public class Queue extends ListActivity
 	
 	}
 
+    void debugToast(String s)
+    {
+        Toast m = Toast.makeText(Queue.this, s, Toast.LENGTH_LONG);
+        m.setDuration(50000);
+        m.show();
+        Log.e(":", s);
+    }
+
     //Drop Listener
     private DDListView.DropListener mDropListener = new DDListView.DropListener() {
         public void drop(int from, int to)
         {
             //to-=(from<to?1:0);
-            //derp.add(to, derp.remove(from));
-            //mAdapter.notifyDataSetChanged();
+            if(from==to)
+                return;
+            Log.e(":", from + " to " + to + " ( " + mainListView.getFirstVisiblePosition() + "  )");
+            int toID   = Integer.parseInt(((TextView)mainListView.getChildAt(to - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
+            //int fromID = from+1, toID = to+1;
+
+            Callisto.databaseConnector.moveQueue(Queue.FromID, toID+1);
+            Toast.makeText(Queue.this,"Moved, pray to the gods it has worked", Toast.LENGTH_SHORT);
+            listAdapter.getCursor().requery();
+            listAdapter.notifyDataSetChanged();
+            //listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+            Queue.FromID = -1;
+        }
+    };
+
+    private DDListView.DragListener mDragListener = new DDListView.DragListener(){
+        @Override
+        public void drag(int from, int to) {
+            if(Queue.FromID==-1)
+            {
+                Queue.FromID = Integer.parseInt(((TextView)mainListView.getChildAt(from - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
+            }
         }
     };
 }

@@ -38,6 +38,7 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     Feature: Skip Updating Inactive -- Added option to only update the active shows.
     Feature: IRC Emoticons -- Added option to have emoticons in the chat.
     Fix: Lack of SD -- Now detects when there is no SD or external storage.
+    Note: Disabled reordering downloads -- Temporarily removed the ability to reorder downloads. I'll put it back in after this release, it's just a pain with the drag-and-drop and all the changes made.
 	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.

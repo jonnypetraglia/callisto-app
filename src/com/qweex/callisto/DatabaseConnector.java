@@ -184,6 +184,7 @@ public class DatabaseConnector
 	 */
 	public Cursor getQueue()
 	{
+           this.deleteQueueItem(-1);
 		   Cursor things = null;
 		   things = database.query(DATABASE_QUEUE,
 				    new String[] {"_id", "identity", "current", "video", "streaming"},
@@ -236,7 +237,7 @@ public class DatabaseConnector
 	 */
 	public void move(long id1, int dir)
 	{
-		
+
 		   //Get the one that is selected
 	       Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id=" + id1, null, null, null, null);
 	       c1.moveToFirst();
@@ -267,8 +268,50 @@ public class DatabaseConnector
 		       updateQueue(id1, identity2, current2, streaming2, video2);
 		       updateQueue(id2, identity1, current1, streaming1, video1);
 	       }
-		   
+
 	}
+
+    public void moveQueue(int fromID, int toID)
+    {
+        long special = -1;
+        this.deleteQueueItem(special);
+        database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET _id=" + special + " WHERE _id=" + fromID);
+        //Move up
+            //This has to be more complicated because when it walks through linearly and tries to update, it runs into a uniqueness problem.
+            // Example:
+            // 5. B
+            // 6. C
+            // 7. D
+            // Move D to point 5
+            // STEP 1:
+            // 6. B
+            // 6. C
+            // -1. D
+            // ERROR
+        if(toID<fromID)
+        {
+            Cursor c = database.query(DATABASE_CALENDAR, new String[] {"_id"},
+                    "_id>=" + toID + " AND _id<" + fromID, null, null, null, "_id");
+            if(c.getCount()>0)
+            {
+                c.moveToLast();
+                while(!c.isBeforeFirst())
+                {
+                    database.execSQL("UPDATE " + DATABASE_QUEUE + " SET _id=_id+1 WHERE _id=" + c.getLong(c.getColumnIndex("_id")));
+                    c.moveToPrevious();
+                }
+            }
+
+            //database.execSQL("UPDATE " + DATABASE_QUEUE + " SET _id=_id+1 WHERE _id=(Select * from " + DATABASE_QUEUE +  " WHERE (_id >= " + toID + " AND _id<" + fromID + ") Order By _id DESC);");
+            //database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET _id=_id+1 WHERE (_id>=" + toID + " AND _id<" + fromID + ")");
+        }
+        //Move down
+        else    //(to>from)
+        {
+            database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET _id=_id-1 WHERE (_id>" + fromID + " AND _id<=" + toID + ")");
+        }
+        database.execSQL("UPDATE " + DATABASE_QUEUE + " SET _id=" + toID + " WHERE _id=" + special);
+    }
 	
 	/** [DATABASE_QUEUE] Gets the number of items in the queue.
 	 * @return The number of items in the queue
