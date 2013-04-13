@@ -32,10 +32,7 @@ import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
 import com.qweex.callisto.VideoActivity;
-import jerklib.ConnectionManager;
-import jerklib.Profile;
-import jerklib.ServerInformation;
-import jerklib.Session;
+import jerklib.*;
 import jerklib.events.*;
 import jerklib.listeners.IRCEventListener;
 
@@ -602,6 +599,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		manager = new ConnectionManager(new Profile(profileNick));
 		manager.setAutoReconnect(RECONNECT_TRIES);
 		session = manager.requestConnection(SERVER_NAME);
+        session.setRejoinOnKick(false);
 		chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
 		ircHandler.post(chatUpdater);
 		
@@ -752,6 +750,228 @@ public class IRCChat extends Activity implements IRCEventListener
 				chatQueue.add(getReceived("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), CLR_TOPIC));
 				ircHandler.post(chatUpdater);
 				break;
+            case MODE_EVENT:
+                List<ModeAdjustment> lm = ((ModeEvent) e).getModeAdjustments();
+                String setter = ((ModeEvent)e).setBy(), plus = "", minus = "";
+                ArrayList<String> prettified = new ArrayList<String>();
+                for(ModeAdjustment ma : lm)
+                {
+                    if(!setter.toLowerCase().endsWith(".geekshed.net") && !setter.equals(""))
+                    {
+                        String tmp = setter; //(setter.equals(session.getNick())?"You":setter);
+                        switch(ma.getMode())
+                        {
+                            case 'm':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("un");
+                                tmp = tmp.concat("moderated'.");
+                                break;
+                            case 'p':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("public'.");
+                                else
+                                    tmp = tmp.concat("private'.");
+                                break;
+                            case 's':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("visible'.");
+                                else
+                                    tmp = tmp.concat("secret'.");
+                                break;
+                            case 'i':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("not ");
+                                tmp = tmp.concat("invite only'.");
+                                break;
+                            case 'n':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                else
+                                    tmp = tmp.concat("allow ");
+                                tmp = tmp.concat("messages from outside'");
+                                break;
+                            case 't':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("topic protection'.");
+                                break;
+                            case 'R':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("doesn't ");
+                                tmp = tmp.concat("require register'.");
+                                break;
+                            case 'c':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("colours'.");
+                                break;
+                            case 'Q':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("kicks allowed'.");
+                                break;
+                            case 'O':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("not ");
+                                tmp = tmp.concat("Ops only'.");
+                                break;
+                            case 'A':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("not ");
+                                tmp = tmp.concat("Admins only'.");
+                                break;
+                            case 'K':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("knocking'.");
+                                break;
+                            case 'V':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("inviting'.");
+                                break;
+                            case 'S':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("do not ");
+                                tmp = tmp.concat("strip colours'.");
+                                break;
+                            case 'l':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("channel limit" + (ma.getArgument()!=null + " [" + ma.getArgument() + " users]") + "'.");
+                                break;
+                            case 'k':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("key required'.");
+                                break;
+                            case 'L':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("key required'.");
+                                break;
+                            case 'N':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("no ");
+                                tmp = tmp.concat("nick changes allowed'.");
+                                break;
+                            case 'G':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("not ");
+                                tmp = tmp.concat("G-rated'.");
+                                break;
+                            case 'u':
+                                tmp = tmp.concat(" sets channel mode to '");
+                                if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                    tmp = tmp.concat("not ");
+                                tmp = tmp.concat("auditorium'.");
+                                break;
+
+                            //OoiwghskSaANTCcfrxebWqBFIHdvtGz
+                            case 'q':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" gives ");
+                                else
+                                    tmp = tmp.concat(" takes ");
+                                tmp = tmp.concat(ma.getArgument() + " '" + "Owner" + "'");
+                                break;
+                            case 'o':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" gives ");
+                                else
+                                    tmp = tmp.concat(" takes ");
+                                tmp = tmp.concat(ma.getArgument() + " '" + "Operator" + "'");
+                                break;
+                            case 'v':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" gives ");
+                                else
+                                    tmp = tmp.concat(" takes ");
+                                tmp = tmp.concat(ma.getArgument() + " '" + "Voice" + "'");
+                                break;
+                            case 'a':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" gives ");
+                                else
+                                    tmp = tmp.concat(" takes ");
+                                tmp = tmp.concat(ma.getArgument() + " '" + "Admin" + "'");
+                                break;
+                            case 'h':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" gives ");
+                                else
+                                    tmp = tmp.concat(" takes ");
+                                tmp = tmp.concat(ma.getArgument() + " '" + "Admin" + "'");
+                                break;
+                            case 'b':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" sets  ");
+                                else
+                                    tmp = tmp.concat(" lifts ");
+                                tmp = tmp.concat("a ban on " + ma.getArgument());
+                                break;
+                            case 'e':
+                                if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
+                                    tmp = tmp.concat(" sets  ");
+                                else
+                                    tmp = tmp.concat(" lifts ");
+                                tmp = tmp.concat("a ban exception on " + ma.getArgument());
+                                break;
+
+                            default:
+                                // L f O
+                                tmp = tmp.concat(" sets channel mode: " + (ma.getAction().equals(ModeAdjustment.Action.MINUS)?'-':'+') + ma.getMode());
+                        }
+                        prettified.add(tmp);
+                    }
+                    else
+                    {
+                        //No argument means it is changing your personal modes......I think
+                        //if((ma.getArgument()==null || ma.getArgument().equals("")))
+                        {
+                            if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
+                                minus = minus.concat(ma.getMode() + "");
+                            else
+                                plus = plus.concat(ma.getMode() + "");
+                        }
+                    }
+                    Log.e("DERP:", ((ModeEvent)e).setBy() + " " + ma.getMode() + " " + ma.getAction() + " " + ma.getArgument() + ((ModeEvent)e).getChannel());
+                }
+
+                for(String s : prettified)
+                {
+                    chatQueue.add(getReceived("***" + s, null, CLR_TOPIC));       //TODO: Different color?
+                    ircHandler.post(chatUpdater);
+                }
+                if(!plus.equals(""))
+                    plus = "+" + plus;
+                if(!minus.equals(""))
+                    minus = "-" + minus;
+                if((setter.toLowerCase().endsWith(".geekshed.net") || setter.equals("ChanServ")) && (!plus.equals("") || !minus.equals("")))
+                {;
+                    logQueue.add(getReceived("[MODE]", setter + " has changed your personal modes: " + plus + minus, CLR_TOPIC));       //TODO: Different color?
+                    ircHandler.post(logUpdater);
+                }
+                break;
 				
 		//Syslog events
 			case SERVER_INFORMATION:
@@ -776,7 +996,7 @@ public class IRCChat extends Activity implements IRCEventListener
 				//JoinCompleteEvent jce = (JoinCompleteEvent) e;
 				chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
                 session.sayRaw("NAMES " + CHANNEL_NAME);
-				if(profilePass!=null && profilePass!="")
+				if(profilePass!=null && profilePass!=null && !profilePass.equals(""))
 					parseOutgoing("/MSG NickServ identify " + profilePass);
 				System.out.println("Decrypted password: " + profilePass);
 				ircHandler.post(chatUpdater);
@@ -888,18 +1108,44 @@ public class IRCChat extends Activity implements IRCEventListener
 			//Errors that display in both
 			case CONNECTION_LOST:
 				//ConnectionLostEvent co = (ConnectionLostEvent) e;
-				chatQueue.add(getReceived("CONNECTION WAS LOST", null, CLR_ERROR));
-				logQueue.add(getReceived("CONNECTION WAS LOST", null, CLR_ERROR));
+				chatQueue.add(getReceived("CONNECTION WAS LOST - attempt " + session.getRetries(), null, CLR_ERROR));
+				logQueue.add(getReceived("CONNECTION WAS LOST - attempt " + session.getRetries(), null, CLR_ERROR));
 				ircHandler.post(chatUpdater);
 				ircHandler.post(logUpdater);
 				break;
 			case ERROR:
-				//ErrorEvent ev = (ErrorEvent) e;
+                final int
+                        ERR_NOSUCHNICK = 401,
+                        ERR_NOTEXTTOSEND = 412,
+                        ERR_NICKNAMEINUSE = 433,
+                        ERR_USERONCHANNEL = 443,
+                        ERR_CHANOPRIVSNEEDED = 482,
+                        ERR_NONONREG = 486
+                                ;
+                boolean retry = false, absolutefail = false;
+
+                if(e.getClass()==UnresolvedHostnameErrorEvent.class)
+                    retry = true;
+                else {
+                    int errorCode = Integer.parseInt(e.getRawEventData().split(" ")[1]);
+                    Log.e("ERROR: ", "Code: " + errorCode);
+                    switch(errorCode)
+                    {
+                        case ERR_NOSUCHNICK:
+                        case ERR_CHANOPRIVSNEEDED:
+                        case ERR_NONONREG:
+                        case ERR_NOTEXTTOSEND:
+                        case ERR_NICKNAMEINUSE:
+                        case ERR_USERONCHANNEL:
+                                retry = false;
+                    }
+                }
+
 				String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
 				this.loopTask.cancel();
 				loopTimer.purge();
-				chatQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
-				logQueue.add(getReceived("[ERROR]", rrealmsg + " - attempt " + session.getRetries(), CLR_ERROR));
+				chatQueue.add(getReceived("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), CLR_ERROR));
+				logQueue.add(getReceived("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), CLR_ERROR));
 				ircHandler.post(chatUpdater);
 				ircHandler.post(logUpdater);
                 /*
@@ -1135,7 +1381,7 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		System.out.println("getReceived: " + theMessage);
 		if((theMessage!=null && session!=null && theMessage.contains(session.getNick()))
-            || theTitle.startsWith("->")) //If it's a PM
+            || (theTitle!=null && theTitle.startsWith("->"))) //If it's a PM
 		{
 			msgColor = 0xFF000000 + CLR_MENTION;
 			System.out.println("MENTIONED" + isFocused);
@@ -1415,9 +1661,13 @@ public class IRCChat extends Activity implements IRCEventListener
 		}
 		else if(msg.toUpperCase().startsWith("/MSG "))
 		{
-			String targetNick = msg.substring(
-					("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
-			String targetMsg = msg.substring("/MSG ".length() + targetNick.length());
+			String targetNick = "";
+			String targetMsg = "";
+            try {
+                targetNick = msg.substring("/MSG ".length());
+                targetNick = msg.substring(("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
+                targetMsg = msg.substring("/MSG ".length() + targetNick.length());
+            }catch(Exception e){}
 			session.sayPrivate(targetNick, targetMsg);
 			if(!targetNick.toUpperCase().equals("NICKSERV") && targetMsg.toUpperCase().startsWith("IDENTIFY"))
 			{
@@ -1443,6 +1693,15 @@ public class IRCChat extends Activity implements IRCEventListener
 		|| msg.toUpperCase().startsWith("/USERIP ")
 		|| msg.toUpperCase().startsWith("/STATS ")	//Denied
 		|| msg.toUpperCase().startsWith("/MODULE")	//Posts as "Notice", not "Module". I am ok with this.
+        || msg.toUpperCase().startsWith("/LICENSE")
+        || msg.toUpperCase().startsWith("/NAMES")
+        || msg.toUpperCase().startsWith("/ISON ")
+        || msg.toUpperCase().startsWith("/PING ")
+        || msg.toUpperCase().startsWith("/PONG ")
+        || msg.toUpperCase().startsWith("/STATS ")
+        || msg.toUpperCase().startsWith("/HELPOP")
+        || msg.toUpperCase().startsWith("/SETNAME")
+        || msg.toUpperCase().startsWith("/VHOST")
 		)
 		{
 			session.sayRaw(msg.substring(1));
@@ -1484,9 +1743,56 @@ public class IRCChat extends Activity implements IRCEventListener
 			Toast.makeText(IRCChat.this, "What, is the JB chat not enough for you?!", Toast.LENGTH_SHORT).show();
 			return false;
 		}
+        //Op stuff. Because I am an Op. SUCK IT, PEOPLE WHO ALWAYS SAID I WOULDN'T AMOUNT TO ANYTHING.
+        else if(msg.toUpperCase().startsWith("/KICK "))
+        {
+            msg = msg.substring("/KICK ".length());
+            String nick = msg.split("\\s+")[0];
+            String reason = nick.length()<msg.length()?msg.substring(nick.length()+1) : session.getNick();
+            Log.e("DERP!:", nick + " | " + reason);
+            session.getChannel(CHANNEL_NAME).kick(nick, reason);
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/INVITE "))
+        {
+            msg = msg.substring("/INVITE ".length());
+            String nick = msg.split("\\s+")[0];
+            try {
+                if(!msg.substring(nick.length()+1).toLowerCase().equals("#jupiterbroadcasting"))
+                {
+                    Toast.makeText(IRCChat.this, "What, is the JB chat not enough for them?!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }catch(Exception e){}
+            session.invite(nick, session.getChannel(CHANNEL_NAME));
+            return true;
+        }
+        else if(msg.toUpperCase().startsWith("/OPER "))
+        {
+            session.getChannel(CHANNEL_NAME).op(msg.substring("/OPER ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/WATCH"))
+        {
+            session.sayRaw(msg.substring(1));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/MODE "))
+        {
+            session.getChannel(CHANNEL_NAME).mode(msg.substring("/MODE ".length()));
+            return false;
+        }
 		else if(msg.startsWith("/"))
 		{
-			String unknown = msg.substring(1, msg.indexOf(" "));
+            //PRIVMSG
+            //NOTICE?
+
+			String unknown = msg;
+            try {
+                unknown = msg.substring(1, msg.indexOf(" "));
+            }catch(Exception e){
+                unknown = unknown.substring(1);
+            }
 			Toast.makeText(IRCChat.this, "The command '" + unknown + "' is unknown. E-mail the developer if it's something that Callisto is missing.", Toast.LENGTH_LONG).show();
 			return false;
 		}
@@ -1509,6 +1815,7 @@ public class IRCChat extends Activity implements IRCEventListener
         @Override
         public void run()
         {
+            Log.e("ASDSADSADS", logQueue.peek() + "1");
             Callisto.logView.append(logQueue.remove());
             Callisto.logView.invalidate();
             sv2.fullScroll(ScrollView.FOCUS_DOWN);

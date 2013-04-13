@@ -334,7 +334,6 @@ public class Queue extends ListActivity
             //to-=(from<to?1:0);
             if(from==to)
                 return;
-            Log.e(":", from + " to " + to + " ( " + mainListView.getFirstVisiblePosition() + "  )");
             int toID   = Integer.parseInt(((TextView)mainListView.getChildAt(to - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
             //int fromID = from+1, toID = to+1;
 
