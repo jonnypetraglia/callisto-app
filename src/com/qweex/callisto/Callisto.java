@@ -1,20 +1,16 @@
 /*
-Copyright (C) 2012 Qweex
-This file is a part of Callisto.
-
-Callisto is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-Callisto is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Callisto; If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2012-2013 Qweex
+ * This file is a part of Callisto.
+ *
+ * Callisto is free software; it is released under the
+ * Open Software License v3.0 without warranty. The OSL is an OSI approved,
+ * copyleft license, meaning you are free to redistribute
+ * the source code under the terms of the OSL.
+ *
+ * You should have received a copy of the Open Software License
+ * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
+ * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
+ */
 package com.qweex.callisto;
 
 import java.io.File;
@@ -27,13 +23,14 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
+import android.text.util.Linkify;
 import android.util.TypedValue;
+import android.view.*;
 import android.widget.*;
 import com.qweex.callisto.podcast.*;
+import com.qweex.callisto.podcast.Queue;
 import com.qweex.utils.ImgTxtButton;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -83,12 +80,6 @@ import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -544,7 +535,8 @@ public class Callisto extends Activity {
         {
             TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
             Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" +  Callisto.databaseConnector.queueCount());
-            titleView.setText(RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
+            if(titleView!=null)
+                titleView.setText(RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
         }
 
         /** Updates the player controls, like the title and times. Used excessively when changing Activities.
@@ -1767,7 +1759,7 @@ public class Callisto extends Activity {
         newsFooter.setPadding(5, 5, 5, 5);
 
         //Create the listview & data for it
-        android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
+        final android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);
         java.util.List<java.util.Map<String, String>> groupData = new ArrayList<java.util.Map<String, String>>();
         java.util.List<java.util.List<java.util.Map<String, String>>> childData = new ArrayList<java.util.List<java.util.Map<String, String>>>();
 
@@ -1830,7 +1822,7 @@ public class Callisto extends Activity {
         } catch(Exception e) {}
 
         //Yeaaah create the adapter! Yeah!
-        android.widget.SimpleExpandableListAdapter mAdapter = new android.widget.SimpleExpandableListAdapter(
+        android.widget.SimpleExpandableListAdapter mAdapter = new SimpleExpandableListAdapterWithLinkify(
                 this,
                 groupData,
                 R.layout.news_listitem1,
@@ -1855,6 +1847,20 @@ public class Callisto extends Activity {
         //Show it!
         news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         news.show();
+    }
+
+    class SimpleExpandableListAdapterWithLinkify extends SimpleExpandableListAdapter
+    {
+
+        public SimpleExpandableListAdapterWithLinkify(Context context, List<? extends Map<String, ?>> groupData, int groupLayout, String[] groupFrom, int[] groupTo, List<? extends List<? extends Map<String, ?>>> childData, int childLayout, String[] childFrom, int[] childTo) {
+            super(context, groupData, groupLayout, groupFrom, groupTo, childData, childLayout, childFrom, childTo);
+        }
+        public View getChildView (int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
+        {
+            convertView = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
+            Linkify.addLinks((TextView)convertView, Linkify.ALL);
+            return convertView;
+        }
     }
 
     static public ProgressDialog BaconDialog(Context c, String title, String message)

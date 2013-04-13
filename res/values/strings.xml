@@ -18,7 +18,7 @@
      them to be changed based on the locale and options. -->
 
 <resources>
-    <string name="version_name">0.76 "Protostar"</string>
+    <string name="version_name">0.8 "Protostar"</string>
     
     <string name="live">Live</string>
 	<string name="watch">Watch</string>

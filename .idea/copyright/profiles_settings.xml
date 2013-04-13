@@ -1,5 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="">
-    <module2copyright />
+  <settings default="OSL3.0">
+    <module2copyright>
+      <element module="All" copyright="OSL3.0" />
+    </module2copyright>
   </settings>
 </component>

@@ -1,0 +1,25 @@
+Callisto includes icons from the set "Android Developer Icons 2" by Opoloo.
+These icons are NOT released under the OSL.
+    http://www.androidicons.com/
+    http://www.opoloo.com/
+
+The icons in question are the ones that are available from the set linked above, specifically the ones that are from the
+paid set, not any of the "Bonus Icons" sets.
+
+These icons have been purchased by the main developer (Jon Petraglia) for the development of his Android apps (including
+Callisto), and he has obtained expressed permission from Opoloo to use their icons in this Callisto as an open-source
+application and include them in the project's revision control.
+
+HOWEVER, this permission ONLY extends to the Callisto project. You are not licensed to download these icons from
+Callisto's source control with the intent to use them in your applications, whether open-source or proprietary. This
+includes forks of Callisto resulting in a new project. Any use of these icons outside the
+
+
+The folks at Opollo were nice enough (and friendly enough to open-source!) to let me use these icons for Callisto.
+Please don't make them regret it. It's a few dollars for some really high quality icons. If I can go further into debt
+with my venture of Callisto, you can stand to shell out a few bucks as well.
+
+-Jon Petraglia (main developer of Callisto)
+
+
+(And for the record, this license was MY idea, NOT Opollo's.)
