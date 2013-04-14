@@ -13,27 +13,13 @@
  */
 package com.qweex.callisto;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -42,8 +28,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.webkit.WebView;
 
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
@@ -58,8 +42,6 @@ public class ContactForm extends Activity
     private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
     //private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/"; //Used for testing.
 
-    /** String to hold the result thingy */
-    private String asyncResult = "";
     /** String to hold the custom CSS */
     private String customCSS;
     /** Main WebView  */
@@ -77,7 +59,7 @@ public class ContactForm extends Activity
 
         wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(true);
-        wv.addJavascriptInterface(new MyIncompleteFormHandler(), "HTMLOUT");
+        wv.addJavascriptInterface(new JavascriptInterface(), "HTMLOUT");
         wv.setWebViewClient(new MyWebViewClient());
         FrameLayout fl = new FrameLayout(this);
         fl.setBackgroundResource(R.color.backClr);
@@ -105,6 +87,7 @@ public class ContactForm extends Activity
         //wv.loadDataWithBaseURL("http://wufoo.com", asyncResult.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";").replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";"), "text/html", "utf-8", "about:blank");
     }
 
+    /** An Asyncronous Task to read in the custom CSS file */
     private class ReadCSS extends AsyncTask<Void, Void, Void>
     {
         @Override
@@ -131,6 +114,7 @@ public class ContactForm extends Activity
         {   wv.loadUrl(formURL);   }
     }
 
+    /** Specialized WebViewClient to handle showing a progress dialog and retrieving the page source if it is from wufoo and not data with our custom CSS */
     class MyWebViewClient extends WebViewClient
     {
         @Override
@@ -144,7 +128,7 @@ public class ContactForm extends Activity
         {
             Log.d("derp", "Loading: " + url);
             if(!url.startsWith("http://wufoo.com/"))
-                view.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);");
+                view.loadUrl("javascript:window.HTMLOUT.CustomCSSApplier(document.getElementsByTagName('html')[0].innerHTML);");
             else
             {
                 view.setVisibility(View.VISIBLE);
@@ -155,10 +139,11 @@ public class ContactForm extends Activity
 
     }
 
-    class MyIncompleteFormHandler
+    /** Javascript Handler class to handle when we retrieve source of a page and want to apply CSS, as well as retrieving data for the draft feature */
+    class JavascriptInterface
     {
         @SuppressWarnings("unused")
-        public void processHTML(String result)
+        public void CustomCSSApplier(String result)
         {
             //Replace Wufoo's CSS with our own
             String str1 = "<!-- CSS -->";
@@ -170,5 +155,54 @@ public class ContactForm extends Activity
             //Load the data into the webview
             wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
         }
+
+        @SuppressWarnings("unused")
+        public void saveDraft(String result)
+        {
+            System.out.println("DERPDONG: " + result);
+            finish();
+        }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, android.view.KeyEvent event)  {
+        if(keyCode == android.view.KeyEvent.KEYCODE_BACK)
+        {
+            /*
+            Field4 - First      - input type=text
+            Field5 - Last       - input type=text
+            Field6 - email      - input type=email
+            Field7 - topic      - select
+            Field1 - message    - textarea
+            Field9 - hidden     - input type=hidden
+            Field9_0 - radio1   - input type=radio
+            Field9_1 - radio2   - input type=radio
+             */
+            String tehJavascript =
+                    "var tehResult = '';" +
+                            "var inputs = document.getElementsByTagName('input');" +
+                            "for(var i=0; i<inputs.length; i++) {" +
+                            "   if(inputs[i].getAttribute('type')=='radio') {" +
+                            "       if(inputs[i].checked)   tehResult = tehResult + '|' + inputs[i].id;" +
+                            "   } else" +
+                            "   if(inputs[i].getAttribute('type')!='hidden' && inputs[i].getAttribute('type')!='submit') {" +
+                            "       tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
+                            "   }" +
+                            "}" +
+                            "inputs = document.getElementsByTagName('textarea');" +
+                            "for(var i=0; i<inputs.length; i++) {" +
+                            "   if(inputs[i].id!='comment')" +
+                            "      tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
+                            "}" +
+                            "inputs = document.getElementsByTagName('select');" +
+                            "for(var i=0; i<inputs.length; i++) {" +
+                            "   tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].options[inputs[i].selectedIndex].value;" +
+                            "}"
+                    ;
+            wv.loadUrl("javascript:" + tehJavascript + ";window.HTMLOUT.saveDraft("+ "tehResult" + ");");
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }
