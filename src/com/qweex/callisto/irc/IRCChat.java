@@ -183,8 +183,8 @@ public class IRCChat extends Activity implements IRCEventListener
 
         profileNick = Rot47(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_nick", null));
         profilePass = Rot47(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_pass", null));
-        mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
         irssi = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_irssi", false);
+        mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
         if(session!=null)
         {
             resume();
@@ -231,6 +231,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     return;
                 }
                 profileNick = nick;
+                mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
                 parseOutgoing("/nick " + profileNick);
                 if(pass.equals(""))
                 {
@@ -257,6 +258,7 @@ public class IRCChat extends Activity implements IRCEventListener
         @Override
         public void onClick(View v) {
             profileNick = user.getText().toString();
+            mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
             System.out.println("profileNick: " + profileNick);
             if(profileNick==null || profileNick.trim().equals(""))
             {
@@ -1385,9 +1387,9 @@ public class IRCChat extends Activity implements IRCEventListener
                 msgColor+= specialColor;
         } catch(NullPointerException e) {
         }
-        System.out.println("getReceived: " + theMessage);
+        System.out.println("getReceived: " + theMessage + " - " + mentionPattern.pattern());
         if( //!theTitle.equals("[004]") &&
-                ((theMessage!=null && session!=null && mentionPattern.matcher(theMessage).matches())   //If it mentions you
+                ((theMessage!=null && session!=null && mentionPattern.matcher(theMessage).find())   //If it mentions you
                         || (theTitle!=null && theTitle.startsWith("->")))) //If it's a PM
         {
             msgColor = 0xFF000000 + CLR_MENTION;
@@ -1397,12 +1399,13 @@ public class IRCChat extends Activity implements IRCEventListener
                 if(Callisto.notification_chat==null)
                     Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
                 mentionCount++;
-                System.out.println("Derp: " + PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false));
-                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", false) &&
+                Callisto.notification_chat.defaults = 0;
+                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", true) &&
                         (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false)))
-                    Callisto.notification_chat.defaults |= Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND;
-                else
-                    Callisto.notification_chat.defaults = 0;
+                    Callisto.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
+                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound", true) &&
+                        (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound_all", false)))
+                    Callisto.notification_chat.defaults |= Notification.DEFAULT_SOUND;
                 Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
                 mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
             }
