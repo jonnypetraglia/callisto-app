@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.qweex.callisto.Callisto;
+import com.qweex.callisto.R;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +45,7 @@ public class NickList extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 		setTitle("Nick List");
+        getListView().setBackgroundResource(R.color.backClr);
 		this.setListAdapter(new NickListAdapter(this, android.R.layout.simple_list_item_1, IRCChat.nickList));
 		setResult(-1);
 	}
@@ -74,6 +77,7 @@ public class NickList extends ListActivity
                 LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v=vi.inflate(layoutResourceID, null);
             }
+            v.setBackgroundColor(android.R.color.transparent);
             String pre = "";
             //Special characters for special people
             if(Owners.contains(content.get(pos).toLowerCase()))
@@ -87,6 +91,7 @@ public class NickList extends ListActivity
             else if(Voices.contains(content.get(pos).toLowerCase()))
                 pre = "+";
             ((TextView)v.findViewById(android.R.id.text1)).setText(pre + content.get(pos));
+            ((TextView)v.findViewById(android.R.id.text1)).setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
             return v;
         }
     }

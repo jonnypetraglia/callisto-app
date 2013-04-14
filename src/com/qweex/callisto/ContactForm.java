@@ -21,6 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import android.os.Handler;
+import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -52,8 +58,14 @@ public class ContactForm extends Activity
     private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
     //private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/"; //Used for testing.
 
+    /** String to hold the result thingy */
     private String asyncResult = "";
+    /** String to hold the custom CSS */
+    private String customCSS;
+    /** Main WebView  */
     private WebView wv;
+    /** The progress dialog to show whilst fetching the form **/
+    private ProgressDialog baconPDialog;
 
     /** Called when the activity is first created. Retrieves the wufoo form and inserts it into the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -64,127 +76,99 @@ public class ContactForm extends Activity
         super.onCreate(savedInstanceState);
 
         wv = new WebView(this);
-        setContentView(wv);
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.addJavascriptInterface(new MyIncompleteFormHandler(), "HTMLOUT");
+        wv.setWebViewClient(new MyWebViewClient());
+        FrameLayout fl = new FrameLayout(this);
+        fl.setBackgroundResource(R.color.backClr);
+        fl.addView(wv);
+        setContentView(fl);
         setTitle(R.string.contact);
 
-        new FetchForm().execute((Void[]) null);
+        baconPDialog = Callisto.BaconDialog(ContactForm.this, Callisto.RESOURCES.getString(R.string.loading)  + "...", null);
+        baconPDialog.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                //Finish the activity if the fetching is canceled
+                finish();
+            }
+        });
+        baconPDialog.setCancelable(true);
+        new ReadCSS().execute((Void[]) null);
+
     }
-
-    /** An AsyncTask to fetch the wufoo form. **/
-    private class FetchForm extends AsyncTask<Void, Void, Void>
-    {
-        /** The progress dialog to show whilst fetching the form **/
-        private ProgressDialog baconPDialog;
-
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
-            baconPDialog = Callisto.BaconDialog(ContactForm.this, Callisto.RESOURCES.getString(R.string.loading)  + "...", null);
-            baconPDialog.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    //Finish the activity if the fetching is canceled
-                    finish();
-                }
-            });
-            baconPDialog.setCancelable(true);
-        }
-
-        @Override
-        protected void onPostExecute(Void result)
-        {
-            if(baconPDialog !=null)
-                baconPDialog.hide();
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpContext localContext = new BasicHttpContext();
-            HttpGet httpGet = new HttpGet(formURL);
-
-            HttpResponse response;
-            try
-            {
-                // Read in the css
-                InputStream input;
-                input = getAssets().open("style.css");
-                int size = input.available();
-                byte[] buffer = new byte[size];
-                input.read(buffer);
-                input.close();
-                asyncResult = new String(buffer);
-                asyncResult = "<style type='text/css'>\n" + asyncResult + "\n</style>\n";
-                File file = new File(Environment.getExternalStorageDirectory() + File.separator + Callisto.storage_path + File.separator + "contact.html");
-                long serverLastModified=0; // = (HttpURLConnection) new URL("https://jblive.wufoo.com/forms/w7x2r7").openConnection().getLastModified();
-                long localLastModified = PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getLong("contact_last_modified", -1);
-
-                //TODO: Check the last modified date of the form, if it has changed update and write it to a file.
-
-                //Fetch the file if has changed
-                if(serverLastModified>localLastModified || !file.exists() || true)
-                {
-                    response = httpClient.execute(httpGet, localContext);
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(
-                                    response.getEntity().getContent()
-                            )
-                    );
-
-                    String line;
-                    //BufferedWriter out = new BufferedWriter(new FileWriter(file));
-                    while ((line = reader.readLine()) != null)
-                        asyncResult += line + "\n";
-                    //out.write(asyncResult);
-                    //out.close();
-                }
-                else
-                {   //Read the last saved form from the file
-                    input = new BufferedInputStream(new FileInputStream(file));
-                    size = input.available();
-                    buffer = new byte[size];
-                    input.read(buffer);
-                    input.close();
-                    asyncResult = asyncResult + (new String(buffer));
-                }
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //End try/catch; if an error happens it will pop out here.
-
-            //For debugging purposes
-            if(formURL.contains("qweex") && false)
-            {
-                String str1 = "<a href=\"https://master.wufoo.com/forms/m7p0x3/def/field1=qweex.wufoo.com/forms/contact-form/\"";
-                String str2 = "Report Abuse</a>";
-                String remove = asyncResult.substring(asyncResult.indexOf(str1),
-                        asyncResult.indexOf(str2)+str2.length());
-                asyncResult = asyncResult.replace(remove, "");
-            }
-
-            //Remove Wufoo's CSS
-            String str1 = "<!-- CSS -->";
-            String str2 = "rel=\"stylesheet\">";
-            String remove = asyncResult.substring(asyncResult.indexOf(str1),
-                    asyncResult.indexOf(str2)+str2.length());
-            asyncResult = asyncResult.replace(remove, "");
-
-            //Load the data into the webview
-            wv.loadDataWithBaseURL("http://wufoo.com", asyncResult.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
-            return null;
-        }
-    };
-
 
     /** Stops the activity from being re-created from  */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         //wv.loadDataWithBaseURL("http://wufoo.com", asyncResult.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";").replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";"), "text/html", "utf-8", "about:blank");
+    }
+
+    private class ReadCSS extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Read in the css
+            InputStream input;
+            try {
+                input = getAssets().open("style.css");
+                int size = input.available();
+                byte[] buffer = new byte[size];
+                input.read(buffer);
+                input.close();
+                customCSS = new String(buffer);
+                customCSS = "<style type='text/css'>\n" + customCSS + "\n</style>\n";
+            }catch(IOException io)
+            {
+                finish();   //TODO: ???
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v)
+        {   wv.loadUrl(formURL);   }
+    }
+
+    class MyWebViewClient extends WebViewClient
+    {
+        @Override
+        public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon)
+        {
+            view.setVisibility(View.INVISIBLE);
+            baconPDialog.show();
+        }
+        @Override
+        public void onPageFinished(WebView view, String url)
+        {
+            Log.d("derp", "Loading: " + url);
+            if(!url.startsWith("http://wufoo.com/"))
+                view.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);");
+            else
+            {
+                view.setVisibility(View.VISIBLE);
+                if(baconPDialog.isShowing())
+                    baconPDialog.hide();
+            }
+        }
+
+    }
+
+    class MyIncompleteFormHandler
+    {
+        @SuppressWarnings("unused")
+        public void processHTML(String result)
+        {
+            //Replace Wufoo's CSS with our own
+            String str1 = "<!-- CSS -->";
+            String str2 = "rel=\"stylesheet\">";
+            String remove = result.substring(result.indexOf(str1),
+                    result.indexOf(str2)+str2.length());
+            result = result.replace(remove, customCSS);
+
+            //Load the data into the webview
+            wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
+        }
     }
 }

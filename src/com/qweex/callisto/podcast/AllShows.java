@@ -344,7 +344,8 @@ public class AllShows extends Activity {
                 {
                     Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
                     ImageView img = (ImageView) row.findViewById(R.id.img);
-                    img.setImageBitmap(bitmap);
+                    if(img!=null) //TODO: This should never happen why did it happen once
+                        img.setImageBitmap(bitmap);
                     break;
                 }
             }

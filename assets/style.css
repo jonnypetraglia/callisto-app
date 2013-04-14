@@ -20,7 +20,7 @@ Got a lot of help from http://kolorkube.com/klick/build-a-sexy-form-with-the-new
 Icons are all from: http://www.softicons.com/free-icons/designers/axialis-team
 */
 
-.embed .wufoo .info, p, h1, .hide {
+.embed .wufoo .info, p, h1, .hide, header {
   display:none;
 }
 
@@ -28,7 +28,7 @@ Icons are all from: http://www.softicons.com/free-icons/designers/axialis-team
   background-color: transparent;
 }
 
-.embed form.wufoo, .embed .wufoo h1, .embed .wufoo h2, .embed .wufoo h3, .embed ul, .embed li, .embed ol, .embed .wufoo .section div {
+.embed form.wufoo, .embed .wufoo h1, .embed .wufoo h2, .embed .wufoo h3, .embed ul, .embed li, .embed ol, .embed .wufoo .section div, #errorLi, #errorMsgLbl, #errorMsg, ul {
   margin-left: 0;
   margin-right: 0;
   padding-left: 0;
@@ -36,8 +36,8 @@ Icons are all from: http://www.softicons.com/free-icons/designers/axialis-team
 }
 
 body {
-	padding-top: 2em;
-	padding-bottom: 2em;
+	padding-top: 1em;
+	padding-bottom: 1em;
 	padding-right: 1.5em;
 	padding-left: 1.5em;
 }
@@ -145,4 +145,30 @@ input:focus, textarea:focus {
 body,td,th {
 	font-family: Tahoma, Geneva, sans-serif;
 	color: #333;
+}
+
+#errorLi {
+    border: 1px dashed #FFDFDF;
+
+    margin-top:0px;
+    padding:0px;
+    text-align:center;
+    -webkit-border-radius:20px;
+    border-radius:20px;
+}
+
+#errorMsgLbl, #errorMsg, #error{
+    display:block;
+}
+
+#errorMsg b {
+    font-weight:normal;
+}
+
+.error {
+    background: #FFDFDF;
+}
+
+.error, #errorMsgLbl, #errorMsg {
+    color: #DF0000;
 }
