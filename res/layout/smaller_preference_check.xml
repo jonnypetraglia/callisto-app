@@ -18,5 +18,7 @@
           android:layout_height="wrap_content"
           android:layout_weight="0.0"
           android:focusable="false"
+          android:focusableInTouchMode="false"
+          android:clickable="false"
           android:button="@drawable/btn_check_holo_light"
           android:layout_gravity="center_vertical"/>

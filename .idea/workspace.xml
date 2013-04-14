@@ -44,15 +44,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/HeaderAdapter.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/HeaderAdapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/class-use/Queue.NowPlayingAdapter.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/podcast/class-use/Queue.NowPlayingAdapter.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/Queue.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/SearchResultsActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/SearchResultsActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/xml/preferences.xml" afterPath="$PROJECT_DIR$/res/xml/preferences.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/smaller_preference_check.xml" afterPath="$PROJECT_DIR$/res/layout/smaller_preference_check.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
@@ -62,9 +57,9 @@
     <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365897306348" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
-    <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364154401407" ignored="false" />
+    <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365911739315" ignored="false" />
     <file path="/smaller_preference.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364152507691" ignored="false" />
-    <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365887154962" ignored="false" />
+    <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365911905429" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364154673167" ignored="false" />
     <file path="/DownloadList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365907126119" ignored="false" />
     <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365895427888" ignored="false" />
@@ -92,6 +87,8 @@
     <file path="/Queue.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365896480686" ignored="false" />
     <file path="/HeaderAdapter.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365896571772" ignored="false" />
     <file path="/DownloadTask.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365901005335" ignored="false" />
+    <file path="/IRCChat.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365915628357" ignored="false" />
+    <file path="/smaller_preference_check.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365912147394" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,39 +147,44 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DownloadList.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+      <file leaf-file-name="EpisodeDesc.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="307" column="21" selection-start="13431" selection-end="13431" vertical-scroll-proportion="6.177746">
+            <state line="499" column="5" selection-start="22424" selection-end="22424" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#0#24928#0" expanded="true" />
-                <element signature="docComment;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#ACTIVE#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#CLEAR_COMP_ID#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#downloadProgress#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#mainListView#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#listAdapter#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#rebuildHeaderThings#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#Download_wifiLock#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#onCreate#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
-                <element signature="e#11411#11768#0" expanded="true" />
-                <element signature="e#11761#11762#0" expanded="true" />
-                <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
-                <element signature="e#11907#12369#0" expanded="true" />
-                <element signature="e#12362#12363#0" expanded="true" />
-                <element signature="docComment;method#moveDownload#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;field#name#0;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;class#DownloadRow#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#makeFileFriendly#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#getDownloadAt#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#getDownloadCount#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#addDownload#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#removeDownloadAt#0;class#DownloadList#0" expanded="true" />
-                <element signature="docComment;method#removeDownload#0;class#DownloadList#0" expanded="true" />
+                <element signature="e#0#22427#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="docComment;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#mp3_link#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#title#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#description#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#link#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#mp3_size#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#date#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#show#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#file_location_audio#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#streamButton#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#id#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#isLandscape#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#audioTab#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#vidSelected#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#twoDec#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#SUFFIXES#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#dltask#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#onCreate#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#getExtension#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#onCreateOptionsMenu#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#onOptionsItemSelected#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#onResume#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#toggleNew#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#launchPlay#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#launchDelete#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#launchStream#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#launchDownload#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#launchCancel#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;field#changeTab#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#determineButtons#0;class#EpisodeDesc#0" expanded="true" />
+                <element signature="docComment;method#formatBytes#0;class#EpisodeDesc#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -191,7 +193,7 @@
       <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="153" column="46" selection-start="6543" selection-end="6543" vertical-scroll-proportion="-10.28">
+            <state line="122" column="32" selection-start="5131" selection-end="5131" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#0#79834#0" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -211,6 +213,142 @@
                 <element signature="e#74571#74602#0" expanded="true" />
                 <element signature="e#75094#75110#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DownloadList.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="278" column="27" selection-start="12006" selection-end="12006" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#24928#0" expanded="true" />
+                <element signature="docComment;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#ACTIVE#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#CLEAR_COMP_ID#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#downloadProgress#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#mainListView#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#listAdapter#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#rebuildHeaderThings#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#Download_wifiLock#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#onCreate#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#moveDownload#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;field#name#0;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;class#DownloadRow#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#makeFileFriendly#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#getDownloadAt#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#getDownloadCount#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#addDownload#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#removeDownloadAt#0;class#DownloadList#0" expanded="true" />
+                <element signature="docComment;method#removeDownload#0;class#DownloadList#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IRCChat.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1387" column="57" selection-start="66314" selection-end="66314" vertical-scroll-proportion="0.15201901">
+              <folding>
+                <element signature="e#0#87949#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="docComment;class#IRCChat#0" expanded="true" />
+                <element signature="e#3623#3632#0" expanded="true" />
+                <element signature="e#3683#3692#0" expanded="true" />
+                <element signature="e#3874#3891#0" expanded="true" />
+                <element signature="docComment;method#onCreate#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#5227#6701#0" expanded="true" />
+                <element signature="e#6498#6603#0" expanded="true" />
+                <element signature="e#6600#6601#0" expanded="true" />
+                <element signature="e#6686#6687#0" expanded="true" />
+                <element signature="e#8875#9827#0" expanded="true" />
+                <element signature="e#9816#9817#0" expanded="true" />
+                <element signature="e#10364#11142#0" expanded="true" />
+                <element signature="e#11135#11136#0" expanded="true" />
+                <element signature="docComment;method#onKeyDown#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#dispatchKeyEvent#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#updateMenu#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#onOptionsItemSelected#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#onActivityResult#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#onConfigurationChanged#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#resume#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#20493#20722#0" expanded="true" />
+                <element signature="e#20711#20712#0" expanded="true" />
+                <element signature="docComment;method#initiate#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#26123#26948#0" expanded="true" />
+                <element signature="e#26937#26938#0" expanded="true" />
+                <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#receiveEvent#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#31649#31657#0" expanded="true" />
+                <element signature="docComment;method#getReceived#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#67929#67940#0" expanded="true" />
+                <element signature="e#68018#68029#0" expanded="true" />
+                <element signature="docComment;method#getNickColor#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#getRandomColor#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#isAcceptable#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;field#sendMessage#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#72576#74081#0" expanded="true" />
+                <element signature="e#74074#74075#0" expanded="true" />
+                <element signature="e#76073#76102#1" expanded="true" />
+                <element signature="e#76213#76242#1" expanded="true" />
+                <element signature="docComment;method#parseOutgoing#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;field#logUpdater#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#85053#85351#0" expanded="true" />
+                <element signature="e#85342#85343#0" expanded="true" />
+                <element signature="docComment;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+                <element signature="docComment;method#EditTextFlash#0;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#86686#86934#0" expanded="true" />
+                <element signature="e#86923#86924#0" expanded="true" />
+                <element signature="docComment;method#Rot47#0;class#IRCChat#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QuickPrefsActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="8" selection-start="2265" selection-end="2265" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#8188#0" expanded="true" />
+                <element signature="docComment;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;field#DONATION_APP#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;field#oldRadioForLiveQuality#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;field#MagicButtonThatDoesAbsolutelyNothing#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;method#onCreate#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;field#setSubpreferenceBG#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;method#onSharedPreferenceChanged#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;method#packageExists#0;class#QuickPrefsActivity#0" expanded="true" />
+                <element signature="docComment;field#numberCheckListener#0;class#QuickPrefsActivity#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="preferences.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="58" column="145" selection-start="2791" selection-end="2791" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="smaller_preference_check.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/smaller_preference_check.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="46" selection-start="791" selection-end="791" vertical-scroll-proportion="-9.807693">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -238,10 +376,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/Bacon.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/bonuses/SplashScreen.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/donate/ResultDelegate.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/NickList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/AllShows.java" />
@@ -254,6 +388,10 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
+        <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
+        <option value="$PROJECT_DIR$/res/layout/smaller_preference_check.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
       </list>
     </option>
   </component>
@@ -580,6 +718,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane" />
@@ -825,31 +981,31 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="34" width="960" height="1046" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297414" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18514532" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18514532" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286638" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32795697" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3972013" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.512035" sideWeight="0.8148547" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3275862" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2702407" sideWeight="0.6027987" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32723358" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="2" side_tool="false" content_ui="tabs" />
@@ -921,84 +1077,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="150" column="65" selection-start="6333" selection-end="6333" vertical-scroll-proportion="0.4162042">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#itemsList#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#GiveChrisSomeHardEarnedMoney#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#mPricesAdapter#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#DONATION_APP_ID#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#contentLayout#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#NAME_ID#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#lastChecked#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#CustomRadio#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#CustomAmount#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#msgView#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#donationChoice#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#memo#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#IpnUrl#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#paymentID#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#paypalEmail#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#baconPDialog#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#server#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#appID#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#request#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#INITIALIZE_SUCCESS#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#hRefresh#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;method#onCreate#0;class#Donate#0" expanded="true" />
-            <element signature="e#11192#11347#0" expanded="true" />
-            <element signature="e#11336#11337#0" expanded="true" />
-            <element signature="docComment;class#PricesAdapter#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;field#selectRadio#0;class#Donate#0" expanded="true" />
-            <element signature="e#14934#15666#0" expanded="true" />
-            <element signature="e#15659#15660#0" expanded="true" />
-            <element signature="docComment;field#CATALOG#0;class#Donate#0" expanded="true" />
-            <element signature="docComment;class#PriceListEntry#0;class#Donate#0" expanded="true" />
-            <element signature="e#18015#19435#0" expanded="true" />
-            <element signature="e#19428#19429#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/ResultDelegate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="33" selection-start="565" selection-end="565" vertical-scroll-proportion="0.2164262">
-          <folding>
-            <element signature="e#0#1881#0" expanded="true" />
-            <element signature="docComment;class#ResultDelegate#0" expanded="true" />
-            <element signature="docComment;method#onPaymentSucceeded#0;class#ResultDelegate#0" expanded="true" />
-            <element signature="docComment;method#onPaymentFailed#0;class#ResultDelegate#0" expanded="true" />
-            <element signature="docComment;method#onPaymentCanceled#0;class#ResultDelegate#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/NickList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="5" selection-start="1958" selection-end="1958" vertical-scroll-proportion="0.39955604">
-          <folding>
-            <element signature="docComment;class#NickList#0" expanded="true" />
-            <element signature="e#1139#1147#0" expanded="true" />
-            <element signature="e#1223#1231#0" expanded="true" />
-            <element signature="e#1310#1318#0" expanded="true" />
-            <element signature="e#1393#1401#0" expanded="true" />
-            <element signature="e#1469#1477#0" expanded="true" />
-            <element signature="docComment;method#onCreate#0;class#NickList#0" expanded="true" />
-            <element signature="docComment;class#NickListAdapter#0;class#NickList#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="38" selection-start="2160" selection-end="2173" vertical-scroll-proportion="0.5063731">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/AllShows.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="218" column="5" selection-start="9037" selection-end="9037" vertical-scroll-proportion="0.26748058">
@@ -1027,13 +1105,6 @@
             <element signature="docComment;class#AllShowsHeader#0;class#AllShows#0" expanded="true" />
             <element signature="docComment;class#AllShowsRow#0;class#AllShows#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="565" column="76" selection-start="20859" selection-end="20859" vertical-scroll-proportion="0.48873875">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1164,9 +1235,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="389" column="34" selection-start="18979" selection-end="18979" vertical-scroll-proportion="0.56624824">
+          <folding>
+            <element signature="docComment;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#Title#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#TotalSize#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#Target#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#NOTIFICATION_ID#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#TIMEOUT_CONNECTION#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#mNotificationManager#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#contentIntent#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#running#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#context#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#inner_failures#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#outer_failures#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#failed#0;class#DownloadTask#0" expanded="true" />
+            <element signature="docComment;field#INNER_LIMIT#0;class#DownloadTask#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="499" column="5" selection-start="22424" selection-end="22424" vertical-scroll-proportion="2.4150944">
+        <state line="499" column="5" selection-start="22424" selection-end="22424" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#0#22427#0" expanded="true" />
             <element signature="imports" expanded="true" />
@@ -1188,64 +1281,58 @@
             <element signature="docComment;field#SUFFIXES#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;field#dltask#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;method#onCreate#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#10243#10355#0" expanded="true" />
-            <element signature="e#10344#10345#0" expanded="true" />
             <element signature="docComment;method#getExtension#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;method#onCreateOptionsMenu#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;method#onOptionsItemSelected#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;method#onResume#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;field#toggleNew#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#13059#13268#0" expanded="true" />
-            <element signature="e#13261#13262#0" expanded="true" />
             <element signature="docComment;field#launchPlay#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#13371#13987#0" expanded="true" />
-            <element signature="e#13980#13981#0" expanded="true" />
             <element signature="docComment;field#launchDelete#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#14093#15912#0" expanded="true" />
-            <element signature="e#15905#15906#0" expanded="true" />
             <element signature="docComment;field#launchStream#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#16018#16576#0" expanded="true" />
-            <element signature="e#16569#16570#0" expanded="true" />
             <element signature="docComment;field#launchDownload#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#16686#18267#0" expanded="true" />
-            <element signature="e#18260#18261#0" expanded="true" />
             <element signature="docComment;field#launchCancel#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#18376#18691#0" expanded="true" />
-            <element signature="e#18684#18685#0" expanded="true" />
             <element signature="docComment;field#changeTab#0;class#EpisodeDesc#0" expanded="true" />
-            <element signature="e#18827#19782#0" expanded="true" />
-            <element signature="e#19775#19776#0" expanded="true" />
             <element signature="docComment;method#determineButtons#0;class#EpisodeDesc#0" expanded="true" />
             <element signature="docComment;method#formatBytes#0;class#EpisodeDesc#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="389" column="34" selection-start="18948" selection-end="18948" vertical-scroll-proportion="0.56546926">
+        <state line="278" column="27" selection-start="12006" selection-end="12006" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="docComment;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#Title#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#TotalSize#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#Target#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#NOTIFICATION_ID#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#TIMEOUT_CONNECTION#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#mNotificationManager#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#contentIntent#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#running#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#context#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#inner_failures#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#outer_failures#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#failed#0;class#DownloadTask#0" expanded="true" />
-            <element signature="docComment;field#INNER_LIMIT#0;class#DownloadTask#0" expanded="true" />
+            <element signature="e#0#24928#0" expanded="true" />
+            <element signature="docComment;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#ACTIVE#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#CLEAR_COMP_ID#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#downloadProgress#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#mainListView#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#listAdapter#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#rebuildHeaderThings#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#Download_wifiLock#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#moveDownload#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;field#name#0;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;class#DownloadRow#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#makeFileFriendly#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#getDownloadAt#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#getDownloadCount#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#addDownload#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#removeDownloadAt#0;class#DownloadList#0" expanded="true" />
+            <element signature="docComment;method#removeDownload#0;class#DownloadList#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="153" column="46" selection-start="6543" selection-end="6543" vertical-scroll-proportion="-10.28">
+        <state line="122" column="32" selection-start="5131" selection-end="5131" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#0#79834#0" expanded="true" />
             <element signature="imports" expanded="true" />
@@ -1268,38 +1355,106 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+    <entry file="file://$PROJECT_DIR$/res/layout/smaller_preference.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="307" column="21" selection-start="13431" selection-end="13431" vertical-scroll-proportion="6.177746">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.10091743">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="8" selection-start="2265" selection-end="2265" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#24928#0" expanded="true" />
-            <element signature="docComment;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#ACTIVE#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#CLEAR_COMP_ID#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#downloadProgress#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#mainListView#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#listAdapter#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#rebuildHeaderThings#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#Download_wifiLock#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#onCreate#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#moveUp#0;class#DownloadList#0" expanded="true" />
-            <element signature="e#11411#11768#0" expanded="true" />
-            <element signature="e#11761#11762#0" expanded="true" />
-            <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
-            <element signature="e#11907#12369#0" expanded="true" />
-            <element signature="e#12362#12363#0" expanded="true" />
-            <element signature="docComment;method#moveDownload#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#removeItem#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;field#name#0;class#DownloadHeader#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;class#DownloadRow#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#makeFileFriendly#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#getDownloadAt#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#getDownloadCount#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#addDownload#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#removeDownloadAt#0;class#DownloadList#0" expanded="true" />
-            <element signature="docComment;method#removeDownload#0;class#DownloadList#0" expanded="true" />
+            <element signature="e#0#8188#0" expanded="true" />
+            <element signature="docComment;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;field#DONATION_APP#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;field#oldRadioForLiveQuality#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;field#MagicButtonThatDoesAbsolutelyNothing#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;field#setSubpreferenceBG#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;method#onSharedPreferenceChanged#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;method#packageExists#0;class#QuickPrefsActivity#0" expanded="true" />
+            <element signature="docComment;field#numberCheckListener#0;class#QuickPrefsActivity#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="145" selection-start="2791" selection-end="2791" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/smaller_preference_check.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="46" selection-start="791" selection-end="791" vertical-scroll-proportion="-9.807693">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1387" column="57" selection-start="66314" selection-end="66314" vertical-scroll-proportion="0.15201901">
+          <folding>
+            <element signature="e#0#87949#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#IRCChat#0" expanded="true" />
+            <element signature="e#3623#3632#0" expanded="true" />
+            <element signature="e#3683#3692#0" expanded="true" />
+            <element signature="e#3874#3891#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#5227#6701#0" expanded="true" />
+            <element signature="e#6498#6603#0" expanded="true" />
+            <element signature="e#6600#6601#0" expanded="true" />
+            <element signature="e#6686#6687#0" expanded="true" />
+            <element signature="e#8875#9827#0" expanded="true" />
+            <element signature="e#9816#9817#0" expanded="true" />
+            <element signature="e#10364#11142#0" expanded="true" />
+            <element signature="e#11135#11136#0" expanded="true" />
+            <element signature="docComment;method#onKeyDown#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#dispatchKeyEvent#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#updateMenu#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onOptionsItemSelected#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onActivityResult#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onConfigurationChanged#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#resume#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#20493#20722#0" expanded="true" />
+            <element signature="e#20711#20712#0" expanded="true" />
+            <element signature="docComment;method#initiate#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#26123#26948#0" expanded="true" />
+            <element signature="e#26937#26938#0" expanded="true" />
+            <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#receiveEvent#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#31649#31657#0" expanded="true" />
+            <element signature="docComment;method#getReceived#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#67929#67940#0" expanded="true" />
+            <element signature="e#68018#68029#0" expanded="true" />
+            <element signature="docComment;method#getNickColor#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#getRandomColor#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#isAcceptable#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;field#sendMessage#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#72576#74081#0" expanded="true" />
+            <element signature="e#74074#74075#0" expanded="true" />
+            <element signature="e#76073#76102#1" expanded="true" />
+            <element signature="e#76213#76242#1" expanded="true" />
+            <element signature="docComment;method#parseOutgoing#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;field#logUpdater#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#85053#85351#0" expanded="true" />
+            <element signature="e#85342#85343#0" expanded="true" />
+            <element signature="docComment;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#EditTextFlash#0;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#86686#86934#0" expanded="true" />
+            <element signature="e#86923#86924#0" expanded="true" />
+            <element signature="docComment;method#Rot47#0;class#IRCChat#0" expanded="true" />
           </folding>
         </state>
       </provider>
