@@ -20,7 +20,10 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-//http://stackoverflow.com/questions/13590627/android-listview-headers/**
+
+/** An adapter for listviews with two types of views: header and row (data).
+ * http://stackoverflow.com/questions/13590627/android-listview-headers
+ * */
 
 public class HeaderAdapter extends ArrayAdapter<HeaderAdapter.Item>
 {

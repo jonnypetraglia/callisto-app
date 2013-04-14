@@ -26,18 +26,20 @@ import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+/** Shows the results of a list for episodes. Can be done for a specific show or all shows. */
+
 public class SearchResultsActivity extends ListActivity
 {
-	
-	public static String searchShow; 
-	
-	/** Called when the activity is first created. Creates all the crap, man.
-	 * @param savedInstanceState Um I don't even know. Read the Android documentation.
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    /** The show that will be searched; is optional, null searches all shows */
+    public static String searchShow;
+
+    /** Called when the activity is first created. Creates all the crap, man.
+     * @param savedInstanceState Um I don't even know. Read the Android documentation.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
         handleIntent(getIntent());
         TextView empty = new TextView(this);
         empty.setText("No results found.");
@@ -45,17 +47,17 @@ public class SearchResultsActivity extends ListActivity
         this.getListView().setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
         this.getListView().setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
     }
-	
-	/** Called when a search is requested.
-	 * @return true if the search was handled, false otherwise
-	 */
-	@Override
-	public boolean onSearchRequested ()
-	{
-		return false;
-	}
 
-	/** Um, called when a new intent is uh...new... */
+    /** Called when a search is requested.
+     * @return true if the search was handled, false otherwise
+     */
+    @Override
+    public boolean onSearchRequested ()
+    {
+        return false;
+    }
+
+    /** Um, called when a new intent is uh...new... */
     @Override
     protected void onNewIntent(Intent intent)
     {
@@ -68,11 +70,11 @@ public class SearchResultsActivity extends ListActivity
      */
     private void handleIntent(Intent intent) {
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction()))
+        if(Intent.ACTION_SEARCH.equals(intent.getAction()))
         {
             String query = intent.getStringExtra(SearchManager.QUERY);
             System.out.println(query);
-            
+
             String[] from = {"title", "_id", "show"};
             int[] to = {R.id.text1, R.id.id1, R.id.uri};
             Cursor c = Callisto.databaseConnector.searchEpisodes(query, searchShow);
@@ -80,15 +82,15 @@ public class SearchResultsActivity extends ListActivity
             this.setListAdapter(adapter);
         }
     }
-    
-    /** Called when a user presses a search result; open's the episode's page. */
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		Intent intent = new Intent(this, EpisodeDesc.class);
-		long id1 = Long.parseLong(((TextView)v.findViewById(R.id.id1)).getText().toString());
-		intent.putExtra("id", id1);
-		startActivity(intent);
-		//finish();
-	}
+
+    /** Called when a user presses a search result; open's the episode's page; that is an EpisodeDesc */
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long useless_id)
+    {
+        Intent intent = new Intent(this, EpisodeDesc.class);
+        long actual_id = Long.parseLong(((TextView)v.findViewById(R.id.id1)).getText().toString());
+        intent.putExtra("id", actual_id);
+        startActivity(intent);
+        //finish();
+    }
 }

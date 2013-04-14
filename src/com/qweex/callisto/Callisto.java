@@ -153,8 +153,8 @@ public class Callisto extends Activity {
 	private static final int SAVE_POSITION_EVERY = 40,
 						     CHECK_LIVE_EVERY = 400;	//Cycles, not necessarily seconds
 	
-	public static OnCompletionListenerWithContext nextTrack;
-	public static OnErrorListenerWithContext nextTrackBug;
+	public static OnCompletionListenerWithContext trackCompleted;
+	public static OnErrorListenerWithContext trackCompletedBug;
 	public static OnPreparedListenerWithContext mplayerPrepared;
 	public static final int NOTIFICATION_ID = 1337;
 	private static NotificationManager mNotificationManager;
@@ -310,8 +310,8 @@ public class Callisto extends Activity {
         findViewById(R.id.previous).setOnClickListener(Callisto.previous);
         findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
         //Sets the player error and completion errors
-		nextTrack = new OnCompletionListenerWithContext();
-		nextTrackBug = new OnErrorListenerWithContext();
+		trackCompleted = new OnCompletionListenerWithContext();
+		trackCompletedBug = new OnErrorListenerWithContext();
 	    mplayerPrepared = new OnPreparedListenerWithContext()
 	    {
 	    	@Override
@@ -551,7 +551,7 @@ public class Callisto extends Activity {
                 return;
             }
 
-            Callisto.nextTrack.setContext(c);
+            Callisto.trackCompleted.setContext(c);
 
             //Retrieve the length & position, depending on if it is video or audio
             if(VideoActivity.videoView!=null)
@@ -894,8 +894,8 @@ public class Callisto extends Activity {
 			Callisto.mplayerPrepared.setContext(c);
 			Callisto.mplayer.setDataSource(media_location);
             Log.i("*:changeToTrack", "Setting source: " + media_location);
-			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
-			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
+			Callisto.mplayer.setOnCompletionListener(Callisto.trackCompleted);
+			Callisto.mplayer.setOnErrorListener(Callisto.trackCompletedBug);
 			mplayerPrepared.startPlaying = sp;
 			Callisto.mplayer.setOnPreparedListener(mplayerPrepared);
 			Log.i("*:changeToTrack", "Preparing..." + sp);
@@ -974,8 +974,8 @@ public class Callisto extends Activity {
 		{
 			Log.d("*:playPause","PlayPause initiated");
 			Callisto.mplayer = new MediaPlayer();
-			Callisto.mplayer.setOnCompletionListener(Callisto.nextTrack);
-			Callisto.mplayer.setOnErrorListener(Callisto.nextTrackBug);
+			Callisto.mplayer.setOnCompletionListener(Callisto.trackCompleted);
+			Callisto.mplayer.setOnErrorListener(Callisto.trackCompletedBug);
 			Callisto.changeToTrack(c, 0, true);
 		}
 		else
