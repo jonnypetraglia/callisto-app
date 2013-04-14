@@ -28,7 +28,7 @@
               android:textSize="20sp"/>
     <include android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             layout="@layout/smaller_preference_check" android:id="@+id/include"
+             layout="@layout/smaller_preference_check" android:id="@android:id/checkbox"
              android:layout_gravity="center_horizontal|bottom"/>
 
 

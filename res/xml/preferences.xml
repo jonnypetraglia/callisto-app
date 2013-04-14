@@ -52,6 +52,21 @@
             android:title="'Update All' skips inactive"
             android:layout="@layout/smaller_preference"
             />
+        <CheckBoxPreference
+            android:key="pause_unplugged"
+            android:title="Pause on unplug"
+            android:summary="Pause playback when headphone jack is unplugged"
+            android:defaultValue="true"
+            android:widgetLayout="@layout/smaller_preference_check"
+            />
+        <CheckBoxPreference
+            android:key="play_plugged"
+            android:title="Play on re-plug"
+            android:summary="Resume playback when headphone jack is plugged back in"
+            android:widgetLayout="@layout/smaller_preference_check"
+            android:dependency="pause_unplugged"
+            />
+
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
@@ -61,8 +76,8 @@
             <CheckBoxPreference android:key="irc_modes" android:title="Show modes" android:summary="Prepends symbols for OPs and such" android:widgetLayout="@layout/smaller_preference_check"/>
 	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display" android:defaultValue="500"/>
             <CheckBoxPreference android:key="irc_sound" android:title="Sound on first mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
-            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on first mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
             <CheckBoxPreference android:key="irc_sound_all" android:title="Sound on EVERY mention" android:summary="When anyone mentions you at all" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_sound"/>
+            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on first mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
             <CheckBoxPreference android:key="irc_vibrate_all" android:title="Vibrate on EVERY mention" android:summary="When anyone mentions you at all" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_vibrate"/>
             <CheckBoxPreference android:key="irc_emoticons" android:title="Use Emoticons" android:summary="May slow performance, but is shiny" android:widgetLayout="@layout/smaller_preference_check"/>
 	        

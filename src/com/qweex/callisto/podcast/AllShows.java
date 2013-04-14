@@ -329,7 +329,7 @@ public class AllShows extends Activity {
             if(row == null)
             {
                 LayoutInflater inflater=getLayoutInflater();
-                row = inflater.inflate(R.layout.main_row_head, parent, false);
+                row = inflater.inflate(R.layout.main_row, parent, false);
             }
 
             //Get the show icon
