@@ -18,7 +18,6 @@
     android:id="@+id/naub"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="5dp"
     android:background="@color/backClr"
     android:orientation="vertical" >
 

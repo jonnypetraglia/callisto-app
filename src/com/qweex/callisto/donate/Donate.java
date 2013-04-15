@@ -243,8 +243,7 @@ public class Donate extends ListActivity
         Thread libraryInitializationThread = new Thread() {
             public void run() {
                 initLibrary();
-                if(baconPDialog !=null)
-                    baconPDialog.hide();
+                hideBacon.sendEmptyMessage(0);
 
                 // The library is initialized so let's create our CheckoutButton and update the UI.
                 if (PayPal.getInstance().isLibraryInitialized()) {
@@ -287,6 +286,15 @@ public class Donate extends ListActivity
 
     }
 
+    Handler hideBacon = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if(baconPDialog !=null)
+                baconPDialog.hide();
+        }
+    };
 
     /** An adapter to update the donation options to the listview */
     private class PricesAdapter extends ArrayAdapter<String>

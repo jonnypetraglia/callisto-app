@@ -37,6 +37,7 @@ import com.qweex.callisto.podcast.*;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.utils.ImgTxtButton;
+import com.qweex.utils.QweexUtils;
 import com.qweex.utils.XBMCStyleListViewMenu;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -143,6 +144,10 @@ public class Callisto extends Activity
     static ProgressBar timeProgress;
     //TODO: wtf
     private Timer timeTimer = null;
+    /** Titles for the tabletMenu */
+    String[] tabletMenu = new String[] {"Play", "Live", "Plan", "Chat", "Contact", "Donate"};
+    /** Ids used for onclicklisteners and the tablet launching activities */
+    int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
 
     // Menu ID for this activity
     private static final int STOP_ID=Menu.FIRST+1;
@@ -349,7 +354,8 @@ public class Callisto extends Activity
 
         //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
         //Set the content view
-        boolean isTablet=true; //TODO
+        boolean isTablet= QweexUtils.isTabletDevice(this);
+        isTablet |= PreferenceManager.getDefaultSharedPreferences(this).getBoolean("new_mainscreen", false);
         if(isTablet)
             initTablet();
         else
@@ -382,9 +388,6 @@ public class Callisto extends Activity
         findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
     }
 
-
-    String[] tabletMenu = new String[] {"Play", "Live", "Plan", "Chat", "Contact", "Donate"};
-    int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
     /** Initiating the activity for a Tablet device. */
     void initTablet()
     {
@@ -400,7 +403,10 @@ public class Callisto extends Activity
             public void onMainItemClick(View v, int position) {
                 View dummy = new View(Callisto.this);
                 dummy.setId(buttonIds[position]);
-                startAct.onClick(dummy);
+                if(buttonIds[position]==R.id.live)
+                    LIVE_PlayButton.onClick(dummy);
+                else
+                    startAct.onClick(dummy);
             }
         });
 

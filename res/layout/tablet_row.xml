@@ -20,9 +20,17 @@
         android:text="New Text"
         android:textColor="@color/kuler_3"
         android:textSize="40sp"
+        android:textStyle="bold"
         android:focusable="false"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
         android:id="@android:id/text1"
         android:singleLine="true"
-        android:padding="15dp"/>
+        android:ellipsize="none"
+        android:padding="15dp"
+        android:shadowColor="@color/kuler_2"
+        android:shadowRadius="3"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        />
+        <!-- android:typeface="monospace" -->

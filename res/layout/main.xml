@@ -18,7 +18,7 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
-              android:background="@color/backClr">
+              > <!-- android:background="@drawable/tabback" -->
 
     <TableLayout android:id="@+id/mainMenu" android:layout_width="fill_parent" android:layout_height="0dip" android:padding="5dp" android:layout_weight="1.0">
 

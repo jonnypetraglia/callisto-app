@@ -29,6 +29,8 @@ import android.widget.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Keyboard support; keep selection on middle one but move up and down
+
 /**
  * Created with IntelliJ IDEA.
  * User: notbryant
@@ -40,6 +42,8 @@ public class XBMCStyleListViewMenu extends ListView
 {
     /** Font sizes */
     float selectedSize = 0, normalSize = 0;
+    /** Font colors */
+    int selectedColor = -1, normalColor = -1;
     /** Views of the what was the last selection and current */
     View oldSelection, currentSelection;
     /** Numbers of the position of the views of the same name */
@@ -148,7 +152,22 @@ public class XBMCStyleListViewMenu extends ListView
     {
         return normalSize;
     }
-    //TODO: Text colors/effects
+    /** Setter */
+    public void setSelectedColor(int s)
+    {
+        selectedColor = s;
+    }
+    public int getSelectedColor()
+    {
+        return selectedColor;
+    }
+    public void setNormalColor(int n)
+    {
+        normalColor=n;
+        if(selectedColor==-1)
+            selectedColor=normalColor;
+    }
+
 
     class SpecialArrayAdapter extends ArrayAdapter
     {
@@ -166,19 +185,27 @@ public class XBMCStyleListViewMenu extends ListView
         @Override
         public View getView(int position, View v, ViewGroup vg)
         {
-            v = super.getView(position, v, vg);
-            //if(v==null)// || v==oldSelection)//true)
+            //v = super.getView(position, v, vg);
+            //*if(v==null)// || v==oldSelection)//true)
             {
                 LayoutInflater inflater= (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 v = inflater.inflate(resId, vg, false);
-            }
+            }//*/
             if(normalSize==0)
                 setNormalSize(((TextView)v.findViewById(R.id.text1)).getTextSize());
+            if(normalColor==-1)
+                setNormalColor(((TextView)v.findViewById(R.id.text1)).getCurrentTextColor());
 
             if(position==currentSelectionPosition)
-                ((TextView)v.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_SP, selectedSize);
+            {
+                ((TextView)v.findViewById(R.id.text1)).setTextColor(selectedColor);
+                ((TextView)v.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, selectedSize);
+            }
             else
-                ((TextView)v.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_SP, normalSize);
+            {
+                ((TextView)v.findViewById(R.id.text1)).setTextColor(normalColor);
+                ((TextView)v.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, normalSize);
+            }
 
 
             ((TextView)v.findViewById(R.id.text1)).setText(objects.get(position));
@@ -233,11 +260,7 @@ public class XBMCStyleListViewMenu extends ListView
                 oldSelectionPosition = currentSelectionPosition;
                 currentSelection = view;
                 currentSelectionPosition = position;
-                if(oldSelection!=null)
-                {
-                    ((TextView) oldSelection.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_SP, normalSize);
-                    invalidateViews();
-                }
+                invalidateViews();
                 return;
             }
 

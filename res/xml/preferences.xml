@@ -66,6 +66,11 @@
             android:widgetLayout="@layout/smaller_preference_check"
             android:dependency="pause_unplugged"
             />
+        <CheckBoxPreference
+            android:key="new_mainscreen"
+            android:title="New (tablet) main screen"
+            android:layout="@layout/smaller_preference"
+            />
 
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
