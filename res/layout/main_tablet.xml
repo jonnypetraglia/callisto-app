@@ -22,82 +22,19 @@
     android:background="@color/backClr"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/listen"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/play"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp" />
 
-    <Button
-        android:id="@+id/live"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/live"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp" />
-
-    <Button
-        android:id="@+id/plan"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/plan"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/chat"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/chat"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/contact"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/contact"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/donate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="25dp"
-        android:layout_weight="1.0"
-        android:drawablePadding="-10dp"
-        android:paddingTop="10dp"
-        android:text="@string/donate"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="50sp"
-        android:visibility="visible" />
-
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+    <com.qweex.utils.SuperListviewMenu
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listView"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            />
+    </FrameLayout>
     <include
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

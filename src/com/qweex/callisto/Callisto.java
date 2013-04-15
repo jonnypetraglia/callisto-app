@@ -33,6 +33,7 @@ import android.widget.*;
 import com.qweex.callisto.podcast.*;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.utils.ImgTxtButton;
+import com.qweex.utils.SuperListviewMenu;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -90,8 +91,8 @@ import android.widget.LinearLayout.LayoutParams;
  Things like the MediaPlayer, the Notifications, and the player Listeners are all here.
  @author MrQweex
  */
-public class Callisto extends Activity {
-
+public class Callisto extends Activity
+{
     //-----Static members-----
     // These are used across the multiple activities
     /** The media players are used across the app to control playing either live or podcast'ed episodes. */
@@ -187,7 +188,7 @@ public class Callisto extends Activity {
     /** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
      */
-    @Override
+    //@Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -279,41 +280,7 @@ public class Callisto extends Activity {
         audioJackReceiver.contextForPreferences = this;
         registerReceiver(audioJackReceiver, receiverFilter );
 
-        //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
-        //Set the content view
-        boolean isTablet=false; //TODO
-        if(isTablet)
-            setContentView(R.layout.main_tablet);
-        else
-            setContentView(R.layout.main);
 
-        //This loop sets the onClickListeners and adjusts the button settings if the view is landscape
-        int [] buttons = {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
-        ImgTxtButton temp;
-        for(int i=0; i<buttons.length; i++)
-        {
-            temp = (ImgTxtButton)findViewById(buttons[i]);
-            temp.setOnClickListener(startAct);
-
-            if(isLandscape)
-            {/*
-				ViewGroup.LayoutParams tr = temp.getLayoutParams();
-				((MarginLayoutParams) tr).setMargins(0, 0, 0, 0);
-				temp.setPadding((int) (10*DP), 0, 0, 0);
-				temp.setLayoutParams(tr);
-				temp.setCompoundDrawablesWithIntrinsicBounds(graphics[i], 0, 0, 0);
-				*/
-                temp.setOrientation(LinearLayout.HORIZONTAL);
-            }
-        }
-
-        //Set the player on click listeners; this is usually done by the PlayerInfo object, when switching activities.
-        findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
-        findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
-        findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
-        findViewById(R.id.next).setOnClickListener(Callisto.next);
-        findViewById(R.id.previous).setOnClickListener(Callisto.previous);
-        findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
         //Sets the player error and completion errors
         trackCompleted = new OnCompletionListenerWithContext();
         trackCompletedBug = new OnErrorListenerWithContext();
@@ -379,8 +346,63 @@ public class Callisto extends Activity {
             editor.putInt("appVersion", Callisto.appVersion);
             editor.commit();
         }
+
+        //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
+        //Set the content view
+        boolean isTablet=true; //TODO
+        if(isTablet)
+            initTablet();
+        else
+            initPhone();
+
     }
 
+    /** Initiating the activity for a Phone formfactor device OR for any device running 2.1 or earlier. (I dunno if Eclair tablets exist but if they do, they shouldn't.)
+     * Note that everything in here should be specific to THIS activity. Everything concerning the app in general should
+     * be in the OnCreate.
+     */
+    void initPhone()
+    {
+        setContentView(R.layout.main);
+        //This loop sets the onClickListeners and adjusts the button settings if the view is landscape
+        ImgTxtButton temp;
+        for(int i=0; i<buttonIds.length; i++)
+        {
+            temp = (ImgTxtButton)findViewById(buttonIds[i]);
+            temp.setOnClickListener(startAct);
+        }
+
+        //Set the player on click listeners; this is usually done by the PlayerInfo object, when switching activities.
+        findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
+        findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
+        findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
+        findViewById(R.id.next).setOnClickListener(Callisto.next);
+        findViewById(R.id.previous).setOnClickListener(Callisto.previous);
+        findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
+    }
+
+
+    String[] tabletMenu = new String[] {"Play", "Live", "Plan", "Chat", "Contact", "Donate"};
+    int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
+    /** Initiating the activity for a Tablet device. */
+    void initTablet()
+    {
+        setContentView(R.layout.main_tablet);
+
+        ((View)findViewById(R.id.listView).getParent()).setBackgroundResource(R.drawable.tabback);
+        SuperListviewMenu slvm = (SuperListviewMenu) this.findViewById(R.id.listView);
+        slvm.setSelectedSize(100);
+        slvm.setData(Arrays.asList(tabletMenu));
+        slvm.setOnMainItemClickListener(new SuperListviewMenu.OnMainItemClickListener()
+        {
+            @Override
+            public void onMainItemClick(View v, int position) {
+                View dummy = new View(Callisto.this);
+                dummy.setId(buttonIds[position]);
+                startAct.onClick(dummy);
+            }
+        });
+    }
 
     /** Called when the activity is going to be destroyed. */
     @Override
@@ -404,7 +426,8 @@ public class Callisto extends Activity {
         if(LIVE_PreparedListener.pd!=null)
             LIVE_PreparedListener.pd.show();
         Log.v("Callisto:onResume", "Resuming main activity");
-        audioJackReceiver.contextForPreferences = Callisto.this;
+        if(audioJackReceiver!=null)
+            audioJackReceiver.contextForPreferences = Callisto.this;
         if(Callisto.playerInfo!=null)
             Callisto.playerInfo.update(Callisto.this);
     }
