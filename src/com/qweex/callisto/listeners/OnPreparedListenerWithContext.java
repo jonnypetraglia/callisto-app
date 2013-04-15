@@ -11,7 +11,7 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-package com.qweex.callisto;
+package com.qweex.callisto.listeners;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,7 +20,7 @@ import android.media.MediaPlayer.OnPreparedListener;
 /** Silly class that just adds a context */
 public abstract class OnPreparedListenerWithContext implements OnPreparedListener
 {
-    Context c;
+    public Context c;
     public ProgressDialog pd = null;
     public boolean startPlaying = false;
 

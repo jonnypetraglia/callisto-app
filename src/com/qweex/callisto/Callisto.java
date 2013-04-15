@@ -30,10 +30,14 @@ import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.*;
 import android.widget.*;
+import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
+import com.qweex.callisto.listeners.OnErrorListenerWithContext;
+import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
 import com.qweex.callisto.podcast.*;
 import com.qweex.callisto.podcast.Queue;
+import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.utils.ImgTxtButton;
-import com.qweex.utils.SuperListviewMenu;
+import com.qweex.utils.XBMCStyleListViewMenu;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -129,8 +133,6 @@ public class Callisto extends Activity
     public static TextView chatView, logView;
     /** If you should be a "weirdo" that likes dates in a logically correct manner. */
     public static boolean europeanDates;
-    /** A receiver to handle when the the audio jack is unplugged */
-    public static AudioJackReceiver audioJackReceiver;
 
     //------Local variables-----
     //TODO: wtf
@@ -275,11 +277,9 @@ public class Callisto extends Activity
         }
 
         //Create the audiojack receiver
-        IntentFilter receiverFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-        audioJackReceiver = new AudioJackReceiver();
-        audioJackReceiver.contextForPreferences = this;
-        registerReceiver(audioJackReceiver, receiverFilter );
-
+        CallistoService.audioJackReceiver = new AudioJackReceiver();
+        CallistoService.audioJackReceiver.contextForPreferences = this;
+        startService(new Intent(this, CallistoService.class));
 
         //Sets the player error and completion errors
         trackCompleted = new OnCompletionListenerWithContext();
@@ -378,6 +378,7 @@ public class Callisto extends Activity
         findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
         findViewById(R.id.next).setOnClickListener(Callisto.next);
         findViewById(R.id.previous).setOnClickListener(Callisto.previous);
+
         findViewById(R.id.live).setOnClickListener(LIVE_PlayButton);
     }
 
@@ -390,10 +391,10 @@ public class Callisto extends Activity
         setContentView(R.layout.main_tablet);
 
         ((View)findViewById(R.id.listView).getParent()).setBackgroundResource(R.drawable.tabback);
-        SuperListviewMenu slvm = (SuperListviewMenu) this.findViewById(R.id.listView);
+        XBMCStyleListViewMenu slvm = (XBMCStyleListViewMenu) this.findViewById(R.id.listView);
         slvm.setSelectedSize(100);
         slvm.setData(Arrays.asList(tabletMenu));
-        slvm.setOnMainItemClickListener(new SuperListviewMenu.OnMainItemClickListener()
+        slvm.setOnMainItemClickListener(new XBMCStyleListViewMenu.OnMainItemClickListener()
         {
             @Override
             public void onMainItemClick(View v, int position) {
@@ -402,6 +403,13 @@ public class Callisto extends Activity
                 startAct.onClick(dummy);
             }
         });
+
+        //Set the player on click listeners; this is usually done by the PlayerInfo object, when switching activities.
+        findViewById(R.id.playPause).setOnClickListener(Callisto.playPauseListener);
+        findViewById(R.id.playlist).setOnClickListener(Callisto.playlist);
+        findViewById(R.id.seek).setOnClickListener(Callisto.seekDialog);
+        findViewById(R.id.next).setOnClickListener(Callisto.next);
+        findViewById(R.id.previous).setOnClickListener(Callisto.previous);
     }
 
     /** Called when the activity is going to be destroyed. */
@@ -426,8 +434,8 @@ public class Callisto extends Activity
         if(LIVE_PreparedListener.pd!=null)
             LIVE_PreparedListener.pd.show();
         Log.v("Callisto:onResume", "Resuming main activity");
-        if(audioJackReceiver!=null)
-            audioJackReceiver.contextForPreferences = Callisto.this;
+        if(CallistoService.audioJackReceiver!=null)
+            CallistoService.audioJackReceiver.contextForPreferences = Callisto.this;
         if(Callisto.playerInfo!=null)
             Callisto.playerInfo.update(Callisto.this);
     }
@@ -574,7 +582,7 @@ public class Callisto extends Activity
         public void update(Context c)
         {
             //Update the context for the receiver, unrelated
-            Callisto.audioJackReceiver.contextForPreferences = c;
+            CallistoService.audioJackReceiver.contextForPreferences = c;
 
             //If it's a widget there is no need to update the controls.
             if(is_widget)
@@ -1040,7 +1048,7 @@ public class Callisto extends Activity
         public void onClick(View v)
         {
             Callisto.playPause(v.getContext(), v);
-            Callisto.audioJackReceiver.wasPausedByThisReceiver = false;
+            CallistoService.audioJackReceiver.wasPausedByThisReceiver = false;
         }
     };
 

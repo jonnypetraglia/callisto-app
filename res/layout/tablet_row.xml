@@ -14,22 +14,15 @@
   ~ or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
   -->
 
-        <!--
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        >-->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:textColor="#ffffffff"
+        android:textColor="@color/kuler_3"
         android:textSize="40sp"
         android:focusable="false"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
-        android:id="@android:id/text1" android:padding="15dp"/>
-        <!--
-        android:background="@drawable/tablet_selector"
-
-</LinearLayout>-->
+        android:id="@android:id/text1"
+        android:singleLine="true"
+        android:padding="15dp"/>

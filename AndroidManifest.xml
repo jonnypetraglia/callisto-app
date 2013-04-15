@@ -82,9 +82,9 @@
         <!--<service android:name="com.android.vending.billing.BillingService" />-->
 
 
-        <receiver android:name=".AlarmNotificationReceiver" android:enabled="true" />
+        <receiver android:name=".receivers.AlarmNotificationReceiver" android:enabled="true" />
 
-        <receiver android:enabled="true" android:name=".BootNotificationReceiver"
+        <receiver android:enabled="true" android:name=".receivers.BootNotificationReceiver"
                   android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -110,8 +110,13 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider" />
         </receiver>
 
+        <service
+                android:enabled="true"
+                android:name=".CallistoService">
+        </service>
+
         <receiver
-                android:name="com.qweex.callisto.AudioJackReceiver"
+                android:name=".receivers.AudioJackReceiver"
                 android:enabled="true"
                 android:exported="true" >
             <intent-filter>

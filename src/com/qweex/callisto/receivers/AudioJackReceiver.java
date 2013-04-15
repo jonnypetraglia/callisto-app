@@ -12,7 +12,7 @@
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
 
-package com.qweex.callisto;
+package com.qweex.callisto.receivers;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.qweex.callisto.Callisto;
+import com.qweex.callisto.R;
 
 /** A receiver to handle when the audio jack is plugged and unplugged.
  * It uses the preferences to determine if it should stop playback on unplug and then resume playback on re-plug.
@@ -47,7 +49,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                 Callisto.playPause(contextForPreferences, ((Activity)contextForPreferences).findViewById(R.id.playPause));
                 wasPausedByThisReceiver = true;
             }
-            Log.i("AudioJackReceiver", "HEADSET IS OR HAS BEEN DISCONNECTED");
+            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
         }else
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("play_replugged", true)
@@ -57,7 +59,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                 Callisto.playPause(contextForPreferences, ((Activity)contextForPreferences).findViewById(R.id.playPause));
                 wasPausedByThisReceiver = false;
             }
-            Log.i("AudioJackReceiver", "HEADSET IS OR HAS BEEN DISCONNECTED");
+            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
         }
     }
 }

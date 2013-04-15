@@ -1,22 +1,25 @@
 /*
- * Copyright (C) 2012-2013 Qweex
- * This file is a part of Callisto.
- *
- * Callisto is free software; it is released under the
- * Open Software License v3.0 without warranty. The OSL is an OSI approved,
- * copyleft license, meaning you are free to redistribute
- * the source code under the terms of the OSL.
- *
- * You should have received a copy of the Open Software License
- * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
- * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
- */
+Copyright (C) 2012 Qweex
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.qweex.utils;
 
 import android.R;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,47 +36,73 @@ import java.util.List;
  * Time: 12:05 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SuperListviewMenu extends ListView
+public class XBMCStyleListViewMenu extends ListView
 {
+    /** Font sizes */
     float selectedSize = 0, normalSize = 0;
+    /** Views of the what was the last selection and current */
     View oldSelection, currentSelection;
+    /** Numbers of the position of the views of the same name */
     int oldSelectionPosition = -1, currentSelectionPosition = -1;
+    /** Array adapter for the listview */
     SpecialArrayAdapter ssa;
+    /** Context, needed for creating the special adapter */
     Context ctext;
+    /** Used to count how many children there are when first drawing.
+     *  When it is actually drawn, add blanks to the data to make it where the top and bottom items are selectable.
+     *  Then it is set to -1, signifying that the work has been done. */
+    int numOfVisibleChildren = 0;
 
-    public SuperListviewMenu(Context context)
+    public XBMCStyleListViewMenu(Context context)
     {
         super(context);
         init(context);
     }
-    public SuperListviewMenu(Context context, AttributeSet attrs)
+    public XBMCStyleListViewMenu(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init(context);
     }
-    public SuperListviewMenu(Context context, AttributeSet attrs, int defStyle)
+    public XBMCStyleListViewMenu(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         init(context);
     }
 
+    /** Initialize the view */
     protected void init(Context context)
     {
         ctext = context;
-        setDivider(null);
-        setBackgroundColor(0x00000000);
-        setCacheColorHint(0x00000000);
     }
 
+    /** Used to pad the data with blanks so that the top and bottom choices are selectable. */
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        if(numOfVisibleChildren<0)
+            return;
+        if(getChildCount()>numOfVisibleChildren)
+            numOfVisibleChildren = getChildCount();
+        else
+        {
+            Log.i("SuperListViewMenu:onDraw", "Adding blanks: " + getChildCount()/2);
+            numOfVisibleChildren = -1;
+            ssa.addBlanks(getChildCount()/2);
+        }
+    }
+
+    /** Used to set the data for the adapter */
     public void setData(List<String> list)
     {
-        ssa =  new SpecialArrayAdapter(ctext, com.qweex.callisto.R.layout.tablet_row, new ArrayList(list));
+        ArrayList al = new ArrayList(list);
+        ssa =  new SpecialArrayAdapter(ctext, com.qweex.callisto.R.layout.tablet_row, al);
         setAdapter(ssa);
         setOnItemClickListener(anyItemClicked);
-        setOnScrollListener(sl);
+        setOnScrollListener(scrollListener);
     }
 
-    OnScrollListener sl = new OnScrollListener()
+    /** Handles reforming the current and old views. */
+    private OnScrollListener scrollListener = new OnScrollListener()
     {
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {}
@@ -81,43 +110,51 @@ public class SuperListviewMenu extends ListView
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
         {
-            System.out.println("DERP:" + getFirstVisiblePosition() + "->" + getLastVisiblePosition() + " = " + getAdapter().getCount());
+            //If they are literally display all of the items there is no need to scroll
             if(getFirstVisiblePosition()==0 && getLastVisiblePosition()==(getAdapter().getCount()-1))
                 return;
 
-            visibleItemCount--;
-            if(currentSelectionPosition== (visibleItemCount / 2 + firstVisibleItem))
+            visibleItemCount--; //ensures that it will choose more toward the top of there is an odd number of items
+            if(currentSelectionPosition== (visibleItemCount / 2 + firstVisibleItem))    //If the current has not changed, stop
                 return;
+            //Update the variables
             oldSelection = currentSelection;
             oldSelectionPosition = currentSelectionPosition;
             currentSelection = getChildAt(visibleItemCount / 2);
             currentSelectionPosition = visibleItemCount / 2 + firstVisibleItem;
-            if(oldSelection!=null)
-            {
-                ((TextView) oldSelection.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_SP, normalSize);
-                invalidateViews();
-            }
+            invalidateViews();
         }
     };
 
+    /** Setter */
     public void setSelectedSize(float sel)
     {
         selectedSize = sel;
     }
-    //TODO: Getter
-    //TODO: Text colors/effects
-
-    void initiateSizes(float nor)
+    /** Getter */
+    public float getSelectedSize()
+    {
+        return selectedSize;
+    }
+    /** Setter */
+    public void setNormalSize(float nor)
     {
         normalSize=nor;
         if(selectedSize==0)
             selectedSize = normalSize*2;
     }
+    /** Getter */
+    public float getNormalSize()
+    {
+        return normalSize;
+    }
+    //TODO: Text colors/effects
 
     class SpecialArrayAdapter extends ArrayAdapter
     {
         int resId;
         List<String> objects;
+        protected int numOfBlanks;
 
         public SpecialArrayAdapter(Context context, int textViewResourceId, List objects)
         {
@@ -136,7 +173,7 @@ public class SuperListviewMenu extends ListView
                 v = inflater.inflate(resId, vg, false);
             }
             if(normalSize==0)
-                initiateSizes(((TextView)v.findViewById(R.id.text1)).getTextSize());
+                setNormalSize(((TextView)v.findViewById(R.id.text1)).getTextSize());
 
             if(position==currentSelectionPosition)
                 ((TextView)v.findViewById(R.id.text1)).setTextSize(TypedValue.COMPLEX_UNIT_SP, selectedSize);
@@ -149,19 +186,17 @@ public class SuperListviewMenu extends ListView
             return v;
         }
 
-        /*
-        @Override
-        public int getCount()
+        public void addBlanks(int x)
         {
-            return Integer.MAX_VALUE;
+            numOfBlanks = x-1;
+            for(int i=0; i<numOfBlanks; i++)
+            {
+                objects.add(0,"");
+                objects.add("");
+            }
+            objects.add("");
+            notifyDataSetChanged();
         }
-
-        @Override
-        public String getItem(int position)
-        {
-            return objects[position % objects.length]
-        }
-        */
     }
 
     public void setOnMainItemClickListener(OnMainItemClickListener l)
@@ -188,7 +223,7 @@ public class SuperListviewMenu extends ListView
             if(position==currentSelectionPosition)
             {
                 if(whatDo!=null)
-                    whatDo.onMainItemClick(view, position);
+                    whatDo.onMainItemClick(view, position-ssa.numOfBlanks);
                 return;
             }
 

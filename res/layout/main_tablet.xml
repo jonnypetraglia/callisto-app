@@ -27,12 +27,15 @@
         android:layout_width="match_parent"
         android:layout_weight="1"
         android:layout_height="wrap_content">
-    <com.qweex.utils.SuperListviewMenu
+    <com.qweex.utils.XBMCStyleListViewMenu
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/listView"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null"
             />
     </FrameLayout>
     <include

@@ -11,7 +11,7 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-package com.qweex.callisto;
+package com.qweex.callisto.receivers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import com.qweex.callisto.receivers.AlarmNotificationReceiver;
 
 /** Receives the boot-up message; re-creates the alarms. */
 public class BootNotificationReceiver extends BroadcastReceiver

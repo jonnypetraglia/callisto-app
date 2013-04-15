@@ -12,7 +12,7 @@
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
 
-package com.qweex.callisto;
+package com.qweex.callisto.listeners;
 
 import java.io.File;
 
@@ -23,6 +23,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.qweex.callisto.Callisto;
 
 /** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener

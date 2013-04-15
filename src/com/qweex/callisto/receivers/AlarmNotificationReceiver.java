@@ -11,7 +11,7 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-package com.qweex.callisto;
+package com.qweex.callisto.receivers;
 
 
 import android.app.Notification;
@@ -24,6 +24,8 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import com.qweex.callisto.Callisto;
+import com.qweex.callisto.R;
 
 /** Receives and creates any alarms set in the "Plan" feature. */
 public class AlarmNotificationReceiver extends BroadcastReceiver

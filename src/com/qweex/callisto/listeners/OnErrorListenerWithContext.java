@@ -11,7 +11,7 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-package com.qweex.callisto;
+package com.qweex.callisto.listeners;
 
 import android.content.Context;
 import android.media.MediaPlayer;
