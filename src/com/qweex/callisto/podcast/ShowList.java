@@ -482,36 +482,63 @@ public class ShowList extends Activity
 
 
             //Set the effects for if the episode has been downloaded or is in queue, etc
-            File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-            File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
-            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
-            if(inDLQueue || music_file_location.exists() || video_file_location.exists())
-            {
-                Log.d("ShowList:ShowListAdapter", "Music: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("mp3size")));
-                Log.d("ShowList:ShowListAdapter", "Video: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("vidsize")));
-                //Check if it is fully downloaded, then if it is partial
-                if(!inDLQueue && (music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
-                        video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"))))
+            try {
+                File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+                music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+                File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+                video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+                boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+                if(inDLQueue || music_file_location.exists() || video_file_location.exists())
                 {
-                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
-                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                    Log.d("ShowList:ShowListAdapter", "Music: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("mp3size")));
+                    Log.d("ShowList:ShowListAdapter", "Video: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("vidsize")));
+                    //Check if it is fully downloaded, then if it is partial
+                    if(!inDLQueue && (music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
+                            video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"))))
+                    {
+                        ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
+                        ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                    }
+                    else
+                    {
+                        ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
+                        ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
+                    }
                 }
-                else
+                else    //No typeface
                 {
-                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
-                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
+                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
+                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
                 }
-            }
-            else    //No typeface
+            }catch(NullPointerException npe)
             {
-                ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
-                ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
+                Log.e("ShowList:ShowListCursorAdapter", "Fuck man. Null pointer when determining file status.");
             }
 
+
+            //TODO: Show time remaining? Downside: can only get length of local episodes.
+            /*
+            try {
+                long position = this.c.getLong(this.c.getColumnIndex("position"));
+                long length = StaticBlob.databaseConnector.getLength(id);
+                Log.w("ShowList:ShowListCursorAdapter", "Length: " + length + " position: " + position);
+                long x = length - position;
+                if(x>0)
+                {
+                    ((TextView) v.findViewById(R.id.rightTextView)).setText(Callisto.formatTimeFromSeconds((int)(x/1000)));
+                    v.findViewById(R.id.rightTextView).setVisibility(View.VISIBLE);
+                }
+                else
+                    v.findViewById(R.id.rightTextView).setVisibility(View.GONE);
+            } catch(Exception e)
+            {
+                Log.w("ShowList:ShowListCursorAdapter", "No time to go off of.");
+                v.findViewById(R.id.rightTextView).setVisibility(View.GONE);
+            }
+            //*/
+
             //Hide the specific views
-            int[] hide = new int[] { R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress, R.id.grabber};
+            int[] hide = new int[] { R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress, R.id.grabber, R.id.rightTextView};
             for(int i=0; i<hide.length; i++)
                 v.findViewById(hide[i]).setVisibility(View.GONE);
 

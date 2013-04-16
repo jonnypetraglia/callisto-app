@@ -18,8 +18,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 import com.qweex.callisto.StaticBlob;
 import com.qweex.utils.UnfinishedParseException;
 import org.xmlpull.v1.XmlPullParser;
@@ -33,7 +35,14 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 
 /** Tools to update a show. */
-public class UpdateShow {
+public class UpdateShow
+{
+    String epDate = null, epTitle = null, epDesc = null, epLink = null, epAudioLink = null, epVideoLink = null;
+    long epAudioSize, epVideoSize;
+    XmlPullParser xpp, xpp_vid;
+    String lastChecked, newLastChecked;
+    int currentShow,
+        eventType, eventType2;
 
     /** Updates a show by checking to see if there are any new episodes available.
      *
@@ -44,19 +53,18 @@ public class UpdateShow {
     public Message doUpdate(int currentShow, SharedPreferences showSettings)
     {
         Log.i("*:updateShow", "Beginning update");
-        String epDate = null, epTitle = null, epDesc = null, epLink = null;
-        String lastChecked = showSettings.getString("last_checked", null);
-
-        String newLastChecked = null;
+        lastChecked = showSettings.getString("last_checked", null);
+        boolean showErrorToast = false;
+        this.currentShow=currentShow;
         try
         {
             //Prepare the parser
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
+            xpp = factory.newPullParser();
             XmlPullParserFactory factory2 = XmlPullParserFactory.newInstance();
             factory2.setNamespaceAware(true);
-            XmlPullParser xpp_vid = factory2.newPullParser();
+            xpp_vid = factory2.newPullParser();
             //URL url = new URL(isVideo ? AllShows.SHOW_LIST_VIDEO[currentShow] : AllShows.SHOW_LIST_AUDIO[currentShow]);
             URL url = new URL(AllShows.SHOW_LIST_AUDIO[currentShow]);
             URL url2 = new URL(AllShows.SHOW_LIST_VIDEO[currentShow]);
@@ -66,8 +74,8 @@ public class UpdateShow {
             xpp_vid.setInput(input2, null);
 
             Log.v("*:updateShow", "Parser is prepared");
-            int eventType = xpp.getEventType();
-            int eventType2 = xpp_vid.getEventType();
+            eventType = xpp.getEventType();
+            eventType2 = xpp_vid.getEventType();
 
             while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG))
             {
@@ -135,173 +143,50 @@ public class UpdateShow {
                 Log.v("*:updateShow", "Parser is downloading image for " + AllShows.SHOW_LIST[currentShow] + ":" + imgurl);
             }
 
-            //Find the first <item> tag
-            while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-            {
-                eventType = xpp.next();
-                if(eventType==XmlPullParser.END_DOCUMENT)
-                    throw(new UnfinishedParseException("Item"));
-            }
-
-            //Get episodes
+//----------------------------------------------------------------------------------------------------------------------
             while(eventType!=XmlPullParser.END_DOCUMENT)
             {
-                //Title
-                while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+                //Find the next <item> tag
+                while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
                 {
                     eventType = xpp.next();
                     if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Title"));
+                        break;
                 }
-                while(!("title".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
-                {
-                    eventType2 = xpp_vid.next();
-                    if(eventType2==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Title"));
-                }
-
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
-                epTitle = xpp.getText();
-                if(epTitle==null)
-                    throw(new UnfinishedParseException("Title"));
-                if(epTitle.indexOf("|")>0)
-                    epTitle = epTitle.substring(0, epTitle.indexOf("|")).trim();
-                Log.d("*:updateShow", "Title: " + epTitle);
-
-                //Link
-                while(!("link".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-                {
-                    eventType = xpp.next();
-                    if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Link"));
-                }
-                while(!("link".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
-                {
-                    eventType2 = xpp_vid.next();
-                    if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Link"));
-                }
-
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
-                epLink = xpp.getText();
-                if(epLink==null)
-                    throw(new UnfinishedParseException("Link"));
-                Log.d("*:updateShow", "Link: " + epLink);
-
-                //Description
-                while(!("description".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-                {
-                    eventType = xpp.next();
-                    if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Description"));
-                }
-                while(!("description".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
-                {
-                    eventType2 = xpp_vid.next();
-                    if(eventType2==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Description"));
-                }
-
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
-                epDesc = xpp.getText();
-                if(epDesc==null)
-                    throw(new UnfinishedParseException("Description"));
-                Log.d("*:updateShow", "Desc: " + epDesc);
-
-                //Date
-                while(!("pubDate".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-                {
-                    eventType = xpp.next();
-                    if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Date"));
-                }
-                while(!("pubDate".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
-                {
-                    eventType2 = xpp_vid.next();
-                    if(eventType2==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Date"));
-                }
-
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
-                epDate = xpp.getText();
-                Log.d("*:updateShow", "Date: " + epDate);
-                Log.e("*:updateShow", "Date: " + xpp_vid.getText());
-
-
-                if(epDate==null)
-                    throw(new UnfinishedParseException("Date"));
-                if(lastChecked!=null && !StaticBlob.sdfSource.parse(epDate).after(StaticBlob.sdfSource.parse(lastChecked)))
+                if(eventType==XmlPullParser.END_DOCUMENT)
                     break;
-                if(newLastChecked==null)
-                    newLastChecked = epDate;
-
-                //Media link and size
-                while(!("enclosure".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-                {
-                    eventType = xpp.next();
-                    if(eventType==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Media"));
-                }
-
-                while(!("enclosure".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
-                {
-                    eventType2 = xpp_vid.next();
-                    if(eventType2==XmlPullParser.END_DOCUMENT)
-                        throw(new UnfinishedParseException("Media"));
-                }
-
-
-                String epAudioLink = xpp.getAttributeValue(xpp.getNamespace(),"url"),
-                        epVideoLink = xpp_vid.getAttributeValue(xpp.getNamespace(),"url");
-                if(epAudioLink==null)
-                    throw(new UnfinishedParseException("AudioLink"));
-
-                String temp = xpp.getAttributeValue(xpp.getNamespace(),"length");
-                if(temp==null)
-                    throw(new UnfinishedParseException("MediaSize"));
-                String temp2 = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
-                long epAudioSize = Long.parseLong(temp);
-                Log.e("*:updateShow", "ASDSDSADS: " + temp2);
-                Log.d("*:updateShow", "A Link: " + epAudioLink);
-                Log.d("*:updateShow", "A Size: " + epAudioSize);
-                long epVideoSize = Long.parseLong(temp2);
-
-                Log.d("*:updateShow", "V Link: " + epVideoLink);
-                Log.d("*:updateShow", "V Size: " + epVideoSize);
-
-                epDate = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(epDate));
-                //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
-                //isVideo, epMediaLink, epMediaSize))
-                StaticBlob.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
-                Log.v("*:updateShow", "Inserting episode: " + epTitle);
+                extractData();
             }
 
         } catch (XmlPullParserException e) {
             Log.e("*:update:XmlPullParserException", "Parser error");
-            //TODO EXCEPTION: XmlPullParserException
+            //TODO EXCEPTION: XmlPullParserExceptionToast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
+            showErrorToast = true;
         } catch (MalformedURLException e) {
             Log.e("*:update:MalformedURLException", "Malformed URL? That should never happen.");
             e.printStackTrace();
+            showErrorToast = true;
         } catch (UnknownHostException e)
         {
             Log.e("*:update:UnknownHostException", "Unable to initiate a connection");
-            return null;
+            showErrorToast = true;
         }  catch (IOException e) {
             //FIXME: EXCEPTION: IOException
             Log.e("*:update:IOException", "IO is a moon");
             e.printStackTrace();
+            showErrorToast = true;
         } catch (ParseException e) {
             //FIXME: EXCEPTION: ParseException
             Log.e("*:update:ParseException", "Date Parser error: |" + epDate + "|");
+            showErrorToast = true;
         } catch (UnfinishedParseException e) {
             Log.w("*:update:UnfinishedParseException",e.toString());
+            showErrorToast = true;
         }
 
+        if(showErrorToast)
+            return null;
 
         Message m = new Message();
         if(newLastChecked==null)
@@ -320,6 +205,139 @@ public class UpdateShow {
         Log.i("*:updateShow", "Finished update");
         return m;
     }
+
+    public void extractData() throws UnfinishedParseException, XmlPullParserException, IOException, ParseException
+    {
+        epTitle = epLink = epDesc = epDate = null;
+        int numOfDone = 0;
+        Log.v("*:updateShow", "Starting new episode");
+        xpp.next();
+        while(eventType!=XmlPullParser.END_DOCUMENT)
+        {
+            if("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
+            {
+                eventType = xpp.next();
+                eventType2 = xpp_vid.next();
+                epTitle = xpp.getText();
+                if(epTitle==null)
+                    throw(new UnfinishedParseException("Title"));
+                if(epTitle.contains("[del.icio.us]")) //endswith should also work
+                    return;
+                if(epTitle.indexOf("|")>0)
+                    epTitle = epTitle.substring(0, epTitle.indexOf("|")).trim();
+                Log.d("*:updateShow", "Title: " + epTitle);
+                if((numOfDone & 0x1)==0x1)
+                    throw(new UnfinishedParseException("Title 2times"));
+                numOfDone |= 0x1;
+            }
+            else if("link".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
+            {
+                eventType = xpp.next();
+                eventType2 = xpp_vid.next();
+                epLink = xpp.getText();
+                if(epLink==null)
+                    throw(new UnfinishedParseException("Link"));
+                Log.d("*:updateShow", "Link: " + epLink);
+                if((numOfDone & 0x2)==0x2)
+                    throw(new UnfinishedParseException("Link 2times"));
+                numOfDone |= 0x2;
+            }
+            else if("description".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
+            {
+                eventType = xpp.next();
+                eventType2 = xpp_vid.next();
+                epDesc = xpp.getText();
+                //if(epDesc==null)
+                    //throw(new UnfinishedParseException("Description"));
+                Log.d("*:updateShow", "Desc: " + epDesc + " (from <description>)");
+                if((numOfDone & 0x4)==0x4)
+                    throw(new UnfinishedParseException("Description 2times"));
+                if(epDesc!=null)
+                    numOfDone |= 0x4;
+            }
+            /*
+            else if(epDesc==null && ("itunes:summary".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+            {
+                eventType = xpp.next();
+                eventType2 = xpp_vid.next();
+                epDesc = xpp.getText();
+                Log.d("*:updateShow", "Desc: " + epDesc + " (from <itunes:summary>)");
+                if((numOfDone & 0x4)==0x4)
+                    throw(new UnfinishedParseException("Description 2times"));
+                if(epDesc!=null)
+                    numOfDone |= 0x4;
+            }
+            //*/
+            else if("pubDate".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
+            {
+                eventType = xpp.next();
+                eventType2 = xpp_vid.next();
+                epDate = xpp.getText();
+                Log.d("*:updateShow", "Date: " + epDate);
+                Log.e("*:updateShow", "Date: " + xpp_vid.getText());
+                if(epDate==null)
+                    throw(new UnfinishedParseException("Date"));
+                if(lastChecked!=null && !StaticBlob.sdfSource.parse(epDate).after(StaticBlob.sdfSource.parse(lastChecked)))
+                {
+                    eventType=XmlPullParser.END_DOCUMENT;
+                    return;
+                }
+                if(newLastChecked==null)
+                    newLastChecked = epDate;
+                if((numOfDone & 0x8)==0x8)
+                    throw(new UnfinishedParseException("Date 2times"));
+                numOfDone |= 0x8;
+            }
+            else if("enclosure".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
+            {
+                epAudioLink = xpp.getAttributeValue(xpp.getNamespace(),"url");
+                epVideoLink = xpp_vid.getAttributeValue(xpp.getNamespace(),"url");
+                Log.d("*:updateShow", "A Link: " + epAudioLink);
+                Log.d("*:updateShow", "V Link: " + epVideoLink);
+                if(epAudioLink==null)
+                    throw(new UnfinishedParseException("AudioLink"));
+                //Sizes
+                String temp = xpp.getAttributeValue(xpp.getNamespace(),"length");
+                String temp2 = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
+                if(temp==null)
+                    throw(new UnfinishedParseException("MediaSize"));
+                epAudioSize = Long.parseLong(temp);
+                if(temp2!=null) //TODO: BAD
+                    epVideoSize = Long.parseLong(temp2);
+
+                Log.d("*:updateShow", "A Size: " + epAudioSize);
+                Log.d("*:updateShow", "V Size: " + epVideoSize);
+                if((numOfDone & 0x10)==0x10)
+                    throw(new UnfinishedParseException("Media 2times"));
+                numOfDone |= 0x10;
+            }
+
+            //Done
+            if("item".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG)
+            {
+                int want = (0x1 | 0x4 | 0x8 | 0x10);
+                if((numOfDone & want)==want) //Not 0x2 because some items miss <link>
+                {
+                    epDate = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(epDate));
+                    //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
+                    //isVideo, epMediaLink, epMediaSize))
+                    StaticBlob.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
+                    Log.v("*:updateShow", "Inserting episode: " + epTitle);
+                    xpp.next();
+                    return;
+                }
+                else
+                    throw(new UnfinishedParseException("Malformed Item, missing info"));
+            }
+            eventType = xpp.next();
+            eventType2 = xpp_vid.next();
+            if(xpp.getName()!=null)
+                Log.v("*:updateShow", "Bollocks: [" + xpp.getName());
+        } //eventType == END_DOCUMENT
+        throw(new UnfinishedParseException("Reached end of file before </item>"));
+    }
+
+
 
     /** Downloads and resizes a show's logo image.
      * @throws IOException
