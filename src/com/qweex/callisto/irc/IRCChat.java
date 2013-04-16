@@ -15,6 +15,8 @@ package com.qweex.callisto.irc;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.InetSocketAddress;
+import java.nio.channels.SocketChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -22,12 +24,14 @@ import java.util.regex.Pattern;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.text.*;
 import android.text.style.ImageSpan;
 import com.qweex.callisto.R;
 
 import com.qweex.callisto.StaticBlob;
 import com.qweex.callisto.VideoActivity;
+import com.qweex.utils.SSLSocketChannel;
 import jerklib.*;
 import jerklib.events.*;
 import jerklib.listeners.IRCEventListener;
@@ -81,6 +85,7 @@ public class IRCChat extends Activity implements IRCEventListener
     protected static final int SAVE_ID=NICKLIST_ID+1;
     private final String SERVER_NAME = "irc.geekshed.net";
     private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
+    private final int SSL_PORT = 6697;
     private String profileNick;
     private String profilePass;
     private boolean SHOW_TIME = true;
@@ -135,6 +140,29 @@ public class IRCChat extends Activity implements IRCEventListener
 
 
 
+    class test extends AsyncTask<Void, Void, Void> {
+        protected Void doInBackground(Void... p)
+        {
+            try {
+                SocketChannel sChannel;
+
+                Log.i("Handshake", "Handyman - creating sChannel");
+
+                sChannel= SSLSocketChannel.open();
+
+                sChannel.socket().setSoTimeout(500);
+
+                sChannel.configureBlocking(false);
+
+                Log.i("Handshake", "Handyman - connect...");
+                sChannel.connect(new InetSocketAddress("irc.geekshed.net", 6697));
+            }catch(Exception e){
+                Log.i("Handshake", "Handyman - BEANS " + e.getClass());
+            }
+            return null;
+        }
+    };
+
     /** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
      */
@@ -142,6 +170,12 @@ public class IRCChat extends Activity implements IRCEventListener
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        //new test().execute(null);
+        //if(true==true)
+        //return;
+
+
         if(ircHandler==null)
         {
             ircHandler = new Handler();
@@ -609,7 +643,7 @@ public class IRCChat extends Activity implements IRCEventListener
         try {
             port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_port", "6667"));
         }catch(Exception e){}
-        session = manager.requestConnection(SERVER_NAME, port);
+        session = manager.requestConnection(SERVER_NAME, SSL_PORT, true);   //port
         session.setRejoinOnKick(false);
         chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
         ircHandler.post(chatUpdater);

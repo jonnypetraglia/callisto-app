@@ -49,9 +49,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.qweex.callisto.StaticBlob;
 
-//IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
-//FIXME: Scrolling in the AllShows view while something is playing is jerky
-
 /** An activity to list all the shows on JupiterBroadcasting. 
  * @author MrQweex
  */

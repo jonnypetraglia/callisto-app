@@ -8,6 +8,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
+import java.security.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.Iterator;
 import java.util.TimerTask;
 import java.util.Collection;
 
+import android.util.Log;
+import com.qweex.utils.SSLSocketChannel;
 import jerklib.Session.State;
 import jerklib.events.ErrorEvent;
 import jerklib.events.GenericErrorEvent;
@@ -30,6 +33,8 @@ import jerklib.parsers.DefaultInternalEventParser;
 import jerklib.parsers.InternalEventParser;
 import jerklib.tasks.Task;
 import jerklib.util.IdentServer;
+
+import javax.net.ssl.*;
 
 /**
  * This class is used to control/store Sessions/Connections.
@@ -187,17 +192,28 @@ public class ConnectionManager
 		return requestConnection(hostName, port, defaultProfile.clone());
 	}
 
-	/**
-	 * request a new connection to a host
-	 * 
-	 * @param hostName DNS name or IP of host to connect to
-	 * @param port port to use for connection
-	 * @param profile profile to use for this connection
-	 * @return the {@link Session} for this connection
-	 */
-	public Session requestConnection(String hostName, int port, Profile profile)
+    /**
+     * request a new connection to a host
+     *
+     * @param hostName DNS name or IP of host to connect to
+     * @param port port to use for connection
+     * @param profile profile to use for this connection
+     * @return the {@link Session} for this connection
+     */
+    public Session requestConnection(String hostName, int port, Profile profile)
+    {
+        return requestConnection(hostName, port, profile, false);
+    }
+
+
+    //<Qweex>
+    public Session requestConnection(String hostName, int port, boolean SSLPort)
+    {
+        return requestConnection(hostName, port, defaultProfile.clone(), SSLPort);
+    }
+	public Session requestConnection(String hostName, int port, Profile profile, boolean SSLPort)
 	{
-		RequestedConnection rCon = new RequestedConnection(hostName, port, profile);
+		RequestedConnection rCon = new RequestedConnection(hostName, port, profile, SSLPort);
 
 		Session session = new Session(rCon , this);
 		session.setInternalParser(internalEventParser);
@@ -207,6 +223,7 @@ public class ConnectionManager
 		
 		return session;
 	}
+    //</Qweex>
 
 	/**
 	 * Closes all connections and shuts down manager
@@ -700,10 +717,16 @@ public class ConnectionManager
 						addToRelayList(error);
 						session.disconnected(e);
 					}
+                    //<Qweex>
+                    catch (Exception e)
+                    {
+                        System.out.println("Well Shit");
+                    }
 				}
 			}
 		}
 	}
+
 
 	/**
 	 * Connect a Session to a server
@@ -711,22 +734,32 @@ public class ConnectionManager
 	 * @param session
 	 * @throws IOException
 	 */
-	void connect(Session session) throws IOException
+	void connect(Session session) throws IOException,
+                                                        NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException //Qweex
 	{
-		SocketChannel sChannel = SocketChannel.open();
-		sChannel.socket().setSoTimeout(500);
+		SocketChannel sChannel;
 
-		sChannel.configureBlocking(false);
+        Log.i("Handshake", "Handyman - creating sChannel");
+        //<Qweex>
+        if(session.useSSL())
+            sChannel= SSLSocketChannel.open();
+        else
+            sChannel = SocketChannel.open();
+        //</Qweex>
 
-		sChannel.connect(new InetSocketAddress(session.getRequestedConnection().getHostName(), session.getRequestedConnection().getPort()));
+        sChannel.socket().setSoTimeout(500);
 
-		sChannel.register(selector, sChannel.validOps());
+        sChannel.configureBlocking(false);
 
-		Connection con = new Connection(this, sChannel, session);
+        Log.i("Handshake", "Handyman - connect...");
+        sChannel.connect(new InetSocketAddress(session.getRequestedConnection().getHostName(), session.getRequestedConnection().getPort()));
+
+        sChannel.register(selector, sChannel.validOps());
+
+        Connection con = new Connection(this, sChannel, session);
 		
 		session.setConnection(con);
 
 		socChanMap.put(sChannel, session);
-		
 	}
 }

@@ -19,6 +19,8 @@ import jerklib.parsers.InternalEventParser;
 import jerklib.tasks.Task;
 import jerklib.tasks.TaskImpl;
 
+import javax.net.ssl.SSLEngine;
+
 /**
  * 
  * Session contains methods to manage an IRC connection.
@@ -57,6 +59,14 @@ public class Session extends RequestGenerator
 	private List<ModeAdjustment> userModes = new ArrayList<ModeAdjustment>();
 	private final Map<String, Channel> channelMap = new HashMap<String, Channel>();
 	private int retries = 0;
+
+    //<Qweex>
+    public boolean useSSL()
+    {
+        return rCon.useSSL();
+    }
+    //</Qweex>
+
 	
 	public enum State
 	{

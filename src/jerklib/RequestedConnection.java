@@ -13,6 +13,14 @@ public class RequestedConnection
     private final int port;
     private Profile profile;
     private final long requestedTime = System.currentTimeMillis();
+    private boolean SSL = false;
+
+    //<Qweex>
+    public boolean useSSL()
+    {
+        return SSL;
+    }
+    //</Qweex>
 
     /**
      * Create new RequestedConnection object
@@ -26,6 +34,14 @@ public class RequestedConnection
         this.hostName = hostName;
         this.port = port;
         this.profile = profile;
+    }
+
+    public RequestedConnection(String hostName, int port, Profile profile, boolean SSL)
+    {
+        this.hostName = hostName;
+        this.port = port;
+        this.profile = profile;
+        this.SSL = SSL;
     }
 
 
