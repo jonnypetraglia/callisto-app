@@ -635,8 +635,12 @@ public class Callisto extends Activity
         //Build and Footer
         TextView newsHeader = new TextView(this);
         newsHeader.setPadding(5, 5, 5, 5);
+        newsHeader.setBackgroundResource(R.color.backClr);
+        newsHeader.setTextColor(R.color.kuler_4);
         TextView newsFooter = new TextView(this);
         newsFooter.setPadding(5, 5, 5, 5);
+        newsFooter.setBackgroundResource(R.color.backClr);
+        newsFooter.setTextColor(R.color.kuler_4);
 
         //Create the listview & data for it
         final android.widget.ExpandableListView elv = new android.widget.ExpandableListView(this);

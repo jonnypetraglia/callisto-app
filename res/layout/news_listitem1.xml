@@ -20,4 +20,6 @@
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:gravity="center_vertical"
     android:padding="10dip"
+    android:background="@color/backClr"
+    android:textColor="@color/kuler_4"
 />

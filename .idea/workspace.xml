@@ -51,16 +51,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/final_strings.xml" afterPath="$PROJECT_DIR$/res/values/final_strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/xml/preferences.xml" afterPath="$PROJECT_DIR$/res/xml/preferences.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/news_listitem1.xml" afterPath="$PROJECT_DIR$/res/layout/news_listitem1.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/news_listitem2.xml" afterPath="$PROJECT_DIR$/res/layout/news_listitem2.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366101330834" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083376467" ignored="false" />
-    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366095976041" ignored="false" />
+    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105183236" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366103961405" ignored="false" />
@@ -113,6 +113,8 @@
     <file path="/StaticBlobOfUsefulness.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083087647" ignored="false" />
     <file path="/Live.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083482205" ignored="false" />
     <file path="/seekbar_dialog.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366099497011" ignored="false" />
+    <file path="/news_listitem2.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105070468" ignored="false" />
+    <file path="/news_listitem1.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105132183" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -181,10 +183,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Callisto.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="114" column="56" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
+            <state line="648" column="0" selection-start="30258" selection-end="30258" vertical-scroll-proportion="0.7679181">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;class#Callisto#0" expanded="true" />
@@ -201,11 +203,11 @@
                 <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;field#LivePlayButton#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
-                <element signature="e#29859#29890#0" expanded="true" />
-                <element signature="e#29989#30036#0" expanded="true" />
-                <element signature="e#31624#31640#0" expanded="true" />
-                <element signature="e#31738#31769#0" expanded="true" />
-                <element signature="e#32261#32277#0" expanded="true" />
+                <element signature="e#30077#30108#0" expanded="true" />
+                <element signature="e#30207#30254#0" expanded="true" />
+                <element signature="e#31842#31858#0" expanded="true" />
+                <element signature="e#31956#31987#0" expanded="true" />
+                <element signature="e#32479#32495#0" expanded="true" />
                 <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
@@ -225,19 +227,6 @@
                 <element signature="docComment;field#moveDown#0;class#DownloadList#0" expanded="true" />
                 <element signature="docComment;method#moveDownload#0;class#DownloadList#0" expanded="true" />
                 <element signature="docComment;method#addDownload#0;class#DownloadList#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="IRCChat.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="609" column="119" selection-start="26256" selection-end="26256" vertical-scroll-proportion="0.63455147">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
-                <element signature="docComment;method#getReceived#0;class#IRCChat#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -304,15 +293,12 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlobOfUsefulness.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Live.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
         <option value="$PROJECT_DIR$/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/UpdateShow.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
         <option value="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
@@ -320,6 +306,9 @@
         <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/res/values/final_strings.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
+        <option value="$PROJECT_DIR$/res/layout/news_listitem1.xml" />
+        <option value="$PROJECT_DIR$/res/layout/news_listitem2.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
       </list>
     </option>
   </component>
@@ -548,6 +537,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layout" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -838,23 +845,23 @@
     <frame x="0" y="33" width="1920" height="1047" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34301075" sideWeight="0.50053364" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20811099" sideWeight="0.67096776" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3268817" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20811099" sideWeight="0.6731183" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="9" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3268817" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17662753" sideWeight="0.6731183" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4483871" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -862,7 +869,7 @@
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34301075" sideWeight="0.49573106" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20811099" sideWeight="0.5967742" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -932,22 +939,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="312" column="60" selection-start="15317" selection-end="15336" vertical-scroll-proportion="0.9946524">
-          <folding>
-            <element signature="docComment;field#inner_failures#0;class#DownloadTask#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="231" column="30" selection-start="11131" selection-end="11131" vertical-scroll-proportion="0.52587646">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="136" column="66" selection-start="4958" selection-end="4958" vertical-scroll-proportion="0.0">
@@ -1080,37 +1071,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="56" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#buttonIds#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#STOP_ID#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#news#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#onCreate#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#initTablet#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#onDestroy#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#onResume#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;field#LivePlayButton#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
-            <element signature="e#29859#29890#0" expanded="true" />
-            <element signature="e#29989#30036#0" expanded="true" />
-            <element signature="e#31624#31640#0" expanded="true" />
-            <element signature="e#31738#31769#0" expanded="true" />
-            <element signature="e#32261#32277#0" expanded="true" />
-            <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
-            <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/AllShows.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="62" column="0" selection-start="2188" selection-end="2188" vertical-scroll-proportion="0.0">
@@ -1145,6 +1105,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="584" column="83" selection-start="24934" selection-end="24934" vertical-scroll-proportion="0.2192691">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#getReceived#0;class#IRCChat#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="552" column="93" selection-start="23793" selection-end="23793" vertical-scroll-proportion="0.0">
@@ -1159,13 +1130,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+    <entry file="file://$PROJECT_DIR$/res/layout/news_listitem1.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="609" column="119" selection-start="26256" selection-end="26256" vertical-scroll-proportion="0.63455147">
+        <state line="22" column="4" selection-start="905" selection-end="979" vertical-scroll-proportion="-12.692307">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/news_listitem2.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="38" selection-start="1042" selection-end="1042" vertical-scroll-proportion="0.62827224">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="648" column="0" selection-start="30258" selection-end="30258" vertical-scroll-proportion="0.7679181">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#getReceived#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#buttonIds#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#STOP_ID#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#news#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#onCreate#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#initTablet#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#onDestroy#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#onResume#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#build_layout#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;field#LivePlayButton#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
+            <element signature="e#30077#30108#0" expanded="true" />
+            <element signature="e#30207#30254#0" expanded="true" />
+            <element signature="e#31842#31858#0" expanded="true" />
+            <element signature="e#31956#31987#0" expanded="true" />
+            <element signature="e#32479#32495#0" expanded="true" />
+            <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
           </folding>
         </state>
       </provider>
