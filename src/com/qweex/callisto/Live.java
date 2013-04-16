@@ -14,17 +14,30 @@
 
 package com.qweex.callisto;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.util.Log;
 import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +50,7 @@ public class Live
 {
     public static MediaPlayer live_player;
     //TODO: wtf
-    static Live_FetchInfo LIVE_update = null;
+    static FetchInfo LiveUpdate = null;
     /** The url that is used to report statistics -completely anonymous- to the developer when the live fails. **/
     private final static String errorReportURL = "http://software.qweex.com/error_report.php";
 
@@ -58,8 +71,8 @@ public class Live
             //*/
             try {
                 live_player.start();
-                LIVE_update = new Live_FetchInfo();
-                LIVE_update.execute((Void [])null);
+                LiveUpdate = new FetchInfo();
+                LiveUpdate.execute((Void[]) null);
                 StaticBlob.live_isPlaying = true;
             }
             catch(Exception e)
@@ -151,5 +164,75 @@ public class Live
         try {
             httpClient.execute(httpGet, localContext);
         }catch(Exception e){}
+    }
+
+    /** Updates the current and next track information when listening to the live stream. */
+    public static class FetchInfo extends AsyncTask<Void, Void, Void>
+    {
+        /** The address of the info to fetch */
+        private static final String infoURL = "http://jbradio.airtime.pro/api/live-info";
+        /** A Regex matcher to extract the info */
+        private static Matcher liveMatcher = null;
+
+        @Override
+        protected Void doInBackground(Void... c)
+        {
+            //Prepare HTTP stuffs
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpContext localContext = new BasicHttpContext();
+            HttpGet httpGet = new HttpGet(infoURL);
+            HttpResponse response;
+            try
+            {
+                //Read the data into a variable
+                response = httpClient.execute(httpGet, localContext);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(
+                                response.getEntity().getContent()
+                        )
+                );
+                String line, result = "";
+                while ((line = reader.readLine()) != null)
+                    result += line + "\n";
+
+                //Extract the title and show
+                liveMatcher = (Pattern.compile(".*?\"currentShow\".*?"
+                        + "\"name\":\"(.*?)\""
+                        + ".*"
+                        + "\"name\":\"(.*?)\""
+                        + ".*?")
+                ).matcher(result);
+                if(liveMatcher.find())
+                    StaticBlob.playerInfo.title = liveMatcher.group(1);
+                if(liveMatcher.groupCount()>1)
+                    StaticBlob.playerInfo.show = liveMatcher.group(2);
+
+                //Send a message to update the player controls
+                PlayerInfo.updateHandler.sendEmptyMessage(0);
+                //CallistoWidget.updateAllWidgets(Callisto.LIVE_PreparedListener.c);
+
+            } catch (ClientProtocolException e) {
+                // TODO EXCEPTION
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            };
+
+            //Update the notification
+            Intent notificationIntent = new Intent(LIVE_PreparedListener.c, Callisto.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            if(StaticBlob.notification_playing==null)
+            {
+                StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
+                StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+            }
+            StaticBlob.notification_playing.setLatestEventInfo(LIVE_PreparedListener.c, StaticBlob.playerInfo.title,  "JB Radio", contentIntent);
+            NotificationManager mNotificationManager =  (NotificationManager) LIVE_PreparedListener.c.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
+
+            return null;
+        }
     }
 }

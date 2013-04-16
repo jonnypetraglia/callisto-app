@@ -223,8 +223,8 @@ public class PlayerInfo
             {
                 if(i==CHECK_LIVE_EVERY)
                 {
-                    Live.LIVE_update = new Live_FetchInfo();
-                    Live.LIVE_update.execute((Void [])null);
+                    Live.LiveUpdate = new Live.FetchInfo();
+                    Live.LiveUpdate.execute((Void [])null);
                     i=0;
                 }
                 return;

@@ -341,7 +341,7 @@ public class CalendarActivity extends Activity {
         }
     };
 
-    /**
+    /** @deprecated
      * Calculates the difference between Jupiter time and local time.
      * http://obscuredclarity.blogspot.com/2010/08/determine-time-difference-between-two.html *
      */

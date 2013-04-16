@@ -11,7 +11,6 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-
 package com.qweex.callisto;
 
 import android.app.Service;
