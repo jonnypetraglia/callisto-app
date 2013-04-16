@@ -23,10 +23,10 @@ import android.media.MediaPlayer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.*;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -40,6 +40,56 @@ import java.text.ParseException;
  */
 public class PlayerControls
 {
+    private static View seekView;
+    private static AlertDialog alertDialog;
+    public static TextView currentTime, totalTime;
+    public static SeekBar seekBar;
+
+    public static void createSeekView(LayoutInflater inflater)
+    {
+        seekView = inflater.inflate(R.layout.seekbar_dialog, null, false);
+
+        //Seekbar
+        SeekBar sb = (SeekBar) seekView.findViewById(R.id.seekBar);
+        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                if(fromUser)
+                    currentTime.setText(Callisto.formatTimeFromSeconds(progress));
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0) {}
+            @Override
+
+            public void onStopTrackingTouch(SeekBar arg0) {
+                StaticBlob.mplayer.seekTo(arg0.getProgress()*1000);
+                StaticBlob.playerInfo.clock.i=PlayerInfo.SAVE_POSITION_EVERY;
+            }
+        });
+
+        //Buttons
+        int[] b = new int[] {R.id.n10, R.id.n5, R.id.n1, R.id.n10s, R.id.p10s, R.id.p1, R.id.p5, R.id.p10};
+        for(int i=0; i<b.length; i++)
+        {
+            seekView.findViewById(b[i]).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    String amnt = ((Button)v).getText().toString();
+                    int amntInSec = Integer.parseInt(amnt.substring(1,amnt.length()-1));
+                    if(amnt.charAt(0)=='-')
+                        amntInSec*=-1;
+                    if(amnt.charAt(amnt.length()-1)=='m')
+                        amntInSec*=60;
+                    StaticBlob.mplayer.seekTo(StaticBlob.mplayer.getCurrentPosition()+amntInSec*1000);
+                    StaticBlob.playerInfo.clock.i=PlayerInfo.SAVE_POSITION_EVERY;
+                    ((SeekBar)seekView.findViewById(R.id.seekBar)).setProgress(StaticBlob.mplayer.getCurrentPosition()/1000);
+                    alertDialog.setMessage(Callisto.formatTimeFromSeconds(StaticBlob.mplayer.getCurrentPosition()/1000) + "/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
+                }
+            });
+        }
+    }
+
     /** Listener for the Next (">") button. Proceeds to the next track, if there is one. */
     public static View.OnClickListener next = new View.OnClickListener()
     {
@@ -114,35 +164,30 @@ public class PlayerControls
             if(StaticBlob.mplayer==null)
                 return;
 
-            SeekBar sb = new SeekBar(v.getContext());
-            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()).setView(sb);
-            final AlertDialog alertDialog = builder.create();
-
-            alertDialog.setTitle(StaticBlob.RESOURCES.getString(R.string.seek_title));
-            alertDialog.setMessage(Callisto.formatTimeFromSeconds(StaticBlob.mplayer.getCurrentPosition() / 1000) + "/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
-            sb.setMax(StaticBlob.playerInfo.length);
-            sb.setProgress(StaticBlob.mplayer.getCurrentPosition()/1000);
-
+            //Create it.
+            if(seekView.getParent()!=null)
+                ((ViewGroup)seekView.getParent()).removeView(seekView);
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()).setView(seekView);
+            alertDialog = builder.create();
             alertDialog.setButton(StaticBlob.RESOURCES.getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
                     arg0.dismiss();
                 }
             });//*/
-            alertDialog.show();
-            sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-                    alertDialog.setMessage(Callisto.formatTimeFromSeconds(progress) + "/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
-                }
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
-                public void onStartTrackingTouch(SeekBar arg0) {}
-                @Override
-
-                public void onStopTrackingTouch(SeekBar arg0) {
-                    StaticBlob.mplayer.seekTo(arg0.getProgress()*1000);
-                    StaticBlob.playerInfo.clock.i=PlayerInfo.SAVE_POSITION_EVERY;
+                public void onDismiss(DialogInterface dialog) {
+                    currentTime = null;
                 }
             });
+            alertDialog.setTitle(StaticBlob.RESOURCES.getString(R.string.seek_title));
+            ((SeekBar)seekView.findViewById(R.id.seekBar)).setMax(StaticBlob.playerInfo.length);
+            ((SeekBar)seekView.findViewById(R.id.seekBar)).setProgress(StaticBlob.mplayer.getCurrentPosition()/1000);
+            alertDialog.show();
+
+            currentTime = (TextView) seekView.findViewById(R.id.currentTime);
+            ((TextView)seekView.findViewById(R.id.totalTime)).setText("/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
         }
     };
 
@@ -180,6 +225,7 @@ public class PlayerControls
 
         //Retrieve all of the playerInfo about the new track
         String media_location;
+        System.out.println("DERP: " + theTargetTrack + " | " + StaticBlob.playerInfo);
         StaticBlob.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
         StaticBlob.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
         StaticBlob.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));

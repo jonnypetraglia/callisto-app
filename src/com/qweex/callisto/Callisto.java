@@ -241,6 +241,9 @@ public class Callisto extends Activity
             editor.commit();
         }
 
+        //Create seek dialog
+        PlayerControls.createSeekView(getLayoutInflater());
+
         //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
         //Set the content view
         boolean isTablet= QweexUtils.isTabletDevice(this);

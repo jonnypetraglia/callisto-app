@@ -44,14 +44,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366009165302" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366095182148" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083376467" ignored="false" />
-    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083968894" ignored="false" />
+    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366095976041" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366066612043" ignored="false" />
@@ -59,7 +62,7 @@
     <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365911905429" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366065388724" ignored="false" />
     <file path="/DownloadList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365907126119" ignored="false" />
-    <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365895427888" ignored="false" />
+    <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366097646808" ignored="false" />
     <file path="/ShowList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366089654210" ignored="false" />
     <file path="/AlarmNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385729850" ignored="false" />
     <file path="/BootNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385796427" ignored="false" />
@@ -97,12 +100,13 @@
     <file path="/QweexUtils.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366066288257" ignored="false" />
     <file path="/XBMCStyleListViewMenu.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366068094828" ignored="false" />
     <file path="/main.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366084350601" ignored="false" />
-    <file path="/PlayerInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366080493892" ignored="false" />
+    <file path="/PlayerInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366100116628" ignored="false" />
     <file path="/Live_FetchInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366080604519" ignored="false" />
     <file path="/UpdateShow.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366092556872" ignored="false" />
-    <file path="/PlayerControls.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366082520102" ignored="false" />
+    <file path="/PlayerControls.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366100301318" ignored="false" />
     <file path="/StaticBlobOfUsefulness.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083087647" ignored="false" />
     <file path="/Live.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083482205" ignored="false" />
+    <file path="/seekbar_dialog.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366099497011" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,8 +178,9 @@
       <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="748" column="49" selection-start="35082" selection-end="35082" vertical-scroll-proportion="0.0">
+            <state line="114" column="56" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="docComment;class#Callisto#0" expanded="true" />
                 <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;field#buttonIds#0;class#Callisto#0" expanded="true" />
@@ -190,11 +195,11 @@
                 <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;field#LivePlayButton#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
-                <element signature="e#29769#29800#0" expanded="true" />
-                <element signature="e#29899#29946#0" expanded="true" />
-                <element signature="e#31534#31550#0" expanded="true" />
-                <element signature="e#31648#31679#0" expanded="true" />
-                <element signature="e#32171#32187#0" expanded="true" />
+                <element signature="e#29859#29890#0" expanded="true" />
+                <element signature="e#29989#30036#0" expanded="true" />
+                <element signature="e#31624#31640#0" expanded="true" />
+                <element signature="e#31738#31769#0" expanded="true" />
+                <element signature="e#32261#32277#0" expanded="true" />
                 <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
@@ -203,17 +208,78 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayerControls.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="PlayerInfo.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="61" column="23" selection-start="2373" selection-end="2375" vertical-scroll-proportion="-7.64">
+              <folding>
+                <element signature="e#0#11596#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="docComment;class#PlayerInfo#0" expanded="true" />
+                <element signature="docComment;method#PlayerInfo#0;class#PlayerInfo#0" expanded="true" />
+                <element signature="docComment;method#clear#0;class#PlayerInfo#0" expanded="true" />
+                <element signature="docComment;method#TimerMethod#0;class#PlayerInfo#0" expanded="true" />
+                <element signature="docComment;class#TimerRunnable#0;class#PlayerInfo#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StaticBlob.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="40" column="41" selection-start="1790" selection-end="1790" vertical-scroll-proportion="-8.4">
+              <folding>
+                <element signature="docComment;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#sdfRaw#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#mplayer#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#databaseConnector#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#notification_download#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#storage_path#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#downloading_count#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#current_download#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#playDrawable#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#RESOURCES#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#DP#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#chatView#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#europeanDates#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#mNotificationManager#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#live_isPlaying#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#is_widget#0;class#StaticBlob#0" expanded="true" />
+                <element signature="docComment;field#Live_wifiLock#0;class#StaticBlob#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PlayerControls.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="141" column="53" selection-start="6009" selection-end="6009" vertical-scroll-proportion="0.0">
+            <state line="186" column="31" selection-start="7928" selection-end="7928" vertical-scroll-proportion="0.4357262">
               <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2578#3577#0" expanded="true" />
+                <element signature="e#3562#3563#0" expanded="true" />
                 <element signature="docComment;field#next#0;class#PlayerControls#0" expanded="true" />
                 <element signature="docComment;field#previous#0;class#PlayerControls#0" expanded="true" />
+                <element signature="e#4071#4255#0" expanded="true" />
+                <element signature="e#4248#4249#0" expanded="true" />
                 <element signature="docComment;field#playlist#0;class#PlayerControls#0" expanded="true" />
+                <element signature="e#4761#5506#0" expanded="true" />
+                <element signature="e#5479#5480#0" expanded="true" />
+                <element signature="e#5559#5826#0" expanded="true" />
+                <element signature="e#5799#5800#0" expanded="true" />
                 <element signature="docComment;field#playPauseListener#0;class#PlayerControls#0" expanded="true" />
                 <element signature="docComment;field#seekDialog#0;class#PlayerControls#0" expanded="true" />
+                <element signature="e#7134#7337#0" expanded="true" />
+                <element signature="e#7322#7323#0" expanded="true" />
+                <element signature="e#7389#7592#0" expanded="true" />
+                <element signature="e#7577#7578#0" expanded="true" />
                 <element signature="docComment;method#changeToTrack#0;class#PlayerControls#0" expanded="true" />
+                <element signature="e#15486#15757#0" expanded="true" />
+                <element signature="e#15738#15739#0" expanded="true" />
                 <element signature="docComment;method#playPause#0;class#PlayerControls#0" expanded="true" />
                 <element signature="docComment;method#stop#0;class#PlayerControls#0" expanded="true" />
               </folding>
@@ -221,16 +287,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayerInfo.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java">
+      <file leaf-file-name="seekbar_dialog.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/seekbar_dialog.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="217" column="23" selection-start="8149" selection-end="8149" vertical-scroll-proportion="0.51085144">
-              <folding>
-                <element signature="docComment;method#PlayerInfo#0;class#PlayerInfo#0" expanded="true" />
-                <element signature="docComment;method#clear#0;class#PlayerInfo#0" expanded="true" />
-                <element signature="docComment;method#TimerMethod#0;class#PlayerInfo#0" expanded="true" />
-                <element signature="docComment;class#TimerRunnable#0;class#PlayerInfo#0" expanded="true" />
-              </folding>
+            <state line="29" column="40" selection-start="1205" selection-end="1205" vertical-scroll-proportion="-12.692307">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -265,10 +329,8 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/res/layout/tablet_row.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/Live_FetchInfo.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/AllShows.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlobOfUsefulness.java" />
@@ -276,11 +338,13 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
         <option value="$PROJECT_DIR$/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/UpdateShow.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+        <option value="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
       </list>
     </option>
   </component>
@@ -419,6 +483,36 @@
               <option name="myItemId" value="com" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qweex" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="podcast" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -431,24 +525,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -749,14 +825,14 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20811099" sideWeight="0.6731183" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20811099" sideWeight="0.6731183" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3268817" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3268817" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17662753" sideWeight="0.6731183" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18387097" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4483871" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32580644" sideWeight="0.49786553" order="7" side_tool="false" content_ui="tabs" />
@@ -833,26 +909,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="804" column="32" selection-start="35172" selection-end="35172" vertical-scroll-proportion="7.820225">
-          <folding>
-            <element signature="docComment;method#timezoneDifference#0;class#CalendarActivity#0" expanded="true" />
-            <element signature="class#FetchEventsTask#0;class#CalendarActivity#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="1" selection-start="1406" selection-end="1406" vertical-scroll-proportion="0.48172757">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;field#audioJackReceiver#0;class#CallistoService#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="205" column="5" selection-start="8648" selection-end="8648" vertical-scroll-proportion="3.1516855">
@@ -896,33 +952,6 @@
         <state line="312" column="60" selection-start="15317" selection-end="15336" vertical-scroll-proportion="0.9946524">
           <folding>
             <element signature="docComment;field#inner_failures#0;class#DownloadTask#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="22" selection-start="3230" selection-end="3230" vertical-scroll-proportion="0.92654425">
-          <folding>
-            <element signature="docComment;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#sdfRaw#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#mplayer#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#databaseConnector#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#notification_download#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#storage_path#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#downloading_count#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#current_download#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#playDrawable#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#RESOURCES#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#DP#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#chatView#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#europeanDates#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#mNotificationManager#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#live_isPlaying#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#is_widget#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#Live_wifiLock#0;class#StaticBlob#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -990,10 +1019,57 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/AllShows.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="309" column="16" selection-start="12240" selection-end="12363" vertical-scroll-proportion="0.33275262">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;field#listAdapter#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;method#onSearchRequested#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;method#onStop#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;method#onCreateOptionsMenu#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;method#onOptionsItemSelected#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;class#UpdateAllShowsTask#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;field#UpdateAdapter#0;class#UpdateAllShowsTask#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;field#selectShow#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;class#AllShowsHeader#0;class#AllShows#0" expanded="true" />
+            <element signature="docComment;class#AllShowsRow#0;class#AllShows#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="41" selection-start="1790" selection-end="1790" vertical-scroll-proportion="-8.4">
+          <folding>
+            <element signature="docComment;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#sdfRaw#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#mplayer#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#databaseConnector#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#notification_download#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#storage_path#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#downloading_count#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#current_download#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#playDrawable#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#RESOURCES#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#DP#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#chatView#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#europeanDates#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#mNotificationManager#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#live_isPlaying#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#is_widget#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#Live_wifiLock#0;class#StaticBlob#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="748" column="49" selection-start="35082" selection-end="35082" vertical-scroll-proportion="0.0">
+        <state line="114" column="56" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="docComment;class#Callisto#0" expanded="true" />
             <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;field#buttonIds#0;class#Callisto#0" expanded="true" />
@@ -1008,11 +1084,11 @@
             <element signature="docComment;field#startAct#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;field#LivePlayButton#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;method#showUpdateNews#0;class#Callisto#0" expanded="true" />
-            <element signature="e#29769#29800#0" expanded="true" />
-            <element signature="e#29899#29946#0" expanded="true" />
-            <element signature="e#31534#31550#0" expanded="true" />
-            <element signature="e#31648#31679#0" expanded="true" />
-            <element signature="e#32171#32187#0" expanded="true" />
+            <element signature="e#29859#29890#0" expanded="true" />
+            <element signature="e#29989#30036#0" expanded="true" />
+            <element signature="e#31624#31640#0" expanded="true" />
+            <element signature="e#31738#31769#0" expanded="true" />
+            <element signature="e#32261#32277#0" expanded="true" />
             <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
@@ -1020,30 +1096,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
+    <entry file="file://$PROJECT_DIR$/res/layout/seekbar_dialog.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="141" column="53" selection-start="6009" selection-end="6009" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="docComment;field#next#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;field#previous#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;field#playlist#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;field#playPauseListener#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;field#seekDialog#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;method#changeToTrack#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;method#playPause#0;class#PlayerControls#0" expanded="true" />
-            <element signature="docComment;method#stop#0;class#PlayerControls#0" expanded="true" />
-          </folding>
+        <state line="29" column="40" selection-start="1205" selection-end="1205" vertical-scroll-proportion="-12.692307">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="217" column="23" selection-start="8149" selection-end="8149" vertical-scroll-proportion="0.51085144">
+        <state line="61" column="23" selection-start="2373" selection-end="2375" vertical-scroll-proportion="-7.64">
           <folding>
+            <element signature="e#0#11596#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#PlayerInfo#0" expanded="true" />
             <element signature="docComment;method#PlayerInfo#0;class#PlayerInfo#0" expanded="true" />
             <element signature="docComment;method#clear#0;class#PlayerInfo#0" expanded="true" />
             <element signature="docComment;method#TimerMethod#0;class#PlayerInfo#0" expanded="true" />
             <element signature="docComment;class#TimerRunnable#0;class#PlayerInfo#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="186" column="31" selection-start="7928" selection-end="7928" vertical-scroll-proportion="0.4357262">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2578#3577#0" expanded="true" />
+            <element signature="e#3562#3563#0" expanded="true" />
+            <element signature="docComment;field#next#0;class#PlayerControls#0" expanded="true" />
+            <element signature="docComment;field#previous#0;class#PlayerControls#0" expanded="true" />
+            <element signature="e#4071#4255#0" expanded="true" />
+            <element signature="e#4248#4249#0" expanded="true" />
+            <element signature="docComment;field#playlist#0;class#PlayerControls#0" expanded="true" />
+            <element signature="e#4761#5506#0" expanded="true" />
+            <element signature="e#5479#5480#0" expanded="true" />
+            <element signature="e#5559#5826#0" expanded="true" />
+            <element signature="e#5799#5800#0" expanded="true" />
+            <element signature="docComment;field#playPauseListener#0;class#PlayerControls#0" expanded="true" />
+            <element signature="docComment;field#seekDialog#0;class#PlayerControls#0" expanded="true" />
+            <element signature="e#7134#7337#0" expanded="true" />
+            <element signature="e#7322#7323#0" expanded="true" />
+            <element signature="e#7389#7592#0" expanded="true" />
+            <element signature="e#7577#7578#0" expanded="true" />
+            <element signature="docComment;method#changeToTrack#0;class#PlayerControls#0" expanded="true" />
+            <element signature="e#15486#15757#0" expanded="true" />
+            <element signature="e#15738#15739#0" expanded="true" />
+            <element signature="docComment;method#playPause#0;class#PlayerControls#0" expanded="true" />
+            <element signature="docComment;method#stop#0;class#PlayerControls#0" expanded="true" />
           </folding>
         </state>
       </provider>

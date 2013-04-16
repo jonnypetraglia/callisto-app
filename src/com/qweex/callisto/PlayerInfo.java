@@ -243,6 +243,14 @@ public class PlayerInfo
                 current = StaticBlob.playerInfo.position/1000;
                 StaticBlob.timeProgress.setProgress(current);
                 StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(current));
+                if(PlayerControls.currentTime!=null)
+                {
+                    PlayerControls.currentTime.setText(Callisto.formatTimeFromSeconds(current));
+                    android.widget.SeekBar sb = (android.widget.SeekBar)
+                                                ((android.view.View) PlayerControls.currentTime.getParent().getParent())
+                                                        .findViewById(R.id.seekBar);
+                    sb.setProgress(current);
+                }
                 Log.i("Callisto:TimerMethod", "Timer mon " + StaticBlob.playerInfo.position);
 
                 Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
