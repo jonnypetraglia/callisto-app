@@ -221,7 +221,7 @@ public class PlayerInfo
             i++;
             if(Live.live_player!=null && StaticBlob.live_isPlaying)
             {
-                if(i==CHECK_LIVE_EVERY)
+                if(i>=CHECK_LIVE_EVERY)
                 {
                     Live.LiveUpdate = new Live.FetchInfo();
                     Live.LiveUpdate.execute((Void [])null);
