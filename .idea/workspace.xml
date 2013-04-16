@@ -44,20 +44,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Live_FetchInfo.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/doc/com/qweex/callisto/class-use/LIVE_FetchInfo.html" afterPath="$PROJECT_DIR$/doc/com/qweex/callisto/class-use/LIVE_FetchInfo.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Live.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Live.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366009165302" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083376467" ignored="false" />
-    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366082319364" ignored="false" />
+    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083968894" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366066612043" ignored="false" />
@@ -180,7 +173,7 @@
       <file leaf-file-name="Callisto.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="88" selection-start="2988" selection-end="2988" vertical-scroll-proportion="0.38764045">
+            <state line="594" column="90" selection-start="27872" selection-end="27872" vertical-scroll-proportion="0.5224719">
               <folding>
                 <element signature="docComment;class#Callisto#0" expanded="true" />
                 <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
@@ -201,6 +194,8 @@
                 <element signature="e#31534#31550#0" expanded="true" />
                 <element signature="e#31648#31679#0" expanded="true" />
                 <element signature="e#32171#32187#0" expanded="true" />
+                <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
+                <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
                 <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
               </folding>
             </state>
@@ -248,11 +243,11 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/UpdateShow.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlobOfUsefulness.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/Live.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
       </list>
     </option>
   </component>
@@ -1008,7 +1003,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="88" selection-start="2988" selection-end="2988" vertical-scroll-proportion="0.38764045">
+        <state line="594" column="90" selection-start="27872" selection-end="27872" vertical-scroll-proportion="0.5224719">
           <folding>
             <element signature="docComment;class#Callisto#0" expanded="true" />
             <element signature="docComment;field#tabletMenu#0;class#Callisto#0" expanded="true" />
@@ -1029,6 +1024,8 @@
             <element signature="e#31534#31550#0" expanded="true" />
             <element signature="e#31648#31679#0" expanded="true" />
             <element signature="e#32171#32187#0" expanded="true" />
+            <element signature="docComment;class#SimpleExpandableListAdapterWithLinkify#0;class#Callisto#0" expanded="true" />
+            <element signature="docComment;method#BaconDialog#0;class#Callisto#0" expanded="true" />
             <element signature="docComment;method#formatTimeFromSeconds#0;class#Callisto#0" expanded="true" />
           </folding>
         </state>

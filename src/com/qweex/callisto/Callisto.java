@@ -726,12 +726,13 @@ public class Callisto extends Activity
         news.show();
     }
 
+    /** It is what it is: a SimpleExandableListAdapter that Linkify's all the items when adding them. */
     class SimpleExpandableListAdapterWithLinkify extends SimpleExpandableListAdapter
     {
-
         public SimpleExpandableListAdapterWithLinkify(Context context, List<? extends Map<String, ?>> groupData, int groupLayout, String[] groupFrom, int[] groupTo, List<? extends List<? extends Map<String, ?>>> childData, int childLayout, String[] childFrom, int[] childTo) {
             super(context, groupData, groupLayout, groupFrom, groupTo, childData, childLayout, childFrom, childTo);
         }
+        @Override
         public View getChildView (int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
         {
             convertView = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
@@ -740,6 +741,7 @@ public class Callisto extends Activity
         }
     }
 
+    /** Create a BACON loading dialog */
     static public ProgressDialog BaconDialog(Context c, String title, String message)
     {
         if(message==null)
