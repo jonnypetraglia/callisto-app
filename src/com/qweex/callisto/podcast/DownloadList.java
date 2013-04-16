@@ -108,10 +108,32 @@ public class DownloadList extends ListActivity
         String active = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(ACTIVE, "|").replaceAll("x", "").replaceAll("//|0", "");
         while(active.contains("||"))
             active = active.replace("||","|");
+        String[] activeCleanse = active.split("\\|");
+        active = "|";
+        for(int i=0; i<activeCleanse.length; i++)
+        {
+            if("".equals(activeCleanse[i]))
+                continue;
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(Long.parseLong(activeCleanse[i]));
+            if(c.getCount()==1)
+                active = active.concat(activeCleanse[i]).concat("|");
+        }
+        active = active.concat("|");
         e.putString(ACTIVE, active);
         String completed = PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(COMPLETED,"|").replaceAll("x","").replaceAll("//|0","");
         while(completed.contains("||"))
             completed = completed.replace("||","|");
+        String[] completedCleanse = completed.split("\\|");
+        completed = "|";
+        for(int i=0; i<completedCleanse.length; i++)
+        {
+            if("".equals(completedCleanse[i]))
+                continue;
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(Long.parseLong(completedCleanse[i]));
+            if(c.getCount()==1)
+                completed = completed.concat(completedCleanse[i]).concat("|");
+        }
+        completed = completed.concat("|");
         e.putString(COMPLETED, completed);
         e.commit();
 
@@ -406,12 +428,14 @@ public class DownloadList extends ListActivity
                 if(getDownloadCount(parent.getContext(), ACTIVE)>0)
                     position=position-1;     //To adjust for the "Active" header
                 id = getDownloadAt(parent.getContext(), COMPLETED, position);
-                row.findViewById(R.id.moveUp).setEnabled(false);
+                Log.e(":", "COMP[" + position + "]: " + PreferenceManager.getDefaultSharedPreferences(parent.getContext()).getString(COMPLETED,"|"));
+                //row.findViewById(R.id.moveUp).setEnabled(false);
             }
             else
             {
+                Log.e(":", "COMP[" + position + "]: " + PreferenceManager.getDefaultSharedPreferences(parent.getContext()).getString(ACTIVE,"|"));
                 id = getDownloadAt(parent.getContext(), ACTIVE, position);
-                row.findViewById(R.id.moveUp).setEnabled(true);
+                //row.findViewById(R.id.moveUp).setEnabled(true);
             }
 
             boolean isVideo = id<0;

@@ -72,5 +72,22 @@
         <item>http://feeds.feedburner.com/stokedipod</item>
 		<item>http://feeds.feedburner.com/TorkedMobile</item>
 	</string-array>
-    
+
+
+    <string-array name="irc_ports">
+        <item>6667</item>
+        <item>6660</item>
+        <item>6661</item>
+        <item>6662</item>
+        <item>6663</item>
+        <item>6664</item>
+        <item>6665</item>
+        <item>6666</item>
+        <item>6668</item>
+        <item>6669</item>
+        <item>7029</item>
+        <item>7070</item>
+        <item>1494</item>
+        <item>1755</item>
+    </string-array>
 </resources>

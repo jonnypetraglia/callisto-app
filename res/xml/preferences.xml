@@ -74,6 +74,14 @@
 
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
+            <ListPreference
+                    android:title="Port"
+                    android:summary="Default is 6667"
+                    android:defaultValue="6667"
+                    android:key="irc_port"
+                    android:entries="@array/irc_ports"
+                    android:entryValues="@array/irc_ports"
+                    />
 	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
 	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
 	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>

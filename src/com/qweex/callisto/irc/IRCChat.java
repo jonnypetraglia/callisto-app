@@ -605,10 +605,15 @@ public class IRCChat extends Activity implements IRCEventListener
 
         manager = new ConnectionManager(new Profile(profileNick));
         manager.setAutoReconnect(RECONNECT_TRIES);
-        session = manager.requestConnection(SERVER_NAME);
+        int port = 6667;
+        try {
+            port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_port", "6667"));
+        }catch(Exception e){}
+        session = manager.requestConnection(SERVER_NAME, port);
         session.setRejoinOnKick(false);
         chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
         ircHandler.post(chatUpdater);
+        logQueue.add(getReceived("[Callisto]", "Intiating connection to " + SERVER_NAME + " on port " + port, CLR_ME));
 
         timeoutCount = 0;
         loopTask = new TimerTask()
