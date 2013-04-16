@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 /** A receiver to handle when the audio jack is plugged and unplugged.
@@ -46,7 +47,7 @@ public class AudioJackReceiver extends BroadcastReceiver
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("pause_unplugged", true)
                     && !Callisto.playerInfo.isPaused && Callisto.mplayer!=null)
             {
-                Callisto.playPause(contextForPreferences, ((Activity)contextForPreferences).findViewById(R.id.playPause));
+                PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));
                 wasPausedByThisReceiver = true;
             }
             Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
@@ -56,7 +57,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                     && Callisto.playerInfo.isPaused && Callisto.mplayer!=null
                 && wasPausedByThisReceiver)
             {
-                Callisto.playPause(contextForPreferences, ((Activity)contextForPreferences).findViewById(R.id.playPause));
+                PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));
                 wasPausedByThisReceiver = false;
             }
             Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");

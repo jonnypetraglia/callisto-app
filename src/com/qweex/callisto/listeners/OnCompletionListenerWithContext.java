@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 
 /** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener
@@ -62,6 +63,6 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 		long id = c.getLong(c.getColumnIndex("identity"));
 		Callisto.databaseConnector.updatePosition(id, 0);
 		
-		Callisto.changeToTrack(this.c, 1, true);
+		PlayerControls.changeToTrack(this.c, 1, true);
 	}
 }

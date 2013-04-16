@@ -19,6 +19,7 @@ import java.util.Date;
 
 import android.preference.PreferenceManager;
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 import android.app.Activity;
@@ -158,19 +159,17 @@ public class ShowList extends Activity
         if(current_episode==null)       //If we aren't returning from an EpisodeDesc, we're done.
             return;
 
-
-        long id = Long.parseLong(
-                (String) ((TextView) current_episode.findViewById(R.id.hiddenId)).getText()
-        );  //Get the id of the episode that was visited in an EpisodeDesc
-        Cursor c = Callisto.databaseConnector.getOneEpisode(id);
-        c.moveToFirst();
-
-        //New marker
-        boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
-        ((CheckBox)((View) current_episode).findViewById(R.id.img)).setChecked(is_new);
-
-        //Downloaded/deleted or incomplete/enqueued
         try {
+            long id = Long.parseLong(
+                    (String) ((TextView) current_episode.findViewById(R.id.hiddenId)).getText()
+            );  //Get the id of the episode that was visited in an EpisodeDesc
+            Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+            c.moveToFirst();
+
+            //New marker
+            boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
+            ((CheckBox)current_episode.findViewById(R.id.img)).setChecked(is_new);
+
             Date tempDate = Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date")));   //Need this for file location
             String title = c.getString(c.getColumnIndex("title")),
                     mp3_link = c.getString(c.getColumnIndex("mp3link")),     //Need this for file extension
@@ -197,8 +196,9 @@ public class ShowList extends Activity
                     ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
                 }
             }
-        }catch(Exception e){
-            Log.e("ShowList:onResume", "ERR: " + e.getClass() + " - " + e.getMessage());
+        }catch(Exception e)
+        {
+            Log.e("ShowList:onResume", "Error: " + e.getClass() + " - " + e.getMessage() + "(this should never happen...?)");
         }
         current_episode=null;
     }
@@ -245,7 +245,7 @@ public class ShowList extends Activity
         switch (item.getItemId())
         {
             case STOP_ID:   //Stop playing
-                Callisto.stop(this);
+                PlayerControls.stop(this);
                 return true;
             case RELOAD_ID: //Check for new episodes
                 reload();
@@ -352,7 +352,8 @@ public class ShowList extends Activity
         @Override
         protected Object doInBackground(Object... params)
         {
-            return Callisto.updateShow(currentShow, showSettings);
+            UpdateShow us = new UpdateShow();
+            return us.doUpdate(currentShow, showSettings);
         }
 
         @Override

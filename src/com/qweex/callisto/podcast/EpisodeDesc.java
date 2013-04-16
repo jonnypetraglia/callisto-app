@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.view.*;
 import android.widget.*;
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 import android.app.Activity;
@@ -250,7 +251,7 @@ public class EpisodeDesc extends Activity
         switch (item.getItemId())
         {
             case STOP_ID:   //Stop Playing
-                Callisto.stop(this);
+                PlayerControls.stop(this);
                 return true;
             case SHARE_ID:  //Sharing is caring (show the built-in Android dialog
                 Intent i=new Intent(android.content.Intent.ACTION_SEND);
@@ -295,7 +296,7 @@ public class EpisodeDesc extends Activity
             Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + false + " vid: " + vidSelected);
             Callisto.databaseConnector.appendToQueue(id, false, vidSelected);
             if(Callisto.databaseConnector.queueCount()==1)
-                Callisto.changeToTrack(v.getContext(), 1, true);
+                PlayerControls.changeToTrack(v.getContext(), 1, true);
             ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
             Callisto.playerInfo.update(v.getContext());
@@ -324,10 +325,10 @@ public class EpisodeDesc extends Activity
             }
             if(id==tempId)
             {
-                Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+                PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
                 Callisto.databaseConnector.advanceQueue(1);
                 boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-                Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+                PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
                 if(isPlaying)
                 {
                     Callisto.playerInfo.isPaused = true;
@@ -358,7 +359,7 @@ public class EpisodeDesc extends Activity
             Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
             Callisto.databaseConnector.appendToQueue(id, true, vidSelected);
             if(Callisto.databaseConnector.queueCount()==1)
-                Callisto.changeToTrack(v.getContext(), 1, true);
+                PlayerControls.changeToTrack(v.getContext(), 1, true);
             ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
         }

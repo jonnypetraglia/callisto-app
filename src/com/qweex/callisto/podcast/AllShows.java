@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 import android.app.Activity;
@@ -125,29 +126,33 @@ public class AllShows extends Activity {
         if(current_view==null)
             return;
         TextView current_textview = (TextView)current_view.findViewById(R.id.rowTextView);
-        if(current_textview==null)  //This should never happen
-            return;
 
-        String the_current_show = (String)(current_textview).getText();
-        int currentShowCount = Callisto.databaseConnector.getShow(the_current_show, true).getCount();
-
-        ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
-        ((TextView)current_view.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowCount));
-
-        //Updated the "last_checked" time for this show in the view, not in the preferences. It was updated in the preferences by the update AsyncTask.
-        SharedPreferences showSettings = getSharedPreferences(the_current_show, 0);
-        String lastChecked = showSettings.getString("last_checked", null);
-        Log.v("AllShows:onResume", "Resuming after:" + the_current_show + "| " + lastChecked);
-        if(lastChecked!=null)
+        try
         {
-            try {
-                lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
-                ((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
-            } catch (ParseException e) {
-                Log.e("AllShows:OnResume:ParseException", "Error parsing a date from the SharedPreferences..");
-                Log.e("AllShows:OnResume:ParseException", lastChecked);
-                Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
+            String the_current_show = (String)(current_textview).getText();
+            int currentShowCount = Callisto.databaseConnector.getShow(the_current_show, true).getCount();
+
+            ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)current_view.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowCount));
+
+            //Updated the "last_checked" time for this show in the view, not in the preferences. It was updated in the preferences by the update AsyncTask.
+            SharedPreferences showSettings = getSharedPreferences(the_current_show, 0);
+            String lastChecked = showSettings.getString("last_checked", null);
+            Log.v("AllShows:onResume", "Resuming after:" + the_current_show + "| " + lastChecked);
+            if(lastChecked!=null)
+            {
+                try {
+                    lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
+                    ((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
+                } catch (ParseException e) {
+                    Log.e("AllShows:OnResume:ParseException", "Error parsing a date from the SharedPreferences..");
+                    Log.e("AllShows:OnResume:ParseException", lastChecked);
+                    Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
+                }
             }
+        }catch(NullPointerException npe)
+        {
+            Log.e("AllShows:onResume", "Null Pointer: " + npe.getMessage() + " (this should never happen)");
         }
         current_view=null;
     }
@@ -192,7 +197,7 @@ public class AllShows extends Activity {
         switch (item.getItemId())
         {
             case STOP_ID:
-                Callisto.stop(this);
+                PlayerControls.stop(this);
                 return true;
             case DOWNLOADS_ID:
                 Intent newIntent = new Intent(AllShows.this, DownloadList.class);
@@ -240,7 +245,8 @@ public class AllShows extends Activity {
                     continue;
                 }
                 current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
-                Callisto.updateShow(i, current_showSettings);
+                UpdateShow us = new UpdateShow();
+                us.doUpdate(i, current_showSettings);
                 UpdateAdapter.sendEmptyMessage(0);
             }
 

@@ -221,6 +221,7 @@ public class XBMCStyleListViewMenu extends ListView
                 objects.add(0,"");
                 objects.add("");
             }
+            objects.add(0,"");
             objects.add("");
             notifyDataSetChanged();
         }

@@ -16,6 +16,7 @@ package com.qweex.callisto.podcast;
 import android.widget.*;
 import com.andrefy.ddviewlist.DDListView;
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 import android.app.ListActivity;
@@ -194,7 +195,7 @@ public class Queue extends ListActivity
                 {
                     Log.d("Queue:removeItem", "Removing the current item; advancing to next");
                     boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-                    Callisto.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+                    PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
                     if(isPlaying)
                     {
                         Log.d("Queue:removeItem", "Track is playing");

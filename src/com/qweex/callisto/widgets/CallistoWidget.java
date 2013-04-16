@@ -16,6 +16,8 @@ package com.qweex.callisto.widgets;
 import java.util.Arrays;
 
 import com.qweex.callisto.Callisto;
+import com.qweex.callisto.Live;
+import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
 import android.app.PendingIntent;
@@ -58,7 +60,7 @@ public class CallistoWidget extends AppWidgetProvider
 
             if(Callisto.playerInfo!=null)
                 System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
-            if((Callisto.live_player!=null && !Callisto.live_isPlaying) ||
+            if((Live.live_player!=null && !Callisto.live_isPlaying) ||
                     (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
                 views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
                 //views.setImageViewBitmap(R.id.widgetButton, playIcon);
@@ -105,7 +107,7 @@ public class CallistoWidget extends AppWidgetProvider
             return;
         Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget");
         Callisto.is_widget = true;
-        Callisto.playPause(context, null);
+        PlayerControls.playPause(context, null);
     }
 
 }

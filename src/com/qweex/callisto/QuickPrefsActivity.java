@@ -57,7 +57,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         
         oldRadioForLiveQuality = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
-        MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(Callisto.playPauseListener);
+        MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(PlayerControls.playPauseListener);
 
         this.getPreferenceScreen().findPreference("irc_settings").setOnPreferenceClickListener(setSubpreferenceBG);
 
