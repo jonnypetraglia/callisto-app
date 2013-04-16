@@ -47,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.qweex.callisto.StaticBlob;
 
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 //FIXME: Scrolling in the AllShows view while something is playing is jerky
@@ -54,15 +55,14 @@ import android.widget.Toast;
 /** An activity to list all the shows on JupiterBroadcasting. 
  * @author MrQweex
  */
-
 public class AllShows extends Activity {
 
     /** A static array containing corresponding info for the shows.
      *  A sub-heading will start with a space in the name list and have a value of null in the feeds.
      */
-    public static final String[] SHOW_LIST = Callisto.RESOURCES.getStringArray(R.array.shows);
-    public static final String[] SHOW_LIST_AUDIO = Callisto.RESOURCES.getStringArray(R.array.shows_audio);
-    public static final String[] SHOW_LIST_VIDEO = Callisto.RESOURCES.getStringArray(R.array.shows_video);
+    public static final String[] SHOW_LIST = StaticBlob.RESOURCES.getStringArray(R.array.shows);
+    public static final String[] SHOW_LIST_AUDIO = StaticBlob.RESOURCES.getStringArray(R.array.shows_audio);
+    public static final String[] SHOW_LIST_VIDEO = StaticBlob.RESOURCES.getStringArray(R.array.shows_video);
 
     //-----Local Variables-----
     /** Menu ID */
@@ -120,7 +120,7 @@ public class AllShows extends Activity {
         super.onResume();
         Log.v("AllShows:onResume", "Resuming AllShows");
         setProgressBarIndeterminateVisibility(false);
-        Callisto.playerInfo.update(AllShows.this);      //Update the player controls
+        StaticBlob.playerInfo.update(AllShows.this);      //Update the player controls
 
         //If there is no current_view (i.e. if it's not returning from a ShowList activity) we're done.
         if(current_view==null)
@@ -130,9 +130,9 @@ public class AllShows extends Activity {
         try
         {
             String the_current_show = (String)(current_textview).getText();
-            int currentShowCount = Callisto.databaseConnector.getShow(the_current_show, true).getCount();
+            int currentShowCount = StaticBlob.databaseConnector.getShow(the_current_show, true).getCount();
 
-            ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + StaticBlob.RESOURCES.getColor(R.color.txtClr));
             ((TextView)current_view.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowCount));
 
             //Updated the "last_checked" time for this show in the view, not in the preferences. It was updated in the preferences by the update AsyncTask.
@@ -142,7 +142,7 @@ public class AllShows extends Activity {
             if(lastChecked!=null)
             {
                 try {
-                    lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
+                    lastChecked = StaticBlob.sdfDestination.format(StaticBlob.sdfSource.parse(lastChecked));
                     ((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
                 } catch (ParseException e) {
                     Log.e("AllShows:OnResume:ParseException", "Error parsing a date from the SharedPreferences..");
@@ -182,7 +182,7 @@ public class AllShows extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
         menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(R.drawable.ic_action_download);
         menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_action_reload);
         return true;
@@ -225,7 +225,7 @@ public class AllShows extends Activity {
         @Override
         protected void onPreExecute()
         {
-            Toast.makeText(AllShows.this, Callisto.RESOURCES.getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AllShows.this, StaticBlob.RESOURCES.getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
             setProgressBarIndeterminateVisibility(true);
         }
 
@@ -263,7 +263,7 @@ public class AllShows extends Activity {
         @Override
         protected void onPostExecute(Object result)
         {
-            Toast.makeText(AllShows.this, Callisto.RESOURCES.getString(R.string.finished_update), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AllShows.this, StaticBlob.RESOURCES.getString(R.string.finished_update), Toast.LENGTH_SHORT).show();
             setProgressBarIndeterminateVisibility(false);
         }
     }
@@ -344,7 +344,7 @@ public class AllShows extends Activity {
             for(String ext : exts)
             {
                 f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                        Callisto.storage_path + File.separator +
+                        StaticBlob.storage_path + File.separator +
                         AllShows.SHOW_LIST[position] + ext);
                 if(f.exists())
                 {
@@ -357,8 +357,8 @@ public class AllShows extends Activity {
             }
 
             //Set the unwatched count & color
-            int currentShowUnwatchedCount = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
-            ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + Callisto.RESOURCES.getColor(R.color.txtClr));
+            int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
+            ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + StaticBlob.RESOURCES.getColor(R.color.txtClr));
             ((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowUnwatchedCount));
 
             //Set the show text
@@ -370,7 +370,7 @@ public class AllShows extends Activity {
             if(lastChecked!=null)
             {
                 try {
-                    lastChecked = Callisto.sdfDestination.format(Callisto.sdfSource.parse(lastChecked));
+                    lastChecked = StaticBlob.sdfDestination.format(StaticBlob.sdfSource.parse(lastChecked));
                 } catch (ParseException e) {
                     Log.e("AllShows:AllShowsAdapter:ParseException", "Error parsing a date from the SharedPreferences..");
                     Log.e("AllShows:AllShowsAdapter:ParseException", lastChecked);

@@ -36,11 +36,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 /**
- * Created with IntelliJ IDEA.
- * User: notbryant
- * Date: 4/15/13
- * Time: 9:12 PM
- * To change this template use File | Settings | File Templates.
+ * Contains a bunch of listeners and functions to deal with the player controls.
  */
 public class PlayerControls
 {
@@ -49,7 +45,7 @@ public class PlayerControls
     {
         @Override public void onClick(View v)
         {
-            changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+            changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
         }
     };
     /** Listener for the Previous ("<") button. Goes back to the previous track, if there is one. */
@@ -57,7 +53,7 @@ public class PlayerControls
     {
         @Override public void onClick(View v)
         {
-            changeToTrack(v.getContext(), -1, !Callisto.playerInfo.isPaused);
+            changeToTrack(v.getContext(), -1, !StaticBlob.playerInfo.isPaused);
         }
     };
     /** Listener for the playlist button; displays the queue. */
@@ -79,10 +75,10 @@ public class PlayerControls
                             {
                                 Live.live_player.reset();
                                 Live.live_player = null;
-                                if(Callisto.Live_wifiLock!=null && !Callisto.Live_wifiLock.isHeld())
-                                    Callisto.Live_wifiLock.release();
-                                Callisto.playerInfo.update(psychV.getContext());
-                                Callisto.mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
+                                if(StaticBlob.Live_wifiLock!=null && !StaticBlob.Live_wifiLock.isHeld())
+                                    StaticBlob.Live_wifiLock.release();
+                                StaticBlob.playerInfo.update(psychV.getContext());
+                                StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
                             }
                         })
                         .setNegativeButton("Nope", new DialogInterface.OnClickListener(){
@@ -115,19 +111,19 @@ public class PlayerControls
         @Override
         public void onClick(View v)
         {
-            if(Callisto.mplayer==null)
+            if(StaticBlob.mplayer==null)
                 return;
 
             SeekBar sb = new SeekBar(v.getContext());
             AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()).setView(sb);
             final AlertDialog alertDialog = builder.create();
 
-            alertDialog.setTitle(Callisto.RESOURCES.getString(R.string.seek_title));
-            alertDialog.setMessage(Callisto.formatTimeFromSeconds(Callisto.mplayer.getCurrentPosition() / 1000) + "/" + Callisto.formatTimeFromSeconds(Callisto.playerInfo.length));
-            sb.setMax(Callisto.playerInfo.length);
-            sb.setProgress(Callisto.mplayer.getCurrentPosition()/1000);
+            alertDialog.setTitle(StaticBlob.RESOURCES.getString(R.string.seek_title));
+            alertDialog.setMessage(Callisto.formatTimeFromSeconds(StaticBlob.mplayer.getCurrentPosition() / 1000) + "/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
+            sb.setMax(StaticBlob.playerInfo.length);
+            sb.setProgress(StaticBlob.mplayer.getCurrentPosition()/1000);
 
-            alertDialog.setButton(Callisto.RESOURCES.getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+            alertDialog.setButton(StaticBlob.RESOURCES.getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
                     arg0.dismiss();
@@ -136,15 +132,15 @@ public class PlayerControls
             alertDialog.show();
             sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-                    alertDialog.setMessage(Callisto.formatTimeFromSeconds(progress) + "/" + Callisto.formatTimeFromSeconds(Callisto.playerInfo.length));
+                    alertDialog.setMessage(Callisto.formatTimeFromSeconds(progress) + "/" + Callisto.formatTimeFromSeconds(StaticBlob.playerInfo.length));
                 }
                 @Override
                 public void onStartTrackingTouch(SeekBar arg0) {}
                 @Override
 
                 public void onStopTrackingTouch(SeekBar arg0) {
-                    Callisto.mplayer.seekTo(arg0.getProgress()*1000);
-                    Callisto.playerInfo.clock.i=PlayerInfo.SAVE_POSITION_EVERY;
+                    StaticBlob.mplayer.seekTo(arg0.getProgress()*1000);
+                    StaticBlob.playerInfo.clock.i=PlayerInfo.SAVE_POSITION_EVERY;
                 }
             });
         }
@@ -157,7 +153,7 @@ public class PlayerControls
      */
     public static void changeToTrack(Context c, int previousOrNext, boolean sp)
     {
-        Cursor queue = Callisto.databaseConnector.advanceQueue(previousOrNext);
+        Cursor queue = StaticBlob.databaseConnector.advanceQueue(previousOrNext);
 
         //If there are no items in the queue, stop the player
         if(queue==null || queue.getCount()==0)
@@ -165,8 +161,8 @@ public class PlayerControls
             Log.v("*:changeToTrack", "Queue is empty. Pausing.");
             ImageButton x = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
             if(x!=null)
-                x.setImageDrawable(Callisto.pauseDrawable);
-            Callisto.mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
+                x.setImageDrawable(StaticBlob.pauseDrawable);
+            StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
             stop(c);
             return;
         }
@@ -179,16 +175,16 @@ public class PlayerControls
         Long identity = queue.getLong(queue.getColumnIndex("identity"));
         boolean isStreaming = queue.getInt(queue.getColumnIndex("streaming"))>0;
         boolean isVideo = queue.getInt(queue.getColumnIndex("video"))>0;
-        Cursor theTargetTrack = Callisto.databaseConnector.getOneEpisode(identity);
+        Cursor theTargetTrack = StaticBlob.databaseConnector.getOneEpisode(identity);
         theTargetTrack.moveToFirst();
 
         //Retrieve all of the playerInfo about the new track
         String media_location;
-        Callisto.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
-        Callisto.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
-        Callisto.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));
-        Callisto.playerInfo.show = theTargetTrack.getString(theTargetTrack.getColumnIndex("show"));
-        Log.i("*:changeToTrack", "Loading info: " + Callisto.playerInfo.title);
+        StaticBlob.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
+        StaticBlob.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
+        StaticBlob.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));
+        StaticBlob.playerInfo.show = theTargetTrack.getString(theTargetTrack.getColumnIndex("show"));
+        Log.i("*:changeToTrack", "Loading info: " + StaticBlob.playerInfo.title);
         //Retrieve the location of the new track
         if(isStreaming)
         {
@@ -198,20 +194,20 @@ public class PlayerControls
         {
             //Get the date from the info retrieved from SQL. If it is malformed we have a SERIOUS problem and must halt.
             try {
-                Callisto.playerInfo.date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(Callisto.playerInfo.date));
+                StaticBlob.playerInfo.date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(StaticBlob.playerInfo.date));
             } catch (ParseException e) {
                 Log.e("*changeToTrack:ParseException", "Error parsing a date from the SQLite db:");
-                Log.e("*changeToTrack:ParseException", Callisto.playerInfo.date);
+                Log.e("*changeToTrack:ParseException", StaticBlob.playerInfo.date);
                 Log.e("*changeToTrack:ParseException", "(This should never happen).");
                 e.printStackTrace();
-                Toast.makeText(c, Callisto.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
-                Callisto.databaseConnector.deleteQueueItem(id);
+                Toast.makeText(c, StaticBlob.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
+                StaticBlob.databaseConnector.deleteQueueItem(id);
                 return;
             }
 
             //Here we actually get the path
-            File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
-            target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title +
+            File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
+            target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title +
                     EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
             //If it doesn't exist, we must halt.
             if(!target.exists())
@@ -226,8 +222,8 @@ public class PlayerControls
                     return;
                 }
                 Log.e("*:changeToTrack", "File not found: " + target.getPath());
-                Toast.makeText(c, Callisto.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
-                Callisto.databaseConnector.deleteQueueItem(id);
+                Toast.makeText(c, StaticBlob.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
+                StaticBlob.databaseConnector.deleteQueueItem(id);
                 return;
             }
             //Here we FINALLY get the path.
@@ -239,10 +235,10 @@ public class PlayerControls
         Intent notificationIntent = new Intent(c, EpisodeDesc.class);
         notificationIntent.putExtra("id", identity);
         PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
-        Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-        Callisto.notification_playing.setLatestEventInfo(c,  Callisto.playerInfo.title,  Callisto.playerInfo.show, contentIntent);
-        Callisto.mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+        StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
+        StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+        StaticBlob.notification_playing.setLatestEventInfo(c,  StaticBlob.playerInfo.title,  StaticBlob.playerInfo.show, contentIntent);
+        StaticBlob.mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
 
 
         //Here is where we FINALLY actually play the track.
@@ -251,38 +247,38 @@ public class PlayerControls
             Log.i("*:changeToTrack", "New track is a video, creating intent");
             Intent intent= new Intent(c, VideoActivity.class);
             intent.putExtra("uri", media_location);
-            intent.putExtra("seek", Callisto.playerInfo.position);
-            Callisto.playerInfo.update(c);
+            intent.putExtra("seek", StaticBlob.playerInfo.position);
+            StaticBlob.playerInfo.update(c);
             c.startActivity(intent);
             return;
         }
         try {
             Log.i("*:changeToTrack", "New track is an audio, doing MediaPlayer things");
-            if(Callisto.mplayer==null)
-                Callisto.mplayer = new MediaPlayer(); //This could be a problem
-            Callisto.mplayer.reset();
-            Callisto.mplayerPrepared.setContext(c);
-            Callisto.mplayer.setDataSource(media_location);
+            if(StaticBlob.mplayer==null)
+                StaticBlob.mplayer = new MediaPlayer(); //This could be a problem
+            StaticBlob.mplayer.reset();
+            StaticBlob.mplayerPrepared.setContext(c);
+            StaticBlob.mplayer.setDataSource(media_location);
             Log.i("*:changeToTrack", "Setting source: " + media_location);
-            Callisto.mplayer.setOnCompletionListener(Callisto.trackCompleted);
-            Callisto.mplayer.setOnErrorListener(Callisto.trackCompletedBug);
-            Callisto.mplayerPrepared.startPlaying = sp;
-            Callisto.mplayer.setOnPreparedListener(Callisto.mplayerPrepared);
+            StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
+            StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
+            StaticBlob.mplayerPrepared.startPlaying = sp;
+            StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
             Log.i("*:changeToTrack", "Preparing..." + sp);
             //Streaming requires a dialog
             if(isStreaming)
             {
-                Callisto.mplayerPrepared.pd = ProgressDialog.show(c, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
-                Callisto.mplayerPrepared.pd.setCancelable(true);
-                Callisto.mplayerPrepared.pd.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
+                StaticBlob.mplayerPrepared.pd.setCancelable(true);
+                StaticBlob.mplayerPrepared.pd.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        Callisto.mplayer.stop();
+                        StaticBlob.mplayer.stop();
                         dialog.cancel();
                     }
                 });
             }
-            Callisto.mplayer.prepareAsync();
+            StaticBlob.mplayer.prepareAsync();
             //Picks up at the mplayerPrepared listener
         } catch (IllegalArgumentException e) {
             Log.e("*changeToTrack:IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
@@ -310,11 +306,11 @@ public class PlayerControls
         } catch(NullPointerException e) {}
         if(Live.live_player!=null)
         {
-            if(Callisto.live_isPlaying)
+            if(StaticBlob.live_isPlaying)
             {
                 Live.live_player.stop();
                 if(v!=null)
-                    ((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+                    ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
             }
             else
             {
@@ -329,41 +325,41 @@ public class PlayerControls
                     Live.live_player.setDataSource(live_url);
                     Live.LIVE_Prepare(null);
                     if(v!=null)
-                        ((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
+                        ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
                 } catch(Exception e){}
             }
-            Callisto.live_isPlaying = !Callisto.live_isPlaying;
+            StaticBlob.live_isPlaying = !StaticBlob.live_isPlaying;
             CallistoWidget.updateAllWidgets(c);
             return;
         }
 
         //-----Local-----
-        if(Callisto.databaseConnector==null || Callisto.databaseConnector.queueCount()==0)
+        if(StaticBlob.databaseConnector==null || StaticBlob.databaseConnector.queueCount()==0)
             return;
-        if(Callisto.mplayer==null)
+        if(StaticBlob.mplayer==null)
         {
             Log.d("*:playPause","PlayPause initiated");
-            Callisto.mplayer = new MediaPlayer();
-            Callisto.mplayer.setOnCompletionListener(Callisto.trackCompleted);
-            Callisto.mplayer.setOnErrorListener(Callisto.trackCompletedBug);
+            StaticBlob.mplayer = new MediaPlayer();
+            StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
+            StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
             changeToTrack(c, 0, true);
         }
         else
         {
-            Log.d("*:playPause","PlayPause is " + (Callisto.playerInfo.isPaused ? "" : "NOT") + "paused");
-            if(Callisto.playerInfo.isPaused)
+            Log.d("*:playPause","PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
+            if(StaticBlob.playerInfo.isPaused)
             {
-                Callisto.mplayer.start();
+                StaticBlob.mplayer.start();
                 if(v!=null)
-                    ((ImageButton)v).setImageDrawable(Callisto.pauseDrawable);
+                    ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
             }
             else
             {
-                Callisto.mplayer.pause();
+                StaticBlob.mplayer.pause();
                 if(v!=null)
-                    ((ImageButton)v).setImageDrawable(Callisto.playDrawable);
+                    ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
             }
-            Callisto.playerInfo.isPaused = !Callisto.playerInfo.isPaused;
+            StaticBlob.playerInfo.isPaused = !StaticBlob.playerInfo.isPaused;
         }
         CallistoWidget.updateAllWidgets(c);
     }
@@ -371,19 +367,19 @@ public class PlayerControls
     /** Stops the player. Clears the notifications, releases resources, etc. */
     public static void stop(Context c)
     {
-        if(Callisto.playerInfo!=null)
-            Callisto.playerInfo.clear();
-        if(Callisto.mplayer!=null) {
-            Callisto.mplayer.reset();
-            Callisto.mplayer = null;
+        if(StaticBlob.playerInfo!=null)
+            StaticBlob.playerInfo.clear();
+        if(StaticBlob.mplayer!=null) {
+            StaticBlob.mplayer.reset();
+            StaticBlob.mplayer = null;
         }
         if(Live.live_player!=null) {
             Live.live_player.reset();
             Live.live_player = null;
         }
-        Callisto.playerInfo.title = null;
-        Callisto.playerInfo.update(c);
-        Callisto.mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
+        StaticBlob.playerInfo.title = null;
+        StaticBlob.playerInfo.update(c);
+        StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
         CallistoWidget.updateAllWidgets(c);
     }
 }

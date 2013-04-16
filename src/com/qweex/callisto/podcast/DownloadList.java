@@ -25,7 +25,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
 import android.app.ListActivity;
@@ -36,6 +35,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View.OnClickListener;
+import com.qweex.callisto.StaticBlob;
 
 /** An activity to display all the current downloads. 
  * @author MrQweex */
@@ -78,12 +78,12 @@ public class DownloadList extends ListActivity
 		super.onCreate(savedInstanceState);
 		mainListView = getListView();
         try {
-		    mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+		    mainListView.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
         } catch(NullPointerException e) //TODO: This should NEVER happen. Seriously, what the hell.
         {
             if(mainListView==null)
                 Log.e("DownloadList:onCreate", "mainListView is null for some dumb reason");
-            if(Callisto.RESOURCES==null)
+            if(StaticBlob.RESOURCES==null)
                 Log.e("DownloadList:onCreate", "RESOURCES is null for some dumb reason");
             finish();
             return;
@@ -92,9 +92,9 @@ public class DownloadList extends ListActivity
 
         //Empty view
 		TextView noResults = new TextView(this);
-			noResults.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
-			noResults.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
-			noResults.setText(Callisto.RESOURCES.getString(R.string.list_empty));
+			noResults.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+			noResults.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+			noResults.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
 			noResults.setTypeface(null, 2);
 			noResults.setGravity(Gravity.CENTER_HORIZONTAL);
 			noResults.setPadding(10,20,10,20);
@@ -143,8 +143,8 @@ public class DownloadList extends ListActivity
         //Listview things
         listAdapter = new HeaderAdapter(this, headerThings);
 		mainListView.setAdapter(listAdapter);
-		mainListView.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
-		mainListView.setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
+		mainListView.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+		mainListView.setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
 
         //like identical to the stuff above but slightly different.
 	    rebuildHeaderThings = new Handler()
@@ -243,7 +243,7 @@ public class DownloadList extends ListActivity
                     }
                     item.setIcon(R.drawable.ic_action_playback_pause);
                     item.setTitle("Pause");
-                    Callisto.downloading_count = getDownloadCount(this, ACTIVE);
+                    StaticBlob.downloading_count = getDownloadCount(this, ACTIVE);
                     EpisodeDesc.dltask = new DownloadTask(DownloadList.this);
                     DownloadTask.running = true;
                     EpisodeDesc.dltask.execute();
@@ -332,7 +332,7 @@ public class DownloadList extends ListActivity
                     headerThings.remove(0);
              }
 			 listAdapter.notifyDataSetChanged();
-			 Callisto.downloading_count--;
+			 StaticBlob.downloading_count--;
 		  }
     };
 
@@ -418,7 +418,7 @@ public class DownloadList extends ListActivity
             if(isVideo)
                 id = id*-1;
             Log.e(":", "Requested id:" + id);
-            Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
             c.moveToFirst();
 
             //Set the data
@@ -452,8 +452,8 @@ public class DownloadList extends ListActivity
 
             //Progress
             try {
-                String date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
-                File file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+                String date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
+                File file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + show);
                 file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
                 ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
                 int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));

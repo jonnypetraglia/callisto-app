@@ -23,8 +23,8 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
+import com.qweex.callisto.StaticBlob;
 
 /** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener
@@ -52,16 +52,16 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 		boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
 		if(del)
 		{
-	        File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Callisto.playerInfo.show);
-	        target = new File(target,Callisto.playerInfo.date + "__" + Callisto.playerInfo.title + ".mp3");
+	        File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
+	        target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title + ".mp3");
 	        target.delete();
 		}
-		Cursor c = Callisto.databaseConnector.currentQueueItem();
+		Cursor c = StaticBlob.databaseConnector.currentQueueItem();
 		if(c.getCount()==0)
 			return;
 		c.moveToFirst();
 		long id = c.getLong(c.getColumnIndex("identity"));
-		Callisto.databaseConnector.updatePosition(id, 0);
+		StaticBlob.databaseConnector.updatePosition(id, 0);
 		
 		PlayerControls.changeToTrack(this.c, 1, true);
 	}

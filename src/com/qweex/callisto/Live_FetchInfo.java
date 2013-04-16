@@ -71,9 +71,9 @@ public class Live_FetchInfo extends AsyncTask<Void, Void, Void>
                     + ".*?")
             ).matcher(result);
             if(liveMatcher.find())
-                Callisto.playerInfo.title = liveMatcher.group(1);
+                StaticBlob.playerInfo.title = liveMatcher.group(1);
             if(liveMatcher.groupCount()>1)
-                Callisto.playerInfo.show = liveMatcher.group(2);
+                StaticBlob.playerInfo.show = liveMatcher.group(2);
 
             //Send a message to update the player controls
             PlayerInfo.updateHandler.sendEmptyMessage(0);
@@ -91,14 +91,14 @@ public class Live_FetchInfo extends AsyncTask<Void, Void, Void>
         //Update the notification
         Intent notificationIntent = new Intent(Live.LIVE_PreparedListener.c, Callisto.class);
         PendingIntent contentIntent = PendingIntent.getActivity(Live.LIVE_PreparedListener.c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        if(Callisto.notification_playing==null)
+        if(StaticBlob.notification_playing==null)
         {
-            Callisto.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
-            Callisto.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+            StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
+            StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
         }
-        Callisto.notification_playing.setLatestEventInfo(Live.LIVE_PreparedListener.c, Callisto.playerInfo.title,  "JB Radio", contentIntent);
+        StaticBlob.notification_playing.setLatestEventInfo(Live.LIVE_PreparedListener.c, StaticBlob.playerInfo.title,  "JB Radio", contentIntent);
         NotificationManager mNotificationManager =  (NotificationManager) Live.LIVE_PreparedListener.c.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_playing);
+        mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
 
         return null;
     }

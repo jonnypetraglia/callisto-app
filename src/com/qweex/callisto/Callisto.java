@@ -41,17 +41,13 @@ import com.qweex.callisto.irc.IRCChat;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -74,85 +70,15 @@ import android.widget.LinearLayout.LayoutParams;
  */
 public class Callisto extends Activity
 {
-    //-----Static members-----
-    // These are used across the multiple activities
-    /** The media players are used across the app to control playing either live or podcast'ed episodes. */
-    public static MediaPlayer mplayer = null;
-    /** Used to connect to the SQLlite database. For more information, see the DatabaseConnector class.*/
-    public static DatabaseConnector databaseConnector;
-    /** Notifications are used in various activities */
-    public static Notification notification_download, notification_playing, notification_chat, notification_alarm;
-    /** The path on the SD card to store downloaded episodes. Customizable via the settings dialog. */
-    public static String storage_path;
-    /** The number of downloads that has been queued up. */
-    public static int downloading_count = 0;
-    /** The current download number. */
-    public static int current_download = 1;
-    /** One of the various date formats used across various Activities. The usage for most should be self-documenting from the name. */
-    public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss"),
-            sdfRawSimple1 = new SimpleDateFormat("yyyyMMdd"),
-            sdfRawSimple2 = new SimpleDateFormat("HHmmss"),
-            sdfTime = new SimpleDateFormat("hh:mm aa"),
-            sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
-    public static SimpleDateFormat sdfDestination;
-    public static final SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd");
-    public static final SimpleDateFormat sdfHuman = new SimpleDateFormat("MMM d");
-    public static final SimpleDateFormat sdfHumanLong = new SimpleDateFormat("MMM d, yyyy");
-    /** Shared Drawable resources for updating the player control graphics. */
-    public static Drawable playDrawable, pauseDrawable;
-    /** An instance of the PlayerInfo class, to keep track of the info of a track when updating the player controls across the activities. */
-    public static PlayerInfo playerInfo;
-    /** Simply the shared resources of the project, for things like strings, colors, drawables, etc. */
-    public static Resources RESOURCES;
-    /** The value of a dip, to be used programatically when updating a view. */
-    public static float DP;
-    /** One of the Views for the IRC client. Having them static lets them be updated at any time, and not be destroyed when you leave the IRC screen. */
-    public static TextView chatView, logView;
-    /** If you should be a "weirdo" that likes dates in a logically correct manner. */
-    public static boolean europeanDates;
-
-    //------Local variables-----
-    //TODO: wtf
-    static TextView timeView;
-    //TODO: wtf
-    static ProgressBar timeProgress;
     /** Titles for the tabletMenu */
     String[] tabletMenu = new String[] {"Play", "Live", "Plan", "Chat", "Contact", "Donate"};
     /** Ids used for onclicklisteners and the tablet launching activities */
     int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
-
-    // Menu ID for this activity
-    private static final int STOP_ID=Menu.FIRST+1;
-    private static final int SETTINGS_ID=STOP_ID+1;
-    private static final int MORE_ID=SETTINGS_ID+1;
-    private static final int RELEASE_ID=MORE_ID+1;
-    private static final int BACON_ID=RELEASE_ID+1;
-    private static final int QUIT_ID=BACON_ID+1,
-            CHRISROLL_ID=QUIT_ID+1;
-
-    public static OnCompletionListenerWithContext trackCompleted;
-    public static OnErrorListenerWithContext trackCompletedBug;
-    public static OnPreparedListenerWithContext mplayerPrepared;
-    public static final int NOTIFICATION_ID = 1337;
-    public static NotificationManager mNotificationManager;
-    public static SharedPreferences alarmPrefs;
-    public final static String PREF_FILE = "alarms";
-
-    /** The status of the live player; true if it is playing, false if it is paused or not in use. */
-    public static boolean live_isPlaying = false;
-    /** The Version of Callisto. Set to -1 if it cannot be determined. */
-    public static int appVersion = -1;
-    /** Contains whether or not the activity has been launched via the widget. **/
-    public static boolean is_widget;
+    /** Menu ID for this activity */
+    private final int STOP_ID=Menu.FIRST+1, SETTINGS_ID=STOP_ID+1, MORE_ID=SETTINGS_ID+1, RELEASE_ID=MORE_ID+1,
+                      BACON_ID=RELEASE_ID+1, QUIT_ID=BACON_ID+1, CHRISROLL_ID=QUIT_ID+1;
     /** The Dialog for displaying what is new in this version **/
     private Dialog news;
-
-
-    //Live stuff
-    /** Locks the wifi when downloading or streaming **/
-    public static WifiLock Live_wifiLock;
-    //TODO: wtf
-    public static Dialog errorDialog, liveDg;
 
 
     /** Called when the activity is first created. Sets up the view for the main screen and additionally initiates many of the static variables for the app.
@@ -165,52 +91,52 @@ public class Callisto extends Activity
 
         //**********************Do the app creation stuff - The stuff that is done because the app is initializing for the first time**********************************//
         //Get the main app settings (static variables)
-        RESOURCES = getResources();
-        europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
-        sdfDestination = new SimpleDateFormat(europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
-        DP = RESOURCES.getDisplayMetrics().density;
-        Callisto.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
+        StaticBlob.RESOURCES = getResources();
+        StaticBlob.europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
+        StaticBlob.sdfDestination = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
+        StaticBlob.DP = StaticBlob.RESOURCES.getDisplayMetrics().density;
+        StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
         try {
-            Callisto.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            StaticBlob.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
         } catch (NameNotFoundException e) {}
         //This is the most reliable way I've found to determine if it is landscape
         boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 
         //Initialize some static variables
-        mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        alarmPrefs = getApplicationContext().getSharedPreferences(PREF_FILE, MODE_PRIVATE);
-        Callisto.playDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
-        Callisto.pauseDrawable = RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
-        Callisto.databaseConnector = new DatabaseConnector(Callisto.this);
-        Callisto.databaseConnector.open();
-        if(Callisto.playerInfo==null)
-            Callisto.playerInfo = new PlayerInfo(this, Callisto.this);
+        StaticBlob.mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        StaticBlob.alarmPrefs = getApplicationContext().getSharedPreferences(StaticBlob.PREF_FILE, MODE_PRIVATE);
+        StaticBlob.playDrawable = StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
+        StaticBlob.pauseDrawable = StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
+        StaticBlob.databaseConnector = new DatabaseConnector(Callisto.this);
+        StaticBlob.databaseConnector.open();
+        if(StaticBlob.playerInfo==null)
+            StaticBlob.playerInfo = new PlayerInfo(this, Callisto.this);
         else
-            Callisto.playerInfo.update(Callisto.this);
+            StaticBlob.playerInfo.update(Callisto.this);
 
         //Create the views for the the IRC
-        chatView = new TextView(this);
-        chatView.setGravity(Gravity.BOTTOM);
+        StaticBlob.chatView = new TextView(this);
+        StaticBlob.chatView.setGravity(Gravity.BOTTOM);
         String irc_scrollback=PreferenceManager.getDefaultSharedPreferences(this).getString("irc_max_scrollback", "500");
-        chatView.setMaxLines(Integer.parseInt(irc_scrollback));
-        logView = new TextView(this);
-        logView.setGravity(Gravity.BOTTOM);
-        logView.setMaxLines(Integer.parseInt(irc_scrollback));
+        StaticBlob.chatView.setMaxLines(Integer.parseInt(irc_scrollback));
+        StaticBlob.logView = new TextView(this);
+        StaticBlob.logView.setGravity(Gravity.BOTTOM);
+        StaticBlob.logView.setMaxLines(Integer.parseInt(irc_scrollback));
 
         //Creates the dialog for live error
-        errorDialog = new Dialog(this);
+        StaticBlob.errorDialog = new Dialog(this);
         TextView t = new TextView(this);
         t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
-        errorDialog.setContentView(t);
-        errorDialog.setTitle("By the beard of Zeus!");
+        StaticBlob.errorDialog.setContentView(t);
+        StaticBlob.errorDialog.setTitle("By the beard of Zeus!");
 
         //Create the wifi lock
         WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        if(Live_wifiLock==null || !Live_wifiLock.isHeld())
-            Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+        if(StaticBlob.Live_wifiLock==null || !StaticBlob.Live_wifiLock.isHeld())
+            StaticBlob.Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
 
         //Create the dialog for live selection
-        liveDg = new AlertDialog.Builder(this)
+        StaticBlob.liveDg = new AlertDialog.Builder(this)
                 .setTitle("Switch from playlist to live?")
                 .setView(((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
                 .create();
@@ -221,8 +147,8 @@ public class Callisto extends Activity
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
                 if (state == TelephonyManager.CALL_STATE_RINGING) {
-                    if(Callisto.live_isPlaying
-                            || !Callisto.playerInfo.isPaused)
+                    if(StaticBlob.live_isPlaying
+                            || !StaticBlob.playerInfo.isPaused)
                     {
                         PlayerControls.playPause(Callisto.this, null);
                     }
@@ -230,8 +156,8 @@ public class Callisto extends Activity
                 } else if(state == TelephonyManager.CALL_STATE_IDLE) {
                     //Not in call: Play music
                 } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
-                    if(Callisto.live_isPlaying
-                            || !Callisto.playerInfo.isPaused)
+                    if(StaticBlob.live_isPlaying
+                            || !StaticBlob.playerInfo.isPaused)
                     {
                         PlayerControls.playPause(Callisto.this, null);
                     }
@@ -250,36 +176,36 @@ public class Callisto extends Activity
         startService(new Intent(this, CallistoService.class));
 
         //Sets the player error and completion errors
-        trackCompleted = new OnCompletionListenerWithContext();
-        trackCompletedBug = new OnErrorListenerWithContext();
-        mplayerPrepared = new OnPreparedListenerWithContext()
+        StaticBlob.trackCompleted = new OnCompletionListenerWithContext();
+        StaticBlob.trackCompletedBug = new OnErrorListenerWithContext();
+        StaticBlob.mplayerPrepared = new OnPreparedListenerWithContext()
         {
             @Override
             public void onPrepared(MediaPlayer arg0) {
 
-                Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + Callisto.playerInfo.position);
-                Callisto.mplayer.seekTo(Callisto.playerInfo.position);
-                Callisto.playerInfo.length = Callisto.mplayer.getDuration()/1000;
-                Callisto.databaseConnector.putLength(Callisto.playerInfo.title, Callisto.mplayer.getDuration());
+                Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + StaticBlob.playerInfo.position);
+                StaticBlob.mplayer.seekTo(StaticBlob.playerInfo.position);
+                StaticBlob.playerInfo.length = StaticBlob.mplayer.getDuration()/1000;
+                StaticBlob.databaseConnector.putLength(StaticBlob.playerInfo.title, StaticBlob.mplayer.getDuration());
 
-                Log.i("*:mplayer:onPrepared", "Prepared, length is " + Callisto.playerInfo.length);
+                Log.i("*:mplayer:onPrepared", "Prepared, length is " + StaticBlob.playerInfo.length);
                 try {
                     ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
-                    ib.setImageDrawable(Callisto.pauseDrawable);
+                    ib.setImageDrawable(StaticBlob.pauseDrawable);
                 } catch(NullPointerException e) {
                     Log.w("*:mplayer:onPrepared", "Could not find the button");
                 } //Case for when ib is not found
                 catch(ClassCastException e) {} //Case for when it's the widget
-                Log.i("*:mplayer:onPrepared", (startPlaying ? "" : "NOT ") + "Starting to play: " + Callisto.playerInfo.title);
+                Log.i("*:mplayer:onPrepared", (startPlaying ? "" : "NOT ") + "Starting to play: " + StaticBlob.playerInfo.title);
                 if(!startPlaying)
                 {
-                    Callisto.playerInfo.update(c);
+                    StaticBlob.playerInfo.update(c);
                     return;
                 }
                 Log.i("*:mplayer:onPrepared", "HERP");
-                Callisto.mplayer.start();
-                Callisto.playerInfo.isPaused = false;
-                Callisto.playerInfo.update(c);
+                StaticBlob.mplayer.start();
+                StaticBlob.playerInfo.isPaused = false;
+                StaticBlob.playerInfo.update(c);
 
                 if(pd!=null)
                 {
@@ -307,11 +233,11 @@ public class Callisto extends Activity
             Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
 
         //Display the release notes if recently updated
-        if((Callisto.appVersion>lastVersion))
+        if((StaticBlob.appVersion>lastVersion))
         {
             showUpdateNews();
             SharedPreferences.Editor editor = pf.edit();
-            editor.putInt("appVersion", Callisto.appVersion);
+            editor.putInt("appVersion", StaticBlob.appVersion);
             editor.commit();
         }
 
@@ -392,8 +318,8 @@ public class Callisto extends Activity
         if(news!=null)
             news.dismiss();
         Log.v("Callisto:onDestroy", "Destroying main activity");
-        if(errorDialog !=null)
-            errorDialog.dismiss();
+        if(StaticBlob.errorDialog !=null)
+            StaticBlob.errorDialog.dismiss();
         if(Live.LIVE_PreparedListener.pd!=null)
             Live.LIVE_PreparedListener.pd.dismiss();
     }
@@ -408,30 +334,30 @@ public class Callisto extends Activity
         Log.v("Callisto:onResume", "Resuming main activity");
         if(CallistoService.audioJackReceiver!=null)
             CallistoService.audioJackReceiver.contextForPreferences = Callisto.this;
-        if(Callisto.playerInfo!=null)
-            Callisto.playerInfo.update(Callisto.this);
+        if(StaticBlob.playerInfo!=null)
+            StaticBlob.playerInfo.update(Callisto.this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, SETTINGS_ID, 0, RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
-        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
-        theSubMenu.add(0, RELEASE_ID, 0, RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
+        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SETTINGS_ID, 0, StaticBlob.RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
+        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, StaticBlob.RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
+        theSubMenu.add(0, RELEASE_ID, 0, StaticBlob.RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
 
         //Stuffs for the donations stuffs
         if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
         {
             String baconString = "Get Bacon";
-            File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+            File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
             if(target.exists())
-                baconString = RESOURCES.getString(R.string.bacon);
+                baconString = StaticBlob.RESOURCES.getString(R.string.bacon);
             theSubMenu.add(0, BACON_ID, 0, baconString).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
             theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
         }
 
-        menu.add(0, QUIT_ID, 0, RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
+        menu.add(0, QUIT_ID, 0, StaticBlob.RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
         return true;
     }
 
@@ -450,7 +376,7 @@ public class Callisto extends Activity
                 showUpdateNews();
                 return true;
             case BACON_ID:
-                File target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + "extras");
+                File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
                 if(!target.exists())
                 {
                     new downloadExtras().execute((Void[])null);
@@ -467,7 +393,7 @@ public class Callisto extends Activity
                 return true;
             case QUIT_ID:
                 finish();
-                mNotificationManager.cancelAll();
+                StaticBlob.mNotificationManager.cancelAll();
                 android.os.Process.killProcess(android.os.Process.myPid());
                 return true;
             default:
@@ -506,7 +432,7 @@ public class Callisto extends Activity
         horl.setOrientation(LinearLayout.HORIZONTAL);
         horl.addView(mainView, xParams);
         horl.addView(empty, cParams);
-        horl.setBackgroundColor(RESOURCES.getColor(R.color.backClr));
+        horl.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
 
         //Add the views to the total layout
         layout.addView(horl, mParams);
@@ -560,11 +486,11 @@ public class Callisto extends Activity
         @Override
         public void onClick(View v)
         {
-            liveDg.dismiss();
+            StaticBlob.liveDg.dismiss();
             String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
             Intent intent= new Intent(v.getContext(), VideoActivity.class);
             intent.putExtra("uri", "");
-            Callisto.playerInfo.update(v.getContext());
+            StaticBlob.playerInfo.update(v.getContext());
             v.getContext().startActivity(intent);
             return;
         }
@@ -574,13 +500,13 @@ public class Callisto extends Activity
     {
         @Override
         public void onClick(View v) {
-            liveDg.dismiss();
-            if(Live.live_player == null || !Callisto.live_isPlaying)
+            StaticBlob.liveDg.dismiss();
+            if(Live.live_player == null || !StaticBlob.live_isPlaying)
             {
                 Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
-                if(Callisto.mplayer!=null)
-                    Callisto.mplayer.reset();
-                Callisto.mplayer=null;
+                if(StaticBlob.mplayer!=null)
+                    StaticBlob.mplayer.reset();
+                StaticBlob.mplayer=null;
                 Live.LIVE_Init();
                 Live.live_player.setOnPreparedListener(Live.LIVE_PreparedListener);
                 Live.LIVE_PreparedListener.setContext(v.getContext());
@@ -588,8 +514,8 @@ public class Callisto extends Activity
                 Log.d("LiveStream:playButton", "Alright so getting url");
                 try {
                     Live.live_player.setDataSource(live_url);
-                    if(!Live_wifiLock.isHeld())
-                        Live_wifiLock.acquire();
+                    if(!StaticBlob.Live_wifiLock.isHeld())
+                        StaticBlob.Live_wifiLock.acquire();
                     Live.LIVE_Prepare(Callisto.this);
                 } catch (Exception e) {
                     //errorDialog.show();
@@ -600,19 +526,19 @@ public class Callisto extends Activity
             else
             {
                 Log.d("LiveStream:playButton", "Live player does exist.");
-                if(Callisto.live_isPlaying)
+                if(StaticBlob.live_isPlaying)
                 {
                     Log.d("LiveStream:playButton", "Pausing.");
                     Live.live_player.pause();
                 }
                 else
                 {
-                    if(!Live_wifiLock.isHeld())
-                        Live_wifiLock.acquire();
+                    if(!StaticBlob.Live_wifiLock.isHeld())
+                        StaticBlob.Live_wifiLock.acquire();
                     Log.d("LiveStream:playButton", "Playing.");
                     Live.live_player.start();
                 }
-                Callisto.live_isPlaying = !Callisto.live_isPlaying;
+                StaticBlob.live_isPlaying = !StaticBlob.live_isPlaying;
             }
             Log.d("LiveStream:playButton", "Done");
         }
@@ -625,7 +551,7 @@ public class Callisto extends Activity
         public void onClick(final View v)
         {
             Log.d("LiveStream:playButton", "Clicked play button");
-            if(Callisto.mplayer!=null)
+            if(StaticBlob.mplayer!=null)
             {
                 Dialog dg = new AlertDialog.Builder(v.getContext())
                         .setTitle("Switch from playlist to live?")
@@ -634,9 +560,9 @@ public class Callisto extends Activity
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                mNotificationManager.cancel(NOTIFICATION_ID);
-                                mplayer.reset();
-                                mplayer = null;
+                                StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
+                                StaticBlob.mplayer.reset();
+                                StaticBlob.mplayer = null;
                                 v.performClick();
                             }
                         })
@@ -649,9 +575,9 @@ public class Callisto extends Activity
                 dg.show();
                 return;
             }
-            liveDg.show();
-            liveDg.getWindow().findViewById(R.id.audio).setOnClickListener(launchAudio);
-            liveDg.getWindow().findViewById(R.id.video).setOnClickListener(launchVideo);
+            StaticBlob.liveDg.show();
+            StaticBlob.liveDg.getWindow().findViewById(R.id.audio).setOnClickListener(launchAudio);
+            StaticBlob.liveDg.getWindow().findViewById(R.id.video).setOnClickListener(launchVideo);
         }
     };
 
@@ -667,13 +593,13 @@ public class Callisto extends Activity
             final String FILELOC = "http://www.qweex.com/qweexware/callisto/extras/";
             String[] files = {"baconlove.gif", "bryan.mp3", "gangnam.mid", "gangnam.gif"};
             File f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                    storage_path + File.separator +
+                    StaticBlob.storage_path + File.separator +
                     "extras");
             f.mkdir();
             for(int i=0; i<files.length; i++)
             {
                 f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                        storage_path + File.separator +
+                        StaticBlob.storage_path + File.separator +
                         "extras" + File.separator + files[i]);
                 if(f.exists())
                     continue;
@@ -817,7 +743,7 @@ public class Callisto extends Activity
     static public ProgressDialog BaconDialog(Context c, String title, String message)
     {
         if(message==null)
-            message=Callisto.RESOURCES.getString(R.string.loading_msg);
+            message= StaticBlob.RESOURCES.getString(R.string.loading_msg);
         ProgressDialog pDialog = new ProgressDialog(c);
         pDialog.setCancelable(false);
         pDialog.setTitle(title);
@@ -831,7 +757,7 @@ public class Callisto extends Activity
         ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);
         ((View) pDialog.getWindow().findViewById(android.R.id.message)).setPadding(15, 5, 5, 5);
         ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setLayoutParams(new LayoutParams(96, 96));
-        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(RESOURCES.getDrawable(R.drawable.bacon_anim));
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(StaticBlob.RESOURCES.getDrawable(R.drawable.bacon_anim));
         return pDialog;
     }
 

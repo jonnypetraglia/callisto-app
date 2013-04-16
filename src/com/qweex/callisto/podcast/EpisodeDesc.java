@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.qweex.callisto.StaticBlob;
 
 //This activity is for displaying specific information about an episode
 
@@ -101,17 +102,17 @@ public class EpisodeDesc extends Activity
         if(b==null)
         {
             Log.e("EpisodeDesc:OnCreate", "Bundle is null. No extra could be retrieved.");
-            Toast.makeText(EpisodeDesc.this, Callisto.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EpisodeDesc.this, StaticBlob.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
         id = b.getLong("id", 0);
         //Get a cursor with the episode
-        Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+        Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
         if(id==0 || c.getCount()==0)
         {
             Log.e("EpisodeDesc:OnCreate", "Id is invalid/blank");
-            Toast.makeText(EpisodeDesc.this, Callisto.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EpisodeDesc.this, StaticBlob.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -139,7 +140,7 @@ public class EpisodeDesc extends Activity
         ((TextView)findViewById(R.id.description)).setText(description);
         //Date
         try {
-            ((TextView)findViewById(R.id.date)).setText(Callisto.sdfDestination.format(Callisto.sdfRaw.parse(date)));
+            ((TextView)findViewById(R.id.date)).setText(StaticBlob.sdfDestination.format(StaticBlob.sdfRaw.parse(date)));
         } catch (ParseException e1) {
             Log.e("EpisodeDesc:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
             Log.e("EpisodeDesc:ShowListAdapter:ParseException", date);
@@ -155,24 +156,24 @@ public class EpisodeDesc extends Activity
         //Convert the date AGAIN into one that is used for the file path.
         SimpleDateFormat sdfDestination = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            date = sdfDestination.format(Callisto.sdfRaw.parse(date));
+            date = sdfDestination.format(StaticBlob.sdfRaw.parse(date));
         } catch (ParseException e) {
             Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date that has already been parsed:");
             Log.e("ShowList:ShowListAdapter:ParseException", date);
             Log.e("ShowList:ShowListAdapter:ParseException", "(This should SERIOUSLY never happen).");
         }
-        file_location_audio = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+        file_location_audio = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + show);
         file_location_audio = new File(file_location_audio, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(mp3_link));
         if(vid_link!=null)  //Only offer a download for video if one exists.
         {
-            file_location_video = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + show);
+            file_location_video = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + show);
             file_location_video = new File(file_location_video, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(vid_link));
         }
 
         streamButton = ((Button)this.findViewById(R.id.stream));
-        streamButton.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        streamButton.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
         downloadButton = ((Button)this.findViewById(R.id.download));
-        downloadButton.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        downloadButton.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
 
         //-----------Adjust for Landscape--------------------
         if(isLandscape)
@@ -204,7 +205,7 @@ public class EpisodeDesc extends Activity
         }
 
         //If the current playing track finishes, redetermine the buttons
-        Callisto.trackCompleted.setRunnable(new Runnable(){
+        StaticBlob.trackCompleted.setRunnable(new Runnable(){
             public void run() {
                 determineButtons(false);
             }
@@ -237,8 +238,8 @@ public class EpisodeDesc extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, SHARE_ID, 0, Callisto.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_action_share);
+        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SHARE_ID, 0, StaticBlob.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_action_share);
         return true;
     }
 
@@ -258,7 +259,7 @@ public class EpisodeDesc extends Activity
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, "Thought I'd share this with you!");
                 i.putExtra(Intent.EXTRA_TEXT, "Check out this awesome episode of " + show + "!\n\n" + link);
-                startActivity(Intent.createChooser(i, Callisto.RESOURCES.getString(R.string.share)));
+                startActivity(Intent.createChooser(i, StaticBlob.RESOURCES.getString(R.string.share)));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -272,7 +273,7 @@ public class EpisodeDesc extends Activity
         super.onResume();
         Log.v("EpisodeDesc:onResume", "Resuming main activity");
         EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
-        Callisto.playerInfo.update(EpisodeDesc.this);
+        StaticBlob.playerInfo.update(EpisodeDesc.this);
         determineButtons(false);
         if(dltask!=null)
             dltask.context = this;
@@ -283,7 +284,7 @@ public class EpisodeDesc extends Activity
     {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            Callisto.databaseConnector.markNew(id, isChecked); }
+            StaticBlob.databaseConnector.markNew(id, isChecked); }
     };
 
 
@@ -294,12 +295,12 @@ public class EpisodeDesc extends Activity
         public void onClick(View v)
         {
             Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + false + " vid: " + vidSelected);
-            Callisto.databaseConnector.appendToQueue(id, false, vidSelected);
-            if(Callisto.databaseConnector.queueCount()==1)
+            StaticBlob.databaseConnector.appendToQueue(id, false, vidSelected);
+            if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
-            ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
+            ((Button)v).setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
-            Callisto.playerInfo.update(v.getContext());
+            StaticBlob.playerInfo.update(v.getContext());
         }
     };
 
@@ -317,7 +318,7 @@ public class EpisodeDesc extends Activity
             int tempId = -1;
 
             //Check to see if it is currently playing. If it is, go to the next one
-            Cursor c = Callisto.databaseConnector.currentQueueItem();
+            Cursor c = StaticBlob.databaseConnector.currentQueueItem();
             if(c.getCount()!=0)
             {
                 c.moveToFirst();
@@ -325,28 +326,28 @@ public class EpisodeDesc extends Activity
             }
             if(id==tempId)
             {
-                PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
-                Callisto.databaseConnector.advanceQueue(1);
-                boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-                PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+                PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
+                StaticBlob.databaseConnector.advanceQueue(1);
+                boolean isPlaying = (StaticBlob.mplayer!=null && !StaticBlob.mplayer.isPlaying());
+                PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
                 if(isPlaying)
                 {
-                    Callisto.playerInfo.isPaused = true;
-                    Callisto.mplayer.pause();
+                    StaticBlob.playerInfo.isPaused = true;
+                    StaticBlob.mplayer.pause();
                 }
-                Callisto.databaseConnector.advanceQueue(1);
+                StaticBlob.databaseConnector.advanceQueue(1);
             }
 
             //Delete item from the queue if it is in it
-            Callisto.databaseConnector.deleteQueueItem(id);
+            StaticBlob.databaseConnector.deleteQueueItem(id);
 
             //Update the buttons
-            streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
+            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
             streamButton.setOnClickListener(launchStream);
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
             downloadButton.setOnClickListener(launchDownload);
 
-            Callisto.playerInfo.update(v.getContext()); //Update the player controls
+            StaticBlob.playerInfo.update(v.getContext()); //Update the player controls
         }
     };
 
@@ -357,10 +358,10 @@ public class EpisodeDesc extends Activity
         public void onClick(View v)
         {
             Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
-            Callisto.databaseConnector.appendToQueue(id, true, vidSelected);
-            if(Callisto.databaseConnector.queueCount()==1)
+            StaticBlob.databaseConnector.appendToQueue(id, true, vidSelected);
+            if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
-            ((Button)v).setText(Callisto.RESOURCES.getString(R.string.enqueued));
+            ((Button)v).setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
         }
     };
@@ -383,8 +384,8 @@ public class EpisodeDesc extends Activity
                 return;
             }
             //http://www.androidsnippets.com/download-an-http-file-to-sdcard-with-progress-notification
-            Callisto.downloading_count++;
-            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + Callisto.downloading_count);
+            StaticBlob.downloading_count++;
+            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + StaticBlob.downloading_count);
 
             DownloadList.addDownload(v.getContext(), DownloadList.ACTIVE, id, vidSelected);
             DownloadList.removeDownload(v.getContext(), DownloadList.COMPLETED, id, vidSelected);
@@ -452,37 +453,37 @@ public class EpisodeDesc extends Activity
         long curr_size = (vidSelected ? vid_size : mp3_size);
         if(PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getString("ActiveDownloads", "").contains("|" + Long.toString(id) + "|") && !forceNotThere)
         {
-            streamButton.setText(Callisto.RESOURCES.getString(R.string.downloading));
+            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.downloading));
             streamButton.setEnabled(false);
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.cancel));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.cancel));
             downloadButton.setOnClickListener(launchCancel);
         }
         else if(curr.exists() && !forceNotThere)
         {
             if(curr.length()!=curr_size)
             {
-                streamButton.setText(Callisto.RESOURCES.getString(R.string.resume));
+                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.resume));
                 streamButton.setOnClickListener(launchDownload);
-            } else if(Callisto.databaseConnector.isInQueue(id))
+            } else if(StaticBlob.databaseConnector.isInQueue(id))
             {
-                streamButton.setText(Callisto.RESOURCES.getString(R.string.enqueued));
+                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
                 streamButton.setEnabled(false);
             }
             else
             {
                 streamButton.setEnabled(true);
-                streamButton.setText(Callisto.RESOURCES.getString(R.string.play));
+                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.play));
                 streamButton.setOnClickListener(launchPlay);
             }
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.delete));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.delete));
             downloadButton.setOnClickListener(launchDelete);
         }
         else
         {
             streamButton.setEnabled(true);
-            streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
+            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
             streamButton.setOnClickListener(launchStream);
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
             downloadButton.setOnClickListener(launchDownload);
         }
     }

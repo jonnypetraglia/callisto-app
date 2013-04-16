@@ -60,11 +60,11 @@ public class Live
                 live_player.start();
                 LIVE_update = new Live_FetchInfo();
                 LIVE_update.execute((Void [])null);
-                Callisto.live_isPlaying = true;
+                StaticBlob.live_isPlaying = true;
             }
             catch(Exception e)
             {
-                Callisto.errorDialog.show();
+                StaticBlob.errorDialog.show();
                 e.printStackTrace();
             }
         }
@@ -98,8 +98,8 @@ public class Live
                         return true;
                 }
                 try{
-                    if(Callisto.errorDialog !=null)
-                        Callisto.errorDialog.show();
+                    if(StaticBlob.errorDialog !=null)
+                        StaticBlob.errorDialog.show();
                 }catch(Exception e){}
 
                 System.out.println(whatWhat);
@@ -144,7 +144,7 @@ public class Live
     /** Sends an error report to the folks at Qweex. COMPLETELY anonymous. The only information that is sent is the version of Callisto and the version of Android. */
     public static void SendErrorReport(String msg)
     {
-        String errorReport = errorReportURL + "?id=Callisto&v=" + Callisto.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;
+        String errorReport = errorReportURL + "?id=Callisto&v=" + StaticBlob.appVersion + "&err=" + android.os.Build.VERSION.RELEASE + "_" + msg;
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
         HttpGet httpGet = new HttpGet(errorReport);

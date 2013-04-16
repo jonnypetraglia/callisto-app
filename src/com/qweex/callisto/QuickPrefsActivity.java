@@ -120,22 +120,22 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	{
     		//Move folder for storage dir
 	    	String new_path = sharedPreferences.getString("storage_path", "callisto");
-	    	if(new_path==Callisto.storage_path)
+	    	if(new_path== StaticBlob.storage_path)
 	    		return;
 	    	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
 	    	newfile.mkdirs();
 	    	
 	    	File sd = Environment.getExternalStorageDirectory();
-	    	File olddir = new File(sd, Callisto.storage_path);
+	    	File olddir = new File(sd, StaticBlob.storage_path);
 	    	if(!olddir.renameTo(new File(sd, new_path)))
 	    	{
 	    		Toast.makeText(this, "An error occurred while trying to rename the folder. You might have to do it manually.", Toast.LENGTH_SHORT).show();
 	    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");
 	    	}
-		    Callisto.storage_path = new_path;
+		    StaticBlob.storage_path = new_path;
     	}
         //Restart stream if live quality changes
-    	else if("live_url".equals(key) && Callisto.live_isPlaying)
+    	else if("live_url".equals(key) && StaticBlob.live_isPlaying)
     	{
     		String new_radio = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
     		if(!new_radio.equals(oldRadioForLiveQuality))
@@ -147,7 +147,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	}
         //Change the IRC scrollback
     	else if(key.equals("irc_max_scrollback"))
-    		Callisto.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+    		StaticBlob.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
 
     }
     
@@ -177,6 +177,4 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         	return (!newValue.toString().equals("")  &&  newValue.toString().matches("\\d*")); 
         }
     };
-
-
 }

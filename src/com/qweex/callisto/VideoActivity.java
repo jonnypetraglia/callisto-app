@@ -61,13 +61,13 @@ public class VideoActivity extends IRCChat
         {
             try {
                 //Remove existing parent & add it for chat
-                if(Callisto.chatView.getParent()!=null)
-                    ((ScrollView)Callisto.chatView.getParent()).removeView(Callisto.chatView);
-                ((ScrollView) findViewById(R.id.scrollView)).addView(Callisto.chatView);
+                if(StaticBlob.chatView.getParent()!=null)
+                    ((ScrollView) StaticBlob.chatView.getParent()).removeView(StaticBlob.chatView);
+                ((ScrollView) findViewById(R.id.scrollView)).addView(StaticBlob.chatView);
                 //Remove existing parent & add it for log
-                if(Callisto.logView.getParent()!=null)
-                    ((ScrollView)Callisto.logView.getParent()).removeView(Callisto.logView);
-                ((ScrollView) findViewById(R.id.scrollView2)).addView(Callisto.logView);
+                if(StaticBlob.logView.getParent()!=null)
+                    ((ScrollView) StaticBlob.logView.getParent()).removeView(StaticBlob.logView);
+                ((ScrollView) findViewById(R.id.scrollView2)).addView(StaticBlob.logView);
             } catch(Exception e) {}
         }
 

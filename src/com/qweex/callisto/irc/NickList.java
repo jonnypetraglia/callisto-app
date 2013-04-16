@@ -22,8 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 
 import java.util.HashSet;
 import java.util.List;
@@ -91,7 +91,7 @@ public class NickList extends ListActivity
             else if(Voices.contains(content.get(pos).toLowerCase()))
                 pre = "+";
             ((TextView)v.findViewById(android.R.id.text1)).setText(pre + content.get(pos));
-            ((TextView)v.findViewById(android.R.id.text1)).setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)v.findViewById(android.R.id.text1)).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
             return v;
         }
     }

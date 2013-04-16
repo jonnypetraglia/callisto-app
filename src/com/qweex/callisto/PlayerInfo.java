@@ -57,9 +57,9 @@ public class PlayerInfo
     {
         this.callisto = callisto;
         TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
-        Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + Callisto.databaseConnector.queueCount());
+        Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
         if(titleView!=null)
-            titleView.setText(Callisto.RESOURCES.getString(R.string.queue_size) + ": " + Callisto.databaseConnector.queueCount());
+            titleView.setText(StaticBlob.RESOURCES.getString(R.string.queue_size) + ": " + StaticBlob.databaseConnector.queueCount());
     }
 
     /** Updates the player controls, like the title and times. Used excessively when changing Activities.
@@ -71,13 +71,13 @@ public class PlayerInfo
         CallistoService.audioJackReceiver.contextForPreferences = c;
 
         //If it's a widget there is no need to update the controls.
-        if(Callisto.is_widget)
+        if(StaticBlob.is_widget)
         {
-            Callisto.is_widget = false;
+            StaticBlob.is_widget = false;
             return;
         }
 
-        Callisto.trackCompleted.setContext(c);
+        StaticBlob.trackCompleted.setContext(c);
 
         //Retrieve the length & position, depending on if it is video or audio
         if(VideoActivity.videoView!=null)
@@ -85,10 +85,10 @@ public class PlayerInfo
             length = VideoActivity.videoView.getDuration()/1000;
             position = VideoActivity.videoView.getCurrentPosition()/1000;
         }
-        else if(Callisto.mplayer!=null)
+        else if(StaticBlob.mplayer!=null)
         {
-            length = Callisto.mplayer.getDuration()/1000;
-            position = Callisto.mplayer.getCurrentPosition()/1000;
+            length = StaticBlob.mplayer.getDuration()/1000;
+            position = StaticBlob.mplayer.getCurrentPosition()/1000;
         }
 
         Log.v("*:update", "Update - Title: " + title);
@@ -99,25 +99,25 @@ public class PlayerInfo
             Log.w("Callisto:update", "Could not find view: " + "titleView");
         else
         if(title==null && Live.live_player==null)
-            titleView.setText("Playlist size: " + Callisto.databaseConnector.queueCount());
+            titleView.setText("Playlist size: " + StaticBlob.databaseConnector.queueCount());
         else if(Live.live_player==null)
             titleView.setText(title + " - " + show);
         else
             titleView.setText(title + " - JB Radio");
 
         //timeView
-        Callisto.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
-        if(Callisto.timeView==null)
+        StaticBlob.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
+        if(StaticBlob.timeView==null)
             Log.w("Callisto:update", "Could not find view: " + "TimeView");
         else if(Live.live_player!=null)
         {
-            Callisto.timeView.setText("Next ");
-            Callisto.timeView.setEnabled(false);
+            StaticBlob.timeView.setText("Next ");
+            StaticBlob.timeView.setEnabled(false);
         }
         else
         {
-            Callisto.timeView.setText(Callisto.formatTimeFromSeconds(title == null ? 0 : position));
-            Callisto.timeView.setEnabled(true);
+            StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(title == null ? 0 : position));
+            StaticBlob.timeView.setEnabled(true);
         }
 
         //lengthView
@@ -136,20 +136,20 @@ public class PlayerInfo
         }
 
         //timeProgress
-        Callisto.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
-        if(Callisto.timeProgress==null)
+        StaticBlob.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
+        if(StaticBlob.timeProgress==null)
             Log.w("Callisto:update", "Could not find view: " + "timeProgress");
         else if(Live.live_player!=null)
         {
-            Callisto.timeProgress.setMax(1);
-            Callisto.timeProgress.setProgress(0);
-            Callisto.timeProgress.setEnabled(false);
+            StaticBlob.timeProgress.setMax(1);
+            StaticBlob.timeProgress.setProgress(0);
+            StaticBlob.timeProgress.setEnabled(false);
         }
         else
         {
-            Callisto.timeProgress.setMax(length);
-            Callisto.timeProgress.setProgress(title==null ? 0 : position);
-            Callisto.timeProgress.setEnabled(true);
+            StaticBlob.timeProgress.setMax(length);
+            StaticBlob.timeProgress.setProgress(title==null ? 0 : position);
+            StaticBlob.timeProgress.setEnabled(true);
         }
 
 
@@ -158,16 +158,16 @@ public class PlayerInfo
             Log.w("Callisto:update", "Could not find view: " + "playPause");
         else if(Live.live_player!=null)
         {
-            if(Callisto.live_isPlaying)
-                play.setImageDrawable(Callisto.pauseDrawable);
+            if(StaticBlob.live_isPlaying)
+                play.setImageDrawable(StaticBlob.pauseDrawable);
             else
-                play.setImageDrawable(Callisto.playDrawable);
+                play.setImageDrawable(StaticBlob.playDrawable);
         } else
         {
-            if(Callisto.playerInfo.isPaused)
-                play.setImageDrawable(Callisto.playDrawable);
+            if(StaticBlob.playerInfo.isPaused)
+                play.setImageDrawable(StaticBlob.playDrawable);
             else
-                play.setImageDrawable(Callisto.pauseDrawable);
+                play.setImageDrawable(StaticBlob.pauseDrawable);
         }
 
         //Disables views if it is live
@@ -219,7 +219,7 @@ public class PlayerInfo
         public void run()
         {
             i++;
-            if(Live.live_player!=null && Callisto.live_isPlaying)
+            if(Live.live_player!=null && StaticBlob.live_isPlaying)
             {
                 if(i==CHECK_LIVE_EVERY)
                 {
@@ -229,7 +229,7 @@ public class PlayerInfo
                 }
                 return;
             }
-            if((Callisto.mplayer==null || !Callisto.mplayer.isPlaying()) &&
+            if((StaticBlob.mplayer==null || !StaticBlob.mplayer.isPlaying()) &&
                     (VideoActivity.videoView==null || !VideoActivity.videoView.isPlaying()))
             {
                 i=0;
@@ -237,19 +237,19 @@ public class PlayerInfo
             }
             try {
                 if(VideoActivity.videoView!=null)
-                    Callisto.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
+                    StaticBlob.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
                 else
-                    Callisto.playerInfo.position = Callisto.mplayer.getCurrentPosition();
-                current = Callisto.playerInfo.position/1000;
-                Callisto.timeProgress.setProgress(current);
-                Callisto.timeView.setText(Callisto.formatTimeFromSeconds(current));
-                Log.i("Callisto:TimerMethod", "Timer mon " + Callisto.playerInfo.position);
+                    StaticBlob.playerInfo.position = StaticBlob.mplayer.getCurrentPosition();
+                current = StaticBlob.playerInfo.position/1000;
+                StaticBlob.timeProgress.setProgress(current);
+                StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(current));
+                Log.i("Callisto:TimerMethod", "Timer mon " + StaticBlob.playerInfo.position);
 
                 Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
                 if(Queue.currentProgress!=null)
                 {
-                    Log.i("currentprogress", current + "/" + Callisto.playerInfo.length);
-                    double xy = (current*100.0) / Callisto.playerInfo.length;
+                    Log.i("currentprogress", current + "/" + StaticBlob.playerInfo.length);
+                    double xy = (current*100.0) / StaticBlob.playerInfo.length;
                     Log.i("currentprogress", xy + " !");
                     Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
                 }
@@ -259,11 +259,11 @@ public class PlayerInfo
                 {
                     i=0;
                     try {
-                        Log.v("Callisto:TimerMethod", "Updating position: " + Callisto.playerInfo.position);
-                        Cursor queue = Callisto.databaseConnector.currentQueueItem();
+                        Log.v("Callisto:TimerMethod", "Updating position: " + StaticBlob.playerInfo.position);
+                        Cursor queue = StaticBlob.databaseConnector.currentQueueItem();
                         queue.moveToFirst();
                         Long identity = queue.getLong(queue.getColumnIndex("identity"));
-                        Callisto.databaseConnector.updatePosition(identity, Callisto.playerInfo.position);
+                        StaticBlob.databaseConnector.updatePosition(identity, StaticBlob.playerInfo.position);
                     } catch(NullPointerException e)
                     {
                         Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
@@ -283,7 +283,7 @@ public class PlayerInfo
         public void handleMessage(Message msg)
         {
             if(Live.LIVE_PreparedListener.c!=null)
-                Callisto.playerInfo.update(Live.LIVE_PreparedListener.c);
+                StaticBlob.playerInfo.update(Live.LIVE_PreparedListener.c);
         }
     };
 }

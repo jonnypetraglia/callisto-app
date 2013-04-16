@@ -57,6 +57,7 @@ import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import com.qweex.callisto.StaticBlob;
 
 /** An activity for displaying the episodes of a show.
  * @author MrQweex */
@@ -104,17 +105,17 @@ public class ShowList extends Activity
         filter = showSettings.getBoolean("filter", false);
         loading = (TextView) findViewById(android.R.id.empty);
         //If it has been checked before but there are no episodes, show that it is empty, not just loading.
-        if(Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter).getCount()==0)
-            loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
+        if(StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter).getCount()==0)
+            loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
         else
-            loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+            loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
         loading.setGravity(Gravity.CENTER_HORIZONTAL);
         //If it has never been checked before add a refresh button
         if(showSettings.getString("last_checked", null)==null)
         {
             refresh = new Button(this);
-            refresh.setText(Callisto.RESOURCES.getString(R.string.refresh));
-            refresh.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+            refresh.setText(StaticBlob.RESOURCES.getString(R.string.refresh));
+            refresh.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
             p.setMargins(20,10,20,10);
             refresh.setLayoutParams(p);
@@ -127,7 +128,7 @@ public class ShowList extends Activity
                 }
             });
             ((LinearLayout)mainListView.getParent()).addView(refresh,1);
-            ((LinearLayout)mainListView.getParent()).setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+            ((LinearLayout)mainListView.getParent()).setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
             mainListView.setEmptyView(refresh);
             loading.setVisibility(View.INVISIBLE);
         }
@@ -142,7 +143,7 @@ public class ShowList extends Activity
         setTitle(AllShows.SHOW_LIST[currentShow]);
         //Get the shows from the SQL; make it async because of reasons
         new GetShowTask().execute((Object[]) null);
-        Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+        Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
         showAdapter = new ShowListCursorAdapter(ShowList.this, R.layout.row, r);
         mainListView.setAdapter(showAdapter);
         return;
@@ -154,7 +155,7 @@ public class ShowList extends Activity
     {
         super.onResume();
         setProgressBarIndeterminateVisibility(false);
-        Callisto.playerInfo.update(ShowList.this);      //Update player controls
+        StaticBlob.playerInfo.update(ShowList.this);      //Update player controls
 
         if(current_episode==null)       //If we aren't returning from an EpisodeDesc, we're done.
             return;
@@ -163,21 +164,21 @@ public class ShowList extends Activity
             long id = Long.parseLong(
                     (String) ((TextView) current_episode.findViewById(R.id.hiddenId)).getText()
             );  //Get the id of the episode that was visited in an EpisodeDesc
-            Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
             c.moveToFirst();
 
             //New marker
             boolean is_new = c.getInt(c.getColumnIndex("new"))>0;
             ((CheckBox)current_episode.findViewById(R.id.img)).setChecked(is_new);
 
-            Date tempDate = Callisto.sdfRaw.parse(c.getString(c.getColumnIndex("date")));   //Need this for file location
+            Date tempDate = StaticBlob.sdfRaw.parse(c.getString(c.getColumnIndex("date")));   //Need this for file location
             String title = c.getString(c.getColumnIndex("title")),
                     mp3_link = c.getString(c.getColumnIndex("mp3link")),     //Need this for file extension
                     vid_link = c.getString(c.getColumnIndex("vidlink"));     // ^
-            File music_file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            music_file_location = new File(music_file_location, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-            File video_file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            video_file_location = new File(video_file_location, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+            File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+            File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
             boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
             if(inDLQueue || music_file_location.exists() || video_file_location.exists())   //If it's in DL queue or either format exists
@@ -228,11 +229,11 @@ public class ShowList extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, Callisto.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, RELOAD_ID, 0, Callisto.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_action_reload);
-        menu.add(0, CLEAR_ID, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
-        menu.add(0, FILTER_ID, 0, Callisto.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_action_filter);
-        menu.add(0, MARK_ID, 0, Callisto.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_action_tick);
+        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, RELOAD_ID, 0, StaticBlob.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_action_reload);
+        menu.add(0, CLEAR_ID, 0, StaticBlob.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
+        menu.add(0, FILTER_ID, 0, StaticBlob.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_action_filter);
+        menu.add(0, MARK_ID, 0, StaticBlob.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_action_tick);
         return true;
     }
 
@@ -252,14 +253,14 @@ public class ShowList extends Activity
                 return true;
             case CLEAR_ID:  //Show a dialog to clear all items of this show from the SQL database
                 new AlertDialog.Builder(this)
-                        .setTitle(Callisto.RESOURCES.getString(R.string.confirm))
-                        .setMessage(Callisto.RESOURCES.getString(R.string.confirm_clear))
+                        .setTitle(StaticBlob.RESOURCES.getString(R.string.confirm))
+                        .setMessage(StaticBlob.RESOURCES.getString(R.string.confirm_clear))
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
-                                Callisto.databaseConnector.clearShow(AllShows.SHOW_LIST[currentShow]);
-                                Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+                                loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+                                StaticBlob.databaseConnector.clearShow(AllShows.SHOW_LIST[currentShow]);
+                                Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                                 SharedPreferences.Editor editor = showSettings.edit();
@@ -271,10 +272,10 @@ public class ShowList extends Activity
             case FILTER_ID: //Filter or unfilter the results showing only new or all
                 filter = !filter;
                 if(filter)
-                    item.setTitle(Callisto.RESOURCES.getString(R.string.unfilter));
+                    item.setTitle(StaticBlob.RESOURCES.getString(R.string.unfilter));
                 else
-                    item.setTitle(Callisto.RESOURCES.getString(R.string.filter));
-                Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+                    item.setTitle(StaticBlob.RESOURCES.getString(R.string.filter));
+                Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
                 SharedPreferences.Editor editor = showSettings.edit();
@@ -283,18 +284,18 @@ public class ShowList extends Activity
                 return true;
             case MARK_ID:   //Mark all in the show as new or old
                 new AlertDialog.Builder(this)
-                        .setTitle(Callisto.RESOURCES.getString(R.string.mark_all))
-                        .setPositiveButton(Callisto.RESOURCES.getString(R.string.new_), new DialogInterface.OnClickListener() {
+                        .setTitle(StaticBlob.RESOURCES.getString(R.string.mark_all))
+                        .setPositiveButton(StaticBlob.RESOURCES.getString(R.string.new_), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Callisto.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], true);
-                                Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+                                StaticBlob.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], true);
+                                Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }})
-                        .setNegativeButton(Callisto.RESOURCES.getString(R.string.old), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(StaticBlob.RESOURCES.getString(R.string.old), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Callisto.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], false);
-                                Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+                                StaticBlob.databaseConnector.markAllNew(AllShows.SHOW_LIST[currentShow], false);
+                                Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }}).show();
@@ -311,7 +312,7 @@ public class ShowList extends Activity
             refresh.setVisibility(View.GONE);
         loading.setVisibility(View.VISIBLE);
         mainListView.setEmptyView(loading);
-        loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+        loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
         setProgressBarIndeterminateVisibility(true);
         new UpdateShowTask().execute((Object[]) null);
         new GetShowTask().execute((Object[]) null);
@@ -325,7 +326,7 @@ public class ShowList extends Activity
         {
             if(msg.arg1!=0)
             {
-                Cursor r = Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
+                Cursor r = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
                 Log.i("ShowList:handleMessage", "Changing cursor");
@@ -333,7 +334,7 @@ public class ShowList extends Activity
             else
             {
                 Log.i("ShowList:handleMessage", "Not Changing cursor");
-                loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
+                loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
             }
         }
     };
@@ -346,7 +347,7 @@ public class ShowList extends Activity
         protected void onPreExecute()
         {
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
-            loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+            loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
         }
 
         @Override
@@ -360,11 +361,11 @@ public class ShowList extends Activity
         protected void onPostExecute(Object result)
         {
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
-            loading.setText(Callisto.RESOURCES.getString(R.string.list_empty));
+            loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
             if(result==null)
             {
                 Log.w("ShowList:UpdateShowTask", "An error occurred while updating the show " + currentShow);
-                Toast.makeText(ShowList.this, Callisto.RESOURCES.getString(R.string.update_error), Toast.LENGTH_LONG).show();
+                Toast.makeText(ShowList.this, StaticBlob.RESOURCES.getString(R.string.update_error), Toast.LENGTH_LONG).show();
             }
             else if(mainListView!=null)
                 ShowList.this.updateHandler.sendMessage((Message) result);
@@ -378,7 +379,7 @@ public class ShowList extends Activity
         @Override
         protected Cursor doInBackground(Object... params)
         {
-            return Callisto.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], ShowList.this.filter);
+            return StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[currentShow], ShowList.this.filter);
         }
 
         @Override
@@ -412,11 +413,11 @@ public class ShowList extends Activity
         {
             Long id = Long.parseLong((String)
                     ((TextView)((View) buttonView.getParent()).findViewById(R.id.hiddenId)).getText());
-            Callisto.databaseConnector.markNew(
+            StaticBlob.databaseConnector.markNew(
                     id
                     , isChecked);
             Log.v("ShowList:toggleNew", "Toggling new for:" + id + " is " + isChecked);
-            Cursor c = Callisto.databaseConnector.getOneEpisode(id);
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
             c.moveToFirst();
         }
     };
@@ -451,7 +452,7 @@ public class ShowList extends Activity
 
             //Get info for selected episode
             long id = this.c.getLong(this.c.getColumnIndex("_id"));
-            this.c = Callisto.databaseConnector.getOneEpisode(id);
+            this.c = StaticBlob.databaseConnector.getOneEpisode(id);
             this.c.moveToFirst();
             String date = this.c.getString(this.c.getColumnIndex("date"));
             String title = this.c.getString(this.c.getColumnIndex("title"));
@@ -465,11 +466,11 @@ public class ShowList extends Activity
             //date
             String d = date;
             try {
-                tempDate = Callisto.sdfRaw.parse(d);
+                tempDate = StaticBlob.sdfRaw.parse(d);
                 if(tempDate.getYear()==thisYear)
-                    d = Callisto.sdfHuman.format(tempDate);
+                    d = StaticBlob.sdfHuman.format(tempDate);
                 else
-                    d = Callisto.sdfHumanLong.format(tempDate);
+                    d = StaticBlob.sdfHumanLong.format(tempDate);
                 //d = Callisto.sdfDestination.format();
             } catch (ParseException e) {
                 Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
@@ -481,10 +482,10 @@ public class ShowList extends Activity
 
 
             //Set the effects for if the episode has been downloaded or is in queue, etc
-            File music_file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            music_file_location = new File(music_file_location, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-            File video_file_location = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-            video_file_location = new File(video_file_location, Callisto.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+            File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+            File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+            video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
             boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
             if(inDLQueue || music_file_location.exists() || video_file_location.exists())
             {

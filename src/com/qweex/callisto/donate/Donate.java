@@ -56,8 +56,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 
 //FEATURE: Use the developer payload to write a note to Chris
 
@@ -143,12 +143,12 @@ public class Donate extends ListActivity
     {
         super.onCreate(savedInstanceState);
         setTitle("Donate");
-        if(Callisto.RESOURCES==null)
-            Callisto.RESOURCES = getResources();
+        if(StaticBlob.RESOURCES==null)
+            StaticBlob.RESOURCES = getResources();
 
         //Prepare the listview's appearance
         itemsList = getListView();
-        itemsList.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
+        itemsList.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
 
         //Prepare the header's appearance
         TextView header = new TextView(this);
@@ -165,7 +165,7 @@ public class Donate extends ListActivity
         TextView dollarsign = new TextView(this);
         dollarsign.setTextSize(20f);
         dollarsign.setText("$");
-        dollarsign.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        dollarsign.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
         CustomAmount = new EditText(this);
         CustomAmount.setId(NAME_ID);
         CustomAmount.setTextSize(20f);
@@ -228,7 +228,7 @@ public class Donate extends ListActivity
 
         //Prepare the message & button's appearance
         msgView = new TextView(this);
-        msgView.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        msgView.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
         msgView.setTextSize(12f);
         msgView.setText(Html.fromHtml("100% of your donation will go "
                 + "<i>directly</i>"
@@ -254,7 +254,7 @@ public class Donate extends ListActivity
                 }
             }
         };
-        baconPDialog = ProgressDialog.show(Donate.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+        baconPDialog = ProgressDialog.show(Donate.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
         baconPDialog.setCancelable(true);
         baconPDialog.setOnCancelListener(new OnCancelListener() {
             @Override
@@ -272,9 +272,9 @@ public class Donate extends ListActivity
         //contentLayout.addView(GiveChrisSomeHardEarnedMoney);
 		/*-------------------*/
 
-        itemsList.setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
-        itemsList.setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
-        header.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+        itemsList.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        itemsList.setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        header.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
         header.setTextSize(25f);
         itemsList.addHeaderView(header);
         itemsList.addFooterView(contentLayout);
@@ -325,7 +325,7 @@ public class Donate extends ListActivity
                 name = new TextView(this.context);
                 name.setId(NAME_ID);
                 name.setTextSize(20f);
-                name.setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+                name.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
                 name.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
                 //Create da radio
                 select = new RadioButton(this.context);

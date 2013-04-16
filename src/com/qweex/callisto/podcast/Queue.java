@@ -15,7 +15,6 @@ package com.qweex.callisto.podcast;
 
 import android.widget.*;
 import com.andrefy.ddviewlist.DDListView;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 
@@ -31,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import com.qweex.callisto.StaticBlob;
 
 /** An activity for showing the queued episodes.
  * @author MrQweex */
@@ -56,7 +56,7 @@ public class Queue extends ListActivity
     {
         // Do some create things
         super.onCreate(savedInstanceState);
-        setTitle(Callisto.RESOURCES.getString(R.string.queue));
+        setTitle(StaticBlob.RESOURCES.getString(R.string.queue));
         mainListView = new DDListView(this, null);
         mainListView.setId(android.R.id.list);
         mainListView.setDropListener(mDropListener, R.id.grabber);
@@ -69,7 +69,7 @@ public class Queue extends ListActivity
         TextView noResults = new TextView(this);
         noResults.setBackgroundColor(getResources().getColor(R.color.backClr));
         noResults.setTextColor(getResources().getColor(R.color.txtClr));
-        noResults.setText(Callisto.RESOURCES.getString(R.string.list_empty));
+        noResults.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
         noResults.setTypeface(null, 2);
         noResults.setGravity(Gravity.CENTER_HORIZONTAL);
         noResults.setPadding(10,20,10,20);
@@ -77,7 +77,7 @@ public class Queue extends ListActivity
         mainListView.setEmptyView(noResults);
 
         //Get der queue
-        queue = Callisto.databaseConnector.getQueue();
+        queue = StaticBlob.databaseConnector.getQueue();
 
         //Create the adapter
         String[] from = new String[] {"_id", "identity"};
@@ -91,7 +91,7 @@ public class Queue extends ListActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, Menu.FIRST, 0, Callisto.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
+        menu.add(0, Menu.FIRST, 0, StaticBlob.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
         return true;
     }
 
@@ -103,13 +103,13 @@ public class Queue extends ListActivity
         {
             case Menu.FIRST:
                 Log.d("Queue:onOptionsItemSelected", "Clearing queue");
-                if(Callisto.mplayer!=null)
-                    Callisto.mplayer.stop();
-                Callisto.databaseConnector.clearQueue();
-                listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+                if(StaticBlob.mplayer!=null)
+                    StaticBlob.mplayer.stop();
+                StaticBlob.databaseConnector.clearQueue();
+                listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
                 Log.d("Queue:onOptionsItemSelected", "Cursor changed");
                 updateNowPlaying(0);
-                Callisto.playerInfo.isPaused = true;
+                StaticBlob.playerInfo.isPaused = true;
                 Log.d("Queue:onOptionsItemSelected", "Derp");
                 return true;
             default:
@@ -126,10 +126,10 @@ public class Queue extends ListActivity
         {
             TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
             long id = Long.parseLong((String) tv.getText());
-            Callisto.databaseConnector.move(id, 1);
+            StaticBlob.databaseConnector.move(id, 1);
             updateNowPlaying(id);
 
-            listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+            listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
             //NowPlaying.this.listAdapter.notifyDataSetChanged();
         }
     };
@@ -143,10 +143,10 @@ public class Queue extends ListActivity
         {
             TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
             long id = Long.parseLong((String) tv.getText());
-            Callisto.databaseConnector.move(id, -1);
+            StaticBlob.databaseConnector.move(id, -1);
             updateNowPlaying(id);
 
-            listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+            listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
         }
     };
 
@@ -156,19 +156,19 @@ public class Queue extends ListActivity
     {
         if(id==0)
         {
-            Callisto.playerInfo.title = null;
-            Callisto.playerInfo.show = null;
-            Callisto.playerInfo.date = "";
-            Callisto.playerInfo.position = 0;
-            Callisto.playerInfo.length = 0;
+            StaticBlob.playerInfo.title = null;
+            StaticBlob.playerInfo.show = null;
+            StaticBlob.playerInfo.date = "";
+            StaticBlob.playerInfo.position = 0;
+            StaticBlob.playerInfo.length = 0;
             return;
         }
-        Cursor c2 = Callisto.databaseConnector.getOneEpisode(id);
+        Cursor c2 = StaticBlob.databaseConnector.getOneEpisode(id);
         c2.moveToFirst();
-        Callisto.playerInfo.title = c2.getString(c2.getColumnIndex("title"));
-        Callisto.playerInfo.show = c2.getString(c2.getColumnIndex("show"));
-        Callisto.playerInfo.date = c2.getString(c2.getColumnIndex("date"));
-        Callisto.playerInfo.position = c2.getInt(c2.getColumnIndex("position"));
+        StaticBlob.playerInfo.title = c2.getString(c2.getColumnIndex("title"));
+        StaticBlob.playerInfo.show = c2.getString(c2.getColumnIndex("show"));
+        StaticBlob.playerInfo.date = c2.getString(c2.getColumnIndex("date"));
+        StaticBlob.playerInfo.position = c2.getInt(c2.getColumnIndex("position"));
     }
 
     /** Listener for the remove button ("x"). */
@@ -182,7 +182,7 @@ public class Queue extends ListActivity
             long id = Long.parseLong((String) tv.getText());
             long current_id = id;
 
-            Cursor c = Callisto.databaseConnector.currentQueueItem();
+            Cursor c = StaticBlob.databaseConnector.currentQueueItem();
 
             if(c.getCount()==0)
                 updateNowPlaying(0);
@@ -194,17 +194,17 @@ public class Queue extends ListActivity
                 if(id==current_id)
                 {
                     Log.d("Queue:removeItem", "Removing the current item; advancing to next");
-                    boolean isPlaying = (Callisto.mplayer!=null && !Callisto.mplayer.isPlaying());
-                    PlayerControls.changeToTrack(v.getContext(), 1, !Callisto.playerInfo.isPaused);
+                    boolean isPlaying = (StaticBlob.mplayer!=null && !StaticBlob.mplayer.isPlaying());
+                    PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
                     if(isPlaying)
                     {
                         Log.d("Queue:removeItem", "Track is playing");
-                        Callisto.playerInfo.isPaused = true;
+                        StaticBlob.playerInfo.isPaused = true;
                     }
                 }
             }
-            Callisto.databaseConnector.move(id, 0);
-            listAdapter.changeCursor(Callisto.databaseConnector.getQueue());
+            StaticBlob.databaseConnector.move(id, 0);
+            listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
             Log.d("Queue:removeItem", "Done");
         }
     };
@@ -243,7 +243,7 @@ public class Queue extends ListActivity
                     mainListView.mItemHeightNormal = v.getMeasuredHeight();
                     mainListView.mItemHeightHalf = mainListView.mItemHeightNormal / 2;
                     mainListView.mItemHeightExpanded = mainListView.mItemHeightNormal * 2;
-                    mainListView.mItemColor = Callisto.RESOURCES.getColor(R.color.backClr);
+                    mainListView.mItemColor = StaticBlob.RESOURCES.getColor(R.color.backClr);
                     Log.d(":", "MEASURED");
                 } catch(NullPointerException e){}
             }
@@ -264,9 +264,9 @@ public class Queue extends ListActivity
 
             //Update the progressbar height
             try {
-                Cursor time = Callisto.databaseConnector.getOneEpisode(identity);
+                Cursor time = StaticBlob.databaseConnector.getOneEpisode(identity);
                 time.moveToFirst();
-                int xy = (int) (time.getLong(time.getColumnIndex("position"))*100.0 / Callisto.databaseConnector.getLength(identity));
+                int xy = (int) (time.getLong(time.getColumnIndex("position"))*100.0 / StaticBlob.databaseConnector.getLength(identity));
                 ((ProgressBar)v.findViewById(R.id.progress)).setProgress(Double.isNaN(xy) ? 0 : xy);
             } catch(Exception e){
                 ((ProgressBar)v.findViewById(R.id.progress)).setProgress(0);
@@ -277,7 +277,7 @@ public class Queue extends ListActivity
 
 
             //-------Ok before we were dealing with queue information now we actually deal with the info from the episode itself.
-            Cursor c_actualEpisode = Callisto.databaseConnector.getOneEpisode(identity);
+            Cursor c_actualEpisode = StaticBlob.databaseConnector.getOneEpisode(identity);
             if(c_actualEpisode.getCount()==0)
                 return v;
             c_actualEpisode.moveToFirst();
@@ -335,7 +335,7 @@ public class Queue extends ListActivity
             int toID   = Integer.parseInt(((TextView)mainListView.getChildAt(to - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
             //int fromID = from+1, toID = to+1;
 
-            Callisto.databaseConnector.moveQueue(Queue.FromID, toID+1);
+            StaticBlob.databaseConnector.moveQueue(Queue.FromID, toID+1);
             Toast.makeText(Queue.this,"Moved, pray to the gods it has worked", Toast.LENGTH_SHORT);
             listAdapter.getCursor().requery();
             listAdapter.notifyDataSetChanged();

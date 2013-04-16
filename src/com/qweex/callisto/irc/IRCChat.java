@@ -24,9 +24,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.*;
 import android.text.style.ImageSpan;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
+import com.qweex.callisto.StaticBlob;
 import com.qweex.callisto.VideoActivity;
 import jerklib.*;
 import jerklib.events.*;
@@ -159,15 +159,15 @@ public class IRCChat extends Activity implements IRCEventListener
                         if(received==null || received.equals(new SpannableString("")))
                             return;
 
-                        View view = Callisto.chatView;
+                        View view = StaticBlob.chatView;
                         Log.e("AtBottom", view + " " + sv);
                         boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= 0;
 
-                        Callisto.chatView.append(received);
-                        Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
-                        Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
+                        StaticBlob.chatView.append(received);
+                        Linkify.addLinks(StaticBlob.chatView, Linkify.EMAIL_ADDRESSES);
+                        Linkify.addLinks(StaticBlob.chatView, Linkify.WEB_URLS);
                         received = new SpannableString("");
-                        Callisto.chatView.invalidate();
+                        StaticBlob.chatView.invalidate();
 
                         System.out.println(view.getBottom()-(sv.getHeight()+sv.getScrollY()));
                         if(atBottom)
@@ -204,14 +204,14 @@ public class IRCChat extends Activity implements IRCEventListener
                 getWindowManager().getDefaultDisplay().getHeight()/10,
                 0);
 
-        login.setCompoundDrawables(Callisto.RESOURCES.getDrawable(R.drawable.ic_action_key), null, null, null);
+        login.setCompoundDrawables(StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_key), null, null, null);
 
         login.setOnClickListener(InitiateLogin);
 
         //Build the ChangeNickDialog
         changeNickDialog = new PopupWindow(this);
         android.widget.FrameLayout fl = new android.widget.FrameLayout(this);
-        fl.setPadding((int)(10*Callisto.DP), (int)(10*Callisto.DP), (int)(10*Callisto.DP), (int)(10*Callisto.DP));
+        fl.setPadding((int)(10* StaticBlob.DP), (int)(10* StaticBlob.DP), (int)(10* StaticBlob.DP), (int)(10* StaticBlob.DP));
         fl.addView(getLayoutInflater().inflate(R.layout.irc_login, null, false));
         changeNickDialog.setContentView(fl);
         changeNickDialog.setFocusable(true);
@@ -421,10 +421,10 @@ public class IRCChat extends Activity implements IRCEventListener
                 this.startActivityForResult(new Intent(this, NickList.class), 1);
                 return true;
             case SAVE_ID:
-                CharSequence cs = Callisto.chatView.getText();
+                CharSequence cs = StaticBlob.chatView.getText();
                 File fileLocation = new File(Environment.getExternalStorageDirectory(),
-                        Callisto.storage_path + File.separator +
-                                "ChatLog_" + Callisto.sdfRaw.format(new Date()) +
+                        StaticBlob.storage_path + File.separator +
+                                "ChatLog_" + StaticBlob.sdfRaw.format(new Date()) +
                                 ".txt");
                 try {
                     FileOutputStream fOut = new FileOutputStream(fileLocation);
@@ -499,14 +499,14 @@ public class IRCChat extends Activity implements IRCEventListener
         sv2.setVerticalFadingEdgeEnabled(false);
 
 
-        ScrollView test = ((ScrollView)Callisto.chatView.getParent());
+        ScrollView test = ((ScrollView) StaticBlob.chatView.getParent());
         if(test!=null)
-            test.removeView(Callisto.chatView);
-        sv.addView(Callisto.chatView);
-        test = ((ScrollView)Callisto.logView.getParent());
+            test.removeView(StaticBlob.chatView);
+        sv.addView(StaticBlob.chatView);
+        test = ((ScrollView) StaticBlob.logView.getParent());
         if(test!=null)
-            test.removeView(Callisto.logView);
-        sv2.addView(Callisto.logView);
+            test.removeView(StaticBlob.logView);
+        sv2.addView(StaticBlob.logView);
         input = (EditText) findViewById(R.id.inputField);
         input.setOnEditorActionListener(new OnEditorActionListener(){
             @Override
@@ -516,29 +516,29 @@ public class IRCChat extends Activity implements IRCEventListener
             }
         });
 
-        Callisto.chatView.setBackgroundColor(CLR_BACK);
-        Callisto.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
-        Callisto.logView.setBackgroundColor(CLR_BACK);
-        Callisto.logView.setLinkTextColor(0xFF000000 + CLR_LINKS);
+        StaticBlob.chatView.setBackgroundColor(CLR_BACK);
+        StaticBlob.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
+        StaticBlob.logView.setBackgroundColor(CLR_BACK);
+        StaticBlob.logView.setLinkTextColor(0xFF000000 + CLR_LINKS);
         if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
             input.setTextColor(0xff000000 + IRSSI_GREEN);
         if(session!=null && session.getIRCEventListeners().size()==0)
             session.addIRCEventListener(this);
-        if(Callisto.notification_chat!=null)
+        if(StaticBlob.notification_chat!=null)
         {
-            Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
-            Callisto.notification_chat.defaults = 0;    //This will be over-written when a mention happens, but we have to set it to ALL to disable an annoying buzz when resuming the activity
-            mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+            StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            StaticBlob.notification_chat.defaults = 0;    //This will be over-written when a mention happens, but we have to set it to ALL to disable an annoying buzz when resuming the activity
+            mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
     }
 
     @Override
     public void onResume()
     {
-        if(Callisto.notification_chat!=null)
+        if(StaticBlob.notification_chat!=null)
         {
-            Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
-            mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+            StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
         super.onResume();
     }
@@ -597,10 +597,10 @@ public class IRCChat extends Activity implements IRCEventListener
     {
         Intent notificationIntent = new Intent(this, IRCChat.class);
         contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
-        Callisto.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
-        Callisto.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
-        mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+        StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
+        StaticBlob.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
+        StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+        mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
 
 
         manager = new ConnectionManager(new Profile(profileNick));
@@ -684,8 +684,8 @@ public class IRCChat extends Activity implements IRCEventListener
 
         new QuitPlz().execute(null);
         System.out.println(2);
-        mNotificationManager.cancel(Callisto.NOTIFICATION_ID);
-        Callisto.notification_chat = null;
+        mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
+        StaticBlob.notification_chat = null;
         isFocused = false;
         System.out.println(3);
         if(IRC_wifiLock!=null && IRC_wifiLock.isHeld())
@@ -1396,18 +1396,18 @@ public class IRCChat extends Activity implements IRCEventListener
             System.out.println("MENTIONED" + isFocused);
             if(!isFocused)
             {
-                if(Callisto.notification_chat==null)
-                    Callisto.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
+                if(StaticBlob.notification_chat==null)
+                    StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
                 mentionCount++;
-                Callisto.notification_chat.defaults = 0;
+                StaticBlob.notification_chat.defaults = 0;
                 if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", true) &&
                         (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false)))
-                    Callisto.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
+                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
                 if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound", true) &&
                         (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound_all", false)))
-                    Callisto.notification_chat.defaults |= Notification.DEFAULT_SOUND;
-                Callisto.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
-                mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_chat);
+                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_SOUND;
+                StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
+                mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
             }
         }
         else
@@ -1562,10 +1562,10 @@ public class IRCChat extends Activity implements IRCEventListener
                         ": ",
                         st2
                 );
-                Callisto.chatView.append(x);
-                Linkify.addLinks(Callisto.chatView, Linkify.EMAIL_ADDRESSES);
-                Linkify.addLinks(Callisto.chatView, Linkify.WEB_URLS);
-                Callisto.chatView.invalidate();
+                StaticBlob.chatView.append(x);
+                Linkify.addLinks(StaticBlob.chatView, Linkify.EMAIL_ADDRESSES);
+                Linkify.addLinks(StaticBlob.chatView, Linkify.WEB_URLS);
+                StaticBlob.chatView.invalidate();
             }
 
             input.requestFocus();
@@ -1613,7 +1613,7 @@ public class IRCChat extends Activity implements IRCEventListener
 
             while (matcher.find())
             {
-                Bitmap smiley = BitmapFactory.decodeResource(Callisto.RESOURCES, ((Integer) pairs.getValue()));
+                Bitmap smiley = BitmapFactory.decodeResource(StaticBlob.RESOURCES, ((Integer) pairs.getValue()));
                 Object[] spans = builder.getSpans(matcher.start(), matcher.end(), ImageSpan.class);
                 if (spans == null || spans.length == 0)
                 {
@@ -1829,8 +1829,8 @@ public class IRCChat extends Activity implements IRCEventListener
         public void run()
         {
             Log.e("ASDSADSADS", logQueue.peek() + "1");
-            Callisto.logView.append(logQueue.remove());
-            Callisto.logView.invalidate();
+            StaticBlob.logView.append(logQueue.remove());
+            StaticBlob.logView.invalidate();
             sv2.fullScroll(ScrollView.FOCUS_DOWN);
         };
 
@@ -1856,7 +1856,7 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             this.view = view;
             this.H = H;
-            color = Callisto.RESOURCES.getColor(com.qweex.callisto.R.color.Salmon);
+            color = StaticBlob.RESOURCES.getColor(com.qweex.callisto.R.color.Salmon);
             flash = new android.text.style.BackgroundColorSpan(color);
 
             inputText = new SpannableString(view.getText().toString());

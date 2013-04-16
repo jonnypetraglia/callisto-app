@@ -20,9 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 
 /** A receiver to handle when the audio jack is plugged and unplugged.
  * It uses the preferences to determine if it should stop playback on unplug and then resume playback on re-plug.
@@ -45,7 +45,7 @@ public class AudioJackReceiver extends BroadcastReceiver
         if(intent.getExtras().getInt("state") == 0)
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("pause_unplugged", true)
-                    && !Callisto.playerInfo.isPaused && Callisto.mplayer!=null)
+                    && !StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null)
             {
                 PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));
                 wasPausedByThisReceiver = true;
@@ -54,7 +54,7 @@ public class AudioJackReceiver extends BroadcastReceiver
         }else
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("play_replugged", true)
-                    && Callisto.playerInfo.isPaused && Callisto.mplayer!=null
+                    && StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null
                 && wasPausedByThisReceiver)
             {
                 PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));

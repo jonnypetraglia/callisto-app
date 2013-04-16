@@ -13,7 +13,6 @@
  */
 package com.qweex.callisto.podcast;
 
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 
 import android.app.ListActivity;
@@ -25,6 +24,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import com.qweex.callisto.StaticBlob;
 
 /** Shows the results of a list for episodes. Can be done for a specific show or all shows. */
 
@@ -44,8 +44,8 @@ public class SearchResultsActivity extends ListActivity
         TextView empty = new TextView(this);
         empty.setText("No results found.");
         this.getListView().setEmptyView(empty);
-        this.getListView().setBackgroundColor(Callisto.RESOURCES.getColor(R.color.backClr));
-        this.getListView().setCacheColorHint(Callisto.RESOURCES.getColor(R.color.backClr));
+        this.getListView().setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        this.getListView().setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
     }
 
     /** Called when a search is requested.
@@ -77,7 +77,7 @@ public class SearchResultsActivity extends ListActivity
 
             String[] from = {"title", "_id", "show"};
             int[] to = {R.id.text1, R.id.id1, R.id.uri};
-            Cursor c = Callisto.databaseConnector.searchEpisodes(query, searchShow);
+            Cursor c = StaticBlob.databaseConnector.searchEpisodes(query, searchShow);
             SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.simple_spinner_item_plus_vis, c, from, to );
             this.setListAdapter(adapter);
         }

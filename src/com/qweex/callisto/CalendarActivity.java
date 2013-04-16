@@ -161,11 +161,11 @@ public class CalendarActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle(Callisto.RESOURCES.getString(R.string.agenda_title));
+        this.setTitle(StaticBlob.RESOURCES.getString(R.string.agenda_title));
 
         isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
-        months = Callisto.RESOURCES.getStringArray(R.array.months);
-        days = Callisto.RESOURCES.getStringArray(R.array.days);
+        months = StaticBlob.RESOURCES.getStringArray(R.array.months);
+        days = StaticBlob.RESOURCES.getStringArray(R.array.days);
 
         //Set up the pop up for viewing an event's info
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -201,10 +201,10 @@ public class CalendarActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     v.setEnabled(false);
-                    ((Button) v).setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr) - 0x88000000);
+                    ((Button) v).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr) - 0x88000000);
                     loadMoreAgenda(false);
                     v.setEnabled(true);
-                    ((Button) v).setTextColor(Callisto.RESOURCES.getColor(R.color.txtClr));
+                    ((Button) v).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
                 }
 
             });
@@ -288,7 +288,7 @@ public class CalendarActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, Callisto.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_action_reload);
+        menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, StaticBlob.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_action_reload);
         return true;
     }
 
@@ -379,7 +379,7 @@ public class CalendarActivity extends Activity {
                 agenda.removeAllViews();
             Log.v("CalendarActivity:FetchEventsTask", "Preparing to fetch new events");
             //Build the progress dialog for fetching
-            progressDialog = ProgressDialog.show(CalendarActivity.this, Callisto.RESOURCES.getString(R.string.loading), Callisto.RESOURCES.getString(R.string.loading_msg), true, false);
+            progressDialog = ProgressDialog.show(CalendarActivity.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
             progressDialog.setCancelable(true);
         }
 
@@ -405,7 +405,7 @@ public class CalendarActivity extends Activity {
                 SimpleDateFormat sdfRecurring = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz", Locale.US);
 
                 //Clear the calendar's current events
-                Callisto.databaseConnector.clearCalendar();
+                StaticBlob.databaseConnector.clearCalendar();
 
                 //Skip the first heading
                 Log.v("CalendarActivity:FetchEventsTask", "Skipping the first heading");
@@ -491,7 +491,7 @@ public class CalendarActivity extends Activity {
                         }
                     }
                     // (not yet)
-                    evDate = Callisto.sdfRaw.format(tempDate.getTime());
+                    evDate = StaticBlob.sdfRaw.format(tempDate.getTime());
 
                     //Date (FINALLY) and Time
                     String evTime = evDate.substring(8).trim();
@@ -504,7 +504,7 @@ public class CalendarActivity extends Activity {
                         evShow = "Linux Action Show";
 
                     //Insert the event
-                    Callisto.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_WEEK) : -1);
+                    StaticBlob.databaseConnector.insertEvent(evShow, evType.trim(), evDate, evTime, evRecurring ? tempDate.get(Calendar.DAY_OF_WEEK) : -1);
 
                 }   //End of the while loop
                 //If an error is thrown, it will break out of the loop. I don't even know if this is a good idea.
@@ -538,7 +538,7 @@ public class CalendarActivity extends Activity {
                     Tmonth.performClick();  //Go to the current week
                 else
                 {
-                    ((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.load_more));       //The button has different text if you've never updated.
+                    ((Button) findViewById(R.id.loadmore)).setText(StaticBlob.RESOURCES.getString(R.string.load_more));       //The button has different text if you've never updated.
                     loadMoreAgenda(true);   //Load the first few event thingies after the update
                 }
             }
@@ -555,7 +555,7 @@ public class CalendarActivity extends Activity {
         Tmonth.setText(months[current_cal.get(Calendar.MONTH)]);
         Tyear.setText(Integer.toString(current_cal.get(Calendar.YEAR)));
         Bprev.setEnabled(true);
-        Bprev.setTextColor(Callisto.RESOURCES.getColor(R.color.calHdrClr));
+        Bprev.setTextColor(StaticBlob.RESOURCES.getColor(R.color.calHdrClr));
 
         int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK) - 1;
         Calendar today = Calendar.getInstance();
@@ -579,20 +579,20 @@ public class CalendarActivity extends Activity {
             if (Math.abs(current_cal.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) <= MILLISECONDS_IN_A_DAY
                     && current_cal.get(Calendar.DATE) == Calendar.getInstance().get(Calendar.DATE))
             {
-                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + Callisto.RESOURCES.getColor(R.color.calTodayClr));
+                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + StaticBlob.RESOURCES.getColor(R.color.calTodayClr));
                 Bprev.setEnabled(false);
-                Bprev.setTextColor(Callisto.RESOURCES.getColor(R.color.calHdrClr) - 0x88000000);
+                Bprev.setTextColor(StaticBlob.RESOURCES.getColor(R.color.calHdrClr) - 0x88000000);
             }
             else
             {
-                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + Callisto.RESOURCES.getColor(R.color.calDayClr));
+                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + StaticBlob.RESOURCES.getColor(R.color.calDayClr));
                 //TODO: Is this even necessary?
                 if(current_cal.before(today))   //Hide shows that have passed?
                 {
                     current_cal.add(Calendar.DATE, 1);
                     for (int j = 1; j <= 10; j++)
                     {
-                        TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+                        TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
                         if (event == null)
                             continue;
                         event.setVisibility(View.GONE);
@@ -602,7 +602,7 @@ public class CalendarActivity extends Activity {
             }
 
             //Get the events for this specific day
-            Cursor events = Callisto.databaseConnector.dayEvents(Callisto.sdfRawSimple1.format(current_cal.getTime()), current_cal.get(Calendar.DAY_OF_WEEK) - 1);
+            Cursor events = StaticBlob.databaseConnector.dayEvents(StaticBlob.sdfRawSimple1.format(current_cal.getTime()), current_cal.get(Calendar.DAY_OF_WEEK) - 1);
             events.moveToFirst();
             int numberOfEvents = 1;
 
@@ -614,13 +614,13 @@ public class CalendarActivity extends Activity {
                 String _id = events.getString(events.getColumnIndex("_id"));
 
                 Log.v("CalendarActivity:updateCalendar", "Getting show for: " + show);
-                TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
+                TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
                 View w = (View) event.getParent();
-                TextView id = (TextView) w.findViewById(Callisto.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
+                TextView id = (TextView) w.findViewById(StaticBlob.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
                 id.setText(_id);
 
                 event.setText(show);
-                event.setBackgroundColor(Callisto.RESOURCES.getColor(type.equals("RELEASE") ? R.color.releaseClr : R.color.liveClr));
+                event.setBackgroundColor(StaticBlob.RESOURCES.getColor(type.equals("RELEASE") ? R.color.releaseClr : R.color.liveClr));
                 event.setVisibility(View.VISIBLE);
                 event.setOnClickListener(clickEvent);
 
@@ -630,7 +630,7 @@ public class CalendarActivity extends Activity {
             //Add empty views that are BS, man.
             for(; numberOfEvents <= 10; numberOfEvents++)
             {
-                TextView event = (TextView) dayViews[i].findViewById(Callisto.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
+                TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
                 if (event == null)
                     continue;
                 event.setVisibility(View.GONE);
@@ -680,7 +680,7 @@ public class CalendarActivity extends Activity {
 
             //Set the previous if it exists
             String key = (String) ((TextView) popUp.getContentView().findViewById(R.id.key)).getText();
-            key = Callisto.alarmPrefs.getString(key, "");
+            key = StaticBlob.alarmPrefs.getString(key, "");
             String tone = "";
             int min = 0;
             boolean vibrate = false, isAlarm = false;
@@ -737,7 +737,7 @@ public class CalendarActivity extends Activity {
                     int vibrate = ((CheckBox) editEventView.findViewById(R.id.vibrate)).isChecked() ? 1 : 0;
                     Calendar time = Calendar.getInstance();
                     try {
-                        time.setTime(Callisto.sdfRaw.parse(key.substring(key.length() - 14)));
+                        time.setTime(StaticBlob.sdfRaw.parse(key.substring(key.length() - 14)));
                         time.add(Calendar.MINUTE, -1 * min);
                     } catch(ParseException e) {
                         //TODO: does this need to have anything?
@@ -759,7 +759,7 @@ public class CalendarActivity extends Activity {
 
                     Log.v("CalendarActivity:editEvent:Save", "Saving the alarm");
                     //Save the alarm to the preferences
-                    SharedPreferences.Editor edit = Callisto.alarmPrefs.edit();
+                    SharedPreferences.Editor edit = StaticBlob.alarmPrefs.edit();
                     edit.putString(key, Integer.toString(min) + "_" + uri + "/" + tone + "_" + isAlarm + "" + vibrate);
                     edit.commit();
                     createEventDialog.dismiss();
@@ -794,7 +794,7 @@ public class CalendarActivity extends Activity {
                 Log.e("CalendarActivity:clickEvent", "A number parse error occurred: " + _id);
                 return;
             }
-            Cursor c = Callisto.databaseConnector.getOneEvent(_id);
+            Cursor c = StaticBlob.databaseConnector.getOneEvent(_id);
             if (!c.moveToFirst())
                 return;
 
@@ -823,24 +823,24 @@ public class CalendarActivity extends Activity {
                     month = Integer.toString(i + 1);
                     //Get the year
                     String year = (String) ((TextView) findViewById(R.id.Tyear)).getText();
-                    date = Callisto.sdfRawSimple1.format(Callisto.sdfDestination.parse(month + "/" + day + "/" + year));
+                    date = StaticBlob.sdfRawSimple1.format(StaticBlob.sdfDestination.parse(month + "/" + day + "/" + year));
                 }
                 else
                 {
                     date = (String) ((TextView) v.findViewById(R.id.date)).getText();
                     if(date.contains("/"))      // MM/dd or dd/MM
                     {
-                        SimpleDateFormat sdf = new SimpleDateFormat(Callisto.europeanDates ? "dd/MM" : "MM/dd");
+                        SimpleDateFormat sdf = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM" : "MM/dd");
                         if(date.indexOf("/", date.indexOf("/") + 1) > 0)
-                            sdf = Callisto.sdfDestination;
+                            sdf = StaticBlob.sdfDestination;
                         Calendar dt = Calendar.getInstance();
                         dt.setTime(sdf.parse(date));
                         dt.set(Calendar.YEAR, (new java.util.Date()).getYear());
-                        date = Callisto.sdfRawSimple1.format(dt.getTime());
+                        date = StaticBlob.sdfRawSimple1.format(dt.getTime());
                     }
                     //Today
-                    else if (date.equals(Callisto.RESOURCES.getString(R.string.today)))
-                        date = Callisto.sdfRawSimple1.format(new java.util.Date());
+                    else if (date.equals(StaticBlob.RESOURCES.getString(R.string.today)))
+                        date = StaticBlob.sdfRawSimple1.format(new java.util.Date());
                     else
                     {
                         //Mon Tue Wed
@@ -855,7 +855,7 @@ public class CalendarActivity extends Activity {
                                     cl.add(Calendar.DATE, i - j);
                                 else
                                     cl.add(Calendar.DATE, 7 + i - j);
-                                date = Callisto.sdfRawSimple1.format(cl.getTime());
+                                date = StaticBlob.sdfRawSimple1.format(cl.getTime());
                                 break;
                             }
                         }
@@ -863,18 +863,18 @@ public class CalendarActivity extends Activity {
                 }
                 Log.v("CalendarActivity:clickEvent", "The date is: " + date);
 
-                show = Callisto.sdfDestination.format(Callisto.sdfRawSimple1.parse(date));
+                show = StaticBlob.sdfDestination.format(StaticBlob.sdfRawSimple1.parse(date));
                 popUp_date.setText(show);
                 //Might just want to read this from the UI
                 time = c.getString(c.getColumnIndex("time"));
-                show = Callisto.sdfTime.format(Callisto.sdfRawSimple2.parse(time));
+                show = StaticBlob.sdfTime.format(StaticBlob.sdfRawSimple2.parse(time));
                 popUp_time.setText(show);
             } catch (ParseException e) {
                 Log.v("CalendarActivity:clickEvent", "ParseException");
             }
 
             //TODO: Dude I don't even know
-            Map<String, ?> alarms = Callisto.alarmPrefs.getAll();
+            Map<String, ?> alarms = StaticBlob.alarmPrefs.getAll();
             String key = title + date + time;
             ((TextView) popUp.getContentView().findViewById(R.id.key)).setText(key);
             if(alarms.containsKey(popUp_title)) {
@@ -926,13 +926,13 @@ public class CalendarActivity extends Activity {
         TextView loading = (TextView) findViewById(R.id.empty);
 
         //Check to see if there are any more events. Hint: there should be.
-        if(Callisto.databaseConnector.eventCount() == 0)
+        if(StaticBlob.databaseConnector.eventCount() == 0)
         {
             Log.v("CalendarActivity:loadMoreAgenda", "eventCount() has returned 0");
             if(thisWeek)
             {
-                loading.setText(Callisto.RESOURCES.getString(R.string.no_events));
-                ((Button) findViewById(R.id.loadmore)).setText(Callisto.RESOURCES.getString(R.string.fetch));
+                loading.setText(StaticBlob.RESOURCES.getString(R.string.no_events));
+                ((Button) findViewById(R.id.loadmore)).setText(StaticBlob.RESOURCES.getString(R.string.fetch));
                 return;
             }
             fetchTask = new FetchEventsTask();
@@ -942,7 +942,7 @@ public class CalendarActivity extends Activity {
 
         //Show the loading message
         loading.setVisibility(View.VISIBLE);
-        loading.setText(Callisto.RESOURCES.getString(R.string.loading));
+        loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
 
         //Loop over the 7 days
         boolean foundEvents = false;
@@ -964,7 +964,7 @@ public class CalendarActivity extends Activity {
 
 
             //Get a cursor containing the valid events for that day
-            Cursor c = Callisto.databaseConnector.dayEvents(targetDate, current_cal.get(Calendar.DAY_OF_WEEK));
+            Cursor c = StaticBlob.databaseConnector.dayEvents(targetDate, current_cal.get(Calendar.DAY_OF_WEEK));
             c.moveToFirst();
 
             //Add these events to the agenda
@@ -982,7 +982,7 @@ public class CalendarActivity extends Activity {
                 try {
                     String d = c.getString(c.getColumnIndex("date"));
                     String t = c.getString(c.getColumnIndex("time"));
-                    eventDate.setTime(Callisto.sdfRaw.parse(d + t));
+                    eventDate.setTime(StaticBlob.sdfRaw.parse(d + t));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1012,13 +1012,13 @@ public class CalendarActivity extends Activity {
                 if(thisWeek)
                 {
                     if(i==0)
-                        ((TextView) v.findViewById(R.id.date)).setText(Callisto.RESOURCES.getString(R.string.today));
+                        ((TextView) v.findViewById(R.id.date)).setText(StaticBlob.RESOURCES.getString(R.string.today));
                     else
                         ((TextView) v.findViewById(R.id.date)).setText(days[(i + dayOfWeek) % 7]);
                 } else
                 {
                     String temp2;
-                    if (Callisto.europeanDates)
+                    if (StaticBlob.europeanDates)
                         temp2 = current_cal.get(Calendar.DATE) + "/" + (current_cal.get(Calendar.MONTH) + 1);
                     else
                         temp2 = (current_cal.get(Calendar.MONTH) + 1) + "/" + current_cal.get(Calendar.DATE);
@@ -1035,7 +1035,7 @@ public class CalendarActivity extends Activity {
                     ((TextView) v.findViewById(R.id.time)).setText(timeUntil);
                     ((TextView) v.findViewById(R.id.soon)).setText("SOON");
                 } else
-                    ((TextView) v.findViewById(R.id.time)).setText(Callisto.sdfTime.format(eventDate.getTime()));
+                    ((TextView) v.findViewById(R.id.time)).setText(StaticBlob.sdfTime.format(eventDate.getTime()));
 
                 //Show
                 ((TextView) v.findViewById(R.id.show)).setText(c.getString(c.getColumnIndex("show")));
@@ -1051,7 +1051,7 @@ public class CalendarActivity extends Activity {
         }   //End the for over 7 days
 
         if (!foundEvents)
-            loading.setText(Callisto.RESOURCES.getString(R.string.no_events));
+            loading.setText(StaticBlob.RESOURCES.getString(R.string.no_events));
         else
             loading.setVisibility(View.GONE);
     }

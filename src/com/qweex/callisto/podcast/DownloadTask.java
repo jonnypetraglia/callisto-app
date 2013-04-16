@@ -24,8 +24,8 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Button;
-import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -79,10 +79,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         //Show notification
         Intent notificationIntent = new Intent(context, DownloadList.class);
         contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        Callisto.notification_download = new Notification(R.drawable.ic_action_download, Callisto.RESOURCES.getString(R.string.beginning_download), System.currentTimeMillis());
-        Callisto.notification_download.flags = Notification.FLAG_ONGOING_EVENT;
+        StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, StaticBlob.RESOURCES.getString(R.string.beginning_download), System.currentTimeMillis());
+        StaticBlob.notification_download.flags = Notification.FLAG_ONGOING_EVENT;
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), Callisto.RESOURCES.getString(R.string.downloading) + " " + Callisto.current_download + " " +  Callisto.RESOURCES.getString(R.string.of) + " " + Callisto.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
+        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), StaticBlob.RESOURCES.getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  StaticBlob.RESOURCES.getString(R.string.of) + " " + StaticBlob.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
     }
 
 
@@ -92,10 +92,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         boolean isVideo;
         Cursor current;
 
-        Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                Callisto.RESOURCES.getString(R.string.downloading) + "...",
+        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
+                StaticBlob.RESOURCES.getString(R.string.downloading) + "...",
                 "", contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+        mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
 
         long id = 0;
         Log.e("DownloadTask:doInBackground", "Preparing to start");
@@ -114,12 +114,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 if(id<=0)   //A negative ID means it is a video
                 {
                     isVideo=true;
-                    current = Callisto.databaseConnector.getOneEpisode(id*-1);
+                    current = StaticBlob.databaseConnector.getOneEpisode(id*-1);
                 }
                 else
                 {
                     isVideo=false;
-                    current = Callisto.databaseConnector.getOneEpisode(id);
+                    current = StaticBlob.databaseConnector.getOneEpisode(id);
                 }
                 current.moveToFirst();
 
@@ -129,10 +129,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Date = current.getString(current.getColumnIndex("date"));
                 Show = current.getString(current.getColumnIndex("show"));
                 Log.i("EpisodeDesc:DownloadTask", "Starting download: " + Link);
-                Date = Callisto.sdfFile.format(Callisto.sdfRaw.parse(Date));
+                Date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(Date));
 
                 //Getting target
-                Target = new File(Environment.getExternalStorageDirectory(), Callisto.storage_path + File.separator + Show);
+                Target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + Show);
                 Target.mkdirs();
                 if(Title.indexOf("|")>0)
                     Title = Title.substring(0, Title.indexOf("|"));
@@ -156,13 +156,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 ucon.connect();
 
                 //Notification
-                Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                        Callisto.RESOURCES.getString(R.string.downloading) + " " +
-                                Callisto.current_download + " " +
-                                Callisto.RESOURCES.getString(R.string.of) + " " +
-                                Callisto.downloading_count + " (...)",
+                StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
+                        StaticBlob.RESOURCES.getString(R.string.downloading) + " " +
+                                StaticBlob.current_download + " " +
+                                StaticBlob.RESOURCES.getString(R.string.of) + " " +
+                                StaticBlob.downloading_count + " (...)",
                         Show + ": " + Title, contentIntent);
-                mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+                mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
 
                 //Actually do the DLing
                 InputStream is = ucon.getInputStream();
@@ -275,14 +275,14 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                             DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
                             DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
                         }
-                        Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                                Callisto.RESOURCES.getString(R.string.downloading) + " " +
-                                        Callisto.current_download + " " +
-                                        Callisto.RESOURCES.getString(R.string.of) + " " +
-                                        Callisto.downloading_count + ": " + percentDone + "%  (" +
+                        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
+                                StaticBlob.RESOURCES.getString(R.string.downloading) + " " +
+                                        StaticBlob.current_download + " " +
+                                        StaticBlob.RESOURCES.getString(R.string.of) + " " +
+                                        StaticBlob.downloading_count + ": " + percentDone + "%  (" +
                                         df.format(avg_speed) + "kb/s)",
                                 Show + ": " + Title, contentIntent);
-                        mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
+                        mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
                     }
                 }
 
@@ -300,7 +300,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                     Log.i("EpisodeDesc:DownloadTask", "Trying to finish with " + Target.length() + "==" + TotalSize);
                     if(Target.length()==TotalSize)
                     {
-                        Callisto.current_download++;
+                        StaticBlob.current_download++;
 
                         Log.i("EpisodeDesc:DownloadTask", (inner_failures<INNER_LIMIT?"Successfully":"FAILED") + " downloaded to : " + Target.getPath());
 
@@ -314,7 +314,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
                         boolean queue = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("download_to_queue", false);
                         if(queue)
-                            Callisto.databaseConnector.appendToQueue(id, false, isVideo);
+                            StaticBlob.databaseConnector.appendToQueue(id, false, isVideo);
                     }
                 } else
                     Target.delete();
@@ -364,19 +364,19 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
         //Notification
         mNotificationManager.cancel(NOTIFICATION_ID);
-        if(Callisto.downloading_count>0)
+        if(StaticBlob.downloading_count>0)
         {
-            Callisto.notification_download = new Notification(R.drawable.ic_action_download, "Finished downloading " + Callisto.downloading_count + " files", NOTIFICATION_ID);
-            Callisto.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + Callisto.downloading_count + " files", failed>0 ? (failed + " failed, try them again later") : null, contentIntent);
-            Callisto.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
-            mNotificationManager.notify(NOTIFICATION_ID, Callisto.notification_download);
-            Callisto.current_download=1;
-            Callisto.downloading_count=0;
+            StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, "Finished downloading " + StaticBlob.downloading_count + " files", NOTIFICATION_ID);
+            StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + StaticBlob.downloading_count + " files", failed>0 ? (failed + " failed, try them again later") : null, contentIntent);
+            StaticBlob.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
+            mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
+            StaticBlob.current_download=1;
+            StaticBlob.downloading_count=0;
         }
         else
         {
-            Callisto.current_download=1;
-            Callisto.downloading_count=0;
+            StaticBlob.current_download=1;
+            StaticBlob.downloading_count=0;
             return false;
         }
         return true;
@@ -393,15 +393,15 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             return;
         if(result)
         {
-            streamButton.setText(Callisto.RESOURCES.getString(R.string.play));
+            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.play));
             streamButton.setOnClickListener(((EpisodeDesc)context).launchPlay);
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.delete));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.delete));
             downloadButton.setOnClickListener(((EpisodeDesc)context).launchDelete);
         } else
         {
-            streamButton.setText(Callisto.RESOURCES.getString(R.string.stream));
+            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
             streamButton.setOnClickListener(((EpisodeDesc)context).launchStream);
-            downloadButton.setText(Callisto.RESOURCES.getString(R.string.download));
+            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
             downloadButton.setOnClickListener(((EpisodeDesc)context).launchDownload);
         }
     }

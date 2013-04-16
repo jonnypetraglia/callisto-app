@@ -11,7 +11,6 @@
  * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
-
 package com.qweex.callisto.podcast;
 
 import android.content.SharedPreferences;
@@ -21,7 +20,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
-import com.qweex.callisto.Callisto;
+import com.qweex.callisto.StaticBlob;
 import com.qweex.utils.UnfinishedParseException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -33,13 +32,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: notbryant
- * Date: 4/15/13
- * Time: 8:49 PM
- * To change this template use File | Settings | File Templates.
- */
+/** Tools to update a show. */
 public class UpdateShow {
 
     /** Updates a show by checking to see if there are any new episodes available.
@@ -241,7 +234,7 @@ public class UpdateShow {
 
                 if(epDate==null)
                     throw(new UnfinishedParseException("Date"));
-                if(lastChecked!=null && !Callisto.sdfSource.parse(epDate).after(Callisto.sdfSource.parse(lastChecked)))
+                if(lastChecked!=null && !StaticBlob.sdfSource.parse(epDate).after(StaticBlob.sdfSource.parse(lastChecked)))
                     break;
                 if(newLastChecked==null)
                     newLastChecked = epDate;
@@ -280,10 +273,10 @@ public class UpdateShow {
                 Log.d("*:updateShow", "V Link: " + epVideoLink);
                 Log.d("*:updateShow", "V Size: " + epVideoSize);
 
-                epDate = Callisto.sdfRaw.format(Callisto.sdfSource.parse(epDate));
+                epDate = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(epDate));
                 //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
                 //isVideo, epMediaLink, epMediaSize))
-                Callisto.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
+                StaticBlob.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
                 Log.v("*:updateShow", "Inserting episode: " + epTitle);
             }
 
@@ -348,13 +341,13 @@ public class UpdateShow {
                 if(img_url==null)
                     throw(new NullPointerException());
                 File f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                        Callisto.storage_path + File.separator +
+                        StaticBlob.storage_path + File.separator +
                         show + EpisodeDesc.getExtension(img_url));
                 System.out.println(f.getAbsolutePath());
                 if(f.exists())
                     return null;
                 (new File(Environment.getExternalStorageDirectory() + File.separator +
-                        Callisto.storage_path)).mkdirs();
+                        StaticBlob.storage_path)).mkdirs();
                 URL url = new URL (img_url);
                 InputStream input = url.openStream();
                 try {
@@ -373,7 +366,7 @@ public class UpdateShow {
                 }
                 //Resize the image
                 Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                Bitmap scale  = Bitmap.createScaledBitmap(bitmap, (int)(60*Callisto.DP), (int)(60*Callisto.DP), true);
+                Bitmap scale  = Bitmap.createScaledBitmap(bitmap, (int)(60* StaticBlob.DP), (int)(60* StaticBlob.DP), true);
                 OutputStream fOut = new FileOutputStream(f);
                 scale.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
             } catch(Exception e) {

@@ -15,10 +15,7 @@ package com.qweex.callisto.widgets;
 
 import java.util.Arrays;
 
-import com.qweex.callisto.Callisto;
-import com.qweex.callisto.Live;
-import com.qweex.callisto.PlayerControls;
-import com.qweex.callisto.R;
+import com.qweex.callisto.*;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -58,10 +55,10 @@ public class CallistoWidget extends AppWidgetProvider
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
             views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
 
-            if(Callisto.playerInfo!=null)
-                System.out.println("WIDGET UPDATE" + Callisto.playerInfo.isPaused);
-            if((Live.live_player!=null && !Callisto.live_isPlaying) ||
-                    (Callisto.playerInfo!=null && Callisto.playerInfo.isPaused))
+            if(StaticBlob.playerInfo!=null)
+                System.out.println("WIDGET UPDATE" + StaticBlob.playerInfo.isPaused);
+            if((Live.live_player!=null && !StaticBlob.live_isPlaying) ||
+                    (StaticBlob.playerInfo!=null && StaticBlob.playerInfo.isPaused))
                 views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
                 //views.setImageViewBitmap(R.id.widgetButton, playIcon);
             else
@@ -70,10 +67,10 @@ public class CallistoWidget extends AppWidgetProvider
 
 
             // Updates the text and button
-            if(Callisto.playerInfo!=null && Callisto.playerInfo.title!=null)
+            if(StaticBlob.playerInfo!=null && StaticBlob.playerInfo.title!=null)
             {
-                views.setTextViewText(R.id.widgetTitle, Callisto.playerInfo.title);
-                views.setTextViewText(R.id.widgetShow, Callisto.playerInfo.show);
+                views.setTextViewText(R.id.widgetTitle, StaticBlob.playerInfo.title);
+                views.setTextViewText(R.id.widgetShow, StaticBlob.playerInfo.show);
             }
             else
             {
@@ -106,7 +103,7 @@ public class CallistoWidget extends AppWidgetProvider
         if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction()))
             return;
         Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget");
-        Callisto.is_widget = true;
+        StaticBlob.is_widget = true;
         PlayerControls.playPause(context, null);
     }
 

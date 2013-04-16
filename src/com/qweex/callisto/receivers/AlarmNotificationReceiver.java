@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 
 /** Receives and creates any alarms set in the "Plan" feature. */
 public class AlarmNotificationReceiver extends BroadcastReceiver
@@ -58,23 +59,23 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
             NotificationManager mNotificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             Intent notificationIntent = new Intent(context, Callisto.class);
     		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            Callisto.notification_alarm = new Notification(R.drawable.callisto, "JupiterBroadcasting alarm!", System.currentTimeMillis());
+            StaticBlob.notification_alarm = new Notification(R.drawable.callisto, "JupiterBroadcasting alarm!", System.currentTimeMillis());
 
             //Set the notification options
             if(isAlarm>0)
-            	Callisto.notification_alarm.flags |= Notification.FLAG_INSISTENT;
+            	StaticBlob.notification_alarm.flags |= Notification.FLAG_INSISTENT;
             else
-            	Callisto.notification_alarm.flags |= Notification.FLAG_AUTO_CANCEL;
+            	StaticBlob.notification_alarm.flags |= Notification.FLAG_AUTO_CANCEL;
             if(vibrate>0)
-            	Callisto.notification_alarm.vibrate = new long[] {300, 200, 100, 200};
-            Callisto.notification_alarm.sound = notification_sound;
+            	StaticBlob.notification_alarm.vibrate = new long[] {300, 200, 100, 200};
+            StaticBlob.notification_alarm.sound = notification_sound;
 
             //Show the notification
             if(min==0)
-            	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is on right now!", contentIntent);
+            	StaticBlob.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is on right now!", contentIntent);
             else
-            	Callisto.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
-            mNotificationManager.notify(Callisto.NOTIFICATION_ID, Callisto.notification_alarm);
+            	StaticBlob.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
+            mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_alarm);
 
             //Remove the alarm
             SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
