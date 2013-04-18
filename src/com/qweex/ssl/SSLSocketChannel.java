@@ -12,21 +12,19 @@
  * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
  */
 
-package com.qweex.utils;
+package com.qweex.ssl;
 
 import android.util.Log;
 
 import javax.net.ssl.*;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.ByteBuffer;
-import java.nio.channels.ByteChannel;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.ScatteringByteChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -34,11 +32,16 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-public class SSLSocketChannel extends SocketChannel implements ByteChannel, ScatteringByteChannel, GatheringByteChannel
+//http://my.fit.edu/~vkepuska/ece5570/adt-bundle-windows-x86_64/sdk/sources/android-16/java/nio/SelectorImpl.java
+
+public class SSLSocketChannel extends SocketChannel
+                              implements FileDescriptorChannel
 {
     SocketChannel socketChannel;
     SSLEngine engine;
     String hostname;
+    private final FileDescriptor fd;
+
     int port;
     /**
      * Constructs a new {@code SocketChannel}.
@@ -48,6 +51,7 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
     public SSLSocketChannel(SelectorProvider selectorProvider) throws IOException
     {
         super(selectorProvider);
+        fd =  new FileDescriptor();
     }
 
     public static SSLSocketChannel open() throws IOException
@@ -79,6 +83,7 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
     //http://publib.boulder.ibm.com/infocenter/java7sdk/v7r0/index.jsp?topic=%2Fcom.ibm.java.security.component.doc%2Fsecurity-component%2Fjsse2Docs%2Fssltlsdata.html
     //http://svn.apache.org/repos/asf/tomcat/trunk/java/org/apache/tomcat/util/net/SecureNioChannel.java
 
+    //http://grepcode.com/file_/repository.grepcode.com/java/root/jdk/openjdk/6-b14/sun/nio/ch/SocketChannelImpl.java/?v=source
     private SSLEngine sslEngine;
     private ByteBuffer appSendBuffer;
     private ByteBuffer appRecvBuffer;
@@ -94,9 +99,11 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
         int aPort = ((InetSocketAddress)address).getPort();
             try
             {
+                Log.v("SSLSocketChannel", "Connecting...");
                 sslEngine = getInitializedSSLContext().createSSLEngine(aHostname, aPort);
                 sslEngine.setNeedClientAuth(false);
                 sslEngine.setUseClientMode(true);
+                Log.v("SSLSocketChannel", "Beginning handshake");
                 sslEngine.beginHandshake();
                 hStatus = sslEngine.getHandshakeStatus();
 
@@ -104,8 +111,10 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
                 cipherSendBuffer = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
                 cipherRecvBuffer = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
                 appRecvBuffer = ByteBuffer.allocate(sslEngine.getSession().getApplicationBufferSize());
-
-                return (sChannel = SocketChannel.open()).connect(new InetSocketAddress(aHostname, aPort));
+                Log.v("SSLSocketChannel", "srsly connecting");
+                if(sChannel==null)
+                    sChannel = SocketChannel.open();
+                return sChannel.connect(new InetSocketAddress(aHostname, aPort));
             }
             catch (Exception aExc)
             {
@@ -143,7 +152,7 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
     {
         while (processHandshake())
         {
-
+            //Purposefully left blank
         }
     }
 
@@ -153,12 +162,15 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
         switch (hStatus)
         {
             case NEED_WRAP:
+                Log.v("SSLSocketChannel", "processHandshake = Need wrap");
                 wrapAndWrite();
                 break;
             case NEED_UNWRAP:
+                Log.v("SSLSocketChannel", "processHandshake = Need unwrap");
                 tryReadAndUnwrap();
                 break;
             case NEED_TASK:
+                Log.v("SSLSocketChannel", "processHandshake = Need task");
                 executeTasks();
                 break;
             case NOT_HANDSHAKING:
@@ -234,9 +246,54 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
         return _sslCtx;
     }
 
+    private final Object stateLock = new Object();
+    private boolean isInputOpen = true;
+    private boolean isOutputOpen = true;
+    @Override
+    protected void implCloseSelectableChannel() throws IOException {
+        //TODO
+        /*
+        synchronized (stateLock) {
+            isInputOpen = false;
+            isOutputOpen = false;
+            nd.preClose(fd);
+            if (readerThread != 0)
+                NativeThread.signal(readerThread);
 
+            if (writerThread != 0)
+                NativeThread.signal(writerThread);
+            if (!isRegistered())
+                kill();
+        }
+        //*/
+    }
 
+    @Override
+    protected void implConfigureBlocking(boolean blocking) throws IOException {
+        //TODO
+    }
 
+    @Override
+    public int read(ByteBuffer target) throws IOException {
+        String s = this.read();
+        target = ByteBuffer.wrap(s.getBytes());
+        return s.length();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public long read(ByteBuffer[] targets, int offset, int length) throws IOException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public int write(ByteBuffer source) throws IOException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public long write(ByteBuffer[] sources, int offset, int length) throws IOException {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 
 
@@ -463,36 +520,6 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
         return socketChannel.finishConnect();
     }
 
-    @Override
-    public int read(ByteBuffer target) throws IOException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public long read(ByteBuffer[] targets, int offset, int length) throws IOException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int write(ByteBuffer source) throws IOException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public long write(ByteBuffer[] sources, int offset, int length) throws IOException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void implCloseSelectableChannel() throws IOException {
-        //TODO
-    }
-
-    @Override
-    protected void implConfigureBlocking(boolean blocking) throws IOException {
-        //TODO
-    }
-
 
     public SocketAddress getRemoteAddress()
     {
@@ -547,6 +574,11 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
         return socketChannel;
     }
 
+    //@Override
+    public FileDescriptor getFD() {
+        return fd;
+    }
+
 
     //<Qweex>
     public class NaiveTrustManager implements X509TrustManager
@@ -584,35 +616,3 @@ public class SSLSocketChannel extends SocketChannel implements ByteChannel, Scat
     }
     //</Qweex>
 }
-        /*
-        KeyStore ks = KeyStore.getInstance("JKS");
-        KeyStore ts = KeyStore.getInstance("JKS");
-
-        char[] passphrase = "passphrase".toCharArray();
-
-        ks.load(new FileInputStream(keyStoreFile), passphrase);
-        ts.load(new FileInputStream(trustStoreFile), passphrase);
-
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, passphrase);
-
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        tmf.init(ts);
-        //*/
-
-        /*
-        SSLContext sslCtx = SSLContext.getInstance("TLS");
-        //sslCtx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        sslCtx.init(null, null, null);
-
-        sslEngine = sslCtx.createSSLEngine(session.getRequestedConnection().getHostName(), session.getRequestedConnection().getPort());
-
-        /*
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, new X509TrustManager[] { new NaiveTrustManager() }, null);
-        SSLSocketFactory factory = context.getSocketFactory();
-        SSLSocket ssocket = (SSLSocket) factory.createSocket(session.getRequestedConnection().getHostName(), session.getRequestedConnection().getPort());
-        ssocket.startHandshake();
-        Socket _socket = ssocket;
-        //https://github.com/pocmo/Yaaic/blob/master/application/src/org/jibble/pircbot/PircBot.java
-        */
