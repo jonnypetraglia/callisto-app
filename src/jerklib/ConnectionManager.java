@@ -3,12 +3,14 @@ package jerklib;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+
+import com.qweex.ssl.SelectorImpl;
+import com.qweex.ssl.SSLSocketChannel;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
-import java.security.*;
+import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +22,6 @@ import java.util.TimerTask;
 import java.util.Collection;
 
 import android.util.Log;
-import com.qweex.utils.SSLSocketChannel;
 import jerklib.Session.State;
 import jerklib.events.ErrorEvent;
 import jerklib.events.GenericErrorEvent;
@@ -33,8 +34,6 @@ import jerklib.parsers.DefaultInternalEventParser;
 import jerklib.parsers.InternalEventParser;
 import jerklib.tasks.Task;
 import jerklib.util.IdentServer;
-
-import javax.net.ssl.*;
 
 /**
  * This class is used to control/store Sessions/Connections.
@@ -72,7 +71,7 @@ public class ConnectionManager
 	private Profile defaultProfile;
 
 	/* NIO Selector */
-	private Selector selector;
+	private SelectorImpl selector;
 
 	/**
 	 * Takes a profile to use as default profile for new
@@ -87,7 +86,7 @@ public class ConnectionManager
 
 		try
 		{
-			selector = Selector.open();
+			selector = SelectorImpl.open();
 		}
 		catch (IOException e)
 		{
@@ -734,8 +733,7 @@ public class ConnectionManager
 	 * @param session
 	 * @throws IOException
 	 */
-	void connect(Session session) throws IOException,
-                                                        NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException //Qweex
+	void connect(Session session) throws IOException
 	{
 		SocketChannel sChannel;
 
@@ -745,6 +743,7 @@ public class ConnectionManager
             sChannel= SSLSocketChannel.open();
         else
             sChannel = SocketChannel.open();
+        System.out.println("DERP: " + SelectorProvider.provider().getClass());
         //</Qweex>
 
         sChannel.socket().setSoTimeout(500);
@@ -759,7 +758,7 @@ public class ConnectionManager
         Connection con = new Connection(this, sChannel, session);
 		
 		session.setConnection(con);
-
+        Log.v("Connect", "DONE!");
 		socChanMap.put(sChannel, session);
 	}
 }
