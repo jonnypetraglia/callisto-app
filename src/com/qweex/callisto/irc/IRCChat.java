@@ -16,6 +16,7 @@ package com.qweex.callisto.irc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
+import com.qweex.ssl.SSLSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,7 +32,6 @@ import com.qweex.callisto.R;
 
 import com.qweex.callisto.StaticBlob;
 import com.qweex.callisto.VideoActivity;
-import com.qweex.utils.SSLSocketChannel;
 import jerklib.*;
 import jerklib.events.*;
 import jerklib.listeners.IRCEventListener;
