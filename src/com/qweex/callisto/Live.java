@@ -68,7 +68,9 @@ public class Live
                     return;
                 pd.hide();
             }
-            //*/
+            else
+                return;
+            
             try {
                 live_player.start();
                 LiveUpdate = new FetchInfo();
