@@ -28,6 +28,7 @@
     <com.qweex.utils.ImgTxtButton
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          style="@style/btnStyleBreakerBay"
           android:id="@+id/audio"
           android:text="Audio"
           android:padding="20dp"
@@ -37,6 +38,7 @@
     <com.qweex.utils.ImgTxtButton
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          style="@style/btnStyleBreakerBay"
           android:id="@+id/video"
           android:text="Video"
           android:padding="20dp"

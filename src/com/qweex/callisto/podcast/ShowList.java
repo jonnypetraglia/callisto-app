@@ -482,37 +482,46 @@ public class ShowList extends Activity
 
 
             //Set the effects for if the episode has been downloaded or is in queue, etc
+            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+            boolean exists = false,
+                    complete = false;
             try {
                 File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
                 music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-                File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
-                video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
-                boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
-                if(inDLQueue || music_file_location.exists() || video_file_location.exists())
-                {
-                    Log.d("ShowList:ShowListAdapter", "Music: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("mp3size")));
-                    Log.d("ShowList:ShowListAdapter", "Video: " + music_file_location.length() + " == " + this.c.getLong(this.c.getColumnIndex("vidsize")));
-                    //Check if it is fully downloaded, then if it is partial
-                    if(!inDLQueue && (music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size")) ||
-                            video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"))))
-                    {
-                        ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
-                        ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
-                    }
-                    else
-                    {
-                        ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
-                        ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
-                    }
-                }
-                else    //No typeface
-                {
-                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
-                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
-                }
+                exists |= music_file_location.exists();
+                complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
             }catch(NullPointerException npe)
             {
-                Log.e("ShowList:ShowListCursorAdapter", "Fuck man. Null pointer when determining file status.");
+                Log.e("ShowList:ShowListCursorAdapter", "Null pointer when determining file status: Audio");
+            }
+            if(!complete)
+            {
+                try {
+                    File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + AllShows.SHOW_LIST[currentShow]);
+                    video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+                    exists |= video_file_location.exists();
+                    complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));
+                }catch(NullPointerException npe)
+                {
+                    Log.e("ShowList:ShowListCursorAdapter", "Null pointer when determining file status: Video");
+                }
+            }
+            if(inDLQueue || exists)
+            {
+                if(complete)
+                {
+                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
+                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                } else
+                {
+                    ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
+                    ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
+                }
+            }
+            else    //No typeface
+            {
+                ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
+                ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
             }
 
 
