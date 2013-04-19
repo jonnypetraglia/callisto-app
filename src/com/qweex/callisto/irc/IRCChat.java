@@ -516,9 +516,9 @@ public class IRCChat extends Activity implements IRCEventListener
             }
         });
 
-        StaticBlob.chatView.setBackgroundColor(CLR_BACK);
+        StaticBlob.chatView.setBackgroundColor(0xFF000000 + CLR_BACK);
         StaticBlob.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
-        StaticBlob.logView.setBackgroundColor(CLR_BACK);
+        StaticBlob.logView.setBackgroundColor(0xFF000000 + CLR_BACK);
         StaticBlob.logView.setLinkTextColor(0xFF000000 + CLR_LINKS);
         if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
             input.setTextColor(0xff000000 + IRSSI_GREEN);
@@ -556,7 +556,7 @@ public class IRCChat extends Activity implements IRCEventListener
         if(irssi)
         {
             CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=CLR_LINKS=IRSSI_GREEN;
-            CLR_BACK=0x0;
+            CLR_BACK=0x000000;
         }
         else
         {

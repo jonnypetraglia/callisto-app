@@ -51,14 +51,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" afterPath="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366343821379" ignored="false" />
-    <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366151764551" ignored="false" />
+    <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366358526659" ignored="false" />
     <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366356071809" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
@@ -71,7 +73,7 @@
     <file path="/ShowList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366089654210" ignored="false" />
     <file path="/AlarmNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385729850" ignored="false" />
     <file path="/BootNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385796427" ignored="false" />
-    <file path="/CalendarActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083603237" ignored="false" />
+    <file path="/CalendarActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366358514252" ignored="false" />
     <file path="/EpisodeDesc.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365899077158" ignored="false" />
     <file path="/UpdateNotes" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366069120870" ignored="false" />
     <file path="/LICENSE.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365825903905" ignored="false" />
@@ -79,7 +81,7 @@
     <file path="/final_strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366104012146" ignored="false" />
     <file path="/ContactForm.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366352065538" ignored="false" />
     <file path="/DatabaseConnector.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365883391015" ignored="false" />
-    <file path="/Donate.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366068708840" ignored="false" />
+    <file path="/Donate.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366359778830" ignored="false" />
     <file path="/LIVE_FetchInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365886524403" ignored="false" />
     <file path="/OnCompletionListenerWithContext.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365886591912" ignored="false" />
     <file path="/ResultDelegate.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365888110878" ignored="false" />
@@ -114,7 +116,7 @@
     <file path="/seekbar_dialog.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366099497011" ignored="false" />
     <file path="/news_listitem2.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105070468" ignored="false" />
     <file path="/news_listitem1.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105132183" ignored="false" />
-    <file path="/ImgTxtButton.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366356021941" ignored="false" />
+    <file path="/ImgTxtButton.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366359339151" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,14 +218,57 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Callisto.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="254" column="0" selection-start="12235" selection-end="12235" vertical-scroll-proportion="0.22569445">
+            <state line="754" column="44" selection-start="35405" selection-end="35416" vertical-scroll-proportion="-7.52">
               <folding>
                 <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
                 <element signature="e#14368#14811#0" expanded="true" />
                 <element signature="e#14800#14801#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CalendarActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="667" column="28" selection-start="27832" selection-end="27832" vertical-scroll-proportion="-5.68">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImgTxtButton.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="75" column="55" selection-start="2753" selection-end="2753" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Donate.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="249" column="13" selection-start="10734" selection-end="10734" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="docComment;field#baconPDialog#0;class#Donate#0" expanded="true" />
+                <element signature="e#10950#11123#0" expanded="true" />
+                <element signature="e#11112#11113#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IRCChat.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="520" column="69" selection-start="21170" selection-end="21170" vertical-scroll-proportion="0.575">
+              <folding>
+                <element signature="e#76889#76918#1" expanded="true" />
+                <element signature="e#77029#77058#1" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -259,8 +304,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
-        <option value="$PROJECT_DIR$/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/UpdateShow.java" />
         <option value="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
@@ -270,11 +313,13 @@
         <option value="$PROJECT_DIR$/res/values/final_strings.xml" />
         <option value="$PROJECT_DIR$/res/layout/news_listitem1.xml" />
         <option value="$PROJECT_DIR$/res/layout/news_listitem2.xml" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
         <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
       </list>
     </option>
   </component>
@@ -282,9 +327,9 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="34" />
-    <option name="width" value="960" />
-    <option name="height" value="1046" />
+    <option name="y" value="33" />
+    <option name="width" value="1920" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -416,6 +461,40 @@
               <option name="myItemId" value="qweex" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qweex" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="irc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -474,7 +553,7 @@
       <recent name="com.qweex.callisto.donate" />
     </key>
   </component>
-  <component name="RunManager" selected="Android Application.Device">
+  <component name="RunManager" selected="Android Application.Emulator">
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
       <module name="" />
       <option name="TESTING_TYPE" value="0" />
@@ -672,7 +751,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="34" width="960" height="1046" extended-state="1" />
+    <frame x="0" y="33" width="1920" height="1047" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -687,15 +766,15 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32615715" sideWeight="0.49786553" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34230354" sideWeight="0.49573106" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32580644" sideWeight="0.49786553" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3419355" sideWeight="0.49573106" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20811099" sideWeight="0.5967742" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32166302" sideWeight="0.67741936" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3229279" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32123798" sideWeight="0.67741936" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32258064" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="9" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -859,11 +938,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="685" column="23" selection-start="29110" selection-end="29110" vertical-scroll-proportion="1.2690217" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="57" column="77" selection-start="2493" selection-end="2493" vertical-scroll-proportion="0.0">
@@ -903,20 +977,48 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="667" column="28" selection-start="27832" selection-end="27832" vertical-scroll-proportion="-5.68">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="155" column="23" selection-start="5047" selection-end="5047" vertical-scroll-proportion="0.7806524">
+        <state line="75" column="55" selection-start="2753" selection-end="2753" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="254" column="0" selection-start="12235" selection-end="12235" vertical-scroll-proportion="0.22569445">
+        <state line="754" column="44" selection-start="35405" selection-end="35416" vertical-scroll-proportion="-7.52">
           <folding>
             <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
             <element signature="e#14368#14811#0" expanded="true" />
             <element signature="e#14800#14801#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="249" column="13" selection-start="10734" selection-end="10734" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="docComment;field#baconPDialog#0;class#Donate#0" expanded="true" />
+            <element signature="e#10950#11123#0" expanded="true" />
+            <element signature="e#11112#11113#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="520" column="69" selection-start="21170" selection-end="21170" vertical-scroll-proportion="0.575">
+          <folding>
+            <element signature="e#76889#76918#1" expanded="true" />
+            <element signature="e#77029#77058#1" expanded="true" />
           </folding>
         </state>
       </provider>

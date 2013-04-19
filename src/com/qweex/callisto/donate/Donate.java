@@ -25,6 +25,7 @@ import com.android.vending.billing.BillingService.RequestPurchase;
 import com.android.vending.billing.BillingService.RestoreTransactions;
 import com.android.vending.billing.ResponseHandler;
 */
+import android.widget.*;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalPayment;
@@ -48,14 +49,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+import com.qweex.callisto.Callisto;
 import com.qweex.callisto.R;
 import com.qweex.callisto.StaticBlob;
 
@@ -254,15 +249,13 @@ public class Donate extends ListActivity
                 }
             }
         };
-        baconPDialog = ProgressDialog.show(Donate.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
-        baconPDialog.setCancelable(true);
-        baconPDialog.setOnCancelListener(new OnCancelListener() {
+        baconPDialog = Callisto.BaconDialog(Donate.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg));
+        baconPDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
-            public void onCancel(DialogInterface dialog) {
+            public void onDismiss(DialogInterface dialog) {
                 finish();
             }
         });
-        baconPDialog.show();
         libraryInitializationThread.start();
 
 		/*------Billing------*/

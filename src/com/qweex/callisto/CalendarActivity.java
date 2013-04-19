@@ -664,18 +664,24 @@ public class CalendarActivity extends Activity {
             NumP.setRange(0, 300);
 
             //Create a ringtone manager; lists the ringtones for selection
-            RingtoneManager mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
-            mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);
-            mRingtoneManager2.setIncludeDrm(true);
-            Cursor mCursor2 = mRingtoneManager2.getCursor();
-            startManagingCursor(mCursor2);
-                //Creating the adapter
-            String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.URI_COLUMN_INDEX)};
-            int[] to = {R.id.text1, R.id.id1, R.id.uri};
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to);
-            adapter.setDropDownViewResource(R.layout.simple_spinner_item_plus);
-            Spinner s = (Spinner) editEventView.findViewById(R.id.spinner1);
-            s.setAdapter(adapter);
+            RingtoneManager mRingtoneManager2 = null;
+            Spinner s = null;
+            try {
+                mRingtoneManager2 = new RingtoneManager(CalendarActivity.this);
+                mRingtoneManager2.setType(RingtoneManager.TYPE_RINGTONE);
+                mRingtoneManager2.setIncludeDrm(true);
+                Cursor mCursor2 = mRingtoneManager2.getCursor();
+                startManagingCursor(mCursor2);
+                    //Creating the adapter
+                String[] from = {mCursor2.getColumnName(RingtoneManager.TITLE_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.ID_COLUMN_INDEX), mCursor2.getColumnName(RingtoneManager.URI_COLUMN_INDEX)};
+                int[] to = {R.id.text1, R.id.id1, R.id.uri};
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(CalendarActivity.this, R.layout.simple_spinner_item_plus, mCursor2, from, to);
+                adapter.setDropDownViewResource(R.layout.simple_spinner_item_plus);
+                s = (Spinner) editEventView.findViewById(R.id.spinner1);
+                s.setAdapter(adapter);
+            }catch(Exception e)
+            {
+            }
 
 
             //Set the previous if it exists

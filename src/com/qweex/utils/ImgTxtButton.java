@@ -15,6 +15,7 @@ limitations under the License.
 */
 package com.qweex.utils;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -83,11 +84,14 @@ public class ImgTxtButton extends LinearLayout
         //*/
     }
 
+    /*
+    @TargetApi(11)
     public ImgTxtButton(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         init();
     }
+    */
 
     public String getText()
     {
