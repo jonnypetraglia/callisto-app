@@ -13,15 +13,8 @@
  */
 package com.qweex.callisto;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Properties;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -42,8 +35,6 @@ import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
 //	    But it took forever and it required figuring out how to do a POST, plus, if the form ever changed it would probably break.

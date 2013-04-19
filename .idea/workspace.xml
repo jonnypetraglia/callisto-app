@@ -51,20 +51,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Callisto.eml" afterPath="$PROJECT_DIR$/Callisto.eml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Callisto.iml" afterPath="$PROJECT_DIR$/Callisto.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/ant.xml" afterPath="$PROJECT_DIR$/.idea/ant.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/xml/preferences.xml" afterPath="$PROJECT_DIR$/res/xml/preferences.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project.properties" afterPath="$PROJECT_DIR$/project.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" afterPath="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366343821379" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366151764551" ignored="false" />
-    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105183236" ignored="false" />
+    <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366356071809" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364151222773" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366347212244" ignored="false" />
@@ -119,6 +114,7 @@
     <file path="/seekbar_dialog.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366099497011" ignored="false" />
     <file path="/news_listitem2.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105070468" ignored="false" />
     <file path="/news_listitem1.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105132183" ignored="false" />
+    <file path="/ImgTxtButton.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366356021941" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,26 +183,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ContactForm.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ContactForm.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="108" column="0" selection-start="4457" selection-end="4457" vertical-scroll-proportion="1.0713073">
+            <state line="14" column="0" selection-start="560" selection-end="560" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#0#12720#0" expanded="true" />
-                <element signature="imports" expanded="true" />
+                <element signature="e#0#12454#0" expanded="true" />
                 <element signature="docComment;field#formURL#0;class#ContactForm#0" expanded="true" />
                 <element signature="docComment;field#DRAFT_ID#0;class#ContactForm#0" expanded="true" />
                 <element signature="docComment;field#customCSS#0;class#ContactForm#0" expanded="true" />
                 <element signature="docComment;field#JAVASCRIPT_SAVE_DRAFT#0;class#ContactForm#0" expanded="true" />
                 <element signature="docComment;method#onCreate#0;class#ContactForm#0" expanded="true" />
-                <element signature="e#5029#5250#0" expanded="true" />
-                <element signature="e#5239#5240#0" expanded="true" />
+                <element signature="e#4763#4984#0" expanded="true" />
+                <element signature="e#4973#4974#0" expanded="true" />
                 <element signature="docComment;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
                 <element signature="docComment;method#CustomCSSApplier#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-                <element signature="e#10166#10193#0" expanded="true" />
+                <element signature="e#9900#9927#0" expanded="true" />
                 <element signature="docComment;method#saveDraft#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-                <element signature="e#11039#11066#0" expanded="true" />
-                <element signature="e#11526#11553#0" expanded="true" />
+                <element signature="e#10773#10800#0" expanded="true" />
+                <element signature="e#11260#11287#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -221,14 +216,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Callisto.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="366" column="0" selection-start="17658" selection-end="17777" vertical-scroll-proportion="-4.52">
+            <state line="254" column="0" selection-start="12235" selection-end="12235" vertical-scroll-proportion="0.22569445">
               <folding>
                 <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
-                <element signature="e#14144#14587#0" expanded="true" />
-                <element signature="e#14576#14577#0" expanded="true" />
+                <element signature="e#14368#14811#0" expanded="true" />
+                <element signature="e#14800#14801#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -264,7 +259,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CallistoService.java" />
         <option value="$PROJECT_DIR$/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
@@ -276,10 +270,11 @@
         <option value="$PROJECT_DIR$/res/values/final_strings.xml" />
         <option value="$PROJECT_DIR$/res/layout/news_listitem1.xml" />
         <option value="$PROJECT_DIR$/res/layout/news_listitem2.xml" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
         <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
       </list>
     </option>
   </component>
@@ -348,6 +343,96 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="Callisto" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qweex" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qweex" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -587,11 +672,12 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="34" width="960" height="1046" extended-state="0" />
+    <frame x="0" y="34" width="960" height="1046" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -608,13 +694,12 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32230523" sideWeight="0.67741936" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3229279" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32166302" sideWeight="0.67741936" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3229279" sideWeight="0.49573106" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="9" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17662753" sideWeight="0.6731183" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4483871" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -700,21 +785,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="207" column="0" selection-start="8651" selection-end="8651" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#12720#0" expanded="true" />
-            <element signature="imports" expanded="true" />
+            <element signature="e#0#12454#0" expanded="true" />
             <element signature="docComment;field#formURL#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#DRAFT_ID#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#customCSS#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#JAVASCRIPT_SAVE_DRAFT#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#onCreate#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#5029#5250#0" expanded="true" />
-            <element signature="e#5239#5240#0" expanded="true" />
+            <element signature="e#4763#4984#0" expanded="true" />
+            <element signature="e#4973#4974#0" expanded="true" />
             <element signature="docComment;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#CustomCSSApplier#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#10166#10193#0" expanded="true" />
+            <element signature="e#9900#9927#0" expanded="true" />
             <element signature="docComment;method#saveDraft#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#11039#11066#0" expanded="true" />
-            <element signature="e#11526#11553#0" expanded="true" />
+            <element signature="e#10773#10800#0" expanded="true" />
+            <element signature="e#11260#11287#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -724,8 +808,8 @@
         <state line="225" column="25" selection-start="10868" selection-end="10871" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
-            <element signature="e#14144#14587#0" expanded="true" />
-            <element signature="e#14576#14577#0" expanded="true" />
+            <element signature="e#14368#14811#0" expanded="true" />
+            <element signature="e#14800#14801#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -734,21 +818,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#12720#0" expanded="true" />
-            <element signature="imports" expanded="true" />
+            <element signature="e#0#12454#0" expanded="true" />
             <element signature="docComment;field#formURL#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#DRAFT_ID#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#customCSS#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#JAVASCRIPT_SAVE_DRAFT#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#onCreate#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#5029#5250#0" expanded="true" />
-            <element signature="e#5239#5240#0" expanded="true" />
+            <element signature="e#4763#4984#0" expanded="true" />
+            <element signature="e#4973#4974#0" expanded="true" />
             <element signature="docComment;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#CustomCSSApplier#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#10166#10193#0" expanded="true" />
+            <element signature="e#9900#9927#0" expanded="true" />
             <element signature="docComment;method#saveDraft#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#11039#11066#0" expanded="true" />
-            <element signature="e#11526#11553#0" expanded="true" />
+            <element signature="e#10773#10800#0" expanded="true" />
+            <element signature="e#11260#11287#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -758,8 +841,8 @@
         <state line="225" column="25" selection-start="10868" selection-end="10871" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
-            <element signature="e#14144#14587#0" expanded="true" />
-            <element signature="e#14576#14577#0" expanded="true" />
+            <element signature="e#14368#14811#0" expanded="true" />
+            <element signature="e#14800#14801#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -788,36 +871,52 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="366" column="0" selection-start="17658" selection-end="17777" vertical-scroll-proportion="-4.52">
-          <folding>
-            <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
-            <element signature="e#14144#14587#0" expanded="true" />
-            <element signature="e#14576#14577#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="0" selection-start="4457" selection-end="4457" vertical-scroll-proportion="1.0713073">
+        <state line="14" column="0" selection-start="560" selection-end="560" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#12720#0" expanded="true" />
-            <element signature="imports" expanded="true" />
+            <element signature="e#0#12454#0" expanded="true" />
             <element signature="docComment;field#formURL#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#DRAFT_ID#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#customCSS#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;field#JAVASCRIPT_SAVE_DRAFT#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#onCreate#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#5029#5250#0" expanded="true" />
-            <element signature="e#5239#5240#0" expanded="true" />
+            <element signature="e#4763#4984#0" expanded="true" />
+            <element signature="e#4973#4974#0" expanded="true" />
             <element signature="docComment;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
             <element signature="docComment;method#CustomCSSApplier#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#10166#10193#0" expanded="true" />
+            <element signature="e#9900#9927#0" expanded="true" />
             <element signature="docComment;method#saveDraft#0;class#JavascriptInterface#0;class#ContactForm#0" expanded="true" />
-            <element signature="e#11039#11066#0" expanded="true" />
-            <element signature="e#11526#11553#0" expanded="true" />
+            <element signature="e#10773#10800#0" expanded="true" />
+            <element signature="e#11260#11287#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/ImgTxtButton.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="155" column="23" selection-start="5047" selection-end="5047" vertical-scroll-proportion="0.7806524">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="254" column="0" selection-start="12235" selection-end="12235" vertical-scroll-proportion="0.22569445">
+          <folding>
+            <element signature="docComment;method#initPhone#0;class#Callisto#0" expanded="true" />
+            <element signature="e#14368#14811#0" expanded="true" />
+            <element signature="e#14800#14801#0" expanded="true" />
           </folding>
         </state>
       </provider>

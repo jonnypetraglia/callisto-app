@@ -264,10 +264,13 @@ public class Callisto extends Activity
         setContentView(R.layout.main);
         //This loop sets the onClickListeners and adjusts the button settings if the view is landscape
         ImgTxtButton temp;
+        boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
         for(int i=0; i<buttonIds.length; i++)
         {
             temp = (ImgTxtButton)findViewById(buttonIds[i]);
             temp.setOnClickListener(startAct);
+            if(isLandscape)
+                temp.setOrientation(ImgTxtButton.HORIZONTAL);
         }
 
         //Set the player on click listeners; this is usually done by the PlayerInfo object, when switching activities.

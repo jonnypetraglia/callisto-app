@@ -30,6 +30,7 @@ import android.widget.*;
  * @author MrQweex */
 public class ImgTxtButton extends LinearLayout
 {
+    public static final int HORIZONTAL = LinearLayout.HORIZONTAL, VERTICAL = LinearLayout.VERTICAL;
 	private String prefix = "", suffix = "";
 	private ImageView img;
     private TextView txt;
@@ -76,7 +77,7 @@ public class ImgTxtButton extends LinearLayout
 
         Log.e("DADSADSADSADA", attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "gravity", Gravity.LEFT) + " ");
         txt.setTextColor(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "textColor", 0xff000000));
-        setOrientation(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "orientation", LinearLayout.VERTICAL));
+        setOrientation(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "orientation", VERTICAL));
         txt.setGravity(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "gravity", Gravity.CENTER));
         img.setImageDrawable(getResources().getDrawable(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "drawable", 0)));
         //*/
@@ -111,14 +112,14 @@ public class ImgTxtButton extends LinearLayout
     @Override
     public void setOrientation(int d)
     {
-        if(d==LinearLayout.VERTICAL)
+        if(d==VERTICAL)
         {
-            super.setOrientation(LinearLayout.VERTICAL);
+            super.setOrientation(VERTICAL);
             txt.setGravity(Gravity.CENTER);
         }
         else
         {
-            super.setOrientation(LinearLayout.HORIZONTAL);
+            super.setOrientation(HORIZONTAL);
             txt.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             txt.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f));
             img.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f));
@@ -152,7 +153,7 @@ public class ImgTxtButton extends LinearLayout
     {
         txt = new TextView(getContext());
         img = new ImageView(getContext());
-        setOrientation(LinearLayout.VERTICAL);
+        setOrientation(VERTICAL);
         txt.setGravity(Gravity.CENTER);
         addView(img);
         addView(txt);
