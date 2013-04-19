@@ -17,6 +17,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 
+import android.app.Dialog;
 import android.preference.PreferenceManager;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
@@ -243,6 +244,7 @@ public class ShowList extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        AlertDialog d;
         switch (item.getItemId())
         {
             case STOP_ID:   //Stop playing
@@ -252,7 +254,7 @@ public class ShowList extends Activity
                 reload();
                 return true;
             case CLEAR_ID:  //Show a dialog to clear all items of this show from the SQL database
-                new AlertDialog.Builder(this)
+                d = new AlertDialog.Builder(this)
                         .setTitle(StaticBlob.RESOURCES.getString(R.string.confirm))
                         .setMessage(StaticBlob.RESOURCES.getString(R.string.confirm_clear))
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -268,6 +270,7 @@ public class ShowList extends Activity
                                 editor.commit();
                             }})
                         .setNegativeButton(android.R.string.no, null).show();
+                StaticBlob.formatAlertDialogButtons(d);
                 return true;
             case FILTER_ID: //Filter or unfilter the results showing only new or all
                 filter = !filter;
@@ -283,7 +286,7 @@ public class ShowList extends Activity
                 editor.commit();
                 return true;
             case MARK_ID:   //Mark all in the show as new or old
-                new AlertDialog.Builder(this)
+                d = new AlertDialog.Builder(this)
                         .setTitle(StaticBlob.RESOURCES.getString(R.string.mark_all))
                         .setPositiveButton(StaticBlob.RESOURCES.getString(R.string.new_), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -299,6 +302,11 @@ public class ShowList extends Activity
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }}).show();
+                d.getButton(Dialog.BUTTON_POSITIVE).setBackgroundResource(R.drawable.blue_button);
+                d.getButton(Dialog.BUTTON_POSITIVE).setPadding((int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP));
+                d.getButton(Dialog.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.blue_button);
+                d.getButton(Dialog.BUTTON_NEGATIVE).setPadding((int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP),(int)(15*StaticBlob.DP));
+                ((View)d.getButton(Dialog.BUTTON_POSITIVE).getParent()).setBackgroundResource(R.color.backClr);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

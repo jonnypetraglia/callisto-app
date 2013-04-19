@@ -116,7 +116,7 @@ public class PlayerControls
             if(Live.live_player!=null)
             {
                 psychV = v;
-                Dialog dg = new AlertDialog.Builder(v.getContext())
+                AlertDialog dg = new AlertDialog.Builder(v.getContext())
                         .setTitle("Switch from live back to playlist?")
                         .setPositiveButton("Yup", new DialogInterface.OnClickListener()
                         {
@@ -136,8 +136,8 @@ public class PlayerControls
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        }).create();
-                dg.show();
+                        }).show();
+                StaticBlob.formatAlertDialogButtons(dg);
             }
             else {
                 Intent newIntent = new Intent(v.getContext(), Queue.class);

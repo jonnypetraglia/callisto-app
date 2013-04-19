@@ -80,14 +80,12 @@ public class UpdateShow
             while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG))
             {
                 eventType = xpp.next();
-                eventType2 = xpp_vid.next();
             }
             eventType = xpp.next();
-            eventType2 = xpp_vid.next();
 
             String imgurl = null, imgurl2 = null;
             //Download the image
-            while(!("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG) && !("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
+            while(!("item".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG) && !("thumbnail".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
             {
                 //Handles if there is an <image> tag
                 if("image".equals(xpp.getName()))
@@ -97,34 +95,27 @@ public class UpdateShow
                         imgurl = xpp.getAttributeValue(null, "href");
                         eventType = xpp.next();
                         eventType = xpp.next();
-                        eventType2 = xpp_vid.next();
-                        eventType2 = xpp_vid.next();
                     }
                     else
                     {
                         eventType = xpp.next();
-                        eventType2 = xpp_vid.next();
                         while(!(("image".equals(xpp.getName()) || ("url".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))))
                         {
                             eventType = xpp.next();
-                            eventType2 = xpp_vid.next();
                         }
                         if(!("image".equals(xpp.getName())))
                         {
                             eventType = xpp.next();
-                            eventType2 = xpp_vid.next();
                             imgurl = xpp.getText();
                             while(!("image".equals(xpp.getName())))
                             {
                                 eventType = xpp.next();
-                                eventType2 = xpp_vid.next();
                             }
                         }
                     }
                 }
 
                 eventType = xpp.next();
-                eventType2 = xpp_vid.next();
                 if(eventType==XmlPullParser.END_DOCUMENT)
                     throw(new UnfinishedParseException("Thumbnail"));
             }
@@ -154,6 +145,14 @@ public class UpdateShow
                         break;
                 }
                 if(eventType==XmlPullParser.END_DOCUMENT)
+                    break;
+                while(!("item".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG))
+                {
+                    eventType2 = xpp_vid.next();
+                    if(eventType2==XmlPullParser.END_DOCUMENT)
+                        break;
+                }
+                if(eventType2==XmlPullParser.END_DOCUMENT)
                     break;
                 extractData();
             }
@@ -208,16 +207,76 @@ public class UpdateShow
 
     public void extractData() throws UnfinishedParseException, XmlPullParserException, IOException, ParseException
     {
-        epTitle = epLink = epDesc = epDate = null;
-        int numOfDone = 0;
+        epTitle = epLink = epDesc = epDate = epAudioLink = epVideoLink = null;
+        int numOfDone = 0, numOfDoneVid=0;
         Log.v("*:updateShow", "Starting new episode");
-        xpp.next();
+        String titleConfirm = null, dateConfirm = null;
+
+        //<START> Block to read in 3 variables to check video feed to audio feed: title, date, and vidlink
+        eventType2 = xpp_vid.next();
+        while(eventType2!=XmlPullParser.END_DOCUMENT)
+        {
+            if("title".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG)
+            {
+                eventType2 = xpp_vid.next();
+                titleConfirm = xpp_vid.getText();
+                Log.d("*:updateShow", "!" + titleConfirm);
+                if(titleConfirm==null)
+                    throw(new UnfinishedParseException("Confirm Title"));
+                if(titleConfirm.indexOf("|")>0)
+                    titleConfirm = titleConfirm.substring(0, titleConfirm.indexOf("|")).trim();
+                if((numOfDoneVid & 0x1)==0x1)
+                    throw(new UnfinishedParseException("Confirm Title 2times"));
+                numOfDoneVid |= 0x1;
+            }
+            else if("pubDate".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG)
+            {
+                eventType2 = xpp_vid.next();
+                dateConfirm = xpp_vid.getText();
+                Log.d("*:updateShow", "!" + dateConfirm);
+                if(dateConfirm==null)
+                    throw(new UnfinishedParseException("Confirm Date"));
+                if((numOfDoneVid & 0x8)==0x8)
+                    throw(new UnfinishedParseException("ConfirmDate 2times"));
+                numOfDoneVid |= 0x8;
+            }
+            else if("enclosure".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG)
+            {
+                epVideoLink = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"url");
+                Log.d("*:updateShow", "V Link: " + epVideoLink);
+                if(epVideoLink==null)
+                    throw(new UnfinishedParseException("VideoLink"));
+
+                String temp = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
+                if(temp==null)
+                    throw(new UnfinishedParseException("VideoSize"));
+                epVideoSize = Long.parseLong(temp);
+                Log.d("*:updateShow", "V Size: " + epVideoSize);
+                if((numOfDoneVid & 0x10)==0x10)
+                    throw(new UnfinishedParseException("Video 2times"));
+                numOfDoneVid |= 0x10;
+            }
+            //Done
+            else if("item".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.END_TAG)
+            {
+                int want = (0x1 | 0x8 | 0x10);
+                if((numOfDoneVid & want)==want) //Not 0x2 because some items miss <link>
+                {
+                    eventType2 = xpp_vid.next();
+                    break;
+                }
+            }
+            eventType2 = xpp_vid.next();
+        }
+        //</END>
+
+        //<START> Read audio info
+        eventType = xpp.next();
         while(eventType!=XmlPullParser.END_DOCUMENT)
         {
             if("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();
-                eventType2 = xpp_vid.next();
                 epTitle = xpp.getText();
                 if(epTitle==null)
                     throw(new UnfinishedParseException("Title"));
@@ -232,8 +291,7 @@ public class UpdateShow
             }
             else if("link".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
+                eventType = xpp.next();;
                 epLink = xpp.getText();
                 if(epLink==null)
                     throw(new UnfinishedParseException("Link"));
@@ -245,33 +303,18 @@ public class UpdateShow
             else if("description".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();
-                eventType2 = xpp_vid.next();
                 epDesc = xpp.getText();
                 //if(epDesc==null)
                     //throw(new UnfinishedParseException("Description"));
-                Log.d("*:updateShow", "Desc: " + epDesc + " (from <description>)");
+                Log.d("*:updateShow", "Desc: " + epDesc);
                 if((numOfDone & 0x4)==0x4)
                     throw(new UnfinishedParseException("Description 2times"));
                 if(epDesc!=null)
                     numOfDone |= 0x4;
             }
-            /*
-            else if(epDesc==null && ("itunes:summary".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
-            {
-                eventType = xpp.next();
-                eventType2 = xpp_vid.next();
-                epDesc = xpp.getText();
-                Log.d("*:updateShow", "Desc: " + epDesc + " (from <itunes:summary>)");
-                if((numOfDone & 0x4)==0x4)
-                    throw(new UnfinishedParseException("Description 2times"));
-                if(epDesc!=null)
-                    numOfDone |= 0x4;
-            }
-            //*/
             else if("pubDate".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();
-                eventType2 = xpp_vid.next();
                 epDate = xpp.getText();
                 Log.d("*:updateShow", "Date: " + epDate);
                 Log.e("*:updateShow", "Date: " + xpp_vid.getText());
@@ -291,33 +334,32 @@ public class UpdateShow
             else if("enclosure".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 epAudioLink = xpp.getAttributeValue(xpp.getNamespace(),"url");
-                epVideoLink = xpp_vid.getAttributeValue(xpp.getNamespace(),"url");
                 Log.d("*:updateShow", "A Link: " + epAudioLink);
-                Log.d("*:updateShow", "V Link: " + epVideoLink);
                 if(epAudioLink==null)
                     throw(new UnfinishedParseException("AudioLink"));
                 //Sizes
                 String temp = xpp.getAttributeValue(xpp.getNamespace(),"length");
-                String temp2 = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
                 if(temp==null)
                     throw(new UnfinishedParseException("MediaSize"));
                 epAudioSize = Long.parseLong(temp);
-                if(temp2!=null) //TODO: BAD
-                    epVideoSize = Long.parseLong(temp2);
-
                 Log.d("*:updateShow", "A Size: " + epAudioSize);
-                Log.d("*:updateShow", "V Size: " + epVideoSize);
                 if((numOfDone & 0x10)==0x10)
                     throw(new UnfinishedParseException("Media 2times"));
                 numOfDone |= 0x10;
             }
 
             //Done
-            if("item".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG)
+            else if("item".equals(xpp.getName()) && eventType == XmlPullParser.END_TAG)
             {
                 int want = (0x1 | 0x4 | 0x8 | 0x10);
                 if((numOfDone & want)==want) //Not 0x2 because some items miss <link>
                 {
+                    Log.d("*:updateShow", "!" + epDate.substring(0,16));
+                    Log.d("*:updateShow", "!" + dateConfirm.substring(0,16));
+                    if(!epTitle.equals(titleConfirm))
+                        throw(new UnfinishedParseException("Video does not match audio: " + epTitle + "==" +titleConfirm));
+                    if(!epDate.substring(0,16).equals(dateConfirm.substring(0,16)))
+                        throw(new UnfinishedParseException("Video does not match audio: " + epDate.substring(0,16) + "==" + dateConfirm.substring(0,16)));
                     epDate = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(epDate));
                     //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
                     //isVideo, epMediaLink, epMediaSize))
@@ -330,7 +372,6 @@ public class UpdateShow
                     throw(new UnfinishedParseException("Malformed Item, missing info"));
             }
             eventType = xpp.next();
-            eventType2 = xpp_vid.next();
             if(xpp.getName()!=null)
                 Log.v("*:updateShow", "Bollocks: [" + xpp.getName());
         } //eventType == END_DOCUMENT

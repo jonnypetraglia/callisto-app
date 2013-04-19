@@ -13,6 +13,7 @@
  */
 package com.qweex.callisto;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,6 +22,8 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
@@ -101,4 +104,19 @@ public class StaticBlob
     public static TextView timeView;
     //TODO: wtf
     public static ProgressBar timeProgress;
+
+    public static void formatAlertDialogButtons(AlertDialog d)
+    {
+        d.getButton(Dialog.BUTTON_POSITIVE).setBackgroundResource(R.drawable.blue_button);
+        d.getButton(Dialog.BUTTON_POSITIVE).setPadding((int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP));
+        d.getButton(Dialog.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.blue_button);
+        d.getButton(Dialog.BUTTON_NEGATIVE).setPadding((int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP), (int) (15 * StaticBlob.DP));
+        ((View)d.getButton(Dialog.BUTTON_POSITIVE).getParent()).setBackgroundResource(R.color.backClr);
+        View msg = ((ViewGroup) ((ViewGroup)(d.getButton(Dialog.BUTTON_POSITIVE).getParent().getParent().getParent())).getChildAt(1)).getChildAt(0);
+        msg.setBackgroundResource(R.color.backClr);
+        if(((TextView)((android.widget.ScrollView)msg).getChildAt(0))!=null)
+            ((TextView)((android.widget.ScrollView)msg).getChildAt(0)).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        //ViewGroup x = (ViewGroup) ((ViewGroup) ((ViewGroup)(d.getButton(Dialog.BUTTON_POSITIVE).getParent().getParent().getParent())).getChildAt(0)).getChildAt(0);
+        //x.setBackgroundResource(R.color.backClr);
+    }
 }

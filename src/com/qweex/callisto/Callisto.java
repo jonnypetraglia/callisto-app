@@ -559,7 +559,7 @@ public class Callisto extends Activity
             Log.d("LiveStream:playButton", "Clicked play button");
             if(StaticBlob.mplayer!=null)
             {
-                Dialog dg = new AlertDialog.Builder(v.getContext())
+                AlertDialog d = new AlertDialog.Builder(v.getContext())
                         .setTitle("Switch from playlist to live?")
                         .setPositiveButton("Yup", new DialogInterface.OnClickListener()
                         {
@@ -577,8 +577,8 @@ public class Callisto extends Activity
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        }).create();
-                dg.show();
+                        }).show();
+                StaticBlob.formatAlertDialogButtons(d);
                 return;
             }
             StaticBlob.liveDg.show();
