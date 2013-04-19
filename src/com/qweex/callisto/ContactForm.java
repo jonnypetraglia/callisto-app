@@ -16,6 +16,8 @@ package com.qweex.callisto;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebViewClient;
@@ -60,7 +62,8 @@ public class ContactForm extends Activity
         wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.addJavascriptInterface(new JavascriptInterface(), "HTMLOUT");
-        wv.setWebViewClient(new MyWebViewClient());
+        wv.setWebViewClient(new RestoreDraftClient());
+
         FrameLayout fl = new FrameLayout(this);
         fl.setBackgroundResource(R.color.backClr);
         fl.addView(wv);
@@ -136,12 +139,44 @@ public class ContactForm extends Activity
                     baconPDialog.hide();
             }
         }
+    }
 
+    /** A class to restore the draft stored in the preference, if it exists. */
+    class RestoreDraftClient extends MyWebViewClient
+    {
+        @Override
+        public void onPageFinished(WebView view, String url)
+        {
+            super.onPageFinished(view, url);
+            if(url.startsWith("http://wufoo.com/")) //In this case the super's method is going to re-load the page to trigger the JS handler
+                return;                             //so we don't need to do anything.
+
+            String draft =  PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getString("ContactDraft", null);
+            Log.i("ContactForm:RestoreDraftClient", "Restoring draft.");
+            if(draft!=null)
+            {
+                String javascript = "javascript:";
+                String element, value;
+                for(String s : draft.split("\\|"))
+                {
+                    element = s.split("=")[0];
+                    value = s.split("=")[1];
+                    Log.i("ContactForm:RestoreDraftClient", element + " = " + value);
+                    draft = draft.concat("document.getElementsById('" + element + "').innerHTML='" + value + "'; ");
+                }
+                view.loadUrl(javascript);
+            }
+            Log.i("ContactForm:RestoreDraftClient", "Changing wvClient");
+            view.setWebViewClient(new MyWebViewClient());
+        }
     }
 
     /** Javascript Handler class to handle when we retrieve source of a page and want to apply CSS, as well as retrieving data for the draft feature */
     class JavascriptInterface
     {
+        /** Applies the custom CSS by doing JS voodoo and reloading the page.
+         * @param result The HTML page source that is passed by the WebViewClient when the page has loaded.
+         **/
         @SuppressWarnings("unused")
         public void CustomCSSApplier(String result)
         {
@@ -156,10 +191,16 @@ public class ContactForm extends Activity
             wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
         }
 
+        /** Pulls the values from the HTML fields and saves them to Preferences.
+         * @param result A JS variable containing the formatted list passed in from the onKeyDown method. Note: NOT just raw HTML.
+         */
         @SuppressWarnings("unused")
         public void saveDraft(String result)
         {
-            System.out.println("DERPDONG: " + result);
+            Log.i("ContactForm:JavascriptInterface:saveDraft", "Draft: " + result);
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit();
+            editor.putString("ContactDraft", result);
+            editor.commit();
             finish();
         }
     }

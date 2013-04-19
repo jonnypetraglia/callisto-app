@@ -687,7 +687,7 @@ public class IRCChat extends Activity implements IRCEventListener
         chatQueue.add(s);
         ircHandler.post(chatUpdater);
 
-        new QuitPlz().execute(null);
+        new QuitPlz().execute((Void[])null);
         System.out.println(2);
         mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
         StaticBlob.notification_chat = null;
