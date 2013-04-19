@@ -13,12 +13,21 @@
  */
 package com.qweex.callisto;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Properties;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -31,6 +40,10 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.webkit.WebView;
+import android.widget.Toast;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 //NOTE: At first, I had built a native UI for each element and I fetched the "Topics" list from the website.
 //	    But it took forever and it required figuring out how to do a POST, plus, if the form ever changed it would probably break.
@@ -41,15 +54,50 @@ import android.webkit.WebView;
  */
 public class ContactForm extends Activity
 {
+    /** Url for the Wufoo form */
     private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
     //private final String formURL = "https://qweex.wufoo.com/embed/m7x3q1/"; //Used for testing.
-
+    /** Menu ID */
+    final int DRAFT_ID = Menu.FIRST;
     /** String to hold the custom CSS */
     private String customCSS;
     /** Main WebView  */
     private WebView wv;
     /** The progress dialog to show whilst fetching the form **/
     private ProgressDialog baconPDialog;
+    /*
+    Field4 - First      - input type=text
+    Field5 - Last       - input type=text
+    Field6 - email      - input type=email
+    Field7 - topic      - select
+    Field1 - message    - textarea
+    Field9 - hidden     - input type=hidden
+    Field9_0 - radio1   - input type=radio
+    Field9_1 - radio2   - input type=radio
+     */
+    /** Huge-ass Javascript Query to get the values of all the form elements */
+    final String JAVASCRIPT_SAVE_DRAFT =
+            "var tehResult = '';" +
+                    "var inputs = document.getElementsByTagName('input');" +
+                    "for(var i=0; i<inputs.length; i++) {" +
+                    "   if(inputs[i].getAttribute('type')=='radio') {" +
+                    "       if(inputs[i].checked)   tehResult = tehResult + '|' + inputs[i].id;" +
+                    "   } else" +
+                    "   if(inputs[i].getAttribute('type')!='hidden' && inputs[i].getAttribute('type')!='submit') {" +
+                    "       tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
+                    "   }" +
+                    "}" +
+                    "inputs = document.getElementsByTagName('textarea');" +
+                    "for(var i=0; i<inputs.length; i++) {" +
+                    "   if(inputs[i].id!='comment')" +
+                    "      tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
+                    "}" +
+                    "inputs = document.getElementsByTagName('select');" +
+                    "for(var i=0; i<inputs.length; i++) {" +
+                    "   tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].options[inputs[i].selectedIndex].value;" +
+                    "}"
+            ;
+
 
     /** Called when the activity is first created. Retrieves the wufoo form and inserts it into the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -148,26 +196,39 @@ public class ContactForm extends Activity
         public void onPageFinished(WebView view, String url)
         {
             super.onPageFinished(view, url);
-            if(url.startsWith("http://wufoo.com/")) //In this case the super's method is going to re-load the page to trigger the JS handler
+            if(!url.startsWith("http://wufoo.com/")) //In this case the super's method is going to re-load the page to trigger the JS handler
                 return;                             //so we don't need to do anything.
 
+            baconPDialog.hide();
             String draft =  PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getString("ContactDraft", null);
             Log.i("ContactForm:RestoreDraftClient", "Restoring draft.");
             if(draft!=null)
             {
                 String javascript = "javascript:";
-                String element, value;
+                String element = null, value = null;
                 for(String s : draft.split("\\|"))
                 {
                     element = s.split("=")[0];
-                    value = s.split("=")[1];
+                    if(element.trim().length()==0)
+                        continue;
+                    System.out.println("ContactForm:S: " + s);
+                    if(s.contains("=") && s.split("=").length==2)
+                    {
+                        value = s.split("=")[1];
+                        javascript = javascript.concat("document.getElementById('" + element + "').value='" + value + "'; ");
+                    }
+                    else
+                    {
+                        javascript = javascript.concat("document.getElementById('" + element + "').checked='true'; ");
+                    }
                     Log.i("ContactForm:RestoreDraftClient", element + " = " + value);
-                    draft = draft.concat("document.getElementsById('" + element + "').innerHTML='" + value + "'; ");
                 }
+                Log.i("ContactForm:RestoreDraftClient", javascript);
                 view.loadUrl(javascript);
+                PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit().remove("ContactDraft").commit();
             }
             Log.i("ContactForm:RestoreDraftClient", "Changing wvClient");
-            view.setWebViewClient(new MyWebViewClient());
+            //view.setWebViewClient(new MyWebViewClient());
         }
     }
 
@@ -201,47 +262,43 @@ public class ContactForm extends Activity
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit();
             editor.putString("ContactDraft", result);
             editor.commit();
+            Toast.makeText(ContactForm.this, "Message saved as draft.", Toast.LENGTH_SHORT).show();
+        }
+
+        @SuppressWarnings("unused")
+        public void safeDraftAndFinish(String result)
+        {
+            saveDraft(result);
             finish();
         }
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, android.view.KeyEvent event)  {
-        if(keyCode == android.view.KeyEvent.KEYCODE_BACK)
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        menu.add(0, DRAFT_ID, 0, "Save Draft").setIcon(R.drawable.ic_action_inbox);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
         {
-            /*
-            Field4 - First      - input type=text
-            Field5 - Last       - input type=text
-            Field6 - email      - input type=email
-            Field7 - topic      - select
-            Field1 - message    - textarea
-            Field9 - hidden     - input type=hidden
-            Field9_0 - radio1   - input type=radio
-            Field9_1 - radio2   - input type=radio
-             */
-            String tehJavascript =
-                    "var tehResult = '';" +
-                            "var inputs = document.getElementsByTagName('input');" +
-                            "for(var i=0; i<inputs.length; i++) {" +
-                            "   if(inputs[i].getAttribute('type')=='radio') {" +
-                            "       if(inputs[i].checked)   tehResult = tehResult + '|' + inputs[i].id;" +
-                            "   } else" +
-                            "   if(inputs[i].getAttribute('type')!='hidden' && inputs[i].getAttribute('type')!='submit') {" +
-                            "       tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
-                            "   }" +
-                            "}" +
-                            "inputs = document.getElementsByTagName('textarea');" +
-                            "for(var i=0; i<inputs.length; i++) {" +
-                            "   if(inputs[i].id!='comment')" +
-                            "      tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].value;" +
-                            "}" +
-                            "inputs = document.getElementsByTagName('select');" +
-                            "for(var i=0; i<inputs.length; i++) {" +
-                            "   tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].options[inputs[i].selectedIndex].value;" +
-                            "}"
-                    ;
-            wv.loadUrl("javascript:" + tehJavascript + ";window.HTMLOUT.saveDraft("+ "tehResult" + ");");
-            return true;
+            case DRAFT_ID:
+                wv.loadUrl("javascript:" + JAVASCRIPT_SAVE_DRAFT + ";window.HTMLOUT.saveDraft("+ "tehResult" + ");");
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, android.view.KeyEvent event)  {
+        if(keyCode == android.view.KeyEvent.KEYCODE_BACK && PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getBoolean("contact_draft", true))
+        {
+            wv.loadUrl("javascript:" + JAVASCRIPT_SAVE_DRAFT + ";window.HTMLOUT.saveDraftAndFinish("+ "tehResult" + ");");
         }
         return super.onKeyDown(keyCode, event);
     }

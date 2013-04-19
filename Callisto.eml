@@ -2,7 +2,4 @@
 <component inheritJdk="true">
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$"/>
-	<levels>
-		<level name="libs" value="project"/>
-	</levels>
 </component>

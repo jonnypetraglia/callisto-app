@@ -71,6 +71,12 @@
             android:title="New (tablet) main screen"
             android:layout="@layout/smaller_preference"
             />
+        <CheckBoxPreference
+            android:key="contact_draft"
+            android:title="Auto-save Contact Draft"
+            android:layout="@layout/smaller_preference"
+            android:defaultValue="true"
+            />
 
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">

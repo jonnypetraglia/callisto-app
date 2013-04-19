@@ -4,6 +4,7 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     NEW SHOW: Plan B! -- Jupiter Broadcasting's new show all about Bitcoins! Now added to Callisto!
     Feature: Brand new looks! -- That's right! A brand new, color coordinated, skin!
     Feature: Sexy new tablet look! -- Also can be used optionally on phones via options.
+    Feature: Save Contact drafts! -- Added the ability to save a contact message and resume later!
     Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
     Fix: Timezone -- Should be fixed for timezone translation for the calendar.
     Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
