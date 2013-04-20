@@ -92,6 +92,9 @@ public class Callisto extends Activity
         //**********************Do the app creation stuff - The stuff that is done because the app is initializing for the first time**********************************//
         //Get the main app settings (static variables)
         StaticBlob.RESOURCES = getResources();
+        StaticBlob.SHOW_LIST_VIDEO = StaticBlob.RESOURCES.getStringArray(R.array.shows_video);
+        StaticBlob.SHOW_LIST_AUDIO = StaticBlob.RESOURCES.getStringArray(R.array.shows_audio);
+        StaticBlob.SHOW_LIST = StaticBlob.RESOURCES.getStringArray(R.array.shows);
         StaticBlob.europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
         StaticBlob.sdfDestination = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
         StaticBlob.DP = StaticBlob.RESOURCES.getDisplayMetrics().density;
@@ -232,22 +235,23 @@ public class Callisto extends Activity
         if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
 
+        //Create seek dialog
+        PlayerControls.createSeekView(getLayoutInflater());
+
+        boolean isTablet= QweexUtils.isTabletDevice(this);
         //Display the release notes if recently updated
         if((StaticBlob.appVersion>lastVersion))
         {
             showUpdateNews();
-            SharedPreferences.Editor editor = pf.edit();
-            editor.putInt("appVersion", StaticBlob.appVersion);
-            editor.commit();
+            if(isTablet)    //TODO: Remove this once the menu is good
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("new_mainscreen", true).commit();
+            pf.edit().putInt("appVersion", StaticBlob.appVersion).commit();
         }
-
-        //Create seek dialog
-        PlayerControls.createSeekView(getLayoutInflater());
 
         //**********************Do the activity creation stuff - The stuff that is specific to the Callisto mainscreen activity**********************//
         //Set the content view
-        boolean isTablet= QweexUtils.isTabletDevice(this);
-        isTablet |= PreferenceManager.getDefaultSharedPreferences(this).getBoolean("new_mainscreen", false);
+        //TODO: change this to '|=' once the menu is sufficiently advanced.
+        isTablet = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("new_mainscreen", false);
         if(isTablet)
             initTablet();
         else
@@ -290,10 +294,10 @@ public class Callisto extends Activity
 
         ((View)findViewById(R.id.listView).getParent()).setBackgroundResource(R.drawable.tabback);
         XBMCStyleListViewMenu slvm = (XBMCStyleListViewMenu) this.findViewById(R.id.listView);
-        if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("new_mainscreen", false))
-            slvm.setSelectedSize(75);
+        if(QweexUtils.isTabletDevice(this))
+            slvm.setSelectedSize(125);
         else
-            slvm.setSelectedSize(150);
+            slvm.setSelectedSize(75);
         slvm.setData(Arrays.asList(tabletMenu));
         slvm.setOnMainItemClickListener(new XBMCStyleListViewMenu.OnMainItemClickListener()
         {
@@ -495,7 +499,7 @@ public class Callisto extends Activity
             StaticBlob.liveDg.dismiss();
             String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
             Intent intent= new Intent(v.getContext(), VideoActivity.class);
-            intent.putExtra("uri", "");
+            intent.putExtra("uri", live_video);
             StaticBlob.playerInfo.update(v.getContext());
             v.getContext().startActivity(intent);
             return;

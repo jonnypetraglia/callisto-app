@@ -288,13 +288,18 @@ public class PlayerControls
 
 
         //Here is where we FINALLY actually play the track.
-        if(isVideo)
+        if(isVideo && sp)
         {
+            ImageButton x = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
+            if(x!=null)
+                x.setImageDrawable(StaticBlob.pauseDrawable);
+            if(StaticBlob.mplayer!=null)
+                StaticBlob.mplayer.stop();
             Log.i("*:changeToTrack", "New track is a video, creating intent");
             Intent intent= new Intent(c, VideoActivity.class);
             intent.putExtra("uri", media_location);
+            Log.i("*:changeToTrack", "seek " + StaticBlob.playerInfo.position);
             intent.putExtra("seek", StaticBlob.playerInfo.position);
-            StaticBlob.playerInfo.update(c);
             c.startActivity(intent);
             return;
         }
@@ -395,7 +400,12 @@ public class PlayerControls
             Log.d("*:playPause","PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
             if(StaticBlob.playerInfo.isPaused)
             {
-                StaticBlob.mplayer.start();
+                Cursor isvid = StaticBlob.databaseConnector.currentQueueItem();
+                isvid.moveToFirst();
+                if(isvid.getInt(isvid.getColumnIndex("video"))>0)
+                    changeToTrack(c, 0, true);
+                else
+                    StaticBlob.mplayer.start();
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
             }

@@ -205,9 +205,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 //-----------------Here is where the actual downloading happens----------------
                 while (len != -1)
                 {
-                    Log.i("EpisodeDesc:DownloadTask", "DownloadedSize: " + downloadedSize);
                     dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
-                    if(dlList.equals("") || !(Long.parseLong(dlList.substring(1,dlList.indexOf('|',1)))==id))
+                    Log.i("EpisodeDesc:DownloadTask", "DownloadedSize: " + downloadedSize + " [" + dlList.substring(1,dlList.indexOf('|',1)) + "]");
+                    Log.i("EpisodeDesc:DownloadTask", "DownloadList: " + dlList);
+                    if(dlList.length()<=1 || !(Long.parseLong(dlList.substring(1,dlList.indexOf('|',1)))==id))
                     {
                         Log.i("EpisodeDesc:DownloadTask", "Download has been canceled, deleting.");
                         Target.delete();

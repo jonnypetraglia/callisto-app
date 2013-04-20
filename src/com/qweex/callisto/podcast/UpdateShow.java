@@ -18,10 +18,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 import com.qweex.callisto.StaticBlob;
 import com.qweex.utils.UnfinishedParseException;
 import org.xmlpull.v1.XmlPullParser;
@@ -66,8 +64,8 @@ public class UpdateShow
             factory2.setNamespaceAware(true);
             xpp_vid = factory2.newPullParser();
             //URL url = new URL(isVideo ? AllShows.SHOW_LIST_VIDEO[currentShow] : AllShows.SHOW_LIST_AUDIO[currentShow]);
-            URL url = new URL(AllShows.SHOW_LIST_AUDIO[currentShow]);
-            URL url2 = new URL(AllShows.SHOW_LIST_VIDEO[currentShow]);
+            URL url = new URL(StaticBlob.SHOW_LIST_AUDIO[currentShow]);
+            URL url2 = new URL(StaticBlob.SHOW_LIST_VIDEO[currentShow]);
             InputStream input = url.openConnection().getInputStream();
             InputStream input2 = url2.openConnection().getInputStream();
             xpp.setInput(input, null);
@@ -129,9 +127,9 @@ public class UpdateShow
             {
                 if(imgurl.startsWith("http://linuxactionshow.com") || imgurl.startsWith("www.linuxactionshow.com") || imgurl.startsWith("http://www.linuxactionshow.com"))
                     imgurl = "http://www.jupiterbroadcasting.com/images/LASBadge-Audio144.jpg";
-                new downloadImage().execute(imgurl, AllShows.SHOW_LIST[currentShow]);
+                new downloadImage().execute(imgurl, StaticBlob.SHOW_LIST[currentShow]);
                 //downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-                Log.v("*:updateShow", "Parser is downloading image for " + AllShows.SHOW_LIST[currentShow] + ":" + imgurl);
+                Log.v("*:updateShow", "Parser is downloading image for " + StaticBlob.SHOW_LIST[currentShow] + ":" + imgurl);
             }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -195,7 +193,7 @@ public class UpdateShow
         }
         else
         {
-            Log.v("*:updateShow", "Updating lastChecked for:" + AllShows.SHOW_LIST[currentShow] + "| " + newLastChecked);
+            Log.v("*:updateShow", "Updating lastChecked for:" + StaticBlob.SHOW_LIST[currentShow] + "| " + newLastChecked);
             SharedPreferences.Editor editor = showSettings.edit();
             editor.putString("last_checked", newLastChecked);
             editor.commit();
@@ -355,7 +353,7 @@ public class UpdateShow
                 if((numOfDone & want)==want) //Not 0x2 because some items miss <link>
                 {
                     Log.d("*:updateShow", "!" + epDate.substring(0,16));
-                    Log.d("*:updateShow", "!" + dateConfirm.substring(0,16));
+                    Log.d("*:updateShow", "!" + dateConfirm.substring(0, 16));
                     if(!epTitle.equals(titleConfirm))
                         throw(new UnfinishedParseException("Video does not match audio: " + epTitle + "==" +titleConfirm));
                     if(!epDate.substring(0,16).equals(dateConfirm.substring(0,16)))
@@ -363,7 +361,7 @@ public class UpdateShow
                     epDate = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(epDate));
                     //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
                     //isVideo, epMediaLink, epMediaSize))
-                    StaticBlob.databaseConnector.insertEpisode(AllShows.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
+                    StaticBlob.databaseConnector.insertEpisode(StaticBlob.SHOW_LIST[currentShow], epTitle, epDate, epDesc, epLink, epAudioLink, epAudioSize, epVideoLink, epVideoSize);
                     Log.v("*:updateShow", "Inserting episode: " + epTitle);
                     xpp.next();
                     return;

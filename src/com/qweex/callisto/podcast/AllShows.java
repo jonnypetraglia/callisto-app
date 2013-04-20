@@ -57,13 +57,6 @@ import com.qweex.callisto.StaticBlob;
  */
 public class AllShows extends Activity {
 
-    /** A static array containing corresponding info for the shows.
-     *  A sub-heading will start with a space in the name list and have a value of null in the feeds.
-     */
-    public static final String[] SHOW_LIST = StaticBlob.RESOURCES.getStringArray(R.array.shows);
-    public static final String[] SHOW_LIST_AUDIO = StaticBlob.RESOURCES.getStringArray(R.array.shows_audio);
-    public static final String[] SHOW_LIST_VIDEO = StaticBlob.RESOURCES.getStringArray(R.array.shows_video);
-
     //-----Local Variables-----
     /** Menu ID */
     private final int STOP_ID = Menu.FIRST + 1, DOWNLOADS_ID = STOP_ID+1, UPDATE_ID = DOWNLOADS_ID+1;
@@ -98,9 +91,9 @@ public class AllShows extends Activity {
         //headerThings is a dummy list used entirely just for numbers, like '1 header, 2 items, 1 header, 4 items'.
         // from there the adapter does the actual important stuff using other arrays
         List<HeaderAdapter.Item> headerThings = new ArrayList<HeaderAdapter.Item>();
-        for(int i=0; i<SHOW_LIST.length; i++)
+        for(int i=0; i< StaticBlob.SHOW_LIST.length; i++)
         {
-            if(SHOW_LIST[i].startsWith(" "))
+            if(StaticBlob.SHOW_LIST[i].startsWith(" "))
                 headerThings.add(new AllShowsHeader());
             else
                 headerThings.add(new AllShowsRow());
@@ -234,17 +227,17 @@ public class AllShows extends Activity {
         {
             boolean done = false,
                     skip_inactive = PreferenceManager.getDefaultSharedPreferences(AllShows.this).getBoolean("skip_inactive", false);
-            for(int i=0; i<SHOW_LIST_AUDIO.length; i++)
+            for(int i=0; i< StaticBlob.SHOW_LIST_AUDIO.length; i++)
             {
                 current_view = mainListView.getChildAt(i);
-                if(SHOW_LIST_AUDIO[i]==null)
+                if(StaticBlob.SHOW_LIST_AUDIO[i]==null)
                 {
                     if(done && skip_inactive)
                         break;
                     done = true;
                     continue;
                 }
-                current_showSettings = getSharedPreferences(AllShows.SHOW_LIST[i], 0);
+                current_showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[i], 0);
                 UpdateShow us = new UpdateShow();
                 us.doUpdate(i, current_showSettings);
                 UpdateAdapter.sendEmptyMessage(0);
@@ -276,7 +269,7 @@ public class AllShows extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
             Log.d("AllShows:selectShow", "Selected show at position: " + position);
-            if(SHOW_LIST[position].charAt(0)==' ')
+            if(StaticBlob.SHOW_LIST[position].charAt(0)==' ')
                 return;
             else
             {
@@ -312,7 +305,7 @@ public class AllShows extends Activity {
             }
 
             TextView x = ((TextView)row.findViewById(R.id.heading));
-            x.setText(AllShows.SHOW_LIST[position]);
+            x.setText(StaticBlob.SHOW_LIST[position]);
             x.setFocusable(false);
             x.setEnabled(false);
             return row;
@@ -345,7 +338,7 @@ public class AllShows extends Activity {
             {
                 f = new File(Environment.getExternalStorageDirectory() + File.separator +
                         StaticBlob.storage_path + File.separator +
-                        AllShows.SHOW_LIST[position] + ext);
+                        StaticBlob.SHOW_LIST[position] + ext);
                 if(f.exists())
                 {
                     Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
@@ -357,15 +350,15 @@ public class AllShows extends Activity {
             }
 
             //Set the unwatched count & color
-            int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(AllShows.SHOW_LIST[position], true).getCount();
+            int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[position], true).getCount();
             ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + StaticBlob.RESOURCES.getColor(R.color.txtClr));
             ((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowUnwatchedCount));
 
             //Set the show text
-            ((TextView)row.findViewById(R.id.rowTextView)).setText(AllShows.SHOW_LIST[position]);
+            ((TextView)row.findViewById(R.id.rowTextView)).setText(StaticBlob.SHOW_LIST[position]);
 
             //Set the lastChecked view
-            SharedPreferences showSettings = getSharedPreferences(AllShows.SHOW_LIST[position], 0);
+            SharedPreferences showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[position], 0);
             String lastChecked = showSettings.getString("last_checked", null);
             if(lastChecked!=null)
             {

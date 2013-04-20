@@ -84,6 +84,7 @@ public class PlayerInfo
         {
             length = VideoActivity.videoView.getDuration()/1000;
             position = VideoActivity.videoView.getCurrentPosition()/1000;
+            Log.v("*:update", "Length=" + length + " | Position=" + position);
         }
         else if(StaticBlob.mplayer!=null)
         {
@@ -236,20 +237,24 @@ public class PlayerInfo
                 return;
             }
             try {
+                current = StaticBlob.playerInfo.position/1000;
+                Log.i("Callisto:TimerMethod", "1");
                 if(VideoActivity.videoView!=null)
                     StaticBlob.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
                 else
-                    StaticBlob.playerInfo.position = StaticBlob.mplayer.getCurrentPosition();
-                current = StaticBlob.playerInfo.position/1000;
-                StaticBlob.timeProgress.setProgress(current);
-                StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(current));
-                if(PlayerControls.currentTime!=null)
                 {
-                    PlayerControls.currentTime.setText(Callisto.formatTimeFromSeconds(current));
-                    android.widget.SeekBar sb = (android.widget.SeekBar)
-                                                ((android.view.View) PlayerControls.currentTime.getParent().getParent())
-                                                        .findViewById(R.id.seekBar);
-                    sb.setProgress(current);
+                    Log.i("Callisto:TimerMethod", "2");
+                    StaticBlob.playerInfo.position = StaticBlob.mplayer.getCurrentPosition();
+                    StaticBlob.timeProgress.setProgress(current);
+                    StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(current));
+                    if(PlayerControls.currentTime!=null)
+                    {
+                        PlayerControls.currentTime.setText(Callisto.formatTimeFromSeconds(current));
+                        android.widget.SeekBar sb = (android.widget.SeekBar)
+                                                    ((android.view.View) PlayerControls.currentTime.getParent().getParent())
+                                                            .findViewById(R.id.seekBar);
+                        sb.setProgress(current);
+                    }
                 }
                 Log.i("Callisto:TimerMethod", "Timer mon " + StaticBlob.playerInfo.position);
 
@@ -280,7 +285,7 @@ public class PlayerInfo
 
             } catch(Exception e)
             {
-                System.out.println("HERP!!!");
+                Log.e("PlayerInfo:TimerRunnable","Error whilst trying to update time: " + e.getClass());
             }
         }
     };

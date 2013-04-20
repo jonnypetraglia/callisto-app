@@ -91,7 +91,9 @@ public class XBMCStyleListViewMenu extends ListView
         {
             Log.i("SuperListViewMenu:onDraw", "Adding blanks: " + getChildCount()/2);
             numOfVisibleChildren = -1;
-            ssa.addBlanks(getChildCount()/2);
+            ssa.addBlanks(getLastVisiblePosition()-getFirstVisiblePosition());
+            this.smoothScrollByOffset((getLastVisiblePosition()-getFirstVisiblePosition())/2 - 1);
+            //this.smoothScrollToPosition((int)(getChildCount()*1.5));
         }
     }
 
@@ -213,9 +215,22 @@ public class XBMCStyleListViewMenu extends ListView
             return v;
         }
 
-        public void addBlanks(int x)
+        public void addBlanks(int childCount)
         {
-            numOfBlanks = x-1;
+            numOfBlanks=0;
+            System.out.println("Blanks: " + numOfBlanks + "<=" + ((childCount-1)/2));
+            while(numOfBlanks<=((childCount-1)/2))
+            {
+                objects.add(0,"");
+                objects.add("");
+                System.out.println("AddBlanks: " + numOfBlanks + "<" + childCount);
+                numOfBlanks++;
+            }
+            notifyDataSetChanged();
+            if(true==true)
+                return;
+
+            numOfBlanks = childCount-1;
             for(int i=0; i<numOfBlanks; i++)
             {
                 objects.add(0,"");
@@ -265,10 +280,7 @@ public class XBMCStyleListViewMenu extends ListView
                 return;
             }
 
-            if(position<currentSelectionPosition)
-                smoothScrollToPosition(getFirstVisiblePosition()-(currentSelectionPosition-position) + 1);
-            else
-                smoothScrollToPosition(getLastVisiblePosition()+(position-currentSelectionPosition) - 1);
+            smoothScrollByOffset(position-currentSelectionPosition);
             System.out.println("Derpina: " + ((TextView)view.findViewById(R.id.text1)).getText().toString() + " | ");
         }
     };

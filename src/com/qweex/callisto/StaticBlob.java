@@ -73,6 +73,12 @@ public class StaticBlob
     public static PlayerInfo playerInfo;
     /** Simply the shared resources of the project, for things like strings, colors, drawables, etc. */
     public static Resources RESOURCES;
+    public static String[] SHOW_LIST_VIDEO;
+    public static String[] SHOW_LIST_AUDIO;
+    /** A static array containing corresponding info for the shows.
+     *  A sub-heading will start with a space in the name list and have a value of null in the feeds.
+     */
+    public static String[] SHOW_LIST;
     /** The value of a dip, to be used programatically when updating a view. */
     public static float DP;
     /** One of the Views for the IRC client. Having them static lets them be updated at any time, and not be destroyed when you leave the IRC screen. */

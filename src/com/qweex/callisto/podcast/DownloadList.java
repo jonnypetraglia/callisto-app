@@ -114,7 +114,10 @@ public class DownloadList extends ListActivity
         {
             if("".equals(activeCleanse[i]))
                 continue;
-            Cursor c = StaticBlob.databaseConnector.getOneEpisode(Long.parseLong(activeCleanse[i]));
+            Long l = Long.parseLong(activeCleanse[i]);
+            if(l<0)
+                l=l*-1;
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(l);
             if(c.getCount()==1)
                 active = active.concat(activeCleanse[i]).concat("|");
         }
@@ -129,7 +132,10 @@ public class DownloadList extends ListActivity
         {
             if("".equals(completedCleanse[i]))
                 continue;
-            Cursor c = StaticBlob.databaseConnector.getOneEpisode(Long.parseLong(completedCleanse[i]));
+            Long l = Long.parseLong(completedCleanse[i]);
+            if(l<0)
+                l=l*-1;
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(l);
             if(c.getCount()==1)
                 completed = completed.concat(completedCleanse[i]).concat("|");
         }
@@ -160,7 +166,8 @@ public class DownloadList extends ListActivity
             }
         }
         //END
-        Log.d("DownloadList:onCreate", "Total: " + tempInt + " " + getDownloadCount(this,ACTIVE));
+        Log.d("DownloadList:onCreate", "String: " + PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(COMPLETED, "|") + " === " + tempInt);
+        Log.d("DownloadList:onCreate", "Total:  " + PreferenceManager.getDefaultSharedPreferences(DownloadList.this).getString(ACTIVE, "|") + " " + getDownloadCount(this,ACTIVE));
 
         //Listview things
         listAdapter = new HeaderAdapter(this, headerThings);
@@ -528,8 +535,13 @@ public class DownloadList extends ListActivity
      * */
     public static long getDownloadAt(Context c, String pref, int num)
     {
-        String[] derp = PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","").split("\\|");
-        return Long.parseLong( derp[num+1] );
+        String derp = PreferenceManager.getDefaultSharedPreferences(c).getString(pref,"|").replaceAll("x","");
+        while(derp.contains("||"))
+            derp = derp.replace("||", "|");
+        String[] herpderp = derp.split("\\|");
+        System.out.println("getDownloadAt:" + derp);
+        PreferenceManager.getDefaultSharedPreferences(c).edit().putString(pref, derp).commit();
+        return Long.parseLong( herpderp[num+1] );
     }
 
     /** Retrieves the number of downloads

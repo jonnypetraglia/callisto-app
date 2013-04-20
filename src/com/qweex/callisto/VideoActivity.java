@@ -13,7 +13,10 @@
  */
 package com.qweex.callisto;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.view.*;
 import android.widget.*;
 import com.qweex.callisto.irc.IRCChat;
@@ -31,6 +34,8 @@ public class VideoActivity extends IRCChat
     static VideoView videoView;
     /* The login info for the IRC */
     View login;
+    int seekto;
+    AlertDialog d;
 
     public void onCreate(Bundle savedInstanceState)
     {
@@ -38,12 +43,20 @@ public class VideoActivity extends IRCChat
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.video);
+        StaticBlob.playerInfo.update(this);
         boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
         if(isLandscape)
             ((LinearLayout)findViewById(R.id.mainVideo)).setOrientation(LinearLayout.HORIZONTAL);
 
+        videoView = new VideoView(this);
+        videoView.setId(R.id.videoView);
+        setContentView(videoView);
+        videoView.getLayoutParams().width= LinearLayout.LayoutParams.FILL_PARENT;
+        videoView.getLayoutParams().height= LinearLayout.LayoutParams.FILL_PARENT;
         //Create the IRC stuff
+        /*
         if(IRCChat.session==null)
         {
             login = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.irc_login, null, false);
@@ -70,38 +83,51 @@ public class VideoActivity extends IRCChat
                 ((ScrollView) findViewById(R.id.scrollView2)).addView(StaticBlob.logView);
             } catch(Exception e) {}
         }
-
+        */
         videoView = (VideoView) findViewById(R.id.videoView);
 
+        Log.d("VideoActivity:onCreate", " " + videoView);
         // Getting the path to the video (either URL or local path)
         Bundle b = getIntent().getExtras();
         if(b==null)
         {
+            Toast.makeText(this, "Unable to get the target video to load. Please don't hate me. :(", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
         String path = b.getString("uri");
-        int seekto = b.getInt("seek");
+        seekto = b.getInt("seek");
         if(path==null)
         {
+            Toast.makeText(this, "Unable to get the target path to load. Please don't hate me. :(", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
         try {
-            Log.d("VideoActivity:onCreate", path);
+            d = Callisto.BaconDialog(this,"Loading, bro", "Dude, loading, bro. Give it a sec.");
+            d.show();
+            Log.d("VideoActivity:onCreate", "URI: " + path);
             Uri pathToVideo = Uri.parse(path);
             videoView.setVideoURI(pathToVideo);
 
             // to start it
             videoView.requestFocus();
             videoView.setMediaController(new MediaController(this));
-            Log.d("VideoActivity:onCreate", "Seeking to " + seekto);
-            //if(seekto<videoView.getDuration())
-            //    videoView.seekTo(seekto);
             videoView.start();
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    Log.d("VideoActivity:onCreate", "Seeking to " + seekto + "/" + videoView.getDuration());
+                    if(seekto<videoView.getDuration())
+                        videoView.seekTo(seekto);
+                    d.hide();
+                }
+            });
         } catch(Exception e)
         {
+            e.printStackTrace();
+            Toast.makeText(this, "There was a problem loading the video. Please don't hate me. :(", Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -112,6 +138,13 @@ public class VideoActivity extends IRCChat
 //        // to stop it
 //        videoView.stopPlayback();
 //        videoView.clearFocus();
+    }
+
+    //TODO: Remove this once we get chat working
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        return true;
     }
 
     @Override
@@ -144,6 +177,8 @@ public class VideoActivity extends IRCChat
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        findViewById(R.id.videoView).getLayoutParams().width= LinearLayout.LayoutParams.FILL_PARENT;
+        findViewById(R.id.videoView).getLayoutParams().height= LinearLayout.LayoutParams.FILL_PARENT;
 //        if(getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight())
 //            ((LinearLayout)findViewById(R.id.mainVideo)).setOrientation(LinearLayout.HORIZONTAL);
 //        else
@@ -156,5 +191,6 @@ public class VideoActivity extends IRCChat
     {
         super.onDestroy();
         videoView=null;
+        PlayerControls.stop(this);
     }
 }

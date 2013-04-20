@@ -30,7 +30,7 @@
             android:defaultValue="http://jbradio.out.airtime.pro:8000/jbradio_b"
 	        />
         <ListPreference
-                android:title="Live video quality"
+                android:title="Live video source"
                 android:key="live_video"
                 android:entries="@array/live_video"
                 android:entryValues="@array/live_video_source"

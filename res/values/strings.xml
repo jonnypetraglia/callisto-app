@@ -105,30 +105,9 @@
         <item >Fri</item>
         <item >Sat</item>
     </string-array>
-    
-    <string-array name="live_quality">
-        <item>Low (64kbps)</item>
-        <item>High (128kbps)</item>
-    </string-array>
-    
-    <string-array name="live_sources">
-        <item>http://jbradio.out.airtime.pro:8000/jbradio_b</item>
-        <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
-    </string-array>
+
     <string name="stop">Stop</string>
 
     <string name="ringtone_prompt">Choose alarm tone</string>
-
-    <string-array name="live_video">
-        <item>RTSP</item>
-        <item>HLS</item>
-        <item>iPhone</item>
-    </string-array>
-
-    <string-array name="live_video_source">
-        <item>rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream</item>
-        <item>http://videocdn-us.geocdn.scaleengine.net/jblive-iphone/live/jblive.stream/playlist.m3u8</item>
-        <item>http://videocdn-us.geocdn.scaleengine.net:1935/jblive-iphone/live/jblive.stream/playlist.m3u8</item>
-    </string-array>
 </resources>
 
