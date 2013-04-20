@@ -4,7 +4,6 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     NEW SHOW: Plan B! -- Jupiter Broadcasting's new show all about Bitcoins! Now added to Callisto!
     Feature: Brand new looks! -- That's right! A brand new, color coordinated, skin!
     Feature: Sexy new tablet look! -- Also can be used optionally on phones via options.
-    Feature: Save Contact drafts! -- Added the ability to save a contact message and resume later!
     Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
     Fix: Timezone -- Should be fixed for timezone translation for the calendar.
     Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
@@ -37,7 +36,7 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     Fix: IRC sticky keyboard -- Keyboard should no longer autohide after sending EVERY SINGLE MESSAGE.
     Feature: Loading BACON! -- Made the loading dialog far more appealing.
     Feature: Force refresh -- Added ability to clear all episodes of a show and refresh from scratch.
-    Feature: IRC Vibrate -- Added ability to vibrate on mention(s).
+    Feature: IRC Alert -- Added ability to vibrate and/or play sound on mention(s).
     Feature: Skip Updating Inactive -- Added option to only update the active shows.
     Feature: IRC Emoticons -- Added option to have emoticons in the chat.
     Fix: Lack of SD -- Now detects when there is no SD or external storage.
@@ -47,6 +46,11 @@ It includes several fixes to issues submitted to Callisto's Google Code page, bu
     Fix: Less annoying notifications -- Notifications such as playing and IRC no longer notify you when launching, they just start.
     Fix: Nick Change dialog -- Fixed where it does not display correctly and does not dismiss.
     Fix: Contact error page -- Fixed the Contact error page not being skinned. Now it looks purty!
+    Feature: Save Contact drafts! -- Added the ability to save a contact message and resume later!
+    Feature: Seek options -- Added the ability to skip forward and backward by set amounts.
+    Feature: IRC ports -- Added the ability to select different ports.
+    Feature: Pause on unplug -- Added option to pause on headset unplug and also to resume on re-plug.
+    Fix: Funky Episode page -- (Hopefully) fixed it so the episode page is not crowded. especially on smaller devices.
     Note: Switched to the OSL -- From this version forward, Callisto will be released under the Open Software License v3.0. -- To read more about the decision to change licenses, visit: http://code.google.com/p/callisto-app/wiki/LicenseChange.
     Note: More dev friendly! -- More Javadocs, more comments, better named variables, more organized code....tons of stuff to make it easier for anybody who wants to contribute!
 	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
