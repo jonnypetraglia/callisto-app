@@ -35,7 +35,6 @@ import com.qweex.utils.ImgTxtButton;
 import com.qweex.utils.QweexUtils;
 import com.qweex.utils.XBMCStyleListViewMenu;
 
-import com.qweex.callisto.bonuses.Bacon;
 import com.qweex.callisto.donate.Donate;
 import com.qweex.callisto.irc.IRCChat;
 
@@ -75,8 +74,7 @@ public class Callisto extends Activity
     /** Ids used for onclicklisteners and the tablet launching activities */
     int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
     /** Menu ID for this activity */
-    private final int STOP_ID=Menu.FIRST+1, SETTINGS_ID=STOP_ID+1, MORE_ID=SETTINGS_ID+1, RELEASE_ID=MORE_ID+1,
-                      BACON_ID=RELEASE_ID+1, QUIT_ID=BACON_ID+1, CHRISROLL_ID=QUIT_ID+1;
+    private final int STOP_ID=Menu.FIRST+1, SETTINGS_ID=STOP_ID+1, MORE_ID=SETTINGS_ID+1, RELEASE_ID=MORE_ID+1, QUIT_ID=RELEASE_ID+1;
     /** The Dialog for displaying what is new in this version **/
     private Dialog news;
 
@@ -357,15 +355,14 @@ public class Callisto extends Activity
         theSubMenu.add(0, RELEASE_ID, 0, StaticBlob.RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
 
         //Stuffs for the donations stuffs
-        if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
-        {
-            String baconString = "Get Bacon";
-            File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
-            if(target.exists())
-                baconString = StaticBlob.RESOURCES.getString(R.string.bacon);
-            theSubMenu.add(0, BACON_ID, 0, baconString).setIcon(R.drawable.bacon).setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
-            theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
-        }
+        //if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
+        //{
+            //String baconString = "Get Bacon";
+            //File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
+            //if(target.exists())
+                //baconString = StaticBlob.RESOURCES.getString(R.string.bacon);
+            //theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
+        //}
 
         menu.add(0, QUIT_ID, 0, StaticBlob.RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
         return true;
@@ -384,22 +381,6 @@ public class Callisto extends Activity
                 return true;
             case RELEASE_ID:
                 showUpdateNews();
-                return true;
-            case BACON_ID:
-                File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
-                if(!target.exists())
-                {
-                    new downloadExtras().execute((Void[])null);
-                    return true;
-                }
-                Intent i = new Intent(Callisto.this, Bacon.class);
-                startActivity(i);
-                return true;
-            case CHRISROLL_ID:
-                Uri uri = Uri.parse("http://www.youtube.com/watch?v=98E2hfxF8oE");
-                uri = Uri.parse("vnd.youtube:"  + uri.getQueryParameter("v"));
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
                 return true;
             case QUIT_ID:
                 finish();
@@ -593,48 +574,6 @@ public class Callisto extends Activity
 
 
     //*********************************** Misc stuffs ***********************************//
-
-    //TODO: Remove this shit
-    public class downloadExtras extends AsyncTask<Void, Void, Void>
-    {
-        @Override
-        protected Void doInBackground(Void... c)
-        {
-            final String FILELOC = "http://www.qweex.com/qweexware/callisto/extras/";
-            String[] files = {"baconlove.gif", "bryan.mp3", "gangnam.mid", "gangnam.gif"};
-            File f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                    StaticBlob.storage_path + File.separator +
-                    "extras");
-            f.mkdir();
-            for(int i=0; i<files.length; i++)
-            {
-                f = new File(Environment.getExternalStorageDirectory() + File.separator +
-                        StaticBlob.storage_path + File.separator +
-                        "extras" + File.separator + files[i]);
-                if(f.exists())
-                    continue;
-                try {
-                    URL url = new URL (FILELOC + files[i]);
-                    InputStream input = url.openStream();
-                    try {
-                        OutputStream output = new FileOutputStream (f.getPath());
-                        try {
-                            byte[] buffer = new byte[5 * 1024];
-                            int bytesRead = 0;
-                            while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
-                                output.write(buffer, 0, bytesRead);
-                            }
-                        } finally {
-                            output.close();
-                        }
-                    } finally {
-                        input.close();
-                    }
-                } catch(Exception e) {e.printStackTrace();}
-            }
-            return null;
-        }
-    };
 
     /** Builds & shows the update news for the current version */
     public void showUpdateNews()

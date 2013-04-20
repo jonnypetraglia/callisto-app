@@ -30,16 +30,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application android:label="Callisto" android:icon="@drawable/callisto" android:debuggable="false" android:theme="@style/Default">
 
-
-        <activity android:name=".bonuses.SplashScreen">
-
-
+        <activity android:name="Callisto" android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
         <activity android:name=".podcast.AllShows">
             <meta-data android:name="android.app.default_searchable"
                        android:value=".podcast.SearchResultsActivity" />
@@ -60,8 +57,6 @@
         <activity android:name=".ContactForm" android:configChanges="keyboardHidden|orientation"
                 ></activity>
         <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
-        <activity android:name="Callisto" android:launchMode="singleTop">
-        </activity>
         <activity android:name="CalendarActivity"></activity>
         <activity android:name=".irc.IRCChat"
                   android:configChanges="keyboardHidden|orientation"
@@ -75,8 +70,6 @@
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation"/>
 
-        <activity android:name=".bonuses.Bacon"
-                  android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name=".VideoActivity" android:configChanges="orientation|screenSize" />
 
         <!--<service android:name="com.android.vending.billing.BillingService" />-->

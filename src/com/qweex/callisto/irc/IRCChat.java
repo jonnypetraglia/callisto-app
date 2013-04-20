@@ -80,7 +80,7 @@ public class IRCChat extends Activity implements IRCEventListener
     protected static final int NICKLIST_ID=LOGOUT_ID+1;
     protected static final int SAVE_ID=NICKLIST_ID+1;
     private final String SERVER_NAME = "irc.geekshed.net";
-    private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
+    private final String CHANNEL_NAME = "#jupiterbroadcasting";
     private String profileNick;
     private String profilePass;
     private boolean SHOW_TIME = true;
@@ -389,13 +389,13 @@ public class IRCChat extends Activity implements IRCEventListener
         try {
             Log_MI.setEnabled(session!=null);
             Nick_MI.setEnabled(session!=null);
-//    	Logout_MI.setEnabled(session!=null);
+    	    Logout_MI.setEnabled(session!=null);
             Save_MI.setEnabled(session!=null);
-            Nick_MI.setEnabled(session!=null);
 
             Log.d("DERP", session + "");
 
             Change_MI.setTitle(this.getClass()== VideoActivity.class ? "Open IRC" : ((session!=null && session.getRetries()>1 ) ? "Reconnect" : "Change Nick"));
+            Change_MI.setEnabled(this.getClass()==VideoActivity.class || (session!=null));
         } catch(Exception e) {}
     }
 
