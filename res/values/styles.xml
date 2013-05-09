@@ -19,7 +19,12 @@
      will be used in multiple tags. -->
 
 <resources>
-    <style name="Default" parent="android:Theme">
+    <style name="Default" parent="@android:style/Theme">
+        <item name="android:windowActionBar">true</item>
+        <item name="android:actionBarStyle">@android:style/Widget.Holo.ActionBar</item>
+        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
+        <item name="android:actionDropDownStyle">@style/MyActionBar</item>
+
         <item name="android:moreIcon">@drawable/ic_action_more</item>
         <item name="android:panelFullBackground">@color/kuler_4</item>
         <item name="android:buttonStyle">@style/btnStyleBreakerBay</item>
@@ -29,6 +34,14 @@
         <item name="android:progressBarStyleHorizontal">@style/pgress</item>
         <item name="android:dropDownSpinnerStyle">@style/ddl</item>
         <item name="android:cacheColorHint">#ff45ab35</item>
+    </style>
+
+    <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_list</item>
+    </style>
+    <style name="MyActionBar" parent="android:style/Widget.Holo.Spinner">
+        <item name="android:padding">0dip</item>
+        <item name="android:layout_margin">0dip</item>
     </style>
 
     <style name="ddl" parent="@android:style/Widget.Spinner">
