@@ -146,7 +146,8 @@ public class Live
             {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    LIVE_PreparedListener.pd.cancel();
+                    if(LIVE_PreparedListener.pd!=null)
+                        LIVE_PreparedListener.pd.cancel();
                     LIVE_PreparedListener.pd = null;
                 }
 

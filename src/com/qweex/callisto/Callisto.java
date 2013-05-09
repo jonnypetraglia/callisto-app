@@ -254,6 +254,9 @@ public class Callisto extends Activity
         else
             initPhone();
 
+        if(Live.LIVE_PreparedListener.pd!=null)
+            Live.LIVE_PreparedListener.pd.show();
+        Log.d("DERP:", Live.live_player + "!!!");
     }
 
     /** Initiating the activity for a Phone formfactor device OR for any device running 2.1 or earlier. (I dunno if Eclair tablets exist but if they do, they shouldn't.)

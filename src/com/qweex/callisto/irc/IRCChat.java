@@ -72,6 +72,25 @@ import android.widget.ViewAnimator;
  * @author MrQweex
  */
 
+
+/* TIPS:
+    - /help
+    - /me
+    - Nickserv
+    - /msg      (pm)
+    - /nick
+    - /whois
+    - /quit
+
+    - !suggest
+    - !next
+    - !schedule
+
+    - !bacon
+    - !8ball
+    - !angela
+    - !allan
+ */
 public class IRCChat extends Activity implements IRCEventListener
 {
     protected static final int LOG_ID=Menu.FIRST+1;
