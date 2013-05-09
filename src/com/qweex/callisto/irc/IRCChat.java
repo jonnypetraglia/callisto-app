@@ -739,8 +739,26 @@ public class IRCChat extends Activity implements IRCEventListener
             {
                 //Misc events
                 case NICK_LIST_EVENT:
-                    nickList = ((NickListEvent) e).getNicks();
-                    Collections.sort(nickList, String.CASE_INSENSITIVE_ORDER);
+                    if(nickList==null)
+                    {
+                        nickList = ((NickListEvent) e).getNicks();
+                        Collections.sort(nickList, String.CASE_INSENSITIVE_ORDER);
+                        break;
+                    }
+                    NickListEvent nle = (NickListEvent) e;
+                    String allNicks = "";
+                    for(String s : nle.getNicks())
+                    {
+                        allNicks = allNicks.concat("[" + s + "] ");
+                        if(allNicks.length()>60)
+                        {
+                            chatQueue.add(getReceived("[NAMES]", allNicks, CLR_TOPIC));
+                            allNicks = "";
+                        }
+                    }
+                    if(allNicks.length()>0)
+                        chatQueue.add(getReceived("[NAMES]", allNicks, CLR_TOPIC));
+                    ircHandler.post(chatUpdater);
                     break;
                 //TODO: This might not work. I dunno.
                 case CTCP_EVENT:
@@ -1008,7 +1026,6 @@ public class IRCChat extends Activity implements IRCEventListener
                 case JOIN_COMPLETE:
                     //JoinCompleteEvent jce = (JoinCompleteEvent) e;
                     chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
-                    session.sayRaw("NAMES " + CHANNEL_NAME);
                     if(profilePass!=null && profilePass!=null && !profilePass.equals(""))
                         parseOutgoing("/MSG NickServ identify " + profilePass);
                     System.out.println("Decrypted password: " + profilePass);
@@ -1722,7 +1739,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 || msg.toUpperCase().startsWith("/VHOST")
                 )
         {
-            session.sayRaw(msg.substring(1));
+            session.sayRaw(msg.substring(1) + " " + CHANNEL_NAME);
             return false;
         }
         else if(msg.toUpperCase().startsWith("/ME "))

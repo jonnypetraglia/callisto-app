@@ -109,7 +109,7 @@ public class ContactForm extends Activity
         setContentView(fl);
         setTitle(R.string.contact);
 
-        baconPDialog = Callisto.BaconDialog(ContactForm.this, StaticBlob.RESOURCES.getString(R.string.loading)  + "...", null);
+        baconPDialog = Callisto.BaconDialog(ContactForm.this, this.getResources().getString(R.string.loading)  + "...", null);
         baconPDialog.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {

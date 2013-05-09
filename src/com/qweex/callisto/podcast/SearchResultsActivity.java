@@ -44,8 +44,8 @@ public class SearchResultsActivity extends ListActivity
         TextView empty = new TextView(this);
         empty.setText("No results found.");
         this.getListView().setEmptyView(empty);
-        this.getListView().setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
-        this.getListView().setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        this.getListView().setBackgroundColor(this.getResources().getColor(R.color.backClr));
+        this.getListView().setCacheColorHint(this.getResources().getColor(R.color.backClr));
     }
 
     /** Called when a search is requested.

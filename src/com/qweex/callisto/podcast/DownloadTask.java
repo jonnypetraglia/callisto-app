@@ -79,10 +79,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         //Show notification
         Intent notificationIntent = new Intent(context, DownloadList.class);
         contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, StaticBlob.RESOURCES.getString(R.string.beginning_download), System.currentTimeMillis());
+        StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, this.context.getResources().getString(R.string.beginning_download), System.currentTimeMillis());
         StaticBlob.notification_download.flags = Notification.FLAG_ONGOING_EVENT;
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), StaticBlob.RESOURCES.getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  StaticBlob.RESOURCES.getString(R.string.of) + " " + StaticBlob.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
+        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  this.context.getResources().getString(R.string.of) + " " + StaticBlob.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
     }
 
 
@@ -93,7 +93,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         Cursor current;
 
         StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                StaticBlob.RESOURCES.getString(R.string.downloading) + "...",
+                this.context.getResources().getString(R.string.downloading) + "...",
                 "", contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
 
@@ -157,9 +157,9 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
                 //Notification
                 StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                        StaticBlob.RESOURCES.getString(R.string.downloading) + " " +
+                        this.context.getResources().getString(R.string.downloading) + " " +
                                 StaticBlob.current_download + " " +
-                                StaticBlob.RESOURCES.getString(R.string.of) + " " +
+                                this.context.getResources().getString(R.string.of) + " " +
                                 StaticBlob.downloading_count + " (...)",
                         Show + ": " + Title, contentIntent);
                 mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
@@ -277,9 +277,9 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                             DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
                         }
                         StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                                StaticBlob.RESOURCES.getString(R.string.downloading) + " " +
+                                this.context.getResources().getString(R.string.downloading) + " " +
                                         StaticBlob.current_download + " " +
-                                        StaticBlob.RESOURCES.getString(R.string.of) + " " +
+                                        this.context.getResources().getString(R.string.of) + " " +
                                         StaticBlob.downloading_count + ": " + percentDone + "%  (" +
                                         df.format(avg_speed) + "kb/s)",
                                 Show + ": " + Title, contentIntent);
@@ -394,15 +394,15 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             return;
         if(result)
         {
-            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.play));
+            streamButton.setText(this.context.getResources().getString(R.string.play));
             streamButton.setOnClickListener(((EpisodeDesc)context).launchPlay);
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.delete));
+            downloadButton.setText(this.context.getResources().getString(R.string.delete));
             downloadButton.setOnClickListener(((EpisodeDesc)context).launchDelete);
         } else
         {
-            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
+            streamButton.setText(this.context.getResources().getString(R.string.stream));
             streamButton.setOnClickListener(((EpisodeDesc)context).launchStream);
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
+            downloadButton.setText(this.context.getResources().getString(R.string.download));
             downloadButton.setOnClickListener(((EpisodeDesc)context).launchDownload);
         }
     }

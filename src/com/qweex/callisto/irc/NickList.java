@@ -94,7 +94,7 @@ public class NickList extends ListActivity
             else if(Voices.contains(content.get(pos).toLowerCase()))
                 pre = "+";
             ((TextView)v.findViewById(android.R.id.text1)).setText(pre + content.get(pos));
-            ((TextView)v.findViewById(android.R.id.text1)).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)v.findViewById(android.R.id.text1)).setTextColor(v.getContext().getResources().getColor(R.color.txtClr));
             return v;
         }
     }

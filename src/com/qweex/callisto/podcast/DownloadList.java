@@ -78,12 +78,12 @@ public class DownloadList extends ListActivity
 		super.onCreate(savedInstanceState);
 		mainListView = getListView();
         try {
-		    mainListView.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+		    mainListView.setBackgroundColor(this.getResources().getColor(R.color.backClr));
         } catch(NullPointerException e) //TODO: This should NEVER happen. Seriously, what the hell.
         {
             if(mainListView==null)
                 Log.e("DownloadList:onCreate", "mainListView is null for some dumb reason");
-            if(StaticBlob.RESOURCES==null)
+            if(this.getResources()==null)
                 Log.e("DownloadList:onCreate", "RESOURCES is null for some dumb reason");
             finish();
             return;
@@ -92,9 +92,9 @@ public class DownloadList extends ListActivity
 
         //Empty view
 		TextView noResults = new TextView(this);
-			noResults.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
-			noResults.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
-			noResults.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+			noResults.setBackgroundColor(this.getResources().getColor(R.color.backClr));
+			noResults.setTextColor(this.getResources().getColor(R.color.txtClr));
+			noResults.setText(this.getResources().getString(R.string.list_empty));
 			noResults.setTypeface(null, 2);
 			noResults.setGravity(Gravity.CENTER_HORIZONTAL);
 			noResults.setPadding(10,20,10,20);
@@ -172,8 +172,8 @@ public class DownloadList extends ListActivity
         //Listview things
         listAdapter = new HeaderAdapter(this, headerThings);
 		mainListView.setAdapter(listAdapter);
-		mainListView.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
-		mainListView.setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
+		mainListView.setBackgroundColor(this.getResources().getColor(R.color.backClr));
+		mainListView.setCacheColorHint(this.getResources().getColor(R.color.backClr));
 
         //like identical to the stuff above but slightly different.
 	    rebuildHeaderThings = new Handler()
