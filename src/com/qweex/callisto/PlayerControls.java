@@ -169,7 +169,7 @@ public class PlayerControls
                 ((ViewGroup)seekView.getParent()).removeView(seekView);
             AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext()).setView(seekView);
             alertDialog = builder.create();
-            alertDialog.setButton(StaticBlob.RESOURCES.getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+            alertDialog.setButton(v.getContext().getResources().getString(android.R.string.yes), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface arg0, int arg1) {
                     arg0.dismiss();
@@ -181,7 +181,7 @@ public class PlayerControls
                     currentTime = null;
                 }
             });
-            alertDialog.setTitle(StaticBlob.RESOURCES.getString(R.string.seek_title));
+            alertDialog.setTitle(v.getContext().getResources().getString(R.string.seek_title));
             ((SeekBar)seekView.findViewById(R.id.seekBar)).setMax(StaticBlob.playerInfo.length);
             ((SeekBar)seekView.findViewById(R.id.seekBar)).setProgress(StaticBlob.mplayer.getCurrentPosition()/1000);
             alertDialog.show();
@@ -246,7 +246,7 @@ public class PlayerControls
                 Log.e("*changeToTrack:ParseException", StaticBlob.playerInfo.date);
                 Log.e("*changeToTrack:ParseException", "(This should never happen).");
                 e.printStackTrace();
-                Toast.makeText(c, StaticBlob.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, c.getResources().getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
                 StaticBlob.databaseConnector.deleteQueueItem(id);
                 return;
             }
@@ -268,7 +268,7 @@ public class PlayerControls
                     return;
                 }
                 Log.e("*:changeToTrack", "File not found: " + target.getPath());
-                Toast.makeText(c, StaticBlob.RESOURCES.getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
+                Toast.makeText(c, c.getResources().getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
                 StaticBlob.databaseConnector.deleteQueueItem(id);
                 return;
             }
@@ -319,7 +319,7 @@ public class PlayerControls
             //Streaming requires a dialog
             if(isStreaming)
             {
-                StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
+                StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, c.getResources().getString(R.string.loading), c.getResources().getString(R.string.loading_msg), true, false);
                 StaticBlob.mplayerPrepared.pd.setCancelable(true);
                 StaticBlob.mplayerPrepared.pd.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override

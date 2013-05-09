@@ -102,7 +102,7 @@ public class EpisodeDesc extends Activity
         if(b==null)
         {
             Log.e("EpisodeDesc:OnCreate", "Bundle is null. No extra could be retrieved.");
-            Toast.makeText(EpisodeDesc.this, StaticBlob.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EpisodeDesc.this, EpisodeDesc.this.getResources().getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -112,7 +112,7 @@ public class EpisodeDesc extends Activity
         if(id==0 || c.getCount()==0)
         {
             Log.e("EpisodeDesc:OnCreate", "Id is invalid/blank");
-            Toast.makeText(EpisodeDesc.this, StaticBlob.RESOURCES.getString(R.string.song_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EpisodeDesc.this, EpisodeDesc.this.getResources().getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -171,9 +171,9 @@ public class EpisodeDesc extends Activity
         }
 
         streamButton = ((Button)this.findViewById(R.id.stream));
-        streamButton.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        streamButton.setTextColor(EpisodeDesc.this.getResources().getColor(R.color.txtClr));
         downloadButton = ((Button)this.findViewById(R.id.download));
-        downloadButton.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        downloadButton.setTextColor(EpisodeDesc.this.getResources().getColor(R.color.txtClr));
 
         //-----------Adjust for Landscape--------------------
         if(isLandscape)
@@ -238,8 +238,8 @@ public class EpisodeDesc extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, SHARE_ID, 0, StaticBlob.RESOURCES.getString(R.string.share)).setIcon(R.drawable.ic_action_share);
+        menu.add(0, STOP_ID, 0, EpisodeDesc.this.getResources().getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SHARE_ID, 0, EpisodeDesc.this.getResources().getString(R.string.share)).setIcon(R.drawable.ic_action_share);
         return true;
     }
 
@@ -259,7 +259,7 @@ public class EpisodeDesc extends Activity
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, "Thought I'd share this with you!");
                 i.putExtra(Intent.EXTRA_TEXT, "Check out this awesome episode of " + show + "!\n\n" + link);
-                startActivity(Intent.createChooser(i, StaticBlob.RESOURCES.getString(R.string.share)));
+                startActivity(Intent.createChooser(i, this.getResources().getString(R.string.share)));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -298,7 +298,7 @@ public class EpisodeDesc extends Activity
             StaticBlob.databaseConnector.appendToQueue(id, false, vidSelected);
             if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
-            ((Button)v).setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
+            ((Button)v).setText(EpisodeDesc.this.getResources().getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
             StaticBlob.playerInfo.update(v.getContext());
         }
@@ -342,9 +342,9 @@ public class EpisodeDesc extends Activity
             StaticBlob.databaseConnector.deleteQueueItem(id);
 
             //Update the buttons
-            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
+            streamButton.setText(EpisodeDesc.this.getResources().getString(R.string.stream));
             streamButton.setOnClickListener(launchStream);
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
+            downloadButton.setText(EpisodeDesc.this.getResources().getString(R.string.download));
             downloadButton.setOnClickListener(launchDownload);
 
             StaticBlob.playerInfo.update(v.getContext()); //Update the player controls
@@ -361,7 +361,7 @@ public class EpisodeDesc extends Activity
             StaticBlob.databaseConnector.appendToQueue(id, true, vidSelected);
             if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
-            ((Button)v).setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
+            ((Button)v).setText(EpisodeDesc.this.getResources().getString(R.string.enqueued));
             ((Button)v).setEnabled(false);
         }
     };
@@ -453,37 +453,37 @@ public class EpisodeDesc extends Activity
         long curr_size = (vidSelected ? vid_size : mp3_size);
         if(PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getString("ActiveDownloads", "").contains("|" + Long.toString(id) + "|") && !forceNotThere)
         {
-            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.downloading));
+            streamButton.setText(this.getResources().getString(R.string.downloading));
             streamButton.setEnabled(false);
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.cancel));
+            downloadButton.setText(this.getResources().getString(R.string.cancel));
             downloadButton.setOnClickListener(launchCancel);
         }
         else if(curr.exists() && !forceNotThere)
         {
             if(curr.length()!=curr_size)
             {
-                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.resume));
+                streamButton.setText(this.getResources().getString(R.string.resume));
                 streamButton.setOnClickListener(launchDownload);
             } else if(StaticBlob.databaseConnector.isInQueue(id))
             {
-                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.enqueued));
+                streamButton.setText(this.getResources().getString(R.string.enqueued));
                 streamButton.setEnabled(false);
             }
             else
             {
                 streamButton.setEnabled(true);
-                streamButton.setText(StaticBlob.RESOURCES.getString(R.string.play));
+                streamButton.setText(this.getResources().getString(R.string.play));
                 streamButton.setOnClickListener(launchPlay);
             }
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.delete));
+            downloadButton.setText(this.getResources().getString(R.string.delete));
             downloadButton.setOnClickListener(launchDelete);
         }
         else
         {
             streamButton.setEnabled(true);
-            streamButton.setText(StaticBlob.RESOURCES.getString(R.string.stream));
+            streamButton.setText(this.getResources().getString(R.string.stream));
             streamButton.setOnClickListener(launchStream);
-            downloadButton.setText(StaticBlob.RESOURCES.getString(R.string.download));
+            downloadButton.setText(this.getResources().getString(R.string.download));
             downloadButton.setOnClickListener(launchDownload);
         }
     }

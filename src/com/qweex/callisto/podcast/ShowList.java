@@ -107,16 +107,16 @@ public class ShowList extends Activity
         loading = (TextView) findViewById(android.R.id.empty);
         //If it has been checked before but there are no episodes, show that it is empty, not just loading.
         if(StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter).getCount()==0)
-            loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+            loading.setText(this.getResources().getString(R.string.list_empty));
         else
-            loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
+            loading.setText(this.getResources().getString(R.string.loading));
         loading.setGravity(Gravity.CENTER_HORIZONTAL);
         //If it has never been checked before add a refresh button
         if(showSettings.getString("last_checked", null)==null)
         {
             refresh = new Button(this);
-            refresh.setText(StaticBlob.RESOURCES.getString(R.string.refresh));
-            refresh.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+            refresh.setText(this.getResources().getString(R.string.refresh));
+            refresh.setTextColor(this.getResources().getColor(R.color.txtClr));
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
             p.setMargins(20,10,20,10);
             refresh.setLayoutParams(p);
@@ -129,7 +129,7 @@ public class ShowList extends Activity
                 }
             });
             ((LinearLayout)mainListView.getParent()).addView(refresh,1);
-            ((LinearLayout)mainListView.getParent()).setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+            ((LinearLayout)mainListView.getParent()).setBackgroundColor(this.getResources().getColor(R.color.backClr));
             mainListView.setEmptyView(refresh);
             loading.setVisibility(View.INVISIBLE);
         }
@@ -230,11 +230,11 @@ public class ShowList extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, RELOAD_ID, 0, StaticBlob.RESOURCES.getString(R.string.refresh)).setIcon(R.drawable.ic_action_reload);
-        menu.add(0, CLEAR_ID, 0, StaticBlob.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
-        menu.add(0, FILTER_ID, 0, StaticBlob.RESOURCES.getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_action_filter);
-        menu.add(0, MARK_ID, 0, StaticBlob.RESOURCES.getString(R.string.mark)).setIcon(R.drawable.ic_action_tick);
+        menu.add(0, STOP_ID, 0, this.getResources().getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, RELOAD_ID, 0, this.getResources().getString(R.string.refresh)).setIcon(R.drawable.ic_action_reload);
+        menu.add(0, CLEAR_ID, 0, this.getResources().getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
+        menu.add(0, FILTER_ID, 0, this.getResources().getString(filter ? R.string.unfilter : R.string.filter)).setIcon(R.drawable.ic_action_filter);
+        menu.add(0, MARK_ID, 0, this.getResources().getString(R.string.mark)).setIcon(R.drawable.ic_action_tick);
         return true;
     }
 
@@ -255,12 +255,12 @@ public class ShowList extends Activity
                 return true;
             case CLEAR_ID:  //Show a dialog to clear all items of this show from the SQL database
                 d = new AlertDialog.Builder(this)
-                        .setTitle(StaticBlob.RESOURCES.getString(R.string.confirm))
-                        .setMessage(StaticBlob.RESOURCES.getString(R.string.confirm_clear))
+                        .setTitle(this.getResources().getString(R.string.confirm))
+                        .setMessage(this.getResources().getString(R.string.confirm_clear))
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+                                loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
                                 StaticBlob.databaseConnector.clearShow(StaticBlob.SHOW_LIST[currentShow]);
                                 Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
                                 ShowList.this.showAdapter.changeCursor(r);
@@ -275,9 +275,9 @@ public class ShowList extends Activity
             case FILTER_ID: //Filter or unfilter the results showing only new or all
                 filter = !filter;
                 if(filter)
-                    item.setTitle(StaticBlob.RESOURCES.getString(R.string.unfilter));
+                    item.setTitle(this.getResources().getString(R.string.unfilter));
                 else
-                    item.setTitle(StaticBlob.RESOURCES.getString(R.string.filter));
+                    item.setTitle(this.getResources().getString(R.string.filter));
                 Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
@@ -287,15 +287,15 @@ public class ShowList extends Activity
                 return true;
             case MARK_ID:   //Mark all in the show as new or old
                 d = new AlertDialog.Builder(this)
-                        .setTitle(StaticBlob.RESOURCES.getString(R.string.mark_all))
-                        .setPositiveButton(StaticBlob.RESOURCES.getString(R.string.new_), new DialogInterface.OnClickListener() {
+                        .setTitle(this.getResources().getString(R.string.mark_all))
+                        .setPositiveButton(this.getResources().getString(R.string.new_), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 StaticBlob.databaseConnector.markAllNew(StaticBlob.SHOW_LIST[currentShow], true);
                                 Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }})
-                        .setNegativeButton(StaticBlob.RESOURCES.getString(R.string.old), new DialogInterface.OnClickListener() {
+                        .setNegativeButton(this.getResources().getString(R.string.old), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 StaticBlob.databaseConnector.markAllNew(StaticBlob.SHOW_LIST[currentShow], false);
                                 Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
@@ -320,7 +320,7 @@ public class ShowList extends Activity
             refresh.setVisibility(View.GONE);
         loading.setVisibility(View.VISIBLE);
         mainListView.setEmptyView(loading);
-        loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
+        loading.setText(this.getResources().getString(R.string.loading));
         setProgressBarIndeterminateVisibility(true);
         new UpdateShowTask().execute((Object[]) null);
         new GetShowTask().execute((Object[]) null);
@@ -342,7 +342,7 @@ public class ShowList extends Activity
             else
             {
                 Log.i("ShowList:handleMessage", "Not Changing cursor");
-                loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+                loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
             }
         }
     };
@@ -355,7 +355,7 @@ public class ShowList extends Activity
         protected void onPreExecute()
         {
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
-            loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
+            loading.setText(ShowList.this.getResources().getString(R.string.loading));
         }
 
         @Override
@@ -369,11 +369,11 @@ public class ShowList extends Activity
         protected void onPostExecute(Object result)
         {
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
-            loading.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+            loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
             if(result==null)
             {
                 Log.w("ShowList:UpdateShowTask", "An error occurred while updating the show " + currentShow);
-                Toast.makeText(ShowList.this, StaticBlob.RESOURCES.getString(R.string.update_error), Toast.LENGTH_LONG).show();
+                Toast.makeText(ShowList.this, ShowList.this.getResources().getString(R.string.update_error), Toast.LENGTH_LONG).show();
             }
             else if(mainListView!=null)
                 ShowList.this.updateHandler.sendMessage((Message) result);

@@ -56,7 +56,7 @@ public class Queue extends ListActivity
     {
         // Do some create things
         super.onCreate(savedInstanceState);
-        setTitle(StaticBlob.RESOURCES.getString(R.string.queue));
+        setTitle(this.getResources().getString(R.string.queue));
         mainListView = new DDListView(this, null);
         mainListView.setId(android.R.id.list);
         mainListView.setDropListener(mDropListener, R.id.grabber);
@@ -69,7 +69,7 @@ public class Queue extends ListActivity
         TextView noResults = new TextView(this);
         noResults.setBackgroundColor(getResources().getColor(R.color.backClr));
         noResults.setTextColor(getResources().getColor(R.color.txtClr));
-        noResults.setText(StaticBlob.RESOURCES.getString(R.string.list_empty));
+        noResults.setText(this.getResources().getString(R.string.list_empty));
         noResults.setTypeface(null, 2);
         noResults.setGravity(Gravity.CENTER_HORIZONTAL);
         noResults.setPadding(10,20,10,20);
@@ -91,7 +91,7 @@ public class Queue extends ListActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, Menu.FIRST, 0, StaticBlob.RESOURCES.getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
+        menu.add(0, Menu.FIRST, 0, this.getResources().getString(R.string.clear)).setIcon(R.drawable.ic_action_trash);
         return true;
     }
 
@@ -243,7 +243,7 @@ public class Queue extends ListActivity
                     mainListView.mItemHeightNormal = v.getMeasuredHeight();
                     mainListView.mItemHeightHalf = mainListView.mItemHeightNormal / 2;
                     mainListView.mItemHeightExpanded = mainListView.mItemHeightNormal * 2;
-                    mainListView.mItemColor = StaticBlob.RESOURCES.getColor(R.color.backClr);
+                    mainListView.mItemColor = Queue.this.getResources().getColor(R.color.backClr);
                     Log.d(":", "MEASURED");
                 } catch(NullPointerException e){}
             }

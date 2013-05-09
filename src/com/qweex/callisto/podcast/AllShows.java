@@ -125,7 +125,7 @@ public class AllShows extends Activity {
             String the_current_show = (String)(current_textview).getText();
             int currentShowCount = StaticBlob.databaseConnector.getShow(the_current_show, true).getCount();
 
-            ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + StaticBlob.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)current_view.findViewById(R.id.showUnwatched)).setTextColor((currentShowCount>0 ? 0xff000000 : 0x11000000) + this.getResources().getColor(R.color.txtClr));
             ((TextView)current_view.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowCount));
 
             //Updated the "last_checked" time for this show in the view, not in the preferences. It was updated in the preferences by the update AsyncTask.
@@ -175,7 +175,7 @@ public class AllShows extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, STOP_ID, 0, this.getResources().getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
         menu.add(0, DOWNLOADS_ID, 0, getResources().getString(R.string.downloads)).setIcon(R.drawable.ic_action_download);
         menu.add(0, UPDATE_ID, 0, getResources().getString(R.string.refresh_all)).setIcon(R.drawable.ic_action_reload);
         return true;
@@ -218,7 +218,7 @@ public class AllShows extends Activity {
         @Override
         protected void onPreExecute()
         {
-            Toast.makeText(AllShows.this, StaticBlob.RESOURCES.getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AllShows.this, AllShows.this.getResources().getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
             setProgressBarIndeterminateVisibility(true);
         }
 
@@ -256,7 +256,7 @@ public class AllShows extends Activity {
         @Override
         protected void onPostExecute(Object result)
         {
-            Toast.makeText(AllShows.this, StaticBlob.RESOURCES.getString(R.string.finished_update), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AllShows.this, AllShows.this.getResources().getString(R.string.finished_update), Toast.LENGTH_SHORT).show();
             setProgressBarIndeterminateVisibility(false);
         }
     }
@@ -351,7 +351,7 @@ public class AllShows extends Activity {
 
             //Set the unwatched count & color
             int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[position], true).getCount();
-            ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + StaticBlob.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + AllShows.this.getResources().getColor(R.color.txtClr));
             ((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowUnwatchedCount));
 
             //Set the show text

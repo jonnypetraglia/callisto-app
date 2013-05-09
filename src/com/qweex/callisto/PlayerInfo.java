@@ -59,7 +59,7 @@ public class PlayerInfo
         TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
         Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
         if(titleView!=null)
-            titleView.setText(StaticBlob.RESOURCES.getString(R.string.queue_size) + ": " + StaticBlob.databaseConnector.queueCount());
+            titleView.setText(c.getResources().getString(R.string.queue_size) + ": " + StaticBlob.databaseConnector.queueCount());
     }
 
     /** Updates the player controls, like the title and times. Used excessively when changing Activities.

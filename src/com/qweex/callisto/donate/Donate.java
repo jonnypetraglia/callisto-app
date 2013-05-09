@@ -138,12 +138,10 @@ public class Donate extends ListActivity
     {
         super.onCreate(savedInstanceState);
         setTitle("Donate");
-        if(StaticBlob.RESOURCES==null)
-            StaticBlob.RESOURCES = getResources();
 
         //Prepare the listview's appearance
         itemsList = getListView();
-        itemsList.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        itemsList.setBackgroundColor(this.getResources().getColor(R.color.backClr));
 
         //Prepare the header's appearance
         TextView header = new TextView(this);
@@ -160,7 +158,7 @@ public class Donate extends ListActivity
         TextView dollarsign = new TextView(this);
         dollarsign.setTextSize(20f);
         dollarsign.setText("$");
-        dollarsign.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        dollarsign.setTextColor(this.getResources().getColor(R.color.txtClr));
         CustomAmount = new EditText(this);
         CustomAmount.setId(NAME_ID);
         CustomAmount.setTextSize(20f);
@@ -223,7 +221,7 @@ public class Donate extends ListActivity
 
         //Prepare the message & button's appearance
         msgView = new TextView(this);
-        msgView.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        msgView.setTextColor(this.getResources().getColor(R.color.txtClr));
         msgView.setTextSize(12f);
         msgView.setText(Html.fromHtml("100% of your donation will go "
                 + "<i>directly</i>"
@@ -249,7 +247,7 @@ public class Donate extends ListActivity
                 }
             }
         };
-        baconPDialog = Callisto.BaconDialog(Donate.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg));
+        baconPDialog = Callisto.BaconDialog(Donate.this, this.getResources().getString(R.string.loading), this.getResources().getString(R.string.loading_msg));
         baconPDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -265,9 +263,9 @@ public class Donate extends ListActivity
         //contentLayout.addView(GiveChrisSomeHardEarnedMoney);
 		/*-------------------*/
 
-        itemsList.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
-        itemsList.setCacheColorHint(StaticBlob.RESOURCES.getColor(R.color.backClr));
-        header.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+        itemsList.setBackgroundColor(this.getResources().getColor(R.color.backClr));
+        itemsList.setCacheColorHint(this.getResources().getColor(R.color.backClr));
+        header.setTextColor(this.getResources().getColor(R.color.txtClr));
         header.setTextSize(25f);
         itemsList.addHeaderView(header);
         itemsList.addFooterView(contentLayout);
@@ -318,7 +316,7 @@ public class Donate extends ListActivity
                 name = new TextView(this.context);
                 name.setId(NAME_ID);
                 name.setTextSize(20f);
-                name.setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+                name.setTextColor(Donate.this.getResources().getColor(R.color.txtClr));
                 name.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
                 //Create da radio
                 select = new RadioButton(this.context);

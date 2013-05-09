@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -71,8 +72,6 @@ public class StaticBlob
     public static Drawable pauseDrawable;
     /** An instance of the PlayerInfo class, to keep track of the info of a track when updating the player controls across the activities. */
     public static PlayerInfo playerInfo;
-    /** Simply the shared resources of the project, for things like strings, colors, drawables, etc. */
-    public static Resources RESOURCES;
     public static String[] SHOW_LIST_VIDEO;
     public static String[] SHOW_LIST_AUDIO;
     /** A static array containing corresponding info for the shows.
@@ -121,7 +120,7 @@ public class StaticBlob
         View msg = ((ViewGroup) ((ViewGroup)(d.getButton(Dialog.BUTTON_POSITIVE).getParent().getParent().getParent())).getChildAt(1)).getChildAt(0);
         msg.setBackgroundResource(R.color.backClr);
         if(((TextView)((android.widget.ScrollView)msg).getChildAt(0))!=null)
-            ((TextView)((android.widget.ScrollView)msg).getChildAt(0)).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+            ((TextView)((android.widget.ScrollView)msg).getChildAt(0)).setTextColor(d.getContext().getResources().getColor(R.color.txtClr));
         //ViewGroup x = (ViewGroup) ((ViewGroup) ((ViewGroup)(d.getButton(Dialog.BUTTON_POSITIVE).getParent().getParent().getParent())).getChildAt(0)).getChildAt(0);
         //x.setBackgroundResource(R.color.backClr);
     }

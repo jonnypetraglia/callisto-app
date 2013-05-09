@@ -89,13 +89,12 @@ public class Callisto extends Activity
 
         //**********************Do the app creation stuff - The stuff that is done because the app is initializing for the first time**********************************//
         //Get the main app settings (static variables)
-        StaticBlob.RESOURCES = getResources();
-        StaticBlob.SHOW_LIST_VIDEO = StaticBlob.RESOURCES.getStringArray(R.array.shows_video);
-        StaticBlob.SHOW_LIST_AUDIO = StaticBlob.RESOURCES.getStringArray(R.array.shows_audio);
-        StaticBlob.SHOW_LIST = StaticBlob.RESOURCES.getStringArray(R.array.shows);
+        StaticBlob.SHOW_LIST_VIDEO = this.getResources().getStringArray(R.array.shows_video);
+        StaticBlob.SHOW_LIST_AUDIO = this.getResources().getStringArray(R.array.shows_audio);
+        StaticBlob.SHOW_LIST = this.getResources().getStringArray(R.array.shows);
         StaticBlob.europeanDates = android.text.format.DateFormat.getDateFormatOrder(this)[0]!='M';
         StaticBlob.sdfDestination = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
-        StaticBlob.DP = StaticBlob.RESOURCES.getDisplayMetrics().density;
+        StaticBlob.DP = this.getResources().getDisplayMetrics().density;
         StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(this).getString("storage_path", "callisto");
         try {
             StaticBlob.appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
@@ -106,8 +105,8 @@ public class Callisto extends Activity
         //Initialize some static variables
         StaticBlob.mNotificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         StaticBlob.alarmPrefs = getApplicationContext().getSharedPreferences(StaticBlob.PREF_FILE, MODE_PRIVATE);
-        StaticBlob.playDrawable = StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_playback_play);
-        StaticBlob.pauseDrawable = StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_playback_pause);
+        StaticBlob.playDrawable = this.getResources().getDrawable(R.drawable.ic_action_playback_play);
+        StaticBlob.pauseDrawable = this.getResources().getDrawable(R.drawable.ic_action_playback_pause);
         StaticBlob.databaseConnector = new DatabaseConnector(Callisto.this);
         StaticBlob.databaseConnector.open();
         if(StaticBlob.playerInfo==null)
@@ -349,10 +348,10 @@ public class Callisto extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, StaticBlob.RESOURCES.getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, SETTINGS_ID, 0, StaticBlob.RESOURCES.getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
-        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, StaticBlob.RESOURCES.getString(R.string.more)).setIcon(R.drawable.ic_action_more);
-        theSubMenu.add(0, RELEASE_ID, 0, StaticBlob.RESOURCES.getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
+        menu.add(0, STOP_ID, 0, this.getResources().getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SETTINGS_ID, 0, this.getResources().getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
+        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, this.getResources().getString(R.string.more)).setIcon(R.drawable.ic_action_more);
+        theSubMenu.add(0, RELEASE_ID, 0, this.getResources().getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
 
         //Stuffs for the donations stuffs
         //if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
@@ -360,11 +359,11 @@ public class Callisto extends Activity
             //String baconString = "Get Bacon";
             //File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + "extras");
             //if(target.exists())
-                //baconString = StaticBlob.RESOURCES.getString(R.string.bacon);
+                //baconString = this.getResources().getString(R.string.bacon);
             //theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
         //}
 
-        menu.add(0, QUIT_ID, 0, StaticBlob.RESOURCES.getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
+        menu.add(0, QUIT_ID, 0, this.getResources().getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
         return true;
     }
 
@@ -423,7 +422,7 @@ public class Callisto extends Activity
         horl.setOrientation(LinearLayout.HORIZONTAL);
         horl.addView(mainView, xParams);
         horl.addView(empty, cParams);
-        horl.setBackgroundColor(StaticBlob.RESOURCES.getColor(R.color.backClr));
+        horl.setBackgroundColor(c.getResources().getColor(R.color.backClr));
 
         //Add the views to the total layout
         layout.addView(horl, mParams);
@@ -698,7 +697,7 @@ public class Callisto extends Activity
     static public ProgressDialog BaconDialog(Context c, String title, String message)
     {
         if(message==null)
-            message= StaticBlob.RESOURCES.getString(R.string.loading_msg);
+            message= c.getResources().getString(R.string.loading_msg);
         ProgressDialog pDialog = new ProgressDialog(c);
         pDialog.setCancelable(false);
         pDialog.setTitle(title);
@@ -712,7 +711,7 @@ public class Callisto extends Activity
         ((TextView)pDialog.getWindow().findViewById(android.R.id.message)).setTextSize(TypedValue.COMPLEX_UNIT_DIP, (float) 17.0);
         ((View) pDialog.getWindow().findViewById(android.R.id.message)).setPadding(15, 5, 5, 5);
         ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setLayoutParams(new LayoutParams(96, 96));
-        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(StaticBlob.RESOURCES.getDrawable(R.drawable.bacon_anim));
+        ((ProgressBar) pDialog.getWindow().findViewById(android.R.id.progress)).setIndeterminateDrawable(c.getResources().getDrawable(R.drawable.bacon_anim));
         return pDialog;
     }
 

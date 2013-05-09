@@ -16,6 +16,7 @@ package com.qweex.callisto.irc;
 import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,9 +46,11 @@ public class NickList extends ListActivity
 	{
 		super.onCreate(savedInstanceState);
 		setTitle("Nick List");
+        Log.d("NickList", "begin");
         getListView().setBackgroundResource(R.color.backClr);
 		this.setListAdapter(new NickListAdapter(this, android.R.layout.simple_list_item_1, IRCChat.nickList));
 		setResult(-1);
+        Log.d("NickList", "derp");
 	}
 	
 	@Override

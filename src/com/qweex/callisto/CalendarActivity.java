@@ -161,11 +161,11 @@ public class CalendarActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle(StaticBlob.RESOURCES.getString(R.string.agenda_title));
+        this.setTitle(this.getResources().getString(R.string.agenda_title));
 
         isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
-        months = StaticBlob.RESOURCES.getStringArray(R.array.months);
-        days = StaticBlob.RESOURCES.getStringArray(R.array.days);
+        months = this.getResources().getStringArray(R.array.months);
+        days = this.getResources().getStringArray(R.array.days);
 
         //Set up the pop up for viewing an event's info
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -201,10 +201,10 @@ public class CalendarActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     v.setEnabled(false);
-                    ((Button) v).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr) - 0x88000000);
+                    ((Button) v).setTextColor(CalendarActivity.this.getResources().getColor(R.color.txtClr) - 0x88000000);
                     loadMoreAgenda(false);
                     v.setEnabled(true);
-                    ((Button) v).setTextColor(StaticBlob.RESOURCES.getColor(R.color.txtClr));
+                    ((Button) v).setTextColor(CalendarActivity.this.getResources().getColor(R.color.txtClr));
                 }
 
             });
@@ -288,7 +288,7 @@ public class CalendarActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, StaticBlob.RESOURCES.getString(R.string.reload)).setIcon(R.drawable.ic_action_reload);
+        menu.add(Menu.NONE, REFRESH_MENU_ID, Menu.NONE, this.getResources().getString(R.string.reload)).setIcon(R.drawable.ic_action_reload);
         return true;
     }
 
@@ -379,7 +379,7 @@ public class CalendarActivity extends Activity {
                 agenda.removeAllViews();
             Log.v("CalendarActivity:FetchEventsTask", "Preparing to fetch new events");
             //Build the progress dialog for fetching
-            progressDialog = ProgressDialog.show(CalendarActivity.this, StaticBlob.RESOURCES.getString(R.string.loading), StaticBlob.RESOURCES.getString(R.string.loading_msg), true, false);
+            progressDialog = ProgressDialog.show(CalendarActivity.this, CalendarActivity.this.getResources().getString(R.string.loading), CalendarActivity.this.getResources().getString(R.string.loading_msg), true, false);
             progressDialog.setCancelable(true);
         }
 
@@ -538,7 +538,7 @@ public class CalendarActivity extends Activity {
                     Tmonth.performClick();  //Go to the current week
                 else
                 {
-                    ((Button) findViewById(R.id.loadmore)).setText(StaticBlob.RESOURCES.getString(R.string.load_more));       //The button has different text if you've never updated.
+                    ((Button) findViewById(R.id.loadmore)).setText(CalendarActivity.this.getResources().getString(R.string.load_more));       //The button has different text if you've never updated.
                     loadMoreAgenda(true);   //Load the first few event thingies after the update
                 }
             }
@@ -555,7 +555,7 @@ public class CalendarActivity extends Activity {
         Tmonth.setText(months[current_cal.get(Calendar.MONTH)]);
         Tyear.setText(Integer.toString(current_cal.get(Calendar.YEAR)));
         Bprev.setEnabled(true);
-        Bprev.setTextColor(StaticBlob.RESOURCES.getColor(R.color.calHdrClr));
+        Bprev.setTextColor(this.getResources().getColor(R.color.calHdrClr));
 
         int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK) - 1;
         Calendar today = Calendar.getInstance();
@@ -579,20 +579,20 @@ public class CalendarActivity extends Activity {
             if (Math.abs(current_cal.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) <= MILLISECONDS_IN_A_DAY
                     && current_cal.get(Calendar.DATE) == Calendar.getInstance().get(Calendar.DATE))
             {
-                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + StaticBlob.RESOURCES.getColor(R.color.calTodayClr));
+                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + this.getResources().getColor(R.color.calTodayClr));
                 Bprev.setEnabled(false);
-                Bprev.setTextColor(StaticBlob.RESOURCES.getColor(R.color.calHdrClr) - 0x88000000);
+                Bprev.setTextColor(this.getResources().getColor(R.color.calHdrClr) - 0x88000000);
             }
             else
             {
-                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + StaticBlob.RESOURCES.getColor(R.color.calDayClr));
+                ((TextView) dayViews[i].findViewWithTag("dayText")).setTextColor(0xFF000000 + this.getResources().getColor(R.color.calDayClr));
                 //TODO: Is this even necessary?
                 if(current_cal.before(today))   //Hide shows that have passed?
                 {
                     current_cal.add(Calendar.DATE, 1);
                     for (int j = 1; j <= 10; j++)
                     {
-                        TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + j, "id", "com.qweex.callisto"));
+                        TextView event = (TextView) dayViews[i].findViewById(this.getResources().getIdentifier("event" + j, "id", "com.qweex.callisto"));
                         if (event == null)
                             continue;
                         event.setVisibility(View.GONE);
@@ -614,13 +614,13 @@ public class CalendarActivity extends Activity {
                 String _id = events.getString(events.getColumnIndex("_id"));
 
                 Log.v("CalendarActivity:updateCalendar", "Getting show for: " + show);
-                TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
+                TextView event = (TextView) dayViews[i].findViewById(this.getResources().getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
                 View w = (View) event.getParent();
-                TextView id = (TextView) w.findViewById(StaticBlob.RESOURCES.getIdentifier("id", "id", "com.qweex.callisto"));
+                TextView id = (TextView) w.findViewById(this.getResources().getIdentifier("id", "id", "com.qweex.callisto"));
                 id.setText(_id);
 
                 event.setText(show);
-                event.setBackgroundColor(StaticBlob.RESOURCES.getColor(type.equals("RELEASE") ? R.color.releaseClr : R.color.liveClr));
+                event.setBackgroundColor(this.getResources().getColor(type.equals("RELEASE") ? R.color.releaseClr : R.color.liveClr));
                 event.setVisibility(View.VISIBLE);
                 event.setOnClickListener(clickEvent);
 
@@ -630,7 +630,7 @@ public class CalendarActivity extends Activity {
             //Add empty views that are BS, man.
             for(; numberOfEvents <= 10; numberOfEvents++)
             {
-                TextView event = (TextView) dayViews[i].findViewById(StaticBlob.RESOURCES.getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
+                TextView event = (TextView) dayViews[i].findViewById(this.getResources().getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
                 if (event == null)
                     continue;
                 event.setVisibility(View.GONE);
@@ -845,7 +845,7 @@ public class CalendarActivity extends Activity {
                         date = StaticBlob.sdfRawSimple1.format(dt.getTime());
                     }
                     //Today
-                    else if (date.equals(StaticBlob.RESOURCES.getString(R.string.today)))
+                    else if (date.equals(CalendarActivity.this.getResources().getString(R.string.today)))
                         date = StaticBlob.sdfRawSimple1.format(new java.util.Date());
                     else
                     {
@@ -937,8 +937,8 @@ public class CalendarActivity extends Activity {
             Log.v("CalendarActivity:loadMoreAgenda", "eventCount() has returned 0");
             if(thisWeek)
             {
-                loading.setText(StaticBlob.RESOURCES.getString(R.string.no_events));
-                ((Button) findViewById(R.id.loadmore)).setText(StaticBlob.RESOURCES.getString(R.string.fetch));
+                loading.setText(this.getResources().getString(R.string.no_events));
+                ((Button) findViewById(R.id.loadmore)).setText(this.getResources().getString(R.string.fetch));
                 return;
             }
             fetchTask = new FetchEventsTask();
@@ -948,7 +948,7 @@ public class CalendarActivity extends Activity {
 
         //Show the loading message
         loading.setVisibility(View.VISIBLE);
-        loading.setText(StaticBlob.RESOURCES.getString(R.string.loading));
+        loading.setText(this.getResources().getString(R.string.loading));
 
         //Loop over the 7 days
         boolean foundEvents = false;
@@ -1018,7 +1018,7 @@ public class CalendarActivity extends Activity {
                 if(thisWeek)
                 {
                     if(i==0)
-                        ((TextView) v.findViewById(R.id.date)).setText(StaticBlob.RESOURCES.getString(R.string.today));
+                        ((TextView) v.findViewById(R.id.date)).setText(this.getResources().getString(R.string.today));
                     else
                         ((TextView) v.findViewById(R.id.date)).setText(days[(i + dayOfWeek) % 7]);
                 } else
@@ -1057,7 +1057,7 @@ public class CalendarActivity extends Activity {
         }   //End the for over 7 days
 
         if (!foundEvents)
-            loading.setText(StaticBlob.RESOURCES.getString(R.string.no_events));
+            loading.setText(this.getResources().getString(R.string.no_events));
         else
             loading.setVisibility(View.GONE);
     }

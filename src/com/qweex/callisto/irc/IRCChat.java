@@ -80,7 +80,7 @@ public class IRCChat extends Activity implements IRCEventListener
     protected static final int NICKLIST_ID=LOGOUT_ID+1;
     protected static final int SAVE_ID=NICKLIST_ID+1;
     private final String SERVER_NAME = "irc.geekshed.net";
-    private final String CHANNEL_NAME = "#jupiterbroadcasting";
+    private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
     private String profileNick;
     private String profilePass;
     private boolean SHOW_TIME = true;
@@ -204,7 +204,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 getWindowManager().getDefaultDisplay().getHeight()/10,
                 0);
 
-        login.setCompoundDrawables(StaticBlob.RESOURCES.getDrawable(R.drawable.ic_action_key), null, null, null);
+        login.setCompoundDrawables(this.getResources().getDrawable(R.drawable.ic_action_key), null, null, null);
 
         login.setOnClickListener(InitiateLogin);
 
@@ -1618,7 +1618,7 @@ public class IRCChat extends Activity implements IRCEventListener
 
             while (matcher.find())
             {
-                Bitmap smiley = BitmapFactory.decodeResource(StaticBlob.RESOURCES, ((Integer) pairs.getValue()));
+                Bitmap smiley = BitmapFactory.decodeResource(this.getResources(), ((Integer) pairs.getValue()));
                 Object[] spans = builder.getSpans(matcher.start(), matcher.end(), ImageSpan.class);
                 if (spans == null || spans.length == 0)
                 {
@@ -1844,7 +1844,7 @@ public class IRCChat extends Activity implements IRCEventListener
     /** A function object to flash the background of an EditText control.
      *  Changes the background, waits a certain amount of time, then changes it back
      * @author notbryant */
-    static class EditTextFlash
+    class EditTextFlash
     {
         SpannableString inputText;
         android.text.style.BackgroundColorSpan flash;
@@ -1861,7 +1861,7 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             this.view = view;
             this.H = H;
-            color = StaticBlob.RESOURCES.getColor(com.qweex.callisto.R.color.Salmon);
+            color = IRCChat.this.getResources().getColor(com.qweex.callisto.R.color.Salmon);
             flash = new android.text.style.BackgroundColorSpan(color);
 
             inputText = new SpannableString(view.getText().toString());
