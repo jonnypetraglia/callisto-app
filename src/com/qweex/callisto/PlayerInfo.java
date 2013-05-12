@@ -40,7 +40,7 @@ public class PlayerInfo
     public int position = 0, length = 0;
     /** Holds whether or not the player is paused. **/
     public boolean isPaused = true;
-    private Callisto callisto;
+
     //TODO: wtf
     private Timer timeTimer = null;
     //TODO: wtf
@@ -53,13 +53,15 @@ public class PlayerInfo
     /** Constructor for the PlayerInfo class. Good to call when first creating the player controls, to set then to something.
      *  @param c The context for the current Activity.
      */
-    public PlayerInfo(Callisto callisto, Context c)
+    public PlayerInfo(Context c)
     {
-        this.callisto = callisto;
-        TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
-        Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
-        if(titleView!=null)
+        try {
+            TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
+            Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
             titleView.setText(c.getResources().getString(R.string.queue_size) + ": " + StaticBlob.databaseConnector.queueCount());
+        }
+        catch(ClassCastException IfBeingCalledByWidget) {}
+        catch(NullPointerException viewNotFound) {}
     }
 
     /** Updates the player controls, like the title and times. Used excessively when changing Activities.
@@ -68,7 +70,7 @@ public class PlayerInfo
     public void update(Context c)
     {
         //Update the context for the receiver, unrelated
-        CallistoService.audioJackReceiver.contextForPreferences = c;
+        //CallistoService.audioJackReceiver.contextForPreferences = c;
 
         //If it's a widget there is no need to update the controls.
         if(StaticBlob.is_widget)

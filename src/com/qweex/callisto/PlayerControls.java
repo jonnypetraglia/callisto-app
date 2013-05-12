@@ -225,12 +225,15 @@ public class PlayerControls
 
         //Retrieve all of the playerInfo about the new track
         String media_location;
+        if(StaticBlob.playerInfo==null)
+            StaticBlob.playerInfo = new PlayerInfo(c);
         System.out.println("DERP: " + theTargetTrack + " | " + StaticBlob.playerInfo);
+
         StaticBlob.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
         StaticBlob.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
         StaticBlob.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));
         StaticBlob.playerInfo.show = theTargetTrack.getString(theTargetTrack.getColumnIndex("show"));
-        Log.i("*:changeToTrack", "Loading info: " + StaticBlob.playerInfo.title);
+        Log.i("*:changeToTrack", "Loading info: " + StaticBlob.playerInfo.title + " | " + StaticBlob.playerInfo.date);
         //Retrieve the location of the new track
         if(isStreaming)
         {
@@ -252,6 +255,8 @@ public class PlayerControls
             }
 
             //Here we actually get the path
+            if(StaticBlob.storage_path==null)
+                StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(c).getString("storage_path", "callisto");
             File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
             target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title +
                     EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
@@ -284,6 +289,8 @@ public class PlayerControls
         StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
         StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
         StaticBlob.notification_playing.setLatestEventInfo(c,  StaticBlob.playerInfo.title,  StaticBlob.playerInfo.show, contentIntent);
+        if(StaticBlob.mNotificationManager==null)
+            StaticBlob.mNotificationManager =  (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         StaticBlob.mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
 
 
@@ -342,14 +349,12 @@ public class PlayerControls
             Log.e("*changeToTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
             e.printStackTrace();
         }
-
-        //Update the widgets
-        CallistoWidget.updateAllWidgets(c);
     }
 
     /** Plays or pauses the currently playing track; does not adjust what is the current track **/
     public static void playPause(Context c, View v)
     {
+        Log.d("*:playPause","PlayPause()");
         //-----Live-----
         String live_url = "";
         try {
@@ -386,7 +391,14 @@ public class PlayerControls
 
         //-----Local-----
         if(StaticBlob.databaseConnector==null || StaticBlob.databaseConnector.queueCount()==0)
-            return;
+        {
+            StaticBlob.databaseConnector = new DatabaseConnector(c);
+            if(StaticBlob.databaseConnector==null)
+                return;
+            StaticBlob.databaseConnector.open();
+            if(StaticBlob.databaseConnector.queueCount()==0)
+                return;
+        }
         if(StaticBlob.mplayer==null)
         {
             Log.d("*:playPause","PlayPause initiated");
@@ -406,6 +418,7 @@ public class PlayerControls
                     changeToTrack(c, 0, true);
                 else
                     StaticBlob.mplayer.start();
+                Log.d("*:playPause","DERERERERERE");
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
             }

@@ -13,23 +13,31 @@
  */
 package com.qweex.callisto;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.*;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.preference.PreferenceManager;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
 import com.qweex.callisto.listeners.OnErrorListenerWithContext;
 import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
+import com.qweex.callisto.receivers.AudioJackReceiver;
+import com.qweex.callisto.widgets.CallistoWidget;
 
 import java.text.SimpleDateFormat;
 
@@ -123,5 +131,141 @@ public class StaticBlob
             ((TextView)((android.widget.ScrollView)msg).getChildAt(0)).setTextColor(d.getContext().getResources().getColor(R.color.txtClr));
         //ViewGroup x = (ViewGroup) ((ViewGroup) ((ViewGroup)(d.getButton(Dialog.BUTTON_POSITIVE).getParent().getParent().getParent())).getChildAt(0)).getChildAt(0);
         //x.setBackgroundResource(R.color.backClr);
+    }
+
+    public static void init(final Context c)
+    {
+        if(StaticBlob.playerInfo!=null)
+            return;
+        Log.e("12345", "!");
+        //Get the main app settings (static variables)
+        StaticBlob.SHOW_LIST_VIDEO = c.getResources().getStringArray(R.array.shows_video);
+        StaticBlob.SHOW_LIST_AUDIO = c.getResources().getStringArray(R.array.shows_audio);
+        StaticBlob.SHOW_LIST = c.getResources().getStringArray(R.array.shows);
+        StaticBlob.europeanDates = android.text.format.DateFormat.getDateFormatOrder(c)[0]!='M';
+        StaticBlob.sdfDestination = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
+        StaticBlob.DP = c.getResources().getDisplayMetrics().density;
+        StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(c).getString("storage_path", "callisto");
+        try {
+            StaticBlob.appVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {}
+
+        //Initialize some static variables
+        StaticBlob.mNotificationManager =  (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        StaticBlob.alarmPrefs = c.getApplicationContext().getSharedPreferences(StaticBlob.PREF_FILE, c.MODE_PRIVATE);
+        StaticBlob.playDrawable = c.getResources().getDrawable(R.drawable.ic_action_playback_play);
+        StaticBlob.pauseDrawable = c.getResources().getDrawable(R.drawable.ic_action_playback_pause);
+        StaticBlob.databaseConnector = new DatabaseConnector(c);
+        StaticBlob.databaseConnector.open();
+        if(StaticBlob.playerInfo==null)
+            StaticBlob.playerInfo = new PlayerInfo(c);
+        else
+            StaticBlob.playerInfo.update(c);
+
+        //Create the views for the the IRC
+        StaticBlob.chatView = new TextView(c);
+        StaticBlob.chatView.setGravity(Gravity.BOTTOM);
+        String irc_scrollback=PreferenceManager.getDefaultSharedPreferences(c).getString("irc_max_scrollback", "500");
+        StaticBlob.chatView.setMaxLines(Integer.parseInt(irc_scrollback));
+        StaticBlob.logView = new TextView(c);
+        StaticBlob.logView.setGravity(Gravity.BOTTOM);
+        StaticBlob.logView.setMaxLines(Integer.parseInt(irc_scrollback));
+
+        //Creates the dialog for live error
+        StaticBlob.errorDialog = new Dialog(c);
+        TextView t = new TextView(c);
+        t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
+        StaticBlob.errorDialog.setContentView(t);
+        StaticBlob.errorDialog.setTitle("By the beard of Zeus!");
+
+        //Create the wifi lock
+        WifiManager wm = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
+        if(StaticBlob.Live_wifiLock==null || !StaticBlob.Live_wifiLock.isHeld())
+            StaticBlob.Live_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_live");
+
+        //Create the dialog for live selection
+        StaticBlob.liveDg = new AlertDialog.Builder(c)
+                .setTitle("Switch from playlist to live?")
+                .setView(((LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
+                .create();
+
+        //Create the phone state listener.
+        // i.e., that which is able to pause when a phone call is received
+
+        PhoneStateListener phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                if (state == TelephonyManager.CALL_STATE_RINGING) {
+                    if(StaticBlob.live_isPlaying
+                            || !StaticBlob.playerInfo.isPaused)
+                    {
+                        PlayerControls.playPause(c, null);
+                    }
+                    //Incoming call: Pause music
+                } else if(state == TelephonyManager.CALL_STATE_IDLE) {
+                    //Not in call: Play music
+                } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                    if(StaticBlob.live_isPlaying
+                            || !StaticBlob.playerInfo.isPaused)
+                    {
+                        PlayerControls.playPause(c, null);
+                    }
+                }
+                super.onCallStateChanged(state, incomingNumber);
+            }
+        };
+        TelephonyManager mgr = (TelephonyManager) c.getSystemService(c.TELEPHONY_SERVICE);
+        if(mgr != null) {
+            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
+
+        //Create the audiojack receiver
+        CallistoService.audioJackReceiver = new AudioJackReceiver();
+        CallistoService.audioJackReceiver.contextForPreferences = c;
+        c.startService(new Intent(c, CallistoService.class));
+
+
+        //Sets the player error and completion errors
+        StaticBlob.trackCompleted = new OnCompletionListenerWithContext();
+        StaticBlob.trackCompletedBug = new OnErrorListenerWithContext();
+        StaticBlob.mplayerPrepared = new OnPreparedListenerWithContext()
+        {
+            @Override
+            public void onPrepared(MediaPlayer arg0) {
+
+                Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + StaticBlob.playerInfo.position);
+                StaticBlob.mplayer.seekTo(StaticBlob.playerInfo.position);
+                StaticBlob.playerInfo.length = StaticBlob.mplayer.getDuration()/1000;
+                StaticBlob.databaseConnector.putLength(StaticBlob.playerInfo.title, StaticBlob.mplayer.getDuration());
+
+                Log.i("*:mplayer:onPrepared", "Prepared, length is " + StaticBlob.playerInfo.length);
+                try {
+                    ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
+                    ib.setImageDrawable(StaticBlob.pauseDrawable);
+                } catch(NullPointerException e) {
+                    Log.w("*:mplayer:onPrepared", "Could not find the button");
+                } //Case for when ib is not found
+                catch(ClassCastException e) {} //Case for when it's the widget
+                Log.i("*:mplayer:onPrepared", (startPlaying ? "" : "NOT ") + "Starting to play: " + StaticBlob.playerInfo.title);
+                if(!startPlaying)
+                {
+                    StaticBlob.playerInfo.update(c);
+                    return;
+                }
+                Log.i("*:mplayer:onPrepared", "HERP");
+                StaticBlob.mplayer.start();
+                StaticBlob.playerInfo.isPaused = false;
+                StaticBlob.playerInfo.update(c);
+
+                if(pd!=null)
+                {
+                    pd.setOnDismissListener(null);
+                    pd.dismiss();
+                }
+                pd=null;
+                //Update the widgets
+                CallistoWidget.updateAllWidgets(c);
+            }
+        };
     }
 }

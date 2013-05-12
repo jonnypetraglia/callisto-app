@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
 import com.qweex.callisto.StaticBlob;
@@ -38,16 +39,25 @@ public class AudioJackReceiver extends BroadcastReceiver
     public Context contextForPreferences;
     /** It is its name. If it is paused was it paused by the receiver or by the user? */
     public boolean wasPausedByThisReceiver = false;
+    private boolean pastInitialCreate = false;
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
+        if(!pastInitialCreate)
+        {
+            pastInitialCreate=true;
+            return;
+        }
+        View v = null;
+        if(contextForPreferences instanceof Activity)
+            v = ((Activity) contextForPreferences).findViewById(R.id.playPause);
         if(intent.getExtras().getInt("state") == 0)
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("pause_unplugged", true)
                     && !StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null)
             {
-                PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));
+                PlayerControls.playPause(contextForPreferences, v);
                 wasPausedByThisReceiver = true;
             }
             Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
@@ -57,7 +67,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                     && StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null
                 && wasPausedByThisReceiver)
             {
-                PlayerControls.playPause(contextForPreferences, ((Activity) contextForPreferences).findViewById(R.id.playPause));
+                PlayerControls.playPause(contextForPreferences, v);
                 wasPausedByThisReceiver = false;
             }
             Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
