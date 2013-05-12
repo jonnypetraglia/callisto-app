@@ -238,12 +238,10 @@ public class PlayerInfo
             }
             try {
                 current = StaticBlob.playerInfo.position/1000;
-                Log.i("Callisto:TimerMethod", "1");
                 if(VideoActivity.videoView!=null)
                     StaticBlob.playerInfo.position = VideoActivity.videoView.getCurrentPosition();
                 else
                 {
-                    Log.i("Callisto:TimerMethod", "2");
                     StaticBlob.playerInfo.position = StaticBlob.mplayer.getCurrentPosition();
                     StaticBlob.timeProgress.setProgress(current);
                     StaticBlob.timeView.setText(Callisto.formatTimeFromSeconds(current));
@@ -256,14 +254,10 @@ public class PlayerInfo
                         sb.setProgress(current);
                     }
                 }
-                Log.i("Callisto:TimerMethod", "Timer mon " + StaticBlob.playerInfo.position);
 
-                Log.i("currentprogress", Queue.currentProgress + " !" + (Queue.currentProgress==null?"NULL":"NOTNULL"));
                 if(Queue.currentProgress!=null)
                 {
-                    Log.i("currentprogress", current + "/" + StaticBlob.playerInfo.length);
                     double xy = (current*100.0) / StaticBlob.playerInfo.length;
-                    Log.i("currentprogress", xy + " !");
                     Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
                 }
 

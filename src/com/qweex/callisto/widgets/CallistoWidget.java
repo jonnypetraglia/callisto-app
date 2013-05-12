@@ -100,9 +100,10 @@ public class CallistoWidget extends AppWidgetProvider
     public void onReceive(Context context, Intent intent)
     {
         super.onReceive(context, intent);
-        if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction()))
+        if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())
+                || "android.appwidget.action.APPWIDGET_ENABLED".equals(intent.getAction()))
             return;
-        Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget");
+        Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget" + intent.getAction());
         StaticBlob.is_widget = true;
         PlayerControls.playPause(context, null);
     }

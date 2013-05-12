@@ -151,6 +151,7 @@ public class IRCChat extends Activity implements IRCEventListener
     //Stole these from nirc; https://github.com/cjstewart88/nirc/blob/master/public/javascripts/client.js
     private String mention_before = "(^|[^a-zA-Z0-9\\[\\]{}\\^`|])",
             mention_after = "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)";
+    private boolean IRCOpPermission;
 
 
 
@@ -801,12 +802,13 @@ public class IRCChat extends Activity implements IRCEventListener
                     ircHandler.post(chatUpdater);
                     break;
                 case MODE_EVENT:
+                    Log.d("DERP;", e + "!");
                     List<ModeAdjustment> lm = ((ModeEvent) e).getModeAdjustments();
                     String setter = ((ModeEvent)e).setBy(), plus = "", minus = "";
                     ArrayList<String> prettified = new ArrayList<String>();
                     for(ModeAdjustment ma : lm)
                     {
-                        if(!setter.toLowerCase().endsWith(".geekshed.net") && !setter.equals(""))
+                        //if(!setter.toLowerCase().endsWith(".geekshed.net") && !setter.equals(""))
                         {
                             String tmp = setter; //(setter.equals(session.getNick())?"You":setter);
                             switch(ma.getMode())
@@ -993,7 +995,7 @@ public class IRCChat extends Activity implements IRCEventListener
                             }
                             prettified.add(tmp);
                         }
-                        else
+                        //else
                         {
                             //No argument means it is changing your personal modes......I think
                             //if((ma.getArgument()==null || ma.getArgument().equals("")))
@@ -1007,6 +1009,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         Log.e("DERP:", ((ModeEvent)e).setBy() + " " + ma.getMode() + " " + ma.getAction() + " " + ma.getArgument() + ((ModeEvent)e).getChannel());
                     }
 
+                    Log.d("Derp...", "Hellooooo " + prettified.size());
                     for(String s : prettified)
                     {
                         chatQueue.add(getReceived("***" + s, null, CLR_TOPIC));       //TODO: Different color?
@@ -1018,6 +1021,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         minus = "-" + minus;
                     if((setter.toLowerCase().endsWith(".geekshed.net") || setter.equals("ChanServ")) && (!plus.equals("") || !minus.equals("")))
                     {;
+                        Log.d("Derp...", (setter.toLowerCase().endsWith(".geekshed.net")==true) + " " + (!plus.equals("")) + " " + (!minus.equals("")));
                         logQueue.add(getReceived("[MODE]", setter + " has changed your personal modes: " + plus + minus, CLR_TOPIC));       //TODO: Different color?
                         ircHandler.post(logUpdater);
                     }

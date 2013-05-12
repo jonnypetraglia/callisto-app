@@ -118,6 +118,8 @@
         </receiver>
 
         <activity android:name=".irc.NickList" android:theme="@android:style/Theme.Dialog"></activity>
+        <activity android:name=".moar.jbtitle"></activity>
+        <activity android:name=".moar.twit"></activity>
 
 
     </application>

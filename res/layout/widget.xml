@@ -16,7 +16,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_margin="4dp"
-    android:background="#434343"
+    android:background="@color/kuler_2"
     android:gravity="center"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
@@ -52,6 +52,7 @@
 
     <ImageButton
         android:id="@+id/widgetButton"
+        style="@style/btnStyleBreakerBay"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="fitCenter"
