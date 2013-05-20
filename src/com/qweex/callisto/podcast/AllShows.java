@@ -222,11 +222,13 @@ public class AllShows extends Activity {
             setProgressBarIndeterminateVisibility(true);
         }
 
+        //Return null on failure, an empty message on success
         @Override
         protected Object doInBackground(Object... params)
         {
             boolean done = false,
                     skip_inactive = PreferenceManager.getDefaultSharedPreferences(AllShows.this).getBoolean("skip_inactive", false);
+            boolean error_happened = false;
             for(int i=0; i< StaticBlob.SHOW_LIST_AUDIO.length; i++)
             {
                 current_view = mainListView.getChildAt(i);
@@ -239,18 +241,24 @@ public class AllShows extends Activity {
                 }
                 current_showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[i], 0);
                 UpdateShow us = new UpdateShow();
-                us.doUpdate(i, current_showSettings);
+                Message m = us.doUpdate(i, current_showSettings);
+                error_happened |= (m.arg1==-1);
                 UpdateAdapter.sendEmptyMessage(0);
             }
-
-            return null;
+            if(error_happened)
+                return null;    //failure
+            return new Message(); //success
         }
 
         /** Update the adapter */
         Handler UpdateAdapter = new Handler() {
             @Override
             public void handleMessage(Message msg)
-            { mainListView.setAdapter(listAdapter);	}
+            {
+                if(msg==null)
+                    Toast.makeText(AllShows.this, AllShows.this.getResources().getString(R.string.update_error), Toast.LENGTH_LONG).show();
+                mainListView.setAdapter(listAdapter);
+            }
         };
 
         @Override

@@ -349,7 +349,7 @@ public class ShowList extends Activity
 
 
     /** Updates the show outside of the UI thread. */
-    private class UpdateShowTask extends AsyncTask<Object, Object, Object>
+    private class UpdateShowTask extends AsyncTask<Object, Object, Message>
     {
         @Override
         protected void onPreExecute()
@@ -359,21 +359,22 @@ public class ShowList extends Activity
         }
 
         @Override
-        protected Object doInBackground(Object... params)
+        protected Message doInBackground(Object... params)
         {
             UpdateShow us = new UpdateShow();
             return us.doUpdate(currentShow, showSettings);
         }
 
         @Override
-        protected void onPostExecute(Object result)
+        protected void onPostExecute(Message result)
         {
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
             loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
-            if(result==null)
+            if(result.arg1==-1)
             {
                 Log.w("ShowList:UpdateShowTask", "An error occurred while updating the show " + currentShow);
-                Toast.makeText(ShowList.this, ShowList.this.getResources().getString(R.string.update_error), Toast.LENGTH_LONG).show();
+                Toast.makeText(ShowList.this, "An error occurred updating the show:\n\n" + result.getData().getString("ERROR"),
+                        Toast.LENGTH_LONG).show();
             }
             else if(mainListView!=null)
                 ShowList.this.updateHandler.sendMessage((Message) result);

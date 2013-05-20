@@ -91,6 +91,7 @@ public class Callisto extends Activity
         //This is the most reliable way I've found to determine if it is landscape
         boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 
+        Log.d("CALLISTO: This is my PID", "There are many like it, but this one is mine.");
         StaticBlob.init(this);
 
         //Update shows
