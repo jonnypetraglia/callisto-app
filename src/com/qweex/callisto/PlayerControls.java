@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.qweex.callisto.listeners.OnAudioFocusChangeListenerImpl;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -417,7 +419,11 @@ public class PlayerControls
                 if(isvid.getInt(isvid.getColumnIndex("video"))>0)
                     changeToTrack(c, 0, true);
                 else
+                {
+                    if(StaticBlob.audioFocus==null)
+                        StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
                     StaticBlob.mplayer.start();
+                }
                 Log.d("*:playPause","DERERERERERE");
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
@@ -450,5 +456,7 @@ public class PlayerControls
         StaticBlob.playerInfo.update(c);
         StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
         CallistoWidget.updateAllWidgets(c);
+        if(StaticBlob.audioFocus!=null)
+            StaticBlob.audioFocus.drop();
     }
 }

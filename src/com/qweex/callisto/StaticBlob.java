@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.qweex.callisto.listeners.OnAudioFocusChangeListenerImpl;
 import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
 import com.qweex.callisto.listeners.OnErrorListenerWithContext;
 import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
@@ -117,6 +118,8 @@ public class StaticBlob
     public static TextView timeView;
     //TODO: wtf
     public static ProgressBar timeProgress;
+
+    public static OnAudioFocusChangeListenerImpl audioFocus;
 
     public static void formatAlertDialogButtons(AlertDialog d)
     {
@@ -253,6 +256,10 @@ public class StaticBlob
                     return;
                 }
                 Log.i("*:mplayer:onPrepared", "HERP");
+
+                if(audioFocus==null)
+                    audioFocus = new OnAudioFocusChangeListenerImpl(c);
+
                 StaticBlob.mplayer.start();
                 StaticBlob.playerInfo.isPaused = false;
                 StaticBlob.playerInfo.update(c);

@@ -1,62 +1,15 @@
 This semi-major version update is one step closer to a stable 1.0 release.
-It includes several fixes to issues submitted to Callisto's Google Code page, but please remember that the 'Protostar' means 'Beta'.
+It includes several fixes to issues submitted to Github page, but please remember that the 'Protostar' means 'Beta'.
 
-    NEW SHOW: Plan B! -- Jupiter Broadcasting's new show all about Bitcoins! Now added to Callisto!
-    Feature: Brand new looks! -- That's right! A brand new, color coordinated, skin!
-    Feature: Sexy new tablet look! -- Also can be used optionally on phones via options.
-    Fix: Network handling -- Better handling for a crappy or nonexistent network connection.
-    Fix: Timezone -- Should be fixed for timezone translation for the calendar.
-    Feature: Non-US dates -- Fixed the order for dates for "dd/mm" people.
-    Fix: Crash on rotate -- Fixed crashing when rotating with a progress dialog open.
-    Fix: IRC Background -- Fixed the background not sticking; other color settings should better as well.
-    Fix: Calendar days misalign -- Calendar days in landscape should now be all the same height.
-	Feature: IRC timeout -- Will try to connect until a specified time.
-	Feature: IRC retries -- Upon given an issue, will retry multiple times.
-	Fix: IRC message discrenpencies -- Fixed messages being skipped, going to the wrong screen, or duplicating.
-	Fix: IRC auto-identify -- This should now work flawlessly, assuming you enter the right password.
-	Feature: IRC obfusication -- Encryption is impossible for locally stored passwords, but obfusication is now done on nicks & passwords.
-	Feature: IRC Change Nick -- Added a dialog to easily change your nick.
-	Feature: IRC Links color -- Added ability to change the color of URLs.
-	Feature: IRC Reset Colors -- Added ability to reset the colors. Because my default choices RULE!
-	Fix: Linux Action Show icon -- Made a temporary workaround to supply a different icon for LAS.
-	Feature: Pretty Contact -- Prettified the contact form.
-    Feature: Unwatched Count -- Switched from background to unwatched count in all shows view.
-    FEATURE: Video support! -- Unstable, but ability to have video!
-    Fix: Reordered shows -- Switch from "random" to "alphabetical".
-    Fix: Dialog crash -- Fixed an issue where a dialog would crash the app if you leave the app before it tries to dismiss.
-    Feature: IRC Modes -- Added option to display the special characters before nicks with certain modes (e.g. '@' for Operators).
-    Feature: Better Header! -- Revamped way of handling the headers in "All Shows"; should now be more smooth of an experience.
-    Feature: Show completed downloads -- That's right! Now you can see your completed downloads!
-    Feature: Better download handling -- Now downloading will not burn through your CPU if you have a network problem or if the file doesn't exist. It will try a certain number of times, then give up and go on to the next file.
-    Feature: Persistent downloads -- Downloads are now saved across app boots, and can be paused and resumed.
-    Feature: Download Speed -- Rudimentary at this point, but now you can see how fast you are currently downloading.
-    Feature: Pretty progress meter -- Now for things like the Queue and Downloads, the progress meter is behind the view!
-    Fix: Local file detection -- Browsing the episodes of a show should now show bold for something that has been downloaded, and italic for something that has been downloaded incomplete.
-    Feature: Remaining time in queue -- Each item in the queue uses the new prettified progress bar to show how much has been watched.
-    Fix: IRC sticky keyboard -- Keyboard should no longer autohide after sending EVERY SINGLE MESSAGE.
-    Feature: Loading BACON! -- Made the loading dialog far more appealing.
-    Feature: Force refresh -- Added ability to clear all episodes of a show and refresh from scratch.
-    Feature: IRC Alert -- Added ability to vibrate and/or play sound on mention(s).
-    Feature: Skip Updating Inactive -- Added option to only update the active shows.
-    Feature: IRC Emoticons -- Added option to have emoticons in the chat.
-    Fix: Lack of SD -- Now detects when there is no SD or external storage.
-    Note: Disabled reordering downloads -- Temporarily removed the ability to reorder downloads. I'll put it back in after this release, it's just a pain with the drag-and-drop and all the changes made.
-    Fix: Scrolling gap thing -- On the Episode Description view there used to be a little gap between the scrollview and the controls, and uh...now there isn't. I can't believe you're still reading all these notes, good on you.
-    Fix: Calendar OCD -- Put in a quick hack to fix the differing "Linux Action Show" and "The Linux Action Show!" because it was driving me crazy and the latter was way too long.
-    Fix: Less annoying notifications -- Notifications such as playing and IRC no longer notify you when launching, they just start.
-    Fix: Nick Change dialog -- Fixed where it does not display correctly and does not dismiss.
-    Fix: Contact error page -- Fixed the Contact error page not being skinned. Now it looks purty!
-    Feature: Save Contact drafts! -- Added the ability to save a contact message and resume later!
-    Feature: Seek options -- Added the ability to skip forward and backward by set amounts.
-    Feature: IRC ports -- Added the ability to select different ports.
-    Feature: Pause on unplug -- Added option to pause on headset unplug and also to resume on re-plug.
-    Fix: Funky Episode page -- (Hopefully) fixed it so the episode page is not crowded. especially on smaller devices.
-    Note: Switched to the OSL -- From this version forward, Callisto will be released under the Open Software License v3.0. -- To read more about the decision to change licenses, visit: http://code.google.com/p/callisto-app/wiki/LicenseChange.
-    Note: More dev friendly! -- More Javadocs, more comments, better named variables, more organized code....tons of stuff to make it easier for anybody who wants to contribute!
-	Special Thanks -- VoNWooDSoN, for being the first other person to make a commit to the project -- sikory & joren, for helping with the obfusication problem -- JupiterBroadcasting, for being awesome, as always.
+    Fix: Error updating feeds -- Fixed an unfortunately common error about becoming a monk.
+    Fix: Widget -- The widget should now be themed to match the app, and hopefully work more reliably.
+    Fix: IRC commands -- Some commands (e.g. /NAMES) would crash the app, and have hopefully been fixed. Thanks, nogal!
+    Feature: JBTitle -- Preliminary support for the JBTitles voting system.
+    Feature: Twitter -- Preliminary support for following the hosts on Twitter.
+	Special Thanks -- ??? -- JupiterBroadcasting, for being awesome, as always.
 
-If you have a problem or question, please don't 1-star the app without at least filing an issue on Google Code or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
+If you have a problem or question, please don't 1-star the app without at least filing an issue on Github or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
 
-This release is dedicated to nogal, for just generally being awesome; thanks for all the encouragement, continual bug reports, and just niceness about you.
+This release is dedicated to ????
 
 	-MrQweex
