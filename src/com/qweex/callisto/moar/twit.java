@@ -16,6 +16,7 @@ package com.qweex.callisto.moar;
 import android.app.ListActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,39 +42,78 @@ import java.util.Date;
 
 public class twit extends ListActivity
 {
-    String user = "ChrisLAS";
+    public static String user = "ChrisLAS";
     int count = 50;
     boolean includeRetweets = true;
+    public Bitmap profilePic;
+    View headerView;
+    TwitterJSONAdapter twitterAdapter;
 
     @Override
     public void onCreate(Bundle savedInstances)
     {
         super.onCreate(savedInstances);
+        headerView = getLayoutInflater().inflate(R.layout.twit_hdr, null, false);
+        getListView().setBackgroundColor(0xffffffff);
+        getListView().setCacheColorHint(0xffffffff);
+        new downloadImage().execute(this);
+    }
 
-        try {
-            URL url = new URL("https://api.twitter.com/1/users/profile_image?screen_name=" + user + "&size=normal");
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            View hdr = getLayoutInflater().inflate(R.layout.twit_hdr, null, false);
-
-            ((ImageView)hdr.findViewById(R.id.profile_pic)).setImageBitmap(bmp);
-            ((TextView)hdr.findViewById(R.id.twit_user)).setText("@" + user);
-            getListView().addHeaderView(hdr);
-        } catch(MalformedURLException m) {} catch(IOException i) {}
-
-        try {
-            String jsonString = callURL("https://api.twitter.com/1/statuses/user_timeline.json?screen_name=" + user + "&count=" + count + "&include_rts=" + (includeRetweets?1:0));
-            JSONArray jsonArray = new JSONArray(jsonString);
-            TwitterJSONAdapter tja = new TwitterJSONAdapter(jsonArray, R.layout.twit);
-            Log.w("twit", "DERP: " + jsonArray);
-            getListView().setAdapter(tja);
-
-            getListView().setBackgroundColor(0xffffffff);
-            getListView().setCacheColorHint(0xffffffff);
-        }catch(Exception e)
+    public static class downloadImage extends AsyncTask<twit, Void, String>
+    {
+        View headerView;
+        twit thisTwit;
+        @Override
+        protected void onPreExecute()
         {
-            finish();
+        }
+
+        @Override
+        protected void onPostExecute(String errorMsg)
+        {
+            if(errorMsg!=null)
+            {
+                TextView derp = new TextView(thisTwit);
+                derp.setText("Sorry, an error occurred: " + errorMsg);
+                thisTwit.getListView().setEmptyView(derp);
+                Log.e("Error", errorMsg);
+                //thisTwit.finish();
+            }
+            else
+            {
+                ((ImageView)headerView.findViewById(R.id.profile_pic)).setImageBitmap(thisTwit.profilePic);
+                ((TextView)headerView.findViewById(R.id.twit_user)).setText("@" + thisTwit.user);
+                thisTwit.getListView().addHeaderView(headerView);
+            }
+        }
+
+        @Override
+        protected String doInBackground(twit... twis)
+        {
+            thisTwit = twis[0];
+            headerView = thisTwit.headerView;
+
+            //Get the profile pic
+            try {
+                URL url = new URL("https://api.twitter.com/1/users/profile_image?screen_name=" + user + "&size=normal");
+                thisTwit.profilePic = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            } catch(MalformedURLException m) {} catch(IOException i) {}
+
+            //Get the
+            try {
+                String jsonString = callURL("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + thisTwit.user + "&count=" + thisTwit.count + "&include_rts=" + (thisTwit.includeRetweets?1:0));
+                JSONArray jsonArray = new JSONArray(jsonString);
+                thisTwit.twitterAdapter = thisTwit.new TwitterJSONAdapter(jsonArray, R.layout.twit);
+                thisTwit.getListView().setAdapter(thisTwit.twitterAdapter);
+
+            }catch(Exception e)
+            {
+                return e.getMessage();
+            }
+            return null;
         }
     }
+
 
     public static String callURL(String myURL) {
         System.out.println("Requested URL:" + myURL);

@@ -233,7 +233,7 @@ public class Callisto extends Activity
         menu.add(0, SETTINGS_ID, 0, this.getResources().getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
         SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, this.getResources().getString(R.string.more)).setIcon(R.drawable.ic_action_more);
         theSubMenu.add(0, TITLE_ID, 0, "JBTitle").setIcon(R.drawable.ic_action_like);
-        theSubMenu.add(0, TWITTER_ID, 0, "Twitter").setIcon(R.drawable.ic_action_twitter);
+        //theSubMenu.add(0, TWITTER_ID, 0, "Twitter").setIcon(R.drawable.ic_action_twitter);
         theSubMenu.add(0, RELEASE_ID, 0, this.getResources().getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
 
         //Stuffs for the donations stuffs
