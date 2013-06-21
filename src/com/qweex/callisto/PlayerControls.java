@@ -154,7 +154,7 @@ public class PlayerControls
         public void onClick(View v)
         {
             playPause(v.getContext(), v);
-            CallistoService.audioJackReceiver.wasPausedByThisReceiver = false;
+            StaticBlob.pauseCause = StaticBlob.PauseCause.User;
         }
     };
     /** Listener for the seek button; displays a dialog that allows the user to seek to a point in the episode. */

@@ -553,6 +553,11 @@ public class DatabaseConnector
            String sql = "ALTER TABLE " + DATABASE_EPISODES + " ADD COLUMN length INTEGER";
            db.execSQL(sql);
            } catch(SQLiteException e){}
+
+           try {
+               String sql = "ALTER TABLE " + DATABASE_QUEUE + " ADD COLUMN video INTEGER";
+               db.execSQL(sql);
+           } catch(SQLiteException e){}
 	   }
 	}
 }

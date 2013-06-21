@@ -49,7 +49,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
             case AudioManager.AUDIOFOCUS_GAIN:
             case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
             case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                if(StaticBlob.playerInfo.isPaused)
+                if(StaticBlob.playerInfo.isPaused && StaticBlob.pauseCause == StaticBlob.PauseCause.FocusChange)
                 {
                     PlayerControls.playPause(c, null);
                     Log.d("OnAudioFocusChangeListenerImpl:onAudioFocusChange", "GAIN");
@@ -66,6 +66,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
                 {
                     Log.d("OnAudioFocusChangeListenerImpl:onAudioFocusChange", "LOSS_TRANSIENT");
                     PlayerControls.playPause(c, null);
+                    StaticBlob.pauseCause = StaticBlob.PauseCause.FocusChange;
                 }
                 break;
 

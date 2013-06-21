@@ -106,6 +106,7 @@ public class CallistoWidget extends AppWidgetProvider
         Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget" + intent.getAction());
         StaticBlob.init(context);
         StaticBlob.is_widget = true;
+        StaticBlob.pauseCause = StaticBlob.PauseCause.User;
         PlayerControls.playPause(context, null);
     }
 

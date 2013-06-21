@@ -38,7 +38,6 @@ public class AudioJackReceiver extends BroadcastReceiver
      */
     public Context contextForPreferences;
     /** It is its name. If it is paused was it paused by the receiver or by the user? */
-    public boolean wasPausedByThisReceiver = false;
     private boolean pastInitialCreate = false;
 
     @Override
@@ -58,19 +57,18 @@ public class AudioJackReceiver extends BroadcastReceiver
                     && !StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null)
             {
                 PlayerControls.playPause(contextForPreferences, v);
-                wasPausedByThisReceiver = true;
+                StaticBlob.pauseCause = StaticBlob.PauseCause.AudioJack;
             }
             Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
         }else
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("play_replugged", true)
                     && StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null
-                && wasPausedByThisReceiver)
+                && StaticBlob.pauseCause == StaticBlob.PauseCause.AudioJack)
             {
                 PlayerControls.playPause(contextForPreferences, v);
-                wasPausedByThisReceiver = false;
             }
-            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
+            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN RECONNECTED");
         }
     }
 }

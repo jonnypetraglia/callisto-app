@@ -33,10 +33,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.qweex.callisto.listeners.OnAudioFocusChangeListenerImpl;
-import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
-import com.qweex.callisto.listeners.OnErrorListenerWithContext;
-import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
+import com.qweex.callisto.listeners.*;
 import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.callisto.widgets.CallistoWidget;
 
@@ -121,6 +118,11 @@ public class StaticBlob
 
     public static OnAudioFocusChangeListenerImpl audioFocus;
 
+    public static PhoneStateListenerImpl phoneStateListener;
+
+    public enum PauseCause { PhoneCall, FocusChange, AudioJack, User};
+    public static PauseCause pauseCause;
+
     public static void formatAlertDialogButtons(AlertDialog d)
     {
         d.getButton(Dialog.BUTTON_POSITIVE).setBackgroundResource(R.drawable.blue_button);
@@ -194,29 +196,9 @@ public class StaticBlob
 
         //Create the phone state listener.
         // i.e., that which is able to pause when a phone call is received
+        pauseCause = PauseCause.User;
 
-        PhoneStateListener phoneStateListener = new PhoneStateListener() {
-            @Override
-            public void onCallStateChanged(int state, String incomingNumber) {
-                if (state == TelephonyManager.CALL_STATE_RINGING) {
-                    if(StaticBlob.live_isPlaying
-                            || !StaticBlob.playerInfo.isPaused)
-                    {
-                        PlayerControls.playPause(c, null);
-                    }
-                    //Incoming call: Pause music
-                } else if(state == TelephonyManager.CALL_STATE_IDLE) {
-                    //Not in call: Play music
-                } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
-                    if(StaticBlob.live_isPlaying
-                            || !StaticBlob.playerInfo.isPaused)
-                    {
-                        PlayerControls.playPause(c, null);
-                    }
-                }
-                super.onCallStateChanged(state, incomingNumber);
-            }
-        };
+        phoneStateListener = new PhoneStateListenerImpl(c);
         TelephonyManager mgr = (TelephonyManager) c.getSystemService(c.TELEPHONY_SERVICE);
         if(mgr != null) {
             mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
