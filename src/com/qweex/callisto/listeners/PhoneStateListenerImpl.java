@@ -42,7 +42,6 @@ public class PhoneStateListenerImpl extends PhoneStateListener
             if(StaticBlob.live_isPlaying
                     || !StaticBlob.playerInfo.isPaused)
             {
-                Log.d("StaticBlob::onCallStateChanged", "live_isPlaying || !isPaused");
                 PlayerControls.playPause(c, null);
                 StaticBlob.pauseCause = StaticBlob.PauseCause.PhoneCall;
             }
@@ -56,7 +55,6 @@ public class PhoneStateListenerImpl extends PhoneStateListener
             if(StaticBlob.pauseCause == StaticBlob.PauseCause.PhoneCall &&
                     StaticBlob.playerInfo.isPaused)
             {
-                Log.d("StaticBlob::onCallStateChanged", "live_isPlaying || !isPaused");
                 PlayerControls.playPause(c, null);
             }
         }

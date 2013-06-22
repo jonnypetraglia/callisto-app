@@ -15,6 +15,7 @@ package com.qweex.callisto;
 
 import java.io.File;
 
+import android.database.Cursor;
 import android.preference.*;
 
 import android.os.Bundle;
@@ -115,6 +116,8 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
+    Log.d("DERPYINGH","!" + StaticBlob.playerInfo.isPaused);
+
         //Move files to new storage_path
     	if("storage_path".equals(key))
     	{
@@ -148,6 +151,21 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         //Change the IRC scrollback
     	else if(key.equals("irc_max_scrollback"))
     		StaticBlob.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+        else if(key.equals("hide_notification_when_paused") && StaticBlob.mplayer!=null && StaticBlob.playerInfo.isPaused)
+        {
+            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hide_notification_when_paused", false))
+                StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
+            else
+            {
+                long id = -1;
+                try {
+                    Cursor c = StaticBlob.databaseConnector.currentQueueItem();
+                    c.moveToFirst();
+                    id = c.getLong(c.getColumnIndex("identity"));
+                }catch(Exception e){}
+                PlayerControls.createNotification(this, id);
+            }
+        }
 
     }
     

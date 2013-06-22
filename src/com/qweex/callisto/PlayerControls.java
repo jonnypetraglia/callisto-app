@@ -284,16 +284,7 @@ public class PlayerControls
         }
 
         //Create the notification for this new track
-        //TODO: must we create the intents and whatnot every time?
-        Intent notificationIntent = new Intent(c, EpisodeDesc.class);
-        notificationIntent.putExtra("id", identity);
-        PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
-        StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
-        StaticBlob.notification_playing.setLatestEventInfo(c,  StaticBlob.playerInfo.title,  StaticBlob.playerInfo.show, contentIntent);
-        if(StaticBlob.mNotificationManager==null)
-            StaticBlob.mNotificationManager =  (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
-        StaticBlob.mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
+        createNotification(c, identity);
 
 
         //Here is where we FINALLY actually play the track.
@@ -351,6 +342,20 @@ public class PlayerControls
             Log.e("*changeToTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
             e.printStackTrace();
         }
+    }
+
+    public static void createNotification(Context c, Long identity)
+    {
+        //TODO: must we create the intents and whatnot every time?
+        Intent notificationIntent = new Intent(c, EpisodeDesc.class);
+        notificationIntent.putExtra("id", identity);
+        PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        StaticBlob.notification_playing = new Notification(R.drawable.callisto, null, System.currentTimeMillis());
+        StaticBlob.notification_playing.flags = Notification.FLAG_ONGOING_EVENT;
+        StaticBlob.notification_playing.setLatestEventInfo(c,  StaticBlob.playerInfo.title,  StaticBlob.playerInfo.show, contentIntent);
+        if(StaticBlob.mNotificationManager==null)
+            StaticBlob.mNotificationManager =  (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        StaticBlob.mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_playing);
     }
 
     /** Plays or pauses the currently playing track; does not adjust what is the current track **/
@@ -424,15 +429,26 @@ public class PlayerControls
                         StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
                     StaticBlob.mplayer.start();
                 }
-                Log.d("*:playPause","DERERERERERE");
+                Log.d("*:playPause","Playing!!!!!");
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
+
+                long id = -1;
+                try {
+                    Cursor cu = StaticBlob.databaseConnector.currentQueueItem();
+                    cu.moveToFirst();
+                    id = cu.getLong(cu.getColumnIndex("identity"));
+                }catch(Exception e){}
+                createNotification(c, id);
             }
             else
             {
                 StaticBlob.mplayer.pause();
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
+                Log.d("dedededededed", PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false) + "!!!");
+                if(PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false))
+                    StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
             }
             StaticBlob.playerInfo.isPaused = !StaticBlob.playerInfo.isPaused;
         }
