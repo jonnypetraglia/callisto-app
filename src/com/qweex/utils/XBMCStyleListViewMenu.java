@@ -92,7 +92,7 @@ public class XBMCStyleListViewMenu extends ListView
             Log.i("SuperListViewMenu:onDraw", "Adding blanks: " + getChildCount()/2);
             numOfVisibleChildren = -1;
             ssa.addBlanks(getLastVisiblePosition()-getFirstVisiblePosition());
-            this.smoothScrollByOffset((getLastVisiblePosition()-getFirstVisiblePosition())/2 - 1);
+            this.smoothScrollByOffset((getLastVisiblePosition()-getFirstVisiblePosition())/2 - 1); //TODO: Version
             //this.smoothScrollToPosition((int)(getChildCount()*1.5));
         }
     }
@@ -280,7 +280,7 @@ public class XBMCStyleListViewMenu extends ListView
                 return;
             }
 
-            smoothScrollByOffset(position-currentSelectionPosition);
+            smoothScrollByOffset(position-currentSelectionPosition); //TODO: Version
             System.out.println("Derpina: " + ((TextView)view.findViewById(R.id.text1)).getText().toString() + " | ");
         }
     };

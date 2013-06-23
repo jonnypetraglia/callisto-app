@@ -377,19 +377,8 @@ public class PlayerControls
             }
             else
             {
-                //1. liveInit
-                //2. setOnPreparedListener
-                //3. setDataSource
-                //4. livePrepare
-                try {
-                    Live.LIVE_Init();
-                    Live.live_player.setOnPreparedListener(Live.LIVE_PreparedListener);
-                    Live.LIVE_PreparedListener.setContext(c);
-                    Live.live_player.setDataSource(live_url);
-                    Live.LIVE_Prepare(null);
-                    if(v!=null)
-                        ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
-                } catch(Exception e){}
+                View x = new View(c);   //Dummy view only useful for carrying the context
+                Callisto.launchAudio.onClick(x);
             }
             StaticBlob.live_isPlaying = !StaticBlob.live_isPlaying;
             CallistoWidget.updateAllWidgets(c);
@@ -425,7 +414,7 @@ public class PlayerControls
                     changeToTrack(c, 0, true);
                 else
                 {
-                    if(StaticBlob.audioFocus==null)
+                    if(StaticBlob.audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
                         StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
                     StaticBlob.mplayer.start();
                 }
@@ -446,7 +435,6 @@ public class PlayerControls
                 StaticBlob.mplayer.pause();
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
-                Log.d("dedededededed", PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false) + "!!!");
                 if(PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false))
                     StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
             }

@@ -36,6 +36,11 @@
                 android:entryValues="@array/live_video_source"
                 android:defaultValue="rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream"
                 />
+        <CheckBoxPreference
+            android:key="Sh_notification_when_paused"
+            android:title="Hide notification when paused"
+            android:layout="@layout/smaller_preference"
+            />
 	    <CheckBoxPreference 
 	        android:key="completion_delete"
 	        android:title="Delete upon completion"

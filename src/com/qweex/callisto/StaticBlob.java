@@ -239,7 +239,7 @@ public class StaticBlob
                 }
                 Log.i("*:mplayer:onPrepared", "HERP");
 
-                if(audioFocus==null)
+                if(audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
                     audioFocus = new OnAudioFocusChangeListenerImpl(c);
 
                 StaticBlob.mplayer.start();

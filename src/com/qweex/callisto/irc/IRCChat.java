@@ -22,8 +22,13 @@ import java.util.regex.Pattern;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Message;
 import android.text.*;
 import android.text.style.ImageSpan;
+import android.view.*;
+import android.view.inputmethod.EditorInfo;
 import com.qweex.callisto.R;
 
 import com.qweex.callisto.StaticBlob;
@@ -51,10 +56,6 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -123,7 +124,8 @@ public class IRCChat extends Activity implements IRCEventListener
     private static int mentionCount = 0;
     private static PendingIntent contentIntent;
     private static boolean isFocused = false;
-    private ScrollView sv, sv2;
+    private static int lastScroll_chat, lastScroll_log;
+    private ScrollViewWithBottom sv, sv2;
     private EditText input;
 
     private static java.util.Queue<Spanned> chatQueue = new java.util.LinkedList<Spanned>(),
@@ -152,8 +154,26 @@ public class IRCChat extends Activity implements IRCEventListener
     private String mention_before = "(^|[^a-zA-Z0-9\\[\\]{}\\^`|])",
             mention_after = "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)";
     private boolean IRCOpPermission;
+    private int heightOfText;
 
 
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        lastScroll_chat = sv.getScrollY();
+        lastScroll_log = sv2.getScrollY();
+    }
+
+
+    Handler thisIsStupid = new Handler()
+    {
+        @Override
+        public void handleMessage(Message message)
+        {
+            sv.fullScroll(View.FOCUS_DOWN);
+        }
+    };
 
     /** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -181,7 +201,12 @@ public class IRCChat extends Activity implements IRCEventListener
 
                         View view = StaticBlob.chatView;
                         Log.e("AtBottom", view + " " + sv);
-                        boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= 0;
+                        boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= heightOfText;
+                        System.out.println("AtBottom: " + (view.getBottom()-(sv.getHeight()+sv.getScrollY())) + " (" + view.getBottom() + "-" + sv.getHeight() + "-" + sv.getScrollY() + ")");
+                        atBottom = sv.atBottom();
+                        System.out.println("AtBottom2:" + atBottom);
+
+                        System.out.println("AtBottom3: " + view.getHeight());
 
                         StaticBlob.chatView.append(received);
                         Linkify.addLinks(StaticBlob.chatView, Linkify.EMAIL_ADDRESSES);
@@ -189,10 +214,18 @@ public class IRCChat extends Activity implements IRCEventListener
                         received = new SpannableString("");
                         StaticBlob.chatView.invalidate();
 
-                        System.out.println(view.getBottom()-(sv.getHeight()+sv.getScrollY()));
                         if(atBottom)
-                            sv.post(new Runnable() {      public void run() {
-                                sv.scrollTo(0, 1000000000); } });
+                            sv.scrollToWithGuarantees(0,0);
+//                            sv.post(new Runnable()
+//                            {
+//                                public void run()
+//                                {
+//                                    System.out.println("AtBottom:ScrollRunnable");
+                                    //sv.scrollTo(0, 0);
+//                                    System.out.println("AtBottom3: " + StaticBlob.chatView.getHeight());
+                                    //sv.scrollTo(0, 1000000000);
+//                                }
+//                            });
                     }
                     input.requestFocus();
                 }
@@ -497,6 +530,12 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Called when the activity either is created or resumes. Basically everything that must be run even whether or not the user is logged in. */
     public void resume()
     {
+        Paint paint = StaticBlob.chatView.getPaint();
+        paint.setStyle(Paint.Style.FILL);
+        Rect result = new Rect();
+        paint.getTextBounds("A",0,1,result);
+        this.heightOfText = result.height();
+
         isFocused = true;
         mentionCount = 0;
         nickColors.put(profileNick, CLR_MYNICK);
@@ -511,11 +550,11 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             setContentView(R.layout.irc);
         }
-        sv = (ScrollView) findViewById(R.id.scrollView);
+        sv = (ScrollViewWithBottom) findViewById(R.id.scrollView);
         sv.setVerticalFadingEdgeEnabled(false);
         sv.setFillViewport(true);
 
-        sv2 = (ScrollView) findViewById(R.id.scrollView2);
+        sv2 = (ScrollViewWithBottom) findViewById(R.id.scrollView2);
         sv2.setVerticalFadingEdgeEnabled(false);
 
 
@@ -528,6 +567,8 @@ public class IRCChat extends Activity implements IRCEventListener
             test.removeView(StaticBlob.logView);
         sv2.addView(StaticBlob.logView);
         input = (EditText) findViewById(R.id.inputField);
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            input.setImeOptions( input.getImeOptions() | EditorInfo.IME_FLAG_NAVIGATE_NEXT); //TODO: Version
         input.setOnEditorActionListener(new OnEditorActionListener(){
             @Override
             public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
@@ -550,6 +591,13 @@ public class IRCChat extends Activity implements IRCEventListener
             StaticBlob.notification_chat.defaults = 0;    //This will be over-written when a mention happens, but we have to set it to ALL to disable an annoying buzz when resuming the activity
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
+
+        sv.scrollTo(0, lastScroll_chat);
+        sv2.scrollTo(0, lastScroll_log);
+
+
+        ((ViewGroup)sv.getParent()).removeView(sv);
+        setContentView(sv);
     }
 
     @Override
@@ -1613,6 +1661,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 StaticBlob.chatView.invalidate();
             }
 
+            sv.scrollTo(0, 1000000000);
             input.requestFocus();
             input.setText("");
         }
@@ -1876,7 +1925,10 @@ public class IRCChat extends Activity implements IRCEventListener
             Log.e("ASDSADSADS", logQueue.peek() + "1");
             StaticBlob.logView.append(logQueue.remove());
             StaticBlob.logView.invalidate();
-            sv2.fullScroll(ScrollView.FOCUS_DOWN);
+            boolean atBottom = (StaticBlob.logView.getBottom()-(sv2.getHeight()+sv2.getScrollY())) <= heightOfText;
+            atBottom = sv2.atBottom();
+            if(atBottom)
+                sv2.scrollTo(0, 1000000000);
         };
 
     };
@@ -1956,5 +2008,6 @@ public class IRCChat extends Activity implements IRCEventListener
 
         return result.toString();
     }
+
 
 }

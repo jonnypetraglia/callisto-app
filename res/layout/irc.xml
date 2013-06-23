@@ -27,14 +27,14 @@
         android:background="@color/backClr"
         android:orientation="vertical" >
 
-        <ScrollView
+        <com.qweex.callisto.irc.ScrollViewWithBottom
             android:id="@+id/scrollView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1" >
             
 
-        </ScrollView>
+        </com.qweex.callisto.irc.ScrollViewWithBottom>
 
 
 
@@ -49,18 +49,18 @@
             android:singleLine="true"
             android:inputType="textCapSentences"
             android:focusable="true"
-            android:imeOptions="actionSend|flagNavigateNext"
+            android:imeOptions="actionSend"
              />
 
     </LinearLayout>
 
 
-    <ScrollView
+    <com.qweex.callisto.irc.ScrollViewWithBottom
         android:id="@+id/scrollView2"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/backClr" >
 
-    </ScrollView>
+    </com.qweex.callisto.irc.ScrollViewWithBottom>
 
 </ViewAnimator>

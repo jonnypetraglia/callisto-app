@@ -70,7 +70,7 @@
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation"/>
 
-        <activity android:name=".VideoActivity" android:configChanges="orientation|screenSize" />
+        <activity android:name=".VideoActivity" android:configChanges="orientation" /> <!-- |screenSize -->
 
         <!--<service android:name="com.android.vending.billing.BillingService" />-->
 

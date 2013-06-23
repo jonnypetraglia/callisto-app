@@ -13,12 +13,6 @@
  */
 package com.qweex.callisto;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import android.content.*;
@@ -26,11 +20,7 @@ import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.*;
 import android.widget.*;
-import com.qweex.callisto.listeners.OnCompletionListenerWithContext;
-import com.qweex.callisto.listeners.OnErrorListenerWithContext;
-import com.qweex.callisto.listeners.OnPreparedListenerWithContext;
 import com.qweex.callisto.podcast.*;
-import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.utils.ImgTxtButton;
 import com.qweex.utils.QweexUtils;
 import com.qweex.utils.XBMCStyleListViewMenu;
@@ -41,18 +31,9 @@ import com.qweex.callisto.irc.IRCChat;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
@@ -377,7 +358,7 @@ public class Callisto extends Activity
         }
     };
 
-    OnClickListener launchAudio = new OnClickListener()
+    public static OnClickListener launchAudio = new OnClickListener()
     {
         @Override
         public void onClick(View v) {
@@ -397,7 +378,7 @@ public class Callisto extends Activity
                     Live.live_player.setDataSource(live_url);
                     if(!StaticBlob.Live_wifiLock.isHeld())
                         StaticBlob.Live_wifiLock.acquire();
-                    Live.LIVE_Prepare(Callisto.this);
+                    Live.LIVE_Prepare(v.getContext());
                 } catch (Exception e) {
                     //errorDialog.show();
                     e.printStackTrace();
