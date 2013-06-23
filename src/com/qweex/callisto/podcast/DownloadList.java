@@ -484,7 +484,7 @@ public class DownloadList extends ListActivity
             //Progress
             try {
                 String date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
-                File file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + show);
+                File file_location = new File(StaticBlob.storage_path + File.separator + show);
                 file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
                 ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
                 int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));

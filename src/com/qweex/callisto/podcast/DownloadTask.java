@@ -132,7 +132,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(Date));
 
                 //Getting target
-                Target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + Show);
+                Target = new File(StaticBlob.storage_path + File.separator + Show);
                 Target.mkdirs();
                 if(Title.indexOf("|")>0)
                     Title = Title.substring(0, Title.indexOf("|"));

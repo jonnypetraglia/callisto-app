@@ -344,7 +344,7 @@ public class AllShows extends Activity {
             File f;
             for(String ext : exts)
             {
-                f = new File(Environment.getExternalStorageDirectory() + File.separator +
+                f = new File(
                         StaticBlob.storage_path + File.separator +
                         StaticBlob.SHOW_LIST[position] + ext);
                 if(f.exists())

@@ -54,7 +54,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         //Deprecated functions ftw!
         addPreferencesFromResource(R.xml.preferences);
         findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);    //Set listener for assuring that it is just a number
-        findPreference("secret").setEnabled(packageExists(DONATION_APP, this));                     //Enable secret features if donation app exists
+        //findPreference("secret").setEnabled(packageExists(DONATION_APP, this));                     //Enable secret features if donation app exists
         
         oldRadioForLiveQuality = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
@@ -123,14 +123,15 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	{
     		//Move folder for storage dir
 	    	String new_path = sharedPreferences.getString("storage_path", "callisto");
-	    	if(new_path== StaticBlob.storage_path)
+            if(!new_path.startsWith("/"))
+                new_path = Environment.getExternalStorageDirectory().toString() + File.separator + new_path;
+	    	if(new_path.equals(StaticBlob.storage_path))
 	    		return;
-	    	File newfile = new File(Environment.getExternalStorageDirectory(), new_path);
+	    	File newfile = new File(new_path);
 	    	newfile.mkdirs();
 	    	
-	    	File sd = Environment.getExternalStorageDirectory();
-	    	File olddir = new File(sd, StaticBlob.storage_path);
-	    	if(!olddir.renameTo(new File(sd, new_path)))
+	    	File olddir = new File(StaticBlob.storage_path);
+	    	if(!olddir.renameTo(new File(new_path)))
 	    	{
 	    		Toast.makeText(this, "An error occurred while trying to rename the folder. You might have to do it manually.", Toast.LENGTH_SHORT).show();
 	    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");

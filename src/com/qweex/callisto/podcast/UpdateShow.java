@@ -467,14 +467,13 @@ public class UpdateShow
                 System.out.println(img_url);
                 if(img_url==null)
                     throw(new NullPointerException());
-                File f = new File(Environment.getExternalStorageDirectory() + File.separator +
+                File f = new File(
                         StaticBlob.storage_path + File.separator +
                         show + EpisodeDesc.getExtension(img_url));
-                System.out.println(f.getAbsolutePath());
+                Log.i("UpdateShow:downloadImage", "Download Path is: " + f.toString() + ", " + f.exists());
                 if(f.exists())
                     return null;
-                (new File(Environment.getExternalStorageDirectory() + File.separator +
-                        StaticBlob.storage_path)).mkdirs();
+                (new File(StaticBlob.storage_path)).mkdirs();
                 URL url = new URL (img_url);
                 InputStream input = url.openStream();
                 try {

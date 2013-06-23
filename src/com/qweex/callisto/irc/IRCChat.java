@@ -90,6 +90,7 @@ public class IRCChat extends Activity implements IRCEventListener
     protected static final int LOGOUT_ID=CHANGE_ID+1;
     protected static final int NICKLIST_ID=LOGOUT_ID+1;
     protected static final int SAVE_ID=NICKLIST_ID+1;
+    protected static final int JBTITLE_ID=SAVE_ID+1;
     private final String SERVER_NAME = "irc.geekshed.net";
     private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
     private String profileNick;
@@ -126,7 +127,7 @@ public class IRCChat extends Activity implements IRCEventListener
     private static Runnable chatUpdater;
     private boolean irssi;
     private int IRSSI_GREEN = 0x00B000;
-    private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI, Change_MI;
+    private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI, Change_MI, JBTitle_MI;
     private WifiLock IRC_wifiLock;
     final private int RECONNECT_TRIES = 5;
     private int SESSION_TIMEOUT = 40;
@@ -155,6 +156,7 @@ public class IRCChat extends Activity implements IRCEventListener
         Date timestamp;
         int getColor()
         {
+            System.out.println("Butts: " + color);
             switch(color)
             {
                 case ME:
@@ -193,8 +195,11 @@ public class IRCChat extends Activity implements IRCEventListener
     public void onDestroy()
     {
         super.onDestroy();
-        lastScroll_chat = chatListview.getFirstVisiblePosition();
-        lastScroll_log = logListview.getFirstVisiblePosition();
+        if(chatListview!=null)
+        {
+            lastScroll_chat = chatListview.getFirstVisiblePosition();
+            lastScroll_log = logListview.getFirstVisiblePosition();
+        }
     }
 
 
@@ -435,6 +440,7 @@ public class IRCChat extends Activity implements IRCEventListener
         Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_action_list);
         Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(R.drawable.ic_action_inbox);
         Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_action_goleft);
+        JBTitle_MI = menu.add(0, JBTITLE_ID, 0, "JBTitle").setIcon(R.drawable.ic_action_like);
         updateMenu();
         return true;
     }
@@ -484,8 +490,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     ircm = StaticBlob.ircChat.get(i);
                     TextUtils.concat(cs,ircm.title + ircm.message);
                 }
-                File fileLocation = new File(Environment.getExternalStorageDirectory(),
-                        StaticBlob.storage_path + File.separator +
+                File fileLocation = new File(StaticBlob.storage_path + File.separator +
                                 "ChatLog_" + StaticBlob.sdfRaw.format(new Date()) +
                                 ".txt");
                 try {
@@ -500,6 +505,9 @@ public class IRCChat extends Activity implements IRCEventListener
                 return true;
             case LOGOUT_ID:
                 logout(null);
+                return true;
+            case JBTITLE_ID:
+                startActivity(new Intent(this, com.qweex.callisto.moar.jbtitle.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

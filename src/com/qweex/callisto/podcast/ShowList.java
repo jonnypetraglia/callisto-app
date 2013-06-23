@@ -176,9 +176,9 @@ public class ShowList extends Activity
             String title = c.getString(c.getColumnIndex("title")),
                     mp3_link = c.getString(c.getColumnIndex("mp3link")),     //Need this for file extension
                     vid_link = c.getString(c.getColumnIndex("vidlink"));     // ^
-            File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+            File music_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
             music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-            File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+            File video_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
             video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
             boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
@@ -495,7 +495,7 @@ public class ShowList extends Activity
             boolean exists = false,
                     complete = false;
             try {
-                File music_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+                File music_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
                 music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
                 exists |= music_file_location.exists();
                 complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
@@ -506,7 +506,7 @@ public class ShowList extends Activity
             if(!complete)
             {
                 try {
-                    File video_file_location = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+                    File video_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
                     video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
                     exists |= video_file_location.exists();
                     complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));

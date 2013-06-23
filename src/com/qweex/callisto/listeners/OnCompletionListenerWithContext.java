@@ -52,7 +52,7 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 		boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
 		if(del)
 		{
-	        File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
+	        File target = new File(StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
 	        target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title + ".mp3");
 	        target.delete();
 		}

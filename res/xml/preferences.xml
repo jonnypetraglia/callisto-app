@@ -12,16 +12,16 @@
   ~ along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
   ~ or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
   -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    android:title="Preferences"
-    <EditTextPreference
-        android:title="Storage path" 
-        android:dialogMessage="Input the path you want files to be stored in" 
-        android:positiveButtonText="Confirm" 
-        android:negativeButtonText="Cancel" 
-        android:dialogTitle="Storage Path" 
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Preferences">
+
+    <com.qweex.utils.PathPreference
+        android:title="Storage path"
         android:key="storage_path"
-        android:defaultValue="callisto" />
+        prefix="/mnt/sdcard"
+        android:defaultValue="callisto"
+        />
+
 	    <ListPreference 
 	        android:title="Live audio quality"
 	        android:key="live_url"
@@ -37,7 +37,7 @@
                 android:defaultValue="rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream"
                 />
         <CheckBoxPreference
-            android:key="Sh_notification_when_paused"
+            android:key="hide_notification_when_paused"
             android:title="Hide notification when paused"
             android:layout="@layout/smaller_preference"
             />
@@ -142,23 +142,6 @@
 		        <Preference 
 		            android:title="Reset colors" android:key="reset_colors"/>
 	        </PreferenceCategory>
-	    </PreferenceScreen><PreferenceCategory
-	        android:title="Super special settings"
-	        android:key="secret" >
-	        <CheckBoxPreference
-	            android:key="splash_show"
-	            android:summary="The wonderful feature that you got for donating to Qweex!"
-	            android:title="@string/show_splash"
-                android:widgetLayout="@layout/smaller_preference_check"
-	            android:defaultValue="true" />
-	        <CheckBoxPreference
-	            android:key="splash_quote"
-	            android:summary="Toggle the quote when starting the app"
-	            android:title="@string/splash_quote" 
-	            android:defaultValue="true"
-	            android:dependency="splash_show"
-                android:widgetLayout="@layout/smaller_preference_check"
-	             />
-	    </PreferenceCategory>
+	    </PreferenceScreen>
 
 </PreferenceScreen>

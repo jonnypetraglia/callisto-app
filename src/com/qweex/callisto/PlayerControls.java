@@ -258,8 +258,12 @@ public class PlayerControls
 
             //Here we actually get the path
             if(StaticBlob.storage_path==null)
+            {
                 StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(c).getString("storage_path", "callisto");
-            File target = new File(Environment.getExternalStorageDirectory(), StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
+                if(!StaticBlob.storage_path.startsWith("/"))
+                    StaticBlob.storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + StaticBlob.storage_path;
+            }
+            File target = new File(StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
             target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title +
                     EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
             //If it doesn't exist, we must halt.

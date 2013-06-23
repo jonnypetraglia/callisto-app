@@ -13,6 +13,7 @@
  */
 package com.qweex.callisto;
 
+import java.io.File;
 import java.util.*;
 
 import android.content.*;
@@ -88,8 +89,14 @@ public class Callisto extends Activity
         }
 
         //Check to see if there is any external storage to write to
-        if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-            Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
+        if(!new File(StaticBlob.storage_path).exists())
+        {
+            if(StaticBlob.storage_path.startsWith(android.os.Environment.getExternalStorageDirectory().toString()) &&
+                    !android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+                Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(this, "The storage directory does not exist, check its correctness in the preferences.", Toast.LENGTH_SHORT).show();
+        }
 
         //Create seek dialog
         PlayerControls.createSeekView(getLayoutInflater());

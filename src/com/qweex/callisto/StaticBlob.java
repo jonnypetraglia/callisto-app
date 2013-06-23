@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -39,6 +40,7 @@ import com.qweex.callisto.listeners.*;
 import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.callisto.widgets.CallistoWidget;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 /**
@@ -151,7 +153,15 @@ public class StaticBlob
         StaticBlob.europeanDates = android.text.format.DateFormat.getDateFormatOrder(c)[0]!='M';
         StaticBlob.sdfDestination = new SimpleDateFormat(StaticBlob.europeanDates ? "dd/MM/yyyy" : "MM/dd/yyyy");
         StaticBlob.DP = c.getResources().getDisplayMetrics().density;
+        //Read the storage dir
         StaticBlob.storage_path = PreferenceManager.getDefaultSharedPreferences(c).getString("storage_path", "callisto");
+        if(!StaticBlob.storage_path.startsWith("/"))
+            StaticBlob.storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + StaticBlob.storage_path;
+        new File(StaticBlob.storage_path).mkdirs();
+
+        Log.i("StaticBlob:init", "Path is: " + StaticBlob.storage_path + ", " + new File(StaticBlob.storage_path).exists());
+
+
         try {
             StaticBlob.appVersion = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {}
