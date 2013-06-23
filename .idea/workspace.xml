@@ -47,40 +47,31 @@
     </option>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="AtBottom" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="E" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="$PROJECT_DIR$/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/irc/ScrollViewWithBottom.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java" afterPath="$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/irc.xml" afterPath="$PROJECT_DIR$/res/layout/irc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/live_select.xml" afterPath="$PROJECT_DIR$/res/layout/live_select.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/main_tablet.xml" afterPath="$PROJECT_DIR$/res/layout/main_tablet.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/xml/preferences.xml" afterPath="$PROJECT_DIR$/res/xml/preferences.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project.properties" afterPath="$PROJECT_DIR$/project.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" afterPath="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/styles.xml" afterPath="$PROJECT_DIR$/res/values/styles.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/twit.xml" afterPath="$PROJECT_DIR$/res/layout/twit.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/twit_hdr.xml" afterPath="$PROJECT_DIR$/res/layout/twit_hdr.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/irc_login.xml" afterPath="$PROJECT_DIR$/res/layout/irc_login.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371924327765" ignored="false" />
-    <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371942316540" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371958373092" ignored="false" />
+    <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371963012896" ignored="false" />
     <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371862824958" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371885447577" ignored="false" />
     <file path="/strings.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1364145816958" ignored="false" />
     <file path="/preferences.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371862137934" ignored="false" />
     <file path="/smaller_preference.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365967384086" ignored="false" />
-    <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371861263616" ignored="false" />
+    <file path="/QuickPrefsActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371956129397" ignored="false" />
     <file path="/AndroidManifest.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371885788818" ignored="false" />
     <file path="/DownloadList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366402145811" ignored="false" />
-    <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371942316540" ignored="false" />
+    <file path="/a.dummy" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371963012896" ignored="false" />
     <file path="/ShowList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366396196726" ignored="false" />
     <file path="/AlarmNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385729850" ignored="false" />
     <file path="/BootNotificationReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365385796427" ignored="false" />
@@ -105,7 +96,7 @@
     <file path="/Queue.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365896480686" ignored="false" />
     <file path="/HeaderAdapter.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365896571772" ignored="false" />
     <file path="/DownloadTask.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366436240798" ignored="false" />
-    <file path="/IRCChat.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371954265824" ignored="false" />
+    <file path="/IRCChat.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371966236374" ignored="false" />
     <file path="/smaller_preference_check.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365912147394" ignored="false" />
     <file path="/style.css" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365923890962" ignored="false" />
     <file path="/AudioJackReceiver.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371858907021" ignored="false" />
@@ -128,14 +119,18 @@
     <file path="/news_listitem2.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105070468" ignored="false" />
     <file path="/news_listitem1.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366105132183" ignored="false" />
     <file path="/ImgTxtButton.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366359339151" ignored="false" />
-    <file path="/StaticBlob.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371858734635" ignored="false" />
+    <file path="/StaticBlob.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371965316380" ignored="false" />
     <file path="/twit.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371843882636" ignored="false" />
     <file path="/PhoneStateListenerImpl.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371858821246" ignored="false" />
     <file path="/OnAudioFocusChangeListenerImpl.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371858855333" ignored="false" />
     <file path="$APPLICATION_HOME_DIR$/plugins/android/lib/android.jar!/org/jetbrains/android/android.xsd" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371859919380" ignored="false" />
     <file path="/styles.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371884897093" ignored="false" />
-    <file path="/irc.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371954862774" ignored="false" />
+    <file path="/irc.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371962399108" ignored="false" />
     <file path="/ScrollViewWithBottom.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371954607663" ignored="false" />
+    <file path="/ArrayListWithMaximum.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371956004718" ignored="false" />
+    <file path="/chat_line.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371959671757" ignored="false" />
+    <file path="/irc_line.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371962792869" ignored="false" />
+    <file path="/irc_login.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371964535269" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,48 +201,76 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="IRCChat.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="IRCChat.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="217" column="57" selection-start="7575" selection-end="7575" vertical-scroll-proportion="-5.59375">
+            <state line="1591" column="75" selection-start="75391" selection-end="75391" vertical-scroll-proportion="0.67277485">
               <folding>
-                <element signature="docComment;method#onCreate#0;class#IRCChat#0" expanded="true" />
-                <element signature="e#5968#8231#0" expanded="true" />
-                <element signature="e#8216#8217#0" expanded="true" />
-                <element signature="e#10418#11466#0" expanded="true" />
-                <element signature="e#11455#11456#0" expanded="true" />
-                <element signature="e#12003#12873#0" expanded="true" />
-                <element signature="e#12866#12867#0" expanded="true" />
+                <element signature="e#0#91392#0" expanded="true" />
+                <element signature="e#5547#6310#0" expanded="true" />
+                <element signature="e#6295#6296#0" expanded="true" />
+                <element signature="e#8497#9545#0" expanded="true" />
+                <element signature="e#9534#9535#0" expanded="true" />
+                <element signature="e#10082#10952#0" expanded="true" />
+                <element signature="e#10945#10946#0" expanded="true" />
+                <element signature="method#onPause#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#onKeyDown#0;class#IRCChat#0" expanded="true" />
+                <element signature="method#onKeyDown#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#dispatchKeyEvent#0;class#IRCChat#0" expanded="true" />
                 <element signature="docComment;method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="true" />
+                <element signature="method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#updateMenu#0;class#IRCChat#0" expanded="true" />
                 <element signature="docComment;method#onOptionsItemSelected#0;class#IRCChat#0" expanded="true" />
+                <element signature="method#onOptionsItemSelected#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#onActivityResult#0;class#IRCChat#0" expanded="true" />
+                <element signature="method#onActivityResult#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#onConfigurationChanged#0;class#IRCChat#0" expanded="true" />
+                <element signature="method#onConfigurationChanged#0;class#IRCChat#0" expanded="false" />
                 <element signature="docComment;method#resume#0;class#IRCChat#0" expanded="true" />
-                <element signature="e#22691#22920#0" expanded="true" />
-                <element signature="e#22909#22910#0" expanded="true" />
+                <element signature="e#20457#20686#0" expanded="true" />
+                <element signature="e#20675#20676#0" expanded="true" />
                 <element signature="docComment;method#initiate#0;class#IRCChat#0" expanded="true" />
-                <element signature="e#28868#29693#0" expanded="true" />
-                <element signature="e#29682#29683#0" expanded="true" />
+                <element signature="e#27066#27891#0" expanded="true" />
+                <element signature="e#27880#27881#0" expanded="true" />
                 <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
-                <element signature="e#80067#80096#1" expanded="true" />
-                <element signature="e#80207#80236#1" expanded="true" />
+                <element signature="class#QuitPlz#0;class#IRCChat#0" expanded="false" />
+                <element signature="method#getReceived#0;class#IRCChat#0" expanded="false" />
+                <element signature="method#getNickColor#0;class#IRCChat#0" expanded="false" />
+                <element signature="method#getRandomColor#0;class#IRCChat#0" expanded="false" />
+                <element signature="method#isAcceptable#0;class#IRCChat#0" expanded="false" />
+                <element signature="e#74038#75498#0" expanded="true" />
+                <element signature="e#75491#75492#0" expanded="true" />
+                <element signature="e#77490#77519#1" expanded="true" />
+                <element signature="e#77630#77659#1" expanded="true" />
+                <element signature="docComment;method#parseOutgoing#0;class#IRCChat#0" expanded="true" />
+                <element signature="e#86492#86771#0" expanded="true" />
+                <element signature="e#86762#86763#0" expanded="true" />
+                <element signature="docComment;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
                 <element signature="docComment;method#EditTextFlash#0;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="irc.xml" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/res/layout/irc.xml">
+      <file leaf-file-name="irc_login.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/irc_login.xml">
           <provider editor-type-id="android-designer">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="52" selection-start="1011" selection-end="1054" vertical-scroll-proportion="0.12837838">
+            <state line="9" column="24" selection-start="344" selection-end="348" vertical-scroll-proportion="-1.875">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DownloadList.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="388" column="77" selection-start="16558" selection-end="16615" vertical-scroll-proportion="-18.533333">
+              <folding>
+                <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -255,13 +278,11 @@
       <file leaf-file-name="StaticBlob.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="4" selection-start="4503" selection-end="4571" vertical-scroll-proportion="-12.033334">
+            <state line="180" column="47" selection-start="9580" selection-end="9580" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#0#13602#0" expanded="true" />
-                <element signature="imports" expanded="true" />
+                <element signature="e#0#13434#0" expanded="true" />
                 <element signature="docComment;class#StaticBlob#0" expanded="true" />
                 <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
-                <element signature="docComment;field#chatView#0;class#StaticBlob#0" expanded="true" />
                 <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
               </folding>
             </state>
@@ -303,22 +324,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
-        <option value="$PROJECT_DIR$/res/xml/preferences.xml" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java" />
-        <option value="$PROJECT_DIR$/res/values/styles.xml" />
-        <option value="$PROJECT_DIR$/res/layout/live_select.xml" />
-        <option value="$PROJECT_DIR$/res/layout/main_tablet.xml" />
-        <option value="$PROJECT_DIR$/res/layout/seekbar_dialog.xml" />
         <option value="$PROJECT_DIR$/res/layout/twit.xml" />
         <option value="$PROJECT_DIR$/res/layout/twit_hdr.xml" />
         <option value="$PROJECT_DIR$/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/ScrollViewWithBottom.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/ArrayListWithMaximum.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java" />
+        <option value="$PROJECT_DIR$/res/layout/chatLine.xml" />
+        <option value="$PROJECT_DIR$/res/layout/chat_line.xml" />
         <option value="$PROJECT_DIR$/res/layout/irc.xml" />
+        <option value="$PROJECT_DIR$/res/layout/irc_line.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IrcListView.java" />
+        <option value="$PROJECT_DIR$/res/layout/irc_login.xml" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
       </list>
     </option>
   </component>
@@ -488,6 +509,36 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="podcast" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qweex" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="callisto" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="listeners" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -537,20 +588,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -813,7 +850,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34236187" sideWeight="0.50426894" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34196332" sideWeight="0.50426894" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -825,8 +862,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31109926" sideWeight="0.8554477" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14455232" sideWeight="0.49733192" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20490928" sideWeight="0.8554477" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14455232" sideWeight="0.49626467" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="9" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -917,55 +954,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Live.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="36" selection-start="2534" selection-end="2534" vertical-scroll-proportion="0.45454547">
-          <folding>
-            <element signature="e#2125#2854#0" expanded="true" />
-            <element signature="e#2847#2848#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="597" column="20" selection-start="27835" selection-end="27837" vertical-scroll-proportion="0.4788991">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/live_select.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="39" selection-start="2076" selection-end="2076" vertical-scroll-proportion="-24.75">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/main_tablet.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="38" selection-start="1124" selection-end="1124" vertical-scroll-proportion="-15.535714">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/seekbar_dialog.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="14" selection-start="819" selection-end="819" vertical-scroll-proportion="-10.714286">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/twit.xml">
       <provider editor-type-id="android-designer">
         <state />
@@ -988,7 +976,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="114" selection-start="3197" selection-end="3197" vertical-scroll-proportion="0.6195652" />
+        <state line="94" column="114" selection-start="3197" selection-end="3197" vertical-scroll-proportion="0.6195652">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/listeners/OnAudioFocusChangeListenerImpl.java">
@@ -1019,58 +1009,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="217" column="57" selection-start="7575" selection-end="7575" vertical-scroll-proportion="-5.59375">
+        <state line="154" column="29" selection-start="7139" selection-end="7139" vertical-scroll-proportion="0.45868465">
           <folding>
-            <element signature="docComment;method#onCreate#0;class#IRCChat#0" expanded="true" />
-            <element signature="e#5968#8231#0" expanded="true" />
-            <element signature="e#8216#8217#0" expanded="true" />
-            <element signature="e#10418#11466#0" expanded="true" />
-            <element signature="e#11455#11456#0" expanded="true" />
-            <element signature="e#12003#12873#0" expanded="true" />
-            <element signature="e#12866#12867#0" expanded="true" />
-            <element signature="docComment;method#onKeyDown#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#dispatchKeyEvent#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#updateMenu#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#onOptionsItemSelected#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#onActivityResult#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#onConfigurationChanged#0;class#IRCChat#0" expanded="true" />
-            <element signature="docComment;method#resume#0;class#IRCChat#0" expanded="true" />
-            <element signature="e#22691#22920#0" expanded="true" />
-            <element signature="e#22909#22910#0" expanded="true" />
-            <element signature="docComment;method#initiate#0;class#IRCChat#0" expanded="true" />
-            <element signature="e#28868#29693#0" expanded="true" />
-            <element signature="e#29682#29683#0" expanded="true" />
-            <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
-            <element signature="e#80067#80096#1" expanded="true" />
-            <element signature="e#80207#80236#1" expanded="true" />
-            <element signature="docComment;method#EditTextFlash#0;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#packageExists#0;class#QuickPrefsActivity#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/ScrollViewWithBottom.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/ArrayListWithMaximum.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="58" selection-start="2608" selection-end="2608" vertical-scroll-proportion="0.0">
+        <state line="19" column="26" selection-start="427" selection-end="427" vertical-scroll-proportion="0.2545692">
           <folding>
-            <element signature="e#2722#3301#0" expanded="true" />
-            <element signature="e#3282#3283#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="4" selection-start="4503" selection-end="4571" vertical-scroll-proportion="-12.033334">
-          <folding>
-            <element signature="e#0#13602#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="docComment;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#chatView#0;class#StaticBlob#0" expanded="true" />
-            <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1080,8 +1032,105 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="52" selection-start="1011" selection-end="1054" vertical-scroll-proportion="0.12837838">
+        <state line="45" column="28" selection-start="1635" selection-end="1635" vertical-scroll-proportion="0.4679634">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/irc_line.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="38" selection-start="786" selection-end="786" vertical-scroll-proportion="0.38513514">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="388" column="77" selection-start="16558" selection-end="16615" vertical-scroll-proportion="-18.533333">
+          <folding>
+            <element signature="docComment;field#headerThings#0;class#DownloadList#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/xml/preferences.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="124" column="48" selection-start="8178" selection-end="8193" vertical-scroll-proportion="0.37848607">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/irc_login.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="24" selection-start="344" selection-end="348" vertical-scroll-proportion="-1.875">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="180" column="47" selection-start="9580" selection-end="9580" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#13434#0" expanded="true" />
+            <element signature="docComment;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#playerInfo#0;class#StaticBlob#0" expanded="true" />
+            <element signature="docComment;field#appVersion#0;class#StaticBlob#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1591" column="75" selection-start="75391" selection-end="75391" vertical-scroll-proportion="0.67277485">
+          <folding>
+            <element signature="e#0#91392#0" expanded="true" />
+            <element signature="e#5547#6310#0" expanded="true" />
+            <element signature="e#6295#6296#0" expanded="true" />
+            <element signature="e#8497#9545#0" expanded="true" />
+            <element signature="e#9534#9535#0" expanded="true" />
+            <element signature="e#10082#10952#0" expanded="true" />
+            <element signature="e#10945#10946#0" expanded="true" />
+            <element signature="method#onPause#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#onKeyDown#0;class#IRCChat#0" expanded="true" />
+            <element signature="method#onKeyDown#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#dispatchKeyEvent#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="true" />
+            <element signature="method#onCreateOptionsMenu#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#updateMenu#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#onOptionsItemSelected#0;class#IRCChat#0" expanded="true" />
+            <element signature="method#onOptionsItemSelected#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#onActivityResult#0;class#IRCChat#0" expanded="true" />
+            <element signature="method#onActivityResult#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#onConfigurationChanged#0;class#IRCChat#0" expanded="true" />
+            <element signature="method#onConfigurationChanged#0;class#IRCChat#0" expanded="false" />
+            <element signature="docComment;method#resume#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#20457#20686#0" expanded="true" />
+            <element signature="e#20675#20676#0" expanded="true" />
+            <element signature="docComment;method#initiate#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#27066#27891#0" expanded="true" />
+            <element signature="e#27880#27881#0" expanded="true" />
+            <element signature="docComment;method#logout#0;class#IRCChat#0" expanded="true" />
+            <element signature="class#QuitPlz#0;class#IRCChat#0" expanded="false" />
+            <element signature="method#getReceived#0;class#IRCChat#0" expanded="false" />
+            <element signature="method#getNickColor#0;class#IRCChat#0" expanded="false" />
+            <element signature="method#getRandomColor#0;class#IRCChat#0" expanded="false" />
+            <element signature="method#isAcceptable#0;class#IRCChat#0" expanded="false" />
+            <element signature="e#74038#75498#0" expanded="true" />
+            <element signature="e#75491#75492#0" expanded="true" />
+            <element signature="e#77490#77519#1" expanded="true" />
+            <element signature="e#77630#77659#1" expanded="true" />
+            <element signature="docComment;method#parseOutgoing#0;class#IRCChat#0" expanded="true" />
+            <element signature="e#86492#86771#0" expanded="true" />
+            <element signature="e#86762#86763#0" expanded="true" />
+            <element signature="docComment;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+            <element signature="docComment;method#EditTextFlash#0;class#EditTextFlash#0;class#IRCChat#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

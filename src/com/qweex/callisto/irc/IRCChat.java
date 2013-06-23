@@ -20,15 +20,16 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.os.Message;
+import android.graphics.Color;
 import android.text.*;
 import android.text.style.ImageSpan;
+import android.util.AttributeSet;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
+import android.widget.*;
 import com.qweex.callisto.R;
 
 import com.qweex.callisto.StaticBlob;
@@ -54,19 +55,10 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.ViewAnimator;
 
 
 /** The IRC portion of the app to connect to the JB chatroom.
@@ -125,7 +117,6 @@ public class IRCChat extends Activity implements IRCEventListener
     private static PendingIntent contentIntent;
     private static boolean isFocused = false;
     private static int lastScroll_chat, lastScroll_log;
-    private ScrollViewWithBottom sv, sv2;
     private EditText input;
 
     private static java.util.Queue<Spanned> chatQueue = new java.util.LinkedList<Spanned>(),
@@ -154,26 +145,17 @@ public class IRCChat extends Activity implements IRCEventListener
     private String mention_before = "(^|[^a-zA-Z0-9\\[\\]{}\\^`|])",
             mention_after = "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)";
     private boolean IRCOpPermission;
-    private int heightOfText;
+
+    private ListView chatListview, logListview;
 
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
-        lastScroll_chat = sv.getScrollY();
-        lastScroll_log = sv2.getScrollY();
+        lastScroll_chat = chatListview.getFirstVisiblePosition();
+        lastScroll_log = logListview.getFirstVisiblePosition();
     }
-
-
-    Handler thisIsStupid = new Handler()
-    {
-        @Override
-        public void handleMessage(Message message)
-        {
-            sv.fullScroll(View.FOCUS_DOWN);
-        }
-    };
 
     /** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -196,37 +178,12 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         received = chatQueue.poll();
                         System.out.println("RECEIVED:" + received.toString());
-                        if(received==null || received.equals(new SpannableString("")))
+                        if(received==null || received.length()==0)
                             return;
 
-                        View view = StaticBlob.chatView;
-                        Log.e("AtBottom", view + " " + sv);
-                        boolean atBottom = (view.getBottom()-(sv.getHeight()+sv.getScrollY())) <= heightOfText;
-                        System.out.println("AtBottom: " + (view.getBottom()-(sv.getHeight()+sv.getScrollY())) + " (" + view.getBottom() + "-" + sv.getHeight() + "-" + sv.getScrollY() + ")");
-                        atBottom = sv.atBottom();
-                        System.out.println("AtBottom2:" + atBottom);
-
-                        System.out.println("AtBottom3: " + view.getHeight());
-
-                        StaticBlob.chatView.append(received);
-                        Linkify.addLinks(StaticBlob.chatView, Linkify.EMAIL_ADDRESSES);
-                        Linkify.addLinks(StaticBlob.chatView, Linkify.WEB_URLS);
-                        received = new SpannableString("");
-                        StaticBlob.chatView.invalidate();
-
-                        if(atBottom)
-                            sv.scrollToWithGuarantees(0,0);
-//                            sv.post(new Runnable()
-//                            {
-//                                public void run()
-//                                {
-//                                    System.out.println("AtBottom:ScrollRunnable");
-                                    //sv.scrollTo(0, 0);
-//                                    System.out.println("AtBottom3: " + StaticBlob.chatView.getHeight());
-                                    //sv.scrollTo(0, 1000000000);
-//                                }
-//                            });
+                        StaticBlob.ircChat.add(received);
                     }
+                    ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
                     input.requestFocus();
                 }
             };
@@ -474,7 +431,9 @@ public class IRCChat extends Activity implements IRCEventListener
                 this.startActivityForResult(new Intent(this, NickList.class), 1);
                 return true;
             case SAVE_ID:
-                CharSequence cs = StaticBlob.chatView.getText();
+                CharSequence cs = "";
+                for(int i=0; i<StaticBlob.ircChat.size(); i++)
+                    TextUtils.concat(cs,StaticBlob.ircChat.get(i));
                 File fileLocation = new File(Environment.getExternalStorageDirectory(),
                         StaticBlob.storage_path + File.separator +
                                 "ChatLog_" + StaticBlob.sdfRaw.format(new Date()) +
@@ -530,12 +489,6 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Called when the activity either is created or resumes. Basically everything that must be run even whether or not the user is logged in. */
     public void resume()
     {
-        Paint paint = StaticBlob.chatView.getPaint();
-        paint.setStyle(Paint.Style.FILL);
-        Rect result = new Rect();
-        paint.getTextBounds("A",0,1,result);
-        this.heightOfText = result.height();
-
         isFocused = true;
         mentionCount = 0;
         nickColors.put(profileNick, CLR_MYNICK);
@@ -550,23 +503,19 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             setContentView(R.layout.irc);
         }
-        sv = (ScrollViewWithBottom) findViewById(R.id.scrollView);
-        sv.setVerticalFadingEdgeEnabled(false);
-        sv.setFillViewport(true);
 
-        sv2 = (ScrollViewWithBottom) findViewById(R.id.scrollView2);
-        sv2.setVerticalFadingEdgeEnabled(false);
-
-
-        ScrollView test = ((ScrollView) StaticBlob.chatView.getParent());
-        if(test!=null)
-            test.removeView(StaticBlob.chatView);
-        sv.addView(StaticBlob.chatView);
-        test = ((ScrollView) StaticBlob.logView.getParent());
-        if(test!=null)
-            test.removeView(StaticBlob.logView);
-        sv2.addView(StaticBlob.logView);
+        input = new EditText(this);
+        //input.getLayoutParams().width = ViewGroup.LayoutParams.FILL_PARENT;
+        input.setEms(10);
+        input.setTextColor(this.getResources().getColor(R.color.txtClr));
+        input.setMaxLines(1);
+        input.setSingleLine();
+        input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        input.setFocusable(true);
+        input.setImeOptions(EditorInfo.IME_ACTION_SEND);
         input = (EditText) findViewById(R.id.inputField);
+
+
         if(android.os.Build.VERSION.SDK_INT >= 11)
             input.setImeOptions( input.getImeOptions() | EditorInfo.IME_FLAG_NAVIGATE_NEXT); //TODO: Version
         input.setOnEditorActionListener(new OnEditorActionListener(){
@@ -577,10 +526,16 @@ public class IRCChat extends Activity implements IRCEventListener
             }
         });
 
-        StaticBlob.chatView.setBackgroundColor(0xFF000000 + CLR_BACK);
-        StaticBlob.chatView.setLinkTextColor(0xFF000000 + CLR_LINKS);
-        StaticBlob.logView.setBackgroundColor(0xFF000000 + CLR_BACK);
-        StaticBlob.logView.setLinkTextColor(0xFF000000 + CLR_LINKS);
+        chatListview = (ListView) findViewById(R.id.chatView);
+        chatListview.setVerticalFadingEdgeEnabled(false);
+        logListview = (ListView) findViewById(R.id.logView);
+        logListview.setVerticalFadingEdgeEnabled(false);
+//        chatListview.addFooterView(input);
+
+        chatListview.setBackgroundColor(0xFF000000 + CLR_BACK);
+        //KIRK: chatListview.setLinkTextColor(0xFF000000 + CLR_LINKS);
+        logListview.setBackgroundColor(0xFF000000 + CLR_BACK);
+        //KIRK: logListview.setLinkTextColor(0xFF000000 + CLR_LINKS);
         if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
             input.setTextColor(0xff000000 + IRSSI_GREEN);
         if(session!=null && session.getIRCEventListeners().size()==0)
@@ -592,12 +547,11 @@ public class IRCChat extends Activity implements IRCEventListener
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
 
-        sv.scrollTo(0, lastScroll_chat);
-        sv2.scrollTo(0, lastScroll_log);
 
-
-        ((ViewGroup)sv.getParent()).removeView(sv);
-        setContentView(sv);
+        chatListview.setAdapter(new IrcAdapter<Spanned>(this,R.layout.irc_line,StaticBlob.ircChat));
+        chatListview.smoothScrollToPosition(lastScroll_chat);
+        logListview.setAdapter(new IrcAdapter<Spanned>(this,R.layout.irc_line,StaticBlob.ircLog));
+        logListview.smoothScrollToPosition(lastScroll_log);
     }
 
     @Override
@@ -711,29 +665,6 @@ public class IRCChat extends Activity implements IRCEventListener
         loopTimer.schedule(loopTask, 0, 1000);
 
         session.addIRCEventListener(this);
-		/*
-		session.setInternalParser(new jerklib.parsers.DefaultInternalEventParser()
-		{
-			@Override
-			public IRCEvent receiveEvent(IRCEvent e)
-			{
-				//This part isn't needed but I am keeping it in because my tiki doll told me to
-				try
-				{
-				String action = e.getRawEventData();
-				action = action.substring(action.lastIndexOf(":")+1);
-					try {
-						if(action.startsWith("ACTION"))
-						{
-							action = action.substring("ACTION".length(), action.length()-1);
-							//String person = e.getRawEventData().substring(1, action.indexOf("!"));
-						}
-					}catch(Exception ex){}
-				}
-				catch(Exception ex){}
-				return super.receiveEvent(e);
-			}
-		});*/
     }
 
     /** Used to logout, quit, or part. */
@@ -750,7 +681,7 @@ public class IRCChat extends Activity implements IRCEventListener
         tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
         tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
 
-        Spanned s =  (Spanned) TextUtils.concat("\n",Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+        Spanned s =  (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
                 , tit);
         chatQueue.add(s);
         ircHandler.post(chatUpdater);
@@ -1557,7 +1488,7 @@ public class IRCChat extends Activity implements IRCEventListener
         } catch(Exception ie) {
         }
 
-        return (Spanned) TextUtils.concat("\n", Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+        return (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
                 , tit, mes);
     }
 
@@ -1649,19 +1580,16 @@ public class IRCChat extends Activity implements IRCEventListener
             if(parseOutgoing(newMessage))
             {
                 Spanned x = (Spanned) TextUtils.concat(
-                        "\n",
                         Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
                         st,
                         ": ",
                         st2
                 );
-                StaticBlob.chatView.append(x);
-                Linkify.addLinks(StaticBlob.chatView, Linkify.EMAIL_ADDRESSES);
-                Linkify.addLinks(StaticBlob.chatView, Linkify.WEB_URLS);
-                StaticBlob.chatView.invalidate();
+                StaticBlob.ircChat.add(x);
+                ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
             }
 
-            sv.scrollTo(0, 1000000000);
+            chatListview.smoothScrollToPosition(StaticBlob.ircChat.size()-1); //TODO: For some reason
             input.requestFocus();
             input.setText("");
         }
@@ -1923,12 +1851,8 @@ public class IRCChat extends Activity implements IRCEventListener
         public void run()
         {
             Log.e("ASDSADSADS", logQueue.peek() + "1");
-            StaticBlob.logView.append(logQueue.remove());
-            StaticBlob.logView.invalidate();
-            boolean atBottom = (StaticBlob.logView.getBottom()-(sv2.getHeight()+sv2.getScrollY())) <= heightOfText;
-            atBottom = sv2.atBottom();
-            if(atBottom)
-                sv2.scrollTo(0, 1000000000);
+            StaticBlob.ircLog.add(logQueue.remove());
+            ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
         };
 
     };
@@ -2010,4 +1934,61 @@ public class IRCChat extends Activity implements IRCEventListener
     }
 
 
+    public class IrcAdapter<E> extends ArrayAdapter<E>
+    {
+        ColorStateList cls;
+        void createColors()
+        {
+            cls = new ColorStateList(
+                    new int[][] {
+                            new int[] { android.R.attr.state_pressed},
+                            new int[] { android.R.attr.state_focused},
+                            new int[] {}
+                    },
+                    new int [] {
+                            Color.BLUE,
+                            0xFF000000 + CLR_LINKS,
+                            0xFF000000 + CLR_LINKS,
+                    }
+            );
+        }
+
+        public IrcAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            createColors();
+        }
+
+        public IrcAdapter(Context context, int resource, int textViewResourceId) {
+            super(context, resource, textViewResourceId);
+            createColors();
+        }
+
+        public IrcAdapter(Context context, int textViewResourceId, E[] objects) {
+            super(context, textViewResourceId, objects);
+            createColors();
+        }
+
+        public IrcAdapter(Context context, int resource, int textViewResourceId, E[] objects) {
+            super(context, resource, textViewResourceId, objects);
+            createColors();
+        }
+
+        public IrcAdapter(Context context, int textViewResourceId, List<E> objects) {
+            super(context, textViewResourceId, objects);
+            createColors();
+        }
+
+        public IrcAdapter(Context context, int resource, int textViewResourceId, List<E> objects) {
+            super(context, resource, textViewResourceId, objects);
+            createColors();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            convertView = super.getView(position, convertView, parent);
+            ((TextView) convertView).setLinkTextColor(cls);
+            return convertView;
+        }
+    }
 }

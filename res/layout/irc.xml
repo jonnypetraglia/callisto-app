@@ -27,16 +27,17 @@
         android:background="@color/backClr"
         android:orientation="vertical" >
 
-        <com.qweex.callisto.irc.ScrollViewWithBottom
-            android:id="@+id/scrollView"
+        <ListView
+            android:id="@+id/chatView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1" >
-            
-
-        </com.qweex.callisto.irc.ScrollViewWithBottom>
-
-
+            android:cacheColorHint="@android:color/transparent"
+            android:background="@android:color/transparent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:layout_weight="1"
+            android:transcriptMode="normal"
+            />
 
         <EditText
             android:id="@+id/inputField"
@@ -55,12 +56,15 @@
     </LinearLayout>
 
 
-    <com.qweex.callisto.irc.ScrollViewWithBottom
-        android:id="@+id/scrollView2"
+    <ListView
+        android:id="@+id/logView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/backClr" >
-
-    </com.qweex.callisto.irc.ScrollViewWithBottom>
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:transcriptMode="normal"
+        />
 
 </ViewAnimator>

@@ -150,7 +150,10 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     	}
         //Change the IRC scrollback
     	else if(key.equals("irc_max_scrollback"))
-    		StaticBlob.chatView.setMaxLines(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+        {
+            StaticBlob.ircChat.setMaximumCapacity(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+            StaticBlob.ircLog.setMaximumCapacity(PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_max_scrollback", 500));
+        }
         else if(key.equals("hide_notification_when_paused") && StaticBlob.mplayer!=null && StaticBlob.playerInfo.isPaused)
         {
             if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("hide_notification_when_paused", false))

@@ -18,13 +18,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.qweex.callisto.irc.ArrayListWithMaximum;
 import com.qweex.callisto.listeners.*;
 import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -86,9 +87,6 @@ public class StaticBlob
     public static String[] SHOW_LIST;
     /** The value of a dip, to be used programatically when updating a view. */
     public static float DP;
-    /** One of the Views for the IRC client. Having them static lets them be updated at any time, and not be destroyed when you leave the IRC screen. */
-    public static TextView chatView;
-    public static TextView logView;
     /** If you should be a "weirdo" that likes dates in a logically correct manner. */
     public static boolean europeanDates;
     //TODO: wtf?
@@ -122,6 +120,8 @@ public class StaticBlob
 
     public enum PauseCause { PhoneCall, FocusChange, AudioJack, User};
     public static PauseCause pauseCause;
+
+    public static ArrayListWithMaximum<Spanned> ircChat, ircLog;
 
     public static void formatAlertDialogButtons(AlertDialog d)
     {
@@ -167,14 +167,15 @@ public class StaticBlob
         else
             StaticBlob.playerInfo.update(c);
 
-        //Create the views for the the IRC
-        StaticBlob.chatView = new TextView(c);
-        StaticBlob.chatView.setGravity(Gravity.BOTTOM);
-        String irc_scrollback=PreferenceManager.getDefaultSharedPreferences(c).getString("irc_max_scrollback", "500");
-        StaticBlob.chatView.setMaxLines(Integer.parseInt(irc_scrollback));
-        StaticBlob.logView = new TextView(c);
-        StaticBlob.logView.setGravity(Gravity.BOTTOM);
-        StaticBlob.logView.setMaxLines(Integer.parseInt(irc_scrollback));
+        //Create the stuff for the IRC
+        int irc_scrollback=500;
+        try {
+            irc_scrollback = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(c).getString("irc_max_scrollback", "500"));
+        } catch(Exception e){}
+        ircChat = new ArrayListWithMaximum<Spanned>();
+        ircLog = new ArrayListWithMaximum<Spanned>();
+        ircChat.setMaximumCapacity(irc_scrollback);
+        ircLog.setMaximumCapacity(irc_scrollback);
 
         //Creates the dialog for live error
         StaticBlob.errorDialog = new Dialog(c);
