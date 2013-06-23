@@ -61,16 +61,11 @@ public class Live
         @Override
         public void onPrepared(MediaPlayer arg0) {
 
-            Log.e("LLLLLLLL:", "PREPARED!");
-            if(pd!=null)
-            {
-                if(!pd.isShowing())
-                    return;
-                pd.hide();
-            }
-            else
+            Log.d("Live:LIVE_PreparedListener:", "PREPARED! " + pd);
+            if(pd==null)    //The loading has been canceled
                 return;
-            
+            pd.cancel();
+
             try {
                 live_player.start();
                 LiveUpdate = new FetchInfo();
@@ -142,12 +137,13 @@ public class Live
                 }
             });
             //*/
-            LIVE_PreparedListener.pd.setOnDismissListener(new DialogInterface.OnDismissListener()
+            LIVE_PreparedListener.pd.setOnCancelListener(new DialogInterface.OnCancelListener()
             {
                 @Override
-                public void onDismiss(DialogInterface dialog) {
+                public void onCancel(DialogInterface dialog) {
+                    System.out.println("DIALOG IS BEING CANCELED");
                     if(LIVE_PreparedListener.pd!=null)
-                        LIVE_PreparedListener.pd.cancel();
+                        LIVE_PreparedListener.pd.hide();
                     LIVE_PreparedListener.pd = null;
                 }
 

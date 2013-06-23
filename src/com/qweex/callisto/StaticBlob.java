@@ -260,7 +260,7 @@ public class StaticBlob
 
                 if(pd!=null)
                 {
-                    pd.setOnDismissListener(null);
+                    pd.setOnCancelListener(null);
                     pd.dismiss();
                 }
                 pd=null;

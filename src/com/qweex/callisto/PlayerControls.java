@@ -325,11 +325,12 @@ public class PlayerControls
             {
                 StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, c.getResources().getString(R.string.loading), c.getResources().getString(R.string.loading_msg), true, false);
                 StaticBlob.mplayerPrepared.pd.setCancelable(true);
-                StaticBlob.mplayerPrepared.pd.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                StaticBlob.mplayerPrepared.pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
-                    public void onDismiss(DialogInterface dialog) {
+                    public void onCancel(DialogInterface dialog) {
                         StaticBlob.mplayer.stop();
-                        dialog.cancel();
+                        StaticBlob.mplayerPrepared.pd.hide();
+                        StaticBlob.mplayerPrepared.pd = null;
                     }
                 });
             }

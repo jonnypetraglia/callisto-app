@@ -205,6 +205,7 @@ public class Callisto extends Activity
     public void onResume()
     {
         super.onResume();
+        System.out.println("onResume: " + Live.LIVE_PreparedListener.pd);
         if(Live.LIVE_PreparedListener.pd!=null)
             Live.LIVE_PreparedListener.pd.show();
         Log.v("Callisto:onResume", "Resuming main activity");
