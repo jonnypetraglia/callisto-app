@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.qweex.callisto.irc.ArrayListWithMaximum;
+import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.listeners.*;
 import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -121,7 +122,7 @@ public class StaticBlob
     public enum PauseCause { PhoneCall, FocusChange, AudioJack, User};
     public static PauseCause pauseCause;
 
-    public static ArrayListWithMaximum<Spanned> ircChat, ircLog;
+    public static ArrayListWithMaximum<IRCChat.IrcMessage> ircChat, ircLog;
 
     public static void formatAlertDialogButtons(AlertDialog d)
     {
@@ -172,8 +173,8 @@ public class StaticBlob
         try {
             irc_scrollback = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(c).getString("irc_max_scrollback", "500"));
         } catch(Exception e){}
-        ircChat = new ArrayListWithMaximum<Spanned>();
-        ircLog = new ArrayListWithMaximum<Spanned>();
+        ircChat = new ArrayListWithMaximum<IRCChat.IrcMessage>();
+        ircLog = new ArrayListWithMaximum<IRCChat.IrcMessage>();
         ircChat.setMaximumCapacity(irc_scrollback);
         ircLog.setMaximumCapacity(irc_scrollback);
 

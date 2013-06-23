@@ -15,8 +15,7 @@
   -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:background="@color/backClr"
+          android:background="@android:color/transparent"
           android:layout_width="fill_parent"
           android:autoLink="web|email"
-          android:textColor="@color/txtClr"
           android:layout_height="fill_parent"/>

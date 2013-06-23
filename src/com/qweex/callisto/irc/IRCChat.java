@@ -26,7 +26,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.text.*;
 import android.text.style.ImageSpan;
-import android.util.AttributeSet;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
@@ -119,9 +118,6 @@ public class IRCChat extends Activity implements IRCEventListener
     private static int lastScroll_chat, lastScroll_log;
     private EditText input;
 
-    private static java.util.Queue<Spanned> chatQueue = new java.util.LinkedList<Spanned>(),
-            logQueue = new java.util.LinkedList<Spanned>();
-
     private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
     private boolean isLandscape;
     private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
@@ -147,6 +143,50 @@ public class IRCChat extends Activity implements IRCEventListener
     private boolean IRCOpPermission;
 
     private ListView chatListview, logListview;
+    private static java.util.Queue<IrcMessage> chatQueue = new java.util.LinkedList<IrcMessage>(),
+            logQueue = new java.util.LinkedList<IrcMessage>();
+
+    enum SPECIAL_COLORS { ME, TOPIC, PM, JOIN, NICK, PART, KICK, ERROR, QUIT, _OTHER };
+
+    public class IrcMessage
+    {
+        String title, message, _otherNick;
+        SPECIAL_COLORS color;
+        Date timestamp;
+        int getColor()
+        {
+            switch(color)
+            {
+                case ME:
+                    return CLR_ME;
+                case TOPIC:
+                    return CLR_TOPIC;
+                case PM:
+                    return CLR_PM;
+                case JOIN:
+                    return CLR_JOIN;
+                case NICK:
+                    return CLR_NICK;
+                case PART:
+                    return CLR_PART;
+                case KICK:
+                    return CLR_KICK;
+                case ERROR:
+                    return CLR_ERROR;
+                case QUIT:
+                    return CLR_QUIT;
+            }
+            return 0;
+        }
+
+        public IrcMessage(String title, String message, SPECIAL_COLORS clr)
+        {
+            this.title = title;
+            this.message = message;
+            this.color = clr;
+            timestamp = new Date();
+        }
+    }
 
 
     @Override
@@ -156,6 +196,7 @@ public class IRCChat extends Activity implements IRCEventListener
         lastScroll_chat = chatListview.getFirstVisiblePosition();
         lastScroll_log = logListview.getFirstVisiblePosition();
     }
+
 
     /** Called when the activity is first created. Sets up the view, mostly, especially if the user is not yet logged in.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -172,18 +213,23 @@ public class IRCChat extends Activity implements IRCEventListener
                 @Override
                 public void run()
                 {
-                    Spanned received;
-                    System.out.println("RECEIVED: " + chatQueue.size());
+                    IrcMessage received;
                     while(!chatQueue.isEmpty())
                     {
                         received = chatQueue.poll();
-                        System.out.println("RECEIVED:" + received.toString());
-                        if(received==null || received.length()==0)
+                        if(received==null)
                             return;
 
                         StaticBlob.ircChat.add(received);
                     }
-                    ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
+                        }
+                    });
                     input.requestFocus();
                 }
             };
@@ -432,8 +478,12 @@ public class IRCChat extends Activity implements IRCEventListener
                 return true;
             case SAVE_ID:
                 CharSequence cs = "";
+                IrcMessage ircm;
                 for(int i=0; i<StaticBlob.ircChat.size(); i++)
-                    TextUtils.concat(cs,StaticBlob.ircChat.get(i));
+                {
+                    ircm = StaticBlob.ircChat.get(i);
+                    TextUtils.concat(cs,ircm.title + ircm.message);
+                }
                 File fileLocation = new File(Environment.getExternalStorageDirectory(),
                         StaticBlob.storage_path + File.separator +
                                 "ChatLog_" + StaticBlob.sdfRaw.format(new Date()) +
@@ -489,6 +539,42 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Called when the activity either is created or resumes. Basically everything that must be run even whether or not the user is logged in. */
     public void resume()
     {
+        //Read colors
+        if(irssi)
+        {
+            CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=CLR_LINKS=IRSSI_GREEN;
+            CLR_BACK=0x000000;
+        }
+        else
+        {
+            IRCChat.nickColors.put("",
+                    CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
+            IRCChat.nickColors.put("",
+                    CLR_BACK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
+            IRCChat.nickColors.put(" ",
+                    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
+            CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
+            IRCChat.nickColors.put("   ",
+                    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_me", 0x9400D3));
+            IRCChat.nickColors.put("    ",
+                    CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_join", 0x0000FF));
+            IRCChat.nickColors.put("     ",
+                    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_nick", CLR_JOIN));
+            IRCChat.nickColors.put("      ",
+                    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_part", CLR_JOIN));
+            IRCChat.nickColors.put("       ",
+                    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_quit", CLR_JOIN));
+            IRCChat.nickColors.put("        ",
+                    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_kick", CLR_JOIN));
+            IRCChat.nickColors.put("         ",
+                    CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_error", 0x800000));
+            IRCChat.nickColors.put("          ",
+                    CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
+            IRCChat.nickColors.put("           ",
+                    CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
+            CLR_LINKS = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_links", 0x0000EE);
+        }
+
         isFocused = true;
         mentionCount = 0;
         nickColors.put(profileNick, CLR_MYNICK);
@@ -532,10 +618,7 @@ public class IRCChat extends Activity implements IRCEventListener
         logListview.setVerticalFadingEdgeEnabled(false);
 //        chatListview.addFooterView(input);
 
-        chatListview.setBackgroundColor(0xFF000000 + CLR_BACK);
-        //KIRK: chatListview.setLinkTextColor(0xFF000000 + CLR_LINKS);
-        logListview.setBackgroundColor(0xFF000000 + CLR_BACK);
-        //KIRK: logListview.setLinkTextColor(0xFF000000 + CLR_LINKS);
+        ((ViewAnimator)findViewById(R.id.viewanimator)).setBackgroundColor(0xFF000000 + CLR_BACK);
         if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
             input.setTextColor(0xff000000 + IRSSI_GREEN);
         if(session!=null && session.getIRCEventListeners().size()==0)
@@ -548,9 +631,9 @@ public class IRCChat extends Activity implements IRCEventListener
         }
 
 
-        chatListview.setAdapter(new IrcAdapter<Spanned>(this,R.layout.irc_line,StaticBlob.ircChat));
+        chatListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircChat));
         chatListview.smoothScrollToPosition(lastScroll_chat);
-        logListview.setAdapter(new IrcAdapter<Spanned>(this,R.layout.irc_line,StaticBlob.ircLog));
+        logListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircLog));
         logListview.smoothScrollToPosition(lastScroll_log);
     }
 
@@ -574,41 +657,6 @@ public class IRCChat extends Activity implements IRCEventListener
         if(!IRC_wifiLock.isHeld())
             IRC_wifiLock.acquire();
 
-        //Read colors
-        if(irssi)
-        {
-            CLR_TEXT=CLR_TOPIC=CLR_ME=CLR_JOIN=CLR_MYNICK=CLR_NICK=CLR_PART=CLR_QUIT=CLR_KICK=CLR_ERROR=CLR_MENTION=CLR_PM=CLR_LINKS=IRSSI_GREEN;
-            CLR_BACK=0x000000;
-        }
-        else
-        {
-            IRCChat.nickColors.put("",
-                    CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
-            IRCChat.nickColors.put("",
-                    CLR_BACK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_back", 0xFFFFFF));
-            IRCChat.nickColors.put(" ",
-                    CLR_TOPIC = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_topic", 0xB8860B));
-            CLR_MYNICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mynick", 0xFFF5EE);
-            IRCChat.nickColors.put("   ",
-                    CLR_ME = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_me", 0x9400D3));
-            IRCChat.nickColors.put("    ",
-                    CLR_JOIN = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_join", 0x0000FF));
-            IRCChat.nickColors.put("     ",
-                    CLR_NICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_nick", CLR_JOIN));
-            IRCChat.nickColors.put("      ",
-                    CLR_PART = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_part", CLR_JOIN));
-            IRCChat.nickColors.put("       ",
-                    CLR_QUIT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_quit", CLR_JOIN));
-            IRCChat.nickColors.put("        ",
-                    CLR_KICK = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_kick", CLR_JOIN));
-            IRCChat.nickColors.put("         ",
-                    CLR_ERROR = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_error", 0x800000));
-            IRCChat.nickColors.put("          ",
-                    CLR_MENTION = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_mention", 0xF08080));
-            IRCChat.nickColors.put("           ",
-                    CLR_PM = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_pm", 0x008B8B));
-            CLR_LINKS = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_links", 0x0000EE);
-        }
         resume();
 
         actuallyConnect();
@@ -633,9 +681,9 @@ public class IRCChat extends Activity implements IRCEventListener
         }catch(Exception e){}
         session = manager.requestConnection(SERVER_NAME, port);
         session.setRejoinOnKick(false);
-        chatQueue.add(getReceived("[Callisto]", "Attempting to logon.....be patient you silly goose.", CLR_ME));
+        chatQueue.add(new IrcMessage("[Callisto]", "Attempting to logon.....be patient you silly goose.", SPECIAL_COLORS.ME));
         ircHandler.post(chatUpdater);
-        logQueue.add(getReceived("[Callisto]", "Intiating connection to " + SERVER_NAME + " on port " + port, CLR_ME));
+        logQueue.add(new IrcMessage("[Callisto]", "Intiating connection to " + SERVER_NAME + " on port " + port, SPECIAL_COLORS.ME));
 
         timeoutCount = 0;
         loopTask = new TimerTask()
@@ -654,7 +702,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     manager = null;
                     session = null;
                     updateMenu();
-                    chatQueue.add(getReceived("[TIMEOUT]", "Connection timed out. Either check your connection, or set a longer timeout in the settings.", CLR_ME));
+                    chatQueue.add(new IrcMessage("[TIMEOUT]", "Connection timed out. Either check your connection, or set a longer timeout in the settings.", SPECIAL_COLORS.ME));
                     ircHandler.post(chatUpdater);
                     this.cancel();
                 }
@@ -676,25 +724,17 @@ public class IRCChat extends Activity implements IRCEventListener
             session.getChannel(CHANNEL_NAME).part(quitMsg);
         System.out.println(1);
 
-        int titleColor = 0xFF000000 + CLR_ERROR;
-        SpannableString tit = new SpannableString("~~~~~[TERMINATED]~~~~~");
-        tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
-        tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
 
-        Spanned s =  (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-                , tit);
-        chatQueue.add(s);
+        IrcMessage ircm = new IrcMessage("~~~~~[TERMINATED]~~~~~",null, SPECIAL_COLORS.ERROR);
+        chatQueue.add(ircm);
         ircHandler.post(chatUpdater);
 
         new QuitPlz().execute((Void[])null);
-        System.out.println(2);
         mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
         StaticBlob.notification_chat = null;
         isFocused = false;
-        System.out.println(3);
         if(IRC_wifiLock!=null && IRC_wifiLock.isHeld())
             IRC_wifiLock.release();
-        System.out.println(6);
         finish();
     }
 
@@ -751,12 +791,12 @@ public class IRCChat extends Activity implements IRCEventListener
                         allNicks = allNicks.concat("[" + s + "] ");
                         if(allNicks.length()>60)
                         {
-                            chatQueue.add(getReceived("[NAMES]", allNicks, CLR_TOPIC));
+                            chatQueue.add(new IrcMessage("[NAMES]", allNicks, SPECIAL_COLORS.TOPIC));
                             allNicks = "";
                         }
                     }
                     if(allNicks.length()>0)
-                        chatQueue.add(getReceived("[NAMES]", allNicks, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[NAMES]", allNicks, SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 //TODO: This might not work. I dunno.
@@ -767,7 +807,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         String realAction = ce.getCtcpString().substring(realEvent.length()).trim();
                         String realPerson = ce.getRawEventData().substring(1, ce.getRawEventData().indexOf("!"));
-                        chatQueue.add(getReceived("* " + realPerson + " " + realAction, null, CLR_ME));
+                        chatQueue.add(new IrcMessage("* " + realPerson + " " + realAction, null, SPECIAL_COLORS.ME));
                         ircHandler.post(chatUpdater);
                     }
                     break;
@@ -775,9 +815,9 @@ public class IRCChat extends Activity implements IRCEventListener
                     AwayEvent a = (AwayEvent) e;
                     if(a.isYou())
                     {
-                        chatQueue.add(getReceived("You are " + (a.isAway() ? " now " : " no longer ") + "away (" + a.getAwayMessage() + ")", null, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("You are " + (a.isAway() ? " now " : " no longer ") + "away (" + a.getAwayMessage() + ")", null, SPECIAL_COLORS.TOPIC));
                     }
-                    chatQueue.add(getReceived("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), CLR_TOPIC));
+                    chatQueue.add(new IrcMessage("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 case MODE_EVENT:
@@ -991,7 +1031,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     Log.d("Derp...", "Hellooooo " + prettified.size());
                     for(String s : prettified)
                     {
-                        chatQueue.add(getReceived("***" + s, null, CLR_TOPIC));       //TODO: Different color?
+                        chatQueue.add(new IrcMessage("***" + s, null, SPECIAL_COLORS.TOPIC));       //TODO: Different color?
                         ircHandler.post(chatUpdater);
                     }
                     if(!plus.equals(""))
@@ -1001,7 +1041,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     if((setter.toLowerCase().endsWith(".geekshed.net") || setter.equals("ChanServ")) && (!plus.equals("") || !minus.equals("")))
                     {;
                         Log.d("Derp...", (setter.toLowerCase().endsWith(".geekshed.net")==true) + " " + (!plus.equals("")) + " " + (!minus.equals("")));
-                        logQueue.add(getReceived("[MODE]", setter + " has changed your personal modes: " + plus + minus, CLR_TOPIC));       //TODO: Different color?
+                        logQueue.add(new IrcMessage("[MODE]", setter + " has changed your personal modes: " + plus + minus, SPECIAL_COLORS.TOPIC));       //TODO: Different color?
                         ircHandler.post(logUpdater);
                     }
                     break;
@@ -1011,23 +1051,23 @@ public class IRCChat extends Activity implements IRCEventListener
                     //FORMAT
                     ServerInformationEvent s = (ServerInformationEvent) e;
                     ServerInformation S = s.getServerInformation();
-                    logQueue.add(getReceived("[INFO]", S.getServerName(), CLR_TOPIC));
+                    logQueue.add(new IrcMessage("[INFO]", S.getServerName(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case SERVER_VERSION_EVENT:
                     ServerVersionEvent sv = (ServerVersionEvent) e;
-                    logQueue.add(getReceived("[VERSION]", sv.getVersion(), CLR_TOPIC));
+                    logQueue.add(new IrcMessage("[VERSION]", sv.getVersion(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case CONNECT_COMPLETE:
                     ConnectionCompleteEvent c = (ConnectionCompleteEvent) e;
-                    logQueue.add(getReceived(null, c.getActualHostName() + "\nConnection complete", CLR_TOPIC));
+                    logQueue.add(new IrcMessage(null, c.getActualHostName() + "\nConnection complete", SPECIAL_COLORS.TOPIC));
                     e.getSession().join(CHANNEL_NAME);
                     ircHandler.post(logUpdater);
                     break;
                 case JOIN_COMPLETE:
                     //JoinCompleteEvent jce = (JoinCompleteEvent) e;
-                    chatQueue.add(getReceived("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", CLR_TOPIC));
+                    chatQueue.add(new IrcMessage("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", SPECIAL_COLORS.TOPIC));
                     if(profilePass!=null && profilePass!=null && !profilePass.equals(""))
                         parseOutgoing("/MSG NickServ identify " + profilePass);
                     System.out.println("Decrypted password: " + profilePass);
@@ -1035,7 +1075,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     break;
                 case MOTD:
                     MotdEvent mo = (MotdEvent) e;
-                    logQueue.add(getReceived("[MOTD]", mo.getMotdLine(), CLR_TOPIC));
+                    logQueue.add(new IrcMessage("[MOTD]", mo.getMotdLine(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case NOTICE:
@@ -1048,13 +1088,13 @@ public class IRCChat extends Activity implements IRCEventListener
                     NoticeEvent ne = (NoticeEvent) e;
                     if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
                     {
-                        chatQueue.add(getReceived("[NICKSERV]", ne.getNoticeMessage(), CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[NICKSERV]", ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
                         System.out.println("FUCK YEAH BANANAS " + chatQueue.size());
                         ircHandler.post(chatUpdater);
                     }
                     else
                     {
-                        logQueue.add(getReceived("[NOTICE]", ne.getNoticeMessage(), CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[NOTICE]", ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
                         System.out.println("fuck no bananas");
                         ircHandler.post(logUpdater);
                     }
@@ -1065,9 +1105,9 @@ public class IRCChat extends Activity implements IRCEventListener
                 case TOPIC:
                     TopicEvent t = (TopicEvent) e;
                     if(t.getTopic()=="")
-                        chatQueue.add(getReceived("[TOPIC] ", "No Topic Set", CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[TOPIC] ", "No Topic Set", SPECIAL_COLORS.TOPIC));
                     else
-                        chatQueue.add(getReceived("[TOPIC] " + t.getTopic() + " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[TOPIC] " + t.getTopic() + " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
 
@@ -1075,50 +1115,50 @@ public class IRCChat extends Activity implements IRCEventListener
                 case CHANNEL_MESSAGE:
                     MessageEvent m = (MessageEvent) e;
                     if((e.getType()).equals(jerklib.events.IRCEvent.Type.PRIVATE_MESSAGE))
-                        chatQueue.add(getReceived("->" + m.getNick(), m.getMessage(), CLR_PM));
+                        chatQueue.add(new IrcMessage("->" + m.getNick(), m.getMessage(), SPECIAL_COLORS.PM));
                     else
-                        chatQueue.add(getReceived(m.getNick(), m.getMessage(), null));
+                        chatQueue.add(new IrcMessage(m.getNick(), m.getMessage(), SPECIAL_COLORS._OTHER));
                     System.out.println("CHANNEL_MESSAGE: " + m.getMessage());
                     ircHandler.post(chatUpdater);
                     break;
                 case JOIN:
                     JoinEvent j = (JoinEvent) e;
                     nickList.add(j.getNick());
-                    chatQueue.add(getReceived(j.getNick() + " entered the room.", null, CLR_JOIN));
+                    chatQueue.add(new IrcMessage(j.getNick() + " entered the room.", null, SPECIAL_COLORS.JOIN));
                     ircHandler.post(chatUpdater);
                     break;
                 case NICK_CHANGE:
                     NickChangeEvent ni = (NickChangeEvent) e;
-                    chatQueue.add(getReceived(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, CLR_NICK));
+                    chatQueue.add(new IrcMessage(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, SPECIAL_COLORS.NICK));
                     ircHandler.post(chatUpdater);
                     break;
                 case PART:
                     PartEvent p = (PartEvent) e;
                     nickColors.remove(p.getNick());
                     nickList.remove(p.getNick());
-                    chatQueue.add(getReceived("PART: " + p.getNick() + " (" + p.getPartMessage() + ")", null, CLR_PART));
+                    chatQueue.add(new IrcMessage("PART: " + p.getNick() + " (" + p.getPartMessage() + ")", null, SPECIAL_COLORS.PART));
                     ircHandler.post(chatUpdater);
                     break;
                 case QUIT:
                     QuitEvent q = (QuitEvent) e;
                     nickColors.remove(q.getNick());
                     nickList.remove(q.getNick());
-                    chatQueue.add(getReceived("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, CLR_QUIT));
+                    chatQueue.add(new IrcMessage("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, SPECIAL_COLORS.QUIT));
                     ircHandler.post(chatUpdater);
                     break;
                 case KICK_EVENT:
                     KickEvent k = (KickEvent) e;
-                    chatQueue.add(getReceived("KICK:  " + k.getWho() + " was kicked by " + k.byWho()  + ". (" + k.getMessage() + ")", null, CLR_KICK));
+                    chatQueue.add(new IrcMessage("KICK:  " + k.getWho() + " was kicked by " + k.byWho()  + ". (" + k.getMessage() + ")", null, SPECIAL_COLORS.KICK));
                     ircHandler.post(chatUpdater);
                     break;
                 case NICK_IN_USE:
                     NickInUseEvent n = (NickInUseEvent) e;
-                    chatQueue.add(getReceived("NICKINUSE:  " + n.getInUseNick() + " is in use.", null, CLR_ERROR));
+                    chatQueue.add(new IrcMessage("NICKINUSE:  " + n.getInUseNick() + " is in use.", null, SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHO_EVENT:
                     WhoEvent we = (WhoEvent) e;
-                    chatQueue.add(getReceived("[WHO]", we.getNick() + " is " + we.getUserName() + "@" + we.getServerName() + " (" + we.getRealName() + ")", CLR_TOPIC));
+                    chatQueue.add(new IrcMessage("[WHO]", we.getNick() + " is " + we.getUserName() + "@" + we.getServerName() + " (" + we.getRealName() + ")", SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHOIS_EVENT:
@@ -1126,22 +1166,23 @@ public class IRCChat extends Activity implements IRCEventListener
                     String var = "";
                     for(String event : wie.getChannelNames())
                         var = var + " " + event;
-                    chatQueue.add((Spanned) TextUtils.concat(getReceived("[WHOIS]", wie.getUser() + " is " + wie.getHost() + "@" + wie.whoisServer() + " (" + wie.getRealName() + ")", CLR_TOPIC)
-                            , getReceived("[WHOIS]", wie.getUser() + " is a user on channels: " + var, CLR_TOPIC)
-                            , getReceived("[WHOIS]", wie.getUser() + " has been idle for " + wie.secondsIdle() + " seconds", CLR_TOPIC)
-                            , getReceived("[WHOIS]", wie.getUser() + " has been online since " + wie.signOnTime(), CLR_TOPIC)));
+
+                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " is " + wie.getHost() + "@" + wie.whoisServer() + " (" + wie.getRealName() + ")", SPECIAL_COLORS.TOPIC ));
+                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " is a user on channels: " + var, SPECIAL_COLORS.TOPIC ));
+                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " has been idle for " + wie.secondsIdle() + " seconds", SPECIAL_COLORS.TOPIC ));
+                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " has been online since " + wie.signOnTime(), SPECIAL_COLORS.TOPIC ));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHOWAS_EVENT: //TODO: Fix?
                     WhowasEvent wwe = (WhowasEvent) e;
-                    chatQueue.add(getReceived("[WHO]", wwe.getNick() + " is " + wwe.getUserName() + "@" + wwe.getHostName() + " (" + wwe.getRealName() + ")", CLR_TOPIC));
+                    chatQueue.add(new IrcMessage("[WHO]", wwe.getNick() + " is " + wwe.getUserName() + "@" + wwe.getHostName() + " (" + wwe.getRealName() + ")", SPECIAL_COLORS.TOPIC));
                     break;
 
                 //Errors that display in both
                 case CONNECTION_LOST:
                     //ConnectionLostEvent co = (ConnectionLostEvent) e;
-                    chatQueue.add(getReceived("CONNECTION WAS LOST - attempt " + session.getRetries(), null, CLR_ERROR));
-                    logQueue.add(getReceived("CONNECTION WAS LOST - attempt " + session.getRetries(), null, CLR_ERROR));
+                    chatQueue.add(new IrcMessage("CONNECTION WAS LOST - attempt " + session.getRetries(), null, SPECIAL_COLORS.ERROR));
+                    logQueue.add(new IrcMessage("CONNECTION WAS LOST - attempt " + session.getRetries(), null, SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     ircHandler.post(logUpdater);
                     break;
@@ -1176,8 +1217,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                     this.loopTask.cancel();
                     loopTimer.purge();
-                    chatQueue.add(getReceived("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), CLR_ERROR));
-                    logQueue.add(getReceived("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), CLR_ERROR));
+                    chatQueue.add(new IrcMessage("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), SPECIAL_COLORS.ERROR));
+                    logQueue.add(new IrcMessage("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     ircHandler.post(logUpdater);
                 /*
@@ -1213,7 +1254,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         String name = e.getRawEventData().substring(e.getRawEventData().lastIndexOf(":")+1);
                         if(name.trim().equals(""))
                             return;
-                        chatQueue.add(getReceived("[ISON]", name + " is online", CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[ISON]", name + " is online", SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                         break;
                     }
@@ -1221,7 +1262,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     if(realType.equals("006"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(getReceived("[MAP] " + realmsg, null, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[MAP] " + realmsg, null, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1229,7 +1270,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     if((i>=250 && i<=255) || i==265 || i==266)
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(getReceived("[LUSERS]", realmsg, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[LUSERS]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1247,7 +1288,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     if(realType.equals("232") || realType.equals("309"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(getReceived("[RULES]", realmsg, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[RULES]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1255,7 +1296,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(realType.equals("364") || realType.equals("365"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(getReceived("[LINKS]", realmsg, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[LINKS]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1263,7 +1304,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(i>=256 && i<=259)
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(getReceived("[ADMIN]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[ADMIN]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                         break;
                     }
@@ -1271,7 +1312,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(realType.equals("315"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(getReceived("[WHO]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[WHO]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //WHOIS part 2
@@ -1280,7 +1321,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         int ijk = e.getRawEventData().lastIndexOf(" ", e.getRawEventData().indexOf(":",2)-2)+1;
                         realmsg = e.getRawEventData().substring(ijk, e.getRawEventData().indexOf(":", 2)-1)
                                 + " " + e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(getReceived("[WHOIS]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[WHOIS]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //USERHOST
@@ -1288,7 +1329,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                         realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
-                        chatQueue.add(getReceived("[USERHOST]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[USERHOST]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //CREDITS
@@ -1296,21 +1337,21 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                         realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
-                        logQueue.add(getReceived("[CREDITS]", realmsg, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[CREDITS]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                     }
                     //TIME
                     else if(realType.equals("391"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(getReceived("[TIME]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[TIME]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //USERIP
                     else if(realType.equals("340"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(getReceived("[USERIP]", realmsg, CLR_TOPIC));
+                        chatQueue.add(new IrcMessage("[USERIP]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //Nicklist? something else? MOTD
@@ -1351,7 +1392,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     else
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(getReceived("[" + realType + "]", realmsg, CLR_TOPIC));
+                        logQueue.add(new IrcMessage("[" + realType + "]", realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                     }
                     break;
@@ -1369,12 +1410,12 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             if(session.getRetries() >= manager.getRetries())
             {
-                chatQueue.add(getReceived("[Callisto]", "Maximum amount of retries exceeded. Quitting.", CLR_TOPIC));
+                chatQueue.add(new IrcMessage("[Callisto]", "Maximum amount of retries exceeded. Quitting.", SPECIAL_COLORS.TOPIC));
                 ircHandler.post(chatUpdater);
             }
             else if(false)
             {
-                chatQueue.add(getReceived("[Callisto]", "Retrying connection: attempt " + session.getRetries(), CLR_TOPIC));
+                chatQueue.add(new IrcMessage("[Callisto]", "Retrying connection: attempt " + session.getRetries(), SPECIAL_COLORS.TOPIC));
                 ircHandler.post(chatUpdater);
             }
         }
@@ -1387,14 +1428,17 @@ public class IRCChat extends Activity implements IRCEventListener
      * @param specialColor The name of the color resource for the message, or null if it should be looked up from the color list
      * @return
      */
-    private Spanned getReceived (String theTitle, String theMessage, Integer specialColor)
+    private Spanned getReceived(IrcMessage ircm)
     {
+        String theTitle = ircm.title,
+               theMessage = ircm.message;
+        int specialColor = ircm.getColor();
         int titleColor = 0xFF000000;
         int msgColor = 0xFF000000;
         try {
-            titleColor+= (specialColor!=null ? specialColor :	getNickColor(theTitle));
+            titleColor+= (ircm.color!=SPECIAL_COLORS._OTHER ? specialColor :	getNickColor(theTitle));
             if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_modes", false)
-                    && specialColor==null)
+                    && ircm.color==SPECIAL_COLORS._OTHER)
             {
                 if(NickList.Owners.contains(theTitle.toLowerCase()))
                     theTitle = "~" + theTitle;
@@ -1456,7 +1500,7 @@ public class IRCChat extends Activity implements IRCEventListener
         }
 
         SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
-        SpannableString mes = new SpannableString(theMessage==null ? "" : parseEmoticons(theMessage));
+        SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
         try {
             if(theTitle!=null)
             {
@@ -1564,28 +1608,10 @@ public class IRCChat extends Activity implements IRCEventListener
             String newMessage = input.getText().toString();
             if(newMessage.length()==0)
                 return;
-            SpannableString st = new SpannableString(session.getNick());
-            int colorBro = 0xFF000000 + CLR_ME;
-            int colorBro2 = 0xFF000000 + CLR_TEXT;
-
-
-            SpannableString st2 = new SpannableString(parseEmoticons(newMessage));
-            try {
-                st.setSpan(new ForegroundColorSpan(colorBro), 0, session.getNick().length(), 0);
-                st.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, session.getNick().length(), 0);
-                st2.setSpan(new ForegroundColorSpan(colorBro2), 0, newMessage.length(), 0);
-            }
-            catch(Exception e) {}
 
             if(parseOutgoing(newMessage))
             {
-                Spanned x = (Spanned) TextUtils.concat(
-                        Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : "")),
-                        st,
-                        ": ",
-                        st2
-                );
-                StaticBlob.ircChat.add(x);
+                StaticBlob.ircChat.add(new IrcMessage(session.getNick(), newMessage, SPECIAL_COLORS.ME));
                 ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
             }
 
@@ -1596,7 +1622,7 @@ public class IRCChat extends Activity implements IRCEventListener
     };
 
     private static HashMap<String, Integer> smilyRegexMap = null;
-    public CharSequence parseEmoticons(String s)
+    public CharSequence parseEmoticons(Spanned s)
     {
         if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_emoticons", false))
             return s;
@@ -1706,7 +1732,7 @@ public class IRCChat extends Activity implements IRCEventListener
             session.sayPrivate(targetNick, targetMsg);
             if(!targetNick.toUpperCase().equals("NICKSERV") && targetMsg.toUpperCase().startsWith("IDENTIFY"))
             {
-                chatQueue.add(getReceived("<-" + targetNick, targetMsg, CLR_PM));
+                chatQueue.add(new IrcMessage("<-" + targetNick, targetMsg, SPECIAL_COLORS.PM));
                 ircHandler.post(chatUpdater);
             }
             return false;
@@ -1745,7 +1771,7 @@ public class IRCChat extends Activity implements IRCEventListener
         else if(msg.toUpperCase().startsWith("/ME "))
         {
             session.action(CHANNEL_NAME, "ACTION" + msg.substring(3));
-            chatQueue.add(getReceived("* " + session.getNick() + msg.substring(3), null, CLR_ME));
+            chatQueue.add(new IrcMessage("* " + session.getNick() + msg.substring(3), null, SPECIAL_COLORS.ME));
             ircHandler.post(chatUpdater);
             return false;
         }
@@ -1839,7 +1865,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			return false;
 		}
 		*/
-        chatQueue.add(getReceived("[CALLISTO]", "Command not recognized!", CLR_TOPIC));
+        chatQueue.add(new IrcMessage("[CALLISTO]", "Command not recognized!", SPECIAL_COLORS.TOPIC));
         ircHandler.post(chatUpdater);
         return false;
     }
@@ -1852,7 +1878,14 @@ public class IRCChat extends Activity implements IRCEventListener
         {
             Log.e("ASDSADSADS", logQueue.peek() + "1");
             StaticBlob.ircLog.add(logQueue.remove());
-            ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
+                }
+            });
         };
 
     };
@@ -1936,9 +1969,12 @@ public class IRCChat extends Activity implements IRCEventListener
 
     public class IrcAdapter<E> extends ArrayAdapter<E>
     {
+        ArrayListWithMaximum<E> data;
         ColorStateList cls;
-        void createColors()
+        int textViewResourceId;
+        void init(int i)
         {
+            this.textViewResourceId = i;
             cls = new ColorStateList(
                     new int[][] {
                             new int[] { android.R.attr.state_pressed},
@@ -1955,38 +1991,44 @@ public class IRCChat extends Activity implements IRCEventListener
 
         public IrcAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
-            createColors();
+            init(textViewResourceId);
         }
 
         public IrcAdapter(Context context, int resource, int textViewResourceId) {
             super(context, resource, textViewResourceId);
-            createColors();
+            init(textViewResourceId);
         }
 
         public IrcAdapter(Context context, int textViewResourceId, E[] objects) {
             super(context, textViewResourceId, objects);
-            createColors();
+            init(textViewResourceId);
         }
 
         public IrcAdapter(Context context, int resource, int textViewResourceId, E[] objects) {
             super(context, resource, textViewResourceId, objects);
-            createColors();
+            init(textViewResourceId);
         }
 
         public IrcAdapter(Context context, int textViewResourceId, List<E> objects) {
             super(context, textViewResourceId, objects);
-            createColors();
+            data = (ArrayListWithMaximum<E>) objects;
+            init(textViewResourceId);
         }
 
         public IrcAdapter(Context context, int resource, int textViewResourceId, List<E> objects) {
             super(context, resource, textViewResourceId, objects);
-            createColors();
+            data = (ArrayListWithMaximum<E>) objects;
+            init(textViewResourceId);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
-            convertView = super.getView(position, convertView, parent);
+            if(convertView==null)
+                convertView = getLayoutInflater().inflate(textViewResourceId, null, false);
+
+            ((TextView)convertView).setText( parseEmoticons((Spanned) getReceived((IrcMessage)data.get(position))) );
+            ((TextView) convertView).setTextColor(0xff000000 + CLR_TEXT);
             ((TextView) convertView).setLinkTextColor(cls);
             return convertView;
         }

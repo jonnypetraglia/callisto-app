@@ -24,7 +24,7 @@
         android:id="@+id/lin"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/backClr"
+        android:background="@android:color/transparent"
         android:orientation="vertical" >
 
         <ListView
