@@ -25,9 +25,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.text.Spanned;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,6 +123,8 @@ public class StaticBlob
 
     public static ArrayListWithMaximum<IRCChat.IrcMessage> ircChat, ircLog;
 
+    public static TelephonyManager teleMgr;
+
     public static void formatAlertDialogButtons(AlertDialog d)
     {
         d.getButton(Dialog.BUTTON_POSITIVE).setBackgroundResource(R.drawable.blue_button);
@@ -210,9 +210,9 @@ public class StaticBlob
         pauseCause = PauseCause.User;
 
         phoneStateListener = new PhoneStateListenerImpl(c);
-        TelephonyManager mgr = (TelephonyManager) c.getSystemService(c.TELEPHONY_SERVICE);
-        if(mgr != null) {
-            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        teleMgr = (TelephonyManager) c.getSystemService(c.TELEPHONY_SERVICE);
+        if(teleMgr != null) {
+            teleMgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
 
         //Create the audiojack receiver

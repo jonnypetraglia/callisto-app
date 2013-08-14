@@ -16,6 +16,7 @@ package com.qweex.callisto;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -235,9 +236,35 @@ public class ContactForm extends Activity
             //Replace Wufoo's CSS with our own
             String str1 = "<!-- CSS -->";
             String str2 = "rel=\"stylesheet\">";
-            String remove = result.substring(result.indexOf(str1),
-                    result.indexOf(str2)+str2.length());
-            result = result.replace(remove, customCSS);
+            int ind1 = result.indexOf(str1),
+                ind2 = result.indexOf(str2);
+            if(ind1<0 || ind2<0)
+            {
+                wv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        baconPDialog.hide();
+                    }
+                });
+                new AlertDialog.Builder(ContactForm.this).setTitle("Weird Error happened").setMessage("The page fetched does not seem to be the valid contact form.").setNeutralButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        }).show().setOnDismissListener(
+                        new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialogInterface) {
+                                //finish();
+                            }
+                        }
+                );
+                //return;
+            } else {
+                ind2 += str2.length();
+                String remove = result.substring(ind1, ind2);
+                result = result.replace(remove, customCSS);
+            }
 
             //Load the data into the webview
             wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
@@ -257,7 +284,7 @@ public class ContactForm extends Activity
         }
 
         @SuppressWarnings("unused")
-        public void safeDraftAndFinish(String result)
+        public void saveDraftAndFinish(String result)
         {
             saveDraft(result);
             finish();

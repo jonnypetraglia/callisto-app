@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.*;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,10 +40,6 @@ import jerklib.events.*;
 import jerklib.listeners.IRCEventListener;
 
 
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -313,6 +311,36 @@ public class IRCChat extends Activity implements IRCEventListener
 
         WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         IRC_wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "Callisto_irc");
+
+        // Show warning for those evil Verizon users
+        String[] naughtyCarriers = new String[] {"verizon"};
+
+        int i = Arrays.asList(naughtyCarriers).indexOf(StaticBlob.teleMgr.getNetworkOperatorName());
+        System.out.println("i=" + i + " " + StaticBlob.teleMgr.getNetworkOperatorName());
+        if(i>=0)
+            new AlertDialog.Builder(this).setTitle("Warning for " + titleCase(naughtyCarriers[i]))
+                    .setMessage("It has been reported that your carrier actively blocks all IRC traffic, so wifi is recommended." +
+                        "\n\nOtherwise, unexpected behaviour may result, abandon all hope, ye who enter here.")
+                    .setNegativeButton(android.R.string.ok, null)
+                    .setIcon(R.drawable.ic_action_cancel)
+                    .show();
+
+    }
+
+    public static String titleCase(String realName) {
+        String space = " ";
+        String[] names = realName.split(space);
+        StringBuilder b = new StringBuilder();
+        for (String name : names) {
+            if (name == null || name.isEmpty()) {
+                b.append(space);
+                continue;
+            }
+            b.append(name.substring(0, 1).toUpperCase())
+                    .append(name.substring(1).toLowerCase())
+                    .append(space);
+        }
+        return b.toString();
     }
 
     protected OnClickListener InitiateLogin= new OnClickListener(){
