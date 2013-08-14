@@ -18,6 +18,7 @@
 		<item>Coder Radio</item>
         <item>FauxShow</item>
 		<item>Linux Action Show</item>
+        <item>Linux Unplugged</item>
         <item>Plan B</item>
 		<item>SciByte</item>
 		<item>TechSnap</item>
@@ -38,6 +39,7 @@
 		<item>http://feeds.feedburner.com/coderradiomp3</item>
         <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml</item>
 		<item>http://feeds2.feedburner.com/TheLinuxActionShow</item>
+        <item>http://feeds.feedburner.com/linuxunplugged</item>
         <item>http://feeds.feedburner.com/planbmp3</item>
 		<item>http://feeds.feedburner.com/scibyteaudio</item>
 		<item>http://feeds.feedburner.com/techsnapmp3</item>
@@ -58,6 +60,7 @@
 		<item>http://feeds.feedburner.com/coderradiovideo</item>
         <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml</item>
 		<item>http://feeds.feedburner.com/linuxactionshowipodvid</item>
+        <item>http://feeds.feedburner.com/linuxunvid</item>
         <item>http://feeds.feedburner.com/PlanBVideo</item>
 		<item>http://feeds.feedburner.com/scibytemobile</item>
 		<item>http://feeds.feedburner.com/techsnapmobile</item>

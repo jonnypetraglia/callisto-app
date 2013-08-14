@@ -37,7 +37,8 @@ public class DatabaseConnector
     /** One of the tables in the SQL database. */
 	private static final String DATABASE_EPISODES = "episodes",
                                 DATABASE_QUEUE = "queue",
-                                DATABASE_CALENDAR = "calendar";
+                                DATABASE_CALENDAR = "calendar",
+                                DATABASE_DOWNLOADS = "downloads";
     /** The database for the app. */
 	private SQLiteDatabase database;
     /** A tool to help with the opening of the database. It's in the Android doc examples, yo.*/
@@ -492,10 +493,69 @@ public class DatabaseConnector
 		database.execSQL("DELETE FROM " + DATABASE_CALENDAR + ";");
 	}
 
+    /** [DATABASE_EPISODES] Insert a length */
     public void putLength(String title, long length)
     {
         database.execSQL("UPDATE " + DATABASE_EPISODES + " SET length='" + length + "'" +
                 " WHERE title='" + title + "'");
+    }
+
+    /** [DATABASE_DOWNLOADS] Retrieves all active downloads */
+    public Cursor getActiveDownloads()
+    {
+        return database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "active>0", null, null, null, "_id");
+    }
+
+    /** [DATABASE_DOWNLOADS] Retrieves all completed downloads */
+    public Cursor getCompleteDownloads()
+    {
+        return database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "active<1", null, null, null, "_id ASC");
+    }
+
+    /** [DATABASE_DOWNLOADS] Tests if an id is in the download queue */
+    public boolean isInDownloadQueue(long id)
+    {
+        Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "_id='" + id + "'", null, null, null, null);
+        return c.getCount()>0;
+    }
+
+    /** [DATABASE_DOWNLOADS] Adds a new active download */
+    public void addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
+    {
+        ContentValues newDownload = new ContentValues();
+        newDownload.put("identity", identity);
+        newDownload.put("video", video);
+        newDownload.put("active", 1);
+
+        database.insert(DATABASE_DOWNLOADS, null, newDownload);
+    }
+
+    /** [DATABASE_DOWNLOADS] Adds a new active download */
+    public void removeDownload(long id)     //note 'id' == the _id in DOWNLOADS table
+    {
+        database.delete(DATABASE_QUEUE, "_id=" + id, null);
+    }
+
+    /** [DATABASE_DOWNLOADS] Adds a new active download */
+    public void markDownloadComplete(long id)     //note 'id' == the _id in DOWNLOADS table
+    {
+        database.execSQL("UPDATE " + DATABASE_DOWNLOADS + " SET active='0'" +
+                " WHERE _id='" + id + "'");
+    }
+
+    /** [DATABASE_DOWNLOADS] Adds a new active download */
+    public void clearActiveDownloads()
+    {
+        database.execSQL("DELETE FROM " + DATABASE_DOWNLOADS + " WHERE active>0;");
+    }
+
+    /** [DATABASE_DOWNLOADS] Adds a new active download */
+    public void clearCompleteDownloads()
+    {
+        database.execSQL("DELETE FROM " + DATABASE_DOWNLOADS + " WHERE active<1;");
     }
 
 	/** Helper open class for DatabaseConnector */
@@ -542,6 +602,13 @@ public class DatabaseConnector
 	 			   "time TEXT, " +              //The time of the event, stored in format HHmmss
 	 			   "recurring INTEGER);";       //>0 if the event is recurring every week, otherwise it's a one-time event.
 	 	  	db.execSQL(createQuery3);
+
+           String createQuery4 = "CREATE TABLE " + DATABASE_DOWNLOADS + " " +
+                   "(_id integer primary key autoincrement, " +
+                   "identity INTEGER, " +
+                   "video INTEGER, " +
+                   "active INTEGER);";        //An ID that is in the DATABASE_EPISODES table. Essentially it should be a foreign key, but it's not because I am teh dumb with databases.
+           db.execSQL(createQuery4);
 	   }
 
 	   @Override
@@ -557,6 +624,20 @@ public class DatabaseConnector
            try {
                String sql = "ALTER TABLE " + DATABASE_QUEUE + " ADD COLUMN video INTEGER";
                db.execSQL(sql);
+           } catch(SQLiteException e){}
+
+           try {
+               String sql = "ALTER TABLE " + DATABASE_QUEUE + " DROP COLUMN streaming";
+               db.execSQL(sql);
+           } catch(SQLiteException e){}
+
+           try {
+               String createQuery4 = "CREATE TABLE " + DATABASE_DOWNLOADS + " " +
+                       "(_id integer primary key autoincrement, " +
+                       "identity INTEGER, " +
+                       "video INTEGER, " +
+                       "active INTEGER);";        //An ID that is in the DATABASE_EPISODES table. Essentially it should be a foreign key, but it's not because I am teh dumb with databases.
+               db.execSQL(createQuery4);
            } catch(SQLiteException e){}
 	   }
 	}

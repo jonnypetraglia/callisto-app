@@ -16,12 +16,11 @@ package com.qweex.callisto.podcast;
 import android.app.*;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Button;
 import com.qweex.callisto.R;
@@ -62,6 +61,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     private int failed = 0;
     /** Limits for how often there can be failures */
     private final int INNER_LIMIT=5, OUTER_LIMIT=10;
+    /** Used for the notification */
+    NotificationCompat.Builder mBuilder;
 
 
     public DownloadTask(Context c)
@@ -79,10 +80,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         //Show notification
         Intent notificationIntent = new Intent(context, DownloadList.class);
         contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, this.context.getResources().getString(R.string.beginning_download), System.currentTimeMillis());
-        StaticBlob.notification_download.flags = Notification.FLAG_ONGOING_EVENT;
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  this.context.getResources().getString(R.string.of) + " " + StaticBlob.downloading_count + ": 0%", Show + ": " + Title, contentIntent);
+        mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setContentTitle( this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  this.context.getResources().getString(R.string.of) + " " + StaticBlob.downloading_count)
+                .setContentText(Show + ": " + Title)
+                .setSmallIcon(R.drawable.bacon)
+                .setContentIntent(contentIntent)
+                .setOngoing(true);
     }
 
 
@@ -92,14 +96,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         boolean isVideo;
         Cursor current;
 
-        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                this.context.getResources().getString(R.string.downloading) + "...",
-                "", contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
-
-        long id = 0;
+        long id = 0, identity = 0;
         Log.e("DownloadTask:doInBackground", "Preparing to start");
-        while(DownloadList.getDownloadCount(context, DownloadList.ACTIVE)>0)
+        boolean canceled = false;
+        while(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0)
         {
             if(isCancelled())   //Checks to see if it has been canceled by somewhere else
             {
@@ -108,19 +108,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             }
             try
             {
-                String dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
-                Log.e("DownloadTask:doInBackground", "The download list is: " + dlList);
-                id = DownloadList.getDownloadAt(context, DownloadList.ACTIVE, 0);
-                if(id<=0)   //A negative ID means it is a video
-                {
-                    isVideo=true;
-                    current = StaticBlob.databaseConnector.getOneEpisode(id*-1);
-                }
-                else
-                {
-                    isVideo=false;
-                    current = StaticBlob.databaseConnector.getOneEpisode(id);
-                }
+                Cursor c = StaticBlob.databaseConnector.getActiveDownloads();
+                c.moveToFirst();
+                id = c.getLong(c.getColumnIndex("_id"));
+                identity = c.getLong(c.getColumnIndex("identity"));
+                isVideo = c.getInt(c.getColumnIndex("video"))>0;
+                current = StaticBlob.databaseConnector.getOneEpisode(identity);
                 current.moveToFirst();
 
                 //Get info
@@ -139,9 +132,17 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Title=Title.trim();
                 Target = new File(Target, Date + "__" + DownloadList.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
 
+
                 //Prepare the HTTP
                 Log.i("EpisodeDesc:DownloadTask", "Path: " + Target.getPath());
                 URL url = new URL(Link);
+
+
+                ///////////////////////TEST
+
+                ///////////////////////TEST
+
+
                 Log.i("EpisodeDesc:DownloadTask", "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
                 String lastModified = ucon.getHeaderField("Last-Modified");
@@ -156,13 +157,14 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 ucon.connect();
 
                 //Notification
-                StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                        this.context.getResources().getString(R.string.downloading) + " " +
-                                StaticBlob.current_download + " " +
-                                this.context.getResources().getString(R.string.of) + " " +
-                                StaticBlob.downloading_count + " (...)",
-                        Show + ": " + Title, contentIntent);
-                mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
+                mBuilder.setProgress(100, 0, true)
+                    .setContentTitle(this.context.getResources().getString(R.string.downloading) + " " +
+                        StaticBlob.current_download + " " +
+                        this.context.getResources().getString(R.string.of) + " " +
+                        StaticBlob.downloading_count)
+                    .setContentText(Show + ": " + Title);
+                // Displays the progress bar for the first time.
+                mNotificationManager.notify(NOTIFICATION_ID,mBuilder.build() );
 
                 //Actually do the DLing
                 InputStream is = ucon.getInputStream();
@@ -205,10 +207,15 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 //-----------------Here is where the actual downloading happens----------------
                 while (len != -1)
                 {
-                    dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
-                    Log.i("EpisodeDesc:DownloadTask", "DownloadedSize: " + downloadedSize + " [" + dlList.substring(1,dlList.indexOf('|',1)) + "]");
-                    Log.i("EpisodeDesc:DownloadTask", "DownloadList: " + dlList);
-                    if(dlList.length()<=1 || !(Long.parseLong(dlList.substring(1,dlList.indexOf('|',1)))==id))
+                    Cursor active = StaticBlob.databaseConnector.getActiveDownloads();
+                    if(StaticBlob.databaseConnector.getActiveDownloads().getCount()==0)
+                        canceled = true;
+                    else
+                    {
+                        active.moveToFirst();
+                        canceled = active.getLong(active.getColumnIndex("identity"))!=identity;
+                    }
+                    if(canceled)
                     {
                         Log.i("EpisodeDesc:DownloadTask", "Download has been canceled, deleting.");
                         Target.delete();
@@ -276,27 +283,39 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                             DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
                             DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
                         }
-                        StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(),
-                                this.context.getResources().getString(R.string.downloading) + " " +
-                                        StaticBlob.current_download + " " +
-                                        this.context.getResources().getString(R.string.of) + " " +
-                                        StaticBlob.downloading_count + ": " + percentDone + "%  (" +
-                                        df.format(avg_speed) + "kb/s)",
-                                Show + ": " + Title, contentIntent);
-                        mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
+
+
+                        mBuilder.setProgress((int)(TotalSize/1000), (int)(downloadedSize/1000), false)
+                            .setContentTitle(this.context.getResources().getString(R.string.downloading) + " " +
+                                StaticBlob.current_download + " " +
+                                this.context.getResources().getString(R.string.of) + " " +
+                                StaticBlob.downloading_count +
+                                " - " + percentDone + "%  (" +
+                                df.format(avg_speed) + "kb/s)")
+                            .setContentText(Show + ": " + Title);
+                        // Displays the progress bar for the first time.
+                        mNotificationManager.notify(NOTIFICATION_ID,mBuilder.build() );
                     }
                 }
 
                 outStream.flush();
                 outStream.close();
                 inStream.close();
-                dlList = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
                 if(inner_failures==INNER_LIMIT)
                 {
 
                     throw new Exception("Inner exception has passed " + INNER_LIMIT);
                 }
-                if(!dlList.equals("") && (Long.parseLong(dlList.substring(1,dlList.indexOf('|',1)))==id))
+
+                Cursor active = StaticBlob.databaseConnector.getActiveDownloads();
+                if(StaticBlob.databaseConnector.getActiveDownloads().getCount()==0)
+                    canceled = true;
+                else
+                {
+                    active.moveToFirst();
+                    canceled = active.getLong(active.getColumnIndex("identity"))!=identity;
+                }
+                if(!canceled)
                 {
                     Log.i("EpisodeDesc:DownloadTask", "Trying to finish with " + Target.length() + "==" + TotalSize);
                     if(Target.length()==TotalSize)
@@ -306,8 +325,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         Log.i("EpisodeDesc:DownloadTask", (inner_failures<INNER_LIMIT?"Successfully":"FAILED") + " downloaded to : " + Target.getPath());
 
                         //Move the download from active to completed.
-                        DownloadList.removeDownload(context, DownloadList.ACTIVE, id, isVideo);
-                        DownloadList.addDownload(context, DownloadList.COMPLETED, id, isVideo);
+                        StaticBlob.databaseConnector.markDownloadComplete(id);
 
                         Log.i("EpisodeDesc:DownloadTask", " " + DownloadList.rebuildHeaderThings);
                         if(DownloadList.rebuildHeaderThings !=null)
@@ -315,7 +333,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
                         boolean queue = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("download_to_queue", false);
                         if(queue)
-                            StaticBlob.databaseConnector.appendToQueue(id, false, isVideo);
+                            StaticBlob.databaseConnector.appendToQueue(identity, false, isVideo);
                     }
                 } else
                     Target.delete();
@@ -335,19 +353,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             }
             if(outer_failures==OUTER_LIMIT)
             {
-                //Add to end of active, but with x signifier to show it failed
-                SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(context).edit();
-                String aDownloads = PreferenceManager.getDefaultSharedPreferences(context).getString("ActiveDownloads", "");
-                aDownloads = aDownloads.replace("|" + Long.toString(id) + "|", "|");
-                aDownloads = aDownloads.concat("x" + Long.toString(id) + "|");
-                if(aDownloads.equals("|"))
-                    aDownloads="";
                 boolean quit = false;
-                if(quit = aDownloads.charAt(1)=='x')
-                    aDownloads = aDownloads.replaceAll("x","");
-                e.putString("ActiveDownloads", aDownloads);
-                e.commit();
-                Log.i("EpisodeDesc:DownloadTask", "New aDownloads: " + aDownloads);
+                //if(quit = aDownloads.charAt(1)=='x')
+                //    aDownloads = aDownloads.replaceAll("x","");
+                quit = true;
                 if(DownloadList.rebuildHeaderThings !=null)
                     DownloadList.rebuildHeaderThings.sendEmptyMessage(0);
                 failed++;
@@ -367,10 +376,16 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         mNotificationManager.cancel(NOTIFICATION_ID);
         if(StaticBlob.downloading_count>0)
         {
-            StaticBlob.notification_download = new Notification(R.drawable.ic_action_download, "Finished downloading " + StaticBlob.downloading_count + " files", NOTIFICATION_ID);
-            StaticBlob.notification_download.setLatestEventInfo(context.getApplicationContext(), "Finished downloading " + StaticBlob.downloading_count + " files", failed>0 ? (failed + " failed, try them again later") : null, contentIntent);
-            StaticBlob.notification_download.flags = Notification.FLAG_AUTO_CANCEL;
-            mNotificationManager.notify(NOTIFICATION_ID, StaticBlob.notification_download);
+
+
+            mBuilder.setProgress(100, 0, false)
+                    .setContentTitle("Finished downloading " + StaticBlob.downloading_count + " files");
+            if(failed>0)
+                mBuilder.setContentText(failed + " failed, try them again later");
+            mBuilder.setAutoCancel(true);
+            mBuilder.setOngoing(false);
+
+            mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
             StaticBlob.current_download=1;
             StaticBlob.downloading_count=0;
         }
@@ -382,6 +397,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         }
         return true;
     }
+
+
 
     @Override
     protected void onPostExecute(Boolean result)

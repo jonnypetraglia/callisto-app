@@ -66,7 +66,6 @@ public class StaticBlob
     /** Used to connect to the SQLlite database. For more information, see the DatabaseConnector class.*/
     public static DatabaseConnector databaseConnector;
     /** Notifications are used in various activities */
-    public static Notification notification_download;
     public static Notification notification_playing;
     public static Notification notification_chat;
     public static Notification notification_alarm;

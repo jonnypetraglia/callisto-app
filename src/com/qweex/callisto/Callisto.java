@@ -81,7 +81,7 @@ public class Callisto extends Activity
         int lastVersion = pf.getInt("appVersion", 0);
 
         //Check for pending downloads. If there are any.....um, do something.
-        if(!pf.getString(DownloadList.ACTIVE, "").equals("") && !pf.getString(DownloadList.ACTIVE, "").equals("|"))
+        //if(!pf.getString(DownloadList.ACTIVE, "").equals("") && !pf.getString(DownloadList.ACTIVE, "").equals("|"))
         {
             //TODO: Display message
             //Callisto.downloading_count = pf.getString("ActiveDownloads", "").length() - pf.getString("ActiveDownloads", "").replaceAll("\\|", "").length() - 1;

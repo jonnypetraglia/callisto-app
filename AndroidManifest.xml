@@ -16,7 +16,7 @@
           package="com.qweex.callisto"
           android:versionName='@string/version_name'
           android:theme="@style/Default"
-          android:versionCode="4">
+          android:versionCode="5">
 
     <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="15" />
 

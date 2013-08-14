@@ -181,7 +181,7 @@ public class ShowList extends Activity
             File video_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
             video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
-            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+            boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
             if(inDLQueue || music_file_location.exists() || video_file_location.exists())   //If it's in DL queue or either format exists
             {
                 //First check if it is fully downloaded, otherwise it must be partially downloaded or in the queue
@@ -491,7 +491,7 @@ public class ShowList extends Activity
 
 
             //Set the effects for if the episode has been downloaded or is in queue, etc
-            boolean inDLQueue = PreferenceManager.getDefaultSharedPreferences(ShowList.this).getString(DownloadList.ACTIVE,"|").contains(id + "");
+            boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
             boolean exists = false,
                     complete = false;
             try {

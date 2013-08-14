@@ -387,8 +387,7 @@ public class EpisodeDesc extends Activity
             StaticBlob.downloading_count++;
             Log.i("EpisodeDesc:launchDownload", "Updated download count: " + StaticBlob.downloading_count);
 
-            DownloadList.addDownload(v.getContext(), DownloadList.ACTIVE, id, vidSelected);
-            DownloadList.removeDownload(v.getContext(), DownloadList.COMPLETED, id, vidSelected);
+            StaticBlob.databaseConnector.addDownload(id, vidSelected);
 
             //Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
             Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
@@ -410,7 +409,7 @@ public class EpisodeDesc extends Activity
         public void onClick(View v)
         {
             Log.i("EpisodeDesc:launchDownload", "Removing Download: " + id);
-            DownloadList.removeDownload(v.getContext(), DownloadList.ACTIVE, id, vidSelected);
+            StaticBlob.databaseConnector.addDownload(id, vidSelected);
             determineButtons(true);
         }
     };
@@ -451,7 +450,7 @@ public class EpisodeDesc extends Activity
     {
         File curr = (vidSelected ? file_location_video : file_location_audio);
         long curr_size = (vidSelected ? vid_size : mp3_size);
-        if(PreferenceManager.getDefaultSharedPreferences(EpisodeDesc.this).getString("ActiveDownloads", "").contains("|" + Long.toString(id) + "|") && !forceNotThere)
+        if(StaticBlob.databaseConnector.isInDownloadQueue(id) && !forceNotThere)
         {
             streamButton.setText(this.getResources().getString(R.string.downloading));
             streamButton.setEnabled(false);

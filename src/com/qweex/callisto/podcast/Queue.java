@@ -32,6 +32,9 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import com.qweex.callisto.StaticBlob;
 
+import java.io.File;
+import java.util.Date;
+
 /** An activity for showing the queued episodes.
  * @author MrQweex */
 
@@ -256,17 +259,17 @@ public class Queue extends ListActivity
             //Get info for the queue entry
             Long _id = this.c.getLong(c.getColumnIndex("_id"));
             boolean isCurrent = this.c.getLong(c.getColumnIndex("current"))>0;
-            boolean isStreaming = this.c.getLong(c.getColumnIndex("streaming"))>0;
             boolean isVideo = this.c.getLong(c.getColumnIndex("video"))>0;
+            boolean isStreaming;
             Long identity = this.c.getLong(c.getColumnIndex("identity"));
             (v.findViewById(R.id.row)).measure(0,0);
             int measuredHeight =(v.findViewById(R.id.row)).getMeasuredHeight();
 
             //Update the progressbar height
+            Cursor curs = StaticBlob.databaseConnector.getOneEpisode(identity);
             try {
-                Cursor time = StaticBlob.databaseConnector.getOneEpisode(identity);
-                time.moveToFirst();
-                int xy = (int) (time.getLong(time.getColumnIndex("position"))*100.0 / StaticBlob.databaseConnector.getLength(identity));
+                curs.moveToFirst();
+                int xy = (int) (curs.getLong(curs.getColumnIndex("position"))*100.0 / StaticBlob.databaseConnector.getLength(identity));
                 ((ProgressBar)v.findViewById(R.id.progress)).setProgress(Double.isNaN(xy) ? 0 : xy);
             } catch(Exception e){
                 ((ProgressBar)v.findViewById(R.id.progress)).setProgress(0);
@@ -274,7 +277,6 @@ public class Queue extends ListActivity
             v.findViewById(R.id.progress).getLayoutParams().height=measuredHeight;
             v.findViewById(R.id.progress).setMinimumHeight(measuredHeight);
             v.findViewById(R.id.progress).invalidate();
-
 
             //-------Ok before we were dealing with queue information now we actually deal with the info from the episode itself.
             Cursor c_actualEpisode = StaticBlob.databaseConnector.getOneEpisode(identity);
@@ -297,6 +299,23 @@ public class Queue extends ListActivity
             down.setOnClickListener(moveDown);
             ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
             remove.setOnClickListener(removeItem);
+
+            //Determine if local or streaming
+            try {
+
+                File localfile = new File(StaticBlob.storage_path + File.separator + c_actualEpisode.getColumnIndex("show"));
+                Date tempDate = StaticBlob.sdfRaw.parse(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("date")));   //Need this for file location
+                if(isVideo) {
+                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("vidlink"))));
+                    isStreaming = !localfile.exists() || localfile.length()!=c_actualEpisode.getLong(c_actualEpisode.getColumnIndex("vidsize"));
+                } else {
+                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("mp3link"))));
+                    isStreaming = !localfile.exists() || localfile.length()!=c_actualEpisode.getLong(c_actualEpisode.getColumnIndex("mp3size"));
+                }
+            } catch(Exception e) {
+                isStreaming = false;
+            }
+
 
             v.findViewById(R.id.streamingIcon).setVisibility(isStreaming ? View.VISIBLE : View.GONE);
             if(isVideo)
