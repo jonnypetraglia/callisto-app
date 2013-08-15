@@ -231,8 +231,8 @@ public class IRCChat extends Activity implements IRCEventListener
                                     return;
 
                                 StaticBlob.ircChat.add(received);
+                                ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
                             }
-                            ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
                             input.requestFocus();
                         }
                     });
@@ -1949,8 +1949,8 @@ public class IRCChat extends Activity implements IRCEventListener
                             return;
 
                         StaticBlob.ircLog.add(received);
+                        ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
                     }
-                    ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
                     input.requestFocus();
                 }
             });

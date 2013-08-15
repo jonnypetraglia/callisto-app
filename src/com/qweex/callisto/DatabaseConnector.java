@@ -525,6 +525,11 @@ public class DatabaseConnector
     /** [DATABASE_DOWNLOADS] Adds a new active download */
     public void addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
     {
+        Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "identity='" + identity + "' AND video='" + video + "'", null, null, null, null);
+        if(c.getCount()>0)
+            return;
+
         ContentValues newDownload = new ContentValues();
         newDownload.put("identity", identity);
         newDownload.put("video", video);

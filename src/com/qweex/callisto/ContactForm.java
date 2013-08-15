@@ -89,6 +89,7 @@ public class ContactForm extends Activity
                     "   tehResult = tehResult + '|' + inputs[i].id + '=' + inputs[i].options[inputs[i].selectedIndex].value;" +
                     "}"
             ;
+    private ReadCSS thatWhichWillReadTheCSS;
 
 
     /** Called when the activity is first created. Retrieves the wufoo form and inserts it into the view.
@@ -119,7 +120,8 @@ public class ContactForm extends Activity
             }
         });
         baconPDialog.setCancelable(true);
-        new ReadCSS().execute((Void[]) null);
+        thatWhichWillReadTheCSS = new ReadCSS();
+        thatWhichWillReadTheCSS.execute((Void[]) null);
 
     }
 
@@ -128,6 +130,15 @@ public class ContactForm extends Activity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         //wv.loadDataWithBaseURL("http://wufoo.com", asyncResult.replaceAll("width:;", "width:" + getWindowManager().getDefaultDisplay().getWidth()*.9 + ";").replaceAll("height:;", "height:" + getWindowManager().getDefaultDisplay().getHeight()*.6 + ";"), "text/html", "utf-8", "about:blank");
+    }
+
+    /** Called when the activity is going to be destroyed. */
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        wv = null;
+        thatWhichWillReadTheCSS.cancel(true);
     }
 
     /** An Asyncronous Task to read in the custom CSS file */
@@ -154,7 +165,12 @@ public class ContactForm extends Activity
 
         @Override
         protected void onPostExecute(Void v)
-        {   wv.loadUrl(formURL);   }
+        {
+            if(wv==null)
+                finish();
+            else
+                wv.loadUrl(formURL);
+        }
     }
 
     /** Specialized WebViewClient to handle showing a progress dialog and retrieving the page source if it is from wufoo and not data with our custom CSS */
@@ -233,6 +249,8 @@ public class ContactForm extends Activity
         @SuppressWarnings("unused")
         public void CustomCSSApplier(String result)
         {
+            if(wv==null)
+                return;
             //Replace Wufoo's CSS with our own
             String str1 = "<!-- CSS -->";
             String str2 = "rel=\"stylesheet\">";
@@ -255,11 +273,11 @@ public class ContactForm extends Activity
                         new DialogInterface.OnDismissListener() {
                             @Override
                             public void onDismiss(DialogInterface dialogInterface) {
-                                //finish();
+                                finish();
                             }
                         }
                 );
-                //return;
+                return;
             } else {
                 ind2 += str2.length();
                 String remove = result.substring(ind1, ind2);

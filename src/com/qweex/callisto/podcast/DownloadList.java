@@ -97,41 +97,19 @@ public class DownloadList extends ListActivity
             completeHeader.addRow(new String[] { "-2", "-2", "-2", "-2" });
         Cursor[] cursors = new Cursor[] {activeHeader, active, completeHeader, complete};
         Cursor extendedCursor = new MergeCursor(cursors);
+        extendedCursor.moveToFirst();
+        for(int i=0; i<extendedCursor.getCount(); i++)
+        {
+            Log.i("Downloads: ", extendedCursor.getString(extendedCursor.getColumnIndex("identity")));
+            extendedCursor.moveToNext();
+        }
         listAdapter = new DownloadAdapter(this, 0, extendedCursor, new String[] {}, new int[] {}, 0);
         mainListView.setAdapter(listAdapter);
 
 
-        //Header Things - START
-        /*
-        int tempInt = active.getCount();
-        Log.d("DownloadList:onCreate", "Rebuilding header things");
-        if(tempInt>0)
-        {
-            headerThings.add(new DownloadHeader("Active"));
-            for(int i=0; i<tempInt; i++)
-            {
-                Log.d("DownloadList:onCreate", "Adding active");
-                headerThings.add(new DownloadRow());
-            }
-        }
-        tempInt = complete.getCount();
-        if(tempInt>0)
-        {
-            headerThings.add(new DownloadHeader("Completed"));
-            for(int i=0; i<tempInt; i++)
-            {
-                Log.d("DownloadList:onCreate", "Adding completed");
-                headerThings.add(new DownloadRow());
-            }
-        }
-
-
-        //Listview things
-        listAdapter = new HeaderAdapter(this, headerThings);
-		mainListView.setAdapter(listAdapter);
 		mainListView.setBackgroundColor(this.getResources().getColor(R.color.backClr));
 		mainListView.setCacheColorHint(this.getResources().getColor(R.color.backClr));
-*/
+
         //like identical to the stuff above but slightly different.
 	    rebuildHeaderThings = new Handler()
 	    {
@@ -226,10 +204,9 @@ public class DownloadList extends ListActivity
             }
 
 
-            if(isVideo)
-                id = id*-1;
-            Log.e(":", "Requested id:" + id);
             Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
+            if(c.getCount()==0)
+                return row;
             c.moveToFirst();
 
             //Set the data
