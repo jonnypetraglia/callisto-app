@@ -47,6 +47,8 @@ public class PlayerControls
     public static TextView currentTime, totalTime;
     public static SeekBar seekBar;
 
+    private long startPlayTime;
+
     public static void createSeekView(LayoutInflater inflater)
     {
         seekView = inflater.inflate(R.layout.seekbar_dialog, null, false);

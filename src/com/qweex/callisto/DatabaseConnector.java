@@ -38,7 +38,8 @@ public class DatabaseConnector
 	private static final String DATABASE_EPISODES = "episodes",
                                 DATABASE_QUEUE = "queue",
                                 DATABASE_CALENDAR = "calendar",
-                                DATABASE_DOWNLOADS = "downloads";
+                                DATABASE_DOWNLOADS = "downloads",
+                                DATABASE_STATS = "stats";
     /** The database for the app. */
 	private SQLiteDatabase database;
     /** A tool to help with the opening of the database. It's in the Android doc examples, yo.*/
@@ -619,6 +620,13 @@ public class DatabaseConnector
                    "video INTEGER, " +
                    "active INTEGER);";        //An ID that is in the DATABASE_EPISODES table. Essentially it should be a foreign key, but it's not because I am teh dumb with databases.
            db.execSQL(createQuery4);
+
+           String createQuery5 = "CREATE TABLE " + DATABASE_STATS + " " +
+                   "(_id integer primary key autoincrement, " +
+                   "show TEXT, " +
+                   "audio_seconds INTEGER, " +
+                   "video_seconds INTEGER);";
+           db.execSQL(createQuery5);
 	   }
 
 	   @Override
