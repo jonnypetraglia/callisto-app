@@ -304,13 +304,29 @@ public class EpisodeDesc extends Activity
         }
     };
 
+    /** Listener for when the "stream" button is pressed. */
+    public OnClickListener launchStream = new OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            Log.v("EpisodeDesc:launchStream", "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
+            StaticBlob.databaseConnector.appendToQueue(id, true, vidSelected);
+            if(StaticBlob.databaseConnector.queueCount()==1)
+                PlayerControls.changeToTrack(v.getContext(), 1, true);
+            ((Button)v).setText(EpisodeDesc.this.getResources().getString(R.string.enqueued));
+            ((Button)v).setEnabled(false);
+            StaticBlob.playerInfo.update(v.getContext());
+        }
+    };
+
     /** Listener for when the "delete" button is pressed. */
     public OnClickListener launchDelete = new OnClickListener()
     {
         @Override
         public void onClick(View v)
         {
-            Log.v("EpisodeDesc:launchPlay", "Deleting item: " + id + " vid: " + vidSelected);
+            Log.v("EpisodeDesc:launchDelete", "Deleting item: " + id + " vid: " + vidSelected);
             if(vidSelected)
                 file_location_video.delete();
             else
@@ -348,21 +364,6 @@ public class EpisodeDesc extends Activity
             downloadButton.setOnClickListener(launchDownload);
 
             StaticBlob.playerInfo.update(v.getContext()); //Update the player controls
-        }
-    };
-
-    /** Listener for when the "stream" button is pressed. */
-    public OnClickListener launchStream = new OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
-            StaticBlob.databaseConnector.appendToQueue(id, true, vidSelected);
-            if(StaticBlob.databaseConnector.queueCount()==1)
-                PlayerControls.changeToTrack(v.getContext(), 1, true);
-            ((Button)v).setText(EpisodeDesc.this.getResources().getString(R.string.enqueued));
-            ((Button)v).setEnabled(false);
         }
     };
 

@@ -15,6 +15,7 @@ package com.qweex.callisto;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.view.*;
@@ -106,6 +107,13 @@ public class VideoActivity extends IRCChat
 
         try {
             d = Callisto.BaconDialog(this,"Loading, bro", "Dude, loading, bro. Give it a sec.");
+            d.setCancelable(true);
+            d.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    finish();
+                }
+            });
             d.show();
             Log.d("VideoActivity:onCreate", "URI: " + path);
             Uri pathToVideo = Uri.parse(path);

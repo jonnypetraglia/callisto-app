@@ -541,14 +541,6 @@ public class DatabaseConnector
     /** [DATABASE_DOWNLOADS] Adds a new active download */
     public void removeDownload(long id)     //note 'id' == the _id in DOWNLOADS table
     {
-        Log.d("DownloadList:removeItem", "_id=" + id);
-        Cursor c = getActiveDownloads();
-        c.moveToFirst();
-        for(int i=0; i<c.getCount(); i++)
-        {
-            Log.d("DownloadList:removeItem", "  dl: " + c.getString(c.getColumnIndex("_id")));
-            c.moveToNext();
-        }
         database.delete(DATABASE_DOWNLOADS, "_id=" + id, null);
     }
 

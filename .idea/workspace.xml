@@ -47,12 +47,14 @@
     </option>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="removeItem" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="E" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -82,7 +84,7 @@
     <file path="/LIVE_FetchInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365886524403" ignored="false" />
     <file path="/OnCompletionListenerWithContext.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365886591912" ignored="false" />
     <file path="/ResultDelegate.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365888110878" ignored="false" />
-    <file path="/VideoActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366488370972" ignored="false" />
+    <file path="/VideoActivity.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376552513155" ignored="false" />
     <file path="/Bacon.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365887830300" ignored="false" />
     <file path="/NickList.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1365917946725" ignored="false" />
     <file path="/AllShows.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1372019510389" ignored="false" />
@@ -214,61 +216,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StaticBlob.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
+      <file leaf-file-name="EpisodeDesc.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="55" selection-start="3074" selection-end="3074" vertical-scroll-proportion="0.0">
+            <state line="318" column="24" selection-start="14807" selection-end="14807" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayerControls.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
+      <file leaf-file-name="DatabaseConnector.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="159" column="114" selection-start="6666" selection-end="6666" vertical-scroll-proportion="-5.28">
+            <state line="535" column="37" selection-start="20584" selection-end="20584" vertical-scroll-proportion="0.17971759">
               <folding>
-                <element signature="e#7264#7467#0" expanded="true" />
-                <element signature="e#7452#7453#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EpisodeDesc.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="377" column="55" selection-start="17204" selection-end="17204" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#16891#18357#0" expanded="true" />
-                <element signature="e#18350#18351#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Callisto.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="60" selection-start="1915" selection-end="1915" vertical-scroll-proportion="-19.72">
-              <folding>
-                <element signature="e#0#28742#0" expanded="true" />
-                <element signature="e#16797#18869#0" expanded="true" />
-                <element signature="e#18862#18863#0" expanded="true" />
-                <element signature="e#19951#20218#0" expanded="true" />
-                <element signature="e#20191#20192#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DownloadList.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="336" column="55" selection-start="14983" selection-end="14983" vertical-scroll-proportion="0.6576728">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#15368#15369#0" expanded="true" />
+                <element signature="e#0#26161#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -309,9 +271,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/assets/UpdateNotes" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/BetterMediaPlayer.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
@@ -323,8 +283,10 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/irc/IRCChat.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java" />
       </list>
     </option>
   </component>
@@ -851,12 +813,12 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34078807" sideWeight="0.5041505" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32694355" sideWeight="0.49786553" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32694355" sideWeight="0.49786553" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26730564" sideWeight="0.49529606" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32800853" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21306032" sideWeight="0.47177848" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1770891" sideWeight="0.6730564" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.14270501" sideWeight="0.49529606" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1770891" sideWeight="0.857295" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14270501" sideWeight="0.49529606" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6731183" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -954,28 +916,11 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="88" selection-start="3916" selection-end="3916" vertical-scroll-proportion="1.4886535">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/moar/jbtitle.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="132" column="84" selection-start="5451" selection-end="5451" vertical-scroll-proportion="0.5120846">
           <folding>
             <element signature="e#5153#5180#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="159" column="114" selection-start="6666" selection-end="6666" vertical-scroll-proportion="-5.28">
-          <folding>
-            <element signature="e#7264#7467#0" expanded="true" />
-            <element signature="e#7452#7453#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1009,46 +954,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="120" column="11" selection-start="5062" selection-end="5062" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#10332#10359#0" expanded="true" />
-            <element signature="e#10770#10941#0" expanded="true" />
-            <element signature="e#10922#10923#0" expanded="true" />
-            <element signature="e#12421#12448#0" expanded="true" />
-            <element signature="e#12908#12935#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="377" column="55" selection-start="17204" selection-end="17204" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#16891#18357#0" expanded="true" />
-            <element signature="e#18350#18351#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="94" column="0" selection-start="3083" selection-end="3083" vertical-scroll-proportion="0.48640484">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="60" selection-start="1915" selection-end="1915" vertical-scroll-proportion="-19.72">
-          <folding>
-            <element signature="e#0#28742#0" expanded="true" />
-            <element signature="e#16797#18869#0" expanded="true" />
-            <element signature="e#18862#18863#0" expanded="true" />
-            <element signature="e#19951#20218#0" expanded="true" />
-            <element signature="e#20191#20192#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1069,13 +978,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="55" selection-start="3074" selection-end="3074" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/row.xml">
       <provider editor-type-id="android-designer">
         <state />
@@ -1086,19 +988,76 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="556" column="5" selection-start="21341" selection-end="21341" vertical-scroll-proportion="0.6148036">
+        <state line="332" column="20" selection-start="14791" selection-end="14791" vertical-scroll-proportion="0.7532637">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#14961#15375#0" expanded="true" />
+            <element signature="e#15368#15369#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/Callisto.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="60" selection-start="1915" selection-end="1915" vertical-scroll-proportion="0.6653171">
+          <folding>
+            <element signature="e#0#28742#0" expanded="true" />
+            <element signature="e#16797#18869#0" expanded="true" />
+            <element signature="e#18862#18863#0" expanded="true" />
+            <element signature="e#19951#20218#0" expanded="true" />
+            <element signature="e#20191#20192#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="159" column="114" selection-start="6666" selection-end="6666" vertical-scroll-proportion="0.1750663">
+          <folding>
+            <element signature="e#7264#7467#0" expanded="true" />
+            <element signature="e#7452#7453#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="55" selection-start="3074" selection-end="3074" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/VideoActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="336" column="55" selection-start="14983" selection-end="14983" vertical-scroll-proportion="0.6576728">
+        <state line="109" column="34" selection-start="4610" selection-end="4610" vertical-scroll-proportion="0.51963747">
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#15368#15369#0" expanded="true" />
+            <element signature="e#4645#4845#0" expanded="true" />
+            <element signature="e#4830#4831#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="214" column="50" selection-start="8646" selection-end="8646" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="318" column="24" selection-start="14807" selection-end="14807" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/DatabaseConnector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="535" column="37" selection-start="20584" selection-end="20584" vertical-scroll-proportion="0.17971759">
+          <folding>
+            <element signature="e#0#26161#0" expanded="true" />
           </folding>
         </state>
       </provider>
