@@ -264,7 +264,8 @@ public class ContactForm extends Activity
                         baconPDialog.hide();
                     }
                 });
-                new AlertDialog.Builder(ContactForm.this).setTitle("Weird Error happened").setMessage("The page fetched does not seem to be the valid contact form.").setNeutralButton(android.R.string.ok,
+                new AlertDialog.Builder(ContactForm.this).setTitle(R.string.contact_form_error)
+                        .setMessage(R.string.contact_form_message).setNeutralButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
@@ -298,7 +299,7 @@ public class ContactForm extends Activity
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit();
             editor.putString("ContactDraft", result);
             editor.commit();
-            Toast.makeText(ContactForm.this, "Message saved as draft.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ContactForm.this, R.string.message_saved_as_draft, Toast.LENGTH_SHORT).show();
         }
 
         @SuppressWarnings("unused")
@@ -312,7 +313,7 @@ public class ContactForm extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, DRAFT_ID, 0, "Save Draft").setIcon(R.drawable.ic_action_inbox);
+        menu.add(0, DRAFT_ID, 0, R.string.save_draft).setIcon(R.drawable.ic_action_inbox);
         return super.onCreateOptionsMenu(menu);
     }
 

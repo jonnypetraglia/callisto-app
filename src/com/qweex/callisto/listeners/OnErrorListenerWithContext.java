@@ -16,6 +16,7 @@ package com.qweex.callisto.listeners;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
+import android.util.Log;
 
 /** Silly class that just adds a context */
 public class OnErrorListenerWithContext implements OnErrorListener
@@ -28,7 +29,7 @@ public class OnErrorListenerWithContext implements OnErrorListener
 
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
-		System.out.println("Next Track Bug");
+		Log.e("OnErrorListenerWithContext::onError", "ERROR");
 		//Callisto.changeToTrack(this.c);
 		return true;
 	}

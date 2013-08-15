@@ -328,6 +328,7 @@ public class PlayerControls
                     StaticBlob.mplayer = null;
                     return;
                 }
+                try {
                 StaticBlob.mplayerPrepared.startPlaying = sp;
                 StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, c.getResources().getString(R.string.loading), c.getResources().getString(R.string.loading_msg), true, false);
                 StaticBlob.mplayerPrepared.pd.setCancelable(true);
@@ -339,6 +340,7 @@ public class PlayerControls
                         StaticBlob.mplayerPrepared.pd = null;
                     }
                 });
+                } catch(Exception e) {}
             }
             StaticBlob.mplayer.prepareAsync();
             //Picks up at the mplayerPrepared listener

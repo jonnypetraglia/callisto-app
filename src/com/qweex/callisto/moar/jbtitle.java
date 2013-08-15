@@ -15,19 +15,16 @@
 package com.qweex.callisto.moar;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import com.qweex.callisto.R;
 
-/* Add refresh  */
+//TODO: refresh
 
 public class jbtitle extends Activity
 {
@@ -82,7 +79,6 @@ public class jbtitle extends Activity
         public void onProgressChanged(WebView view, int progress) {
             boolean der= (readyForCSS && progress!=100) ||
                     (readyForCSS && progress==100);
-            Log.e("DSADS " + readyForCSS, progress + "! " + ((readyForCSS ? 5000 : 0) + progress * 50));
             jbtitle.this.setProgress((der ? 5000 : 0) + progress * 50);
             if(progress==100)
             {
@@ -112,7 +108,6 @@ public class jbtitle extends Activity
         switch (item.getItemId())
         {
             case Menu.FIRST:
-                Log.d("DSAD", wv.getUrl() + " " + wv.getOriginalUrl());
                 wv.loadUrl("http://jbbot.jupitercolony.com:5000/titles");
             default:
                 return true;

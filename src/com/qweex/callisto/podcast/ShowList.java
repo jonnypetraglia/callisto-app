@@ -373,7 +373,7 @@ public class ShowList extends Activity
             if(result.arg1==-1)
             {
                 Log.w("ShowList:UpdateShowTask", "An error occurred while updating the show " + currentShow);
-                Toast.makeText(ShowList.this, "An error occurred updating the show:\n\n" + result.getData().getString("ERROR"),
+                Toast.makeText(ShowList.this, getResources().getString(R.string.show_update_error) + ":\n\n" + result.getData().getString("ERROR"),
                         Toast.LENGTH_LONG).show();
             }
             else if(mainListView!=null)

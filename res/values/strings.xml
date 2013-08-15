@@ -17,70 +17,114 @@
      them to be changed based on the locale and options. -->
 
 <resources>
+    <!-- Meta -->
+    <string name="app_name">Callisto</string>
     <string name="version_name">0.81 "Protostar"</string>
-    
+    <string name="jbtitle">JBTitle</string>
+
+    <!-- Used a lot of places -->
+    <string name="stop">Stop</string>
     <string name="live">Live</string>
-	<string name="watch">Watch</string>
-	<string name="listen">Listen</string>
-	<string name="loading">Loading&#8230;</string>
-	<string name="download">Download</string>
-	<string name="downloads">Downloads</string>
-	<string name="agenda_title">Upcoming Shows</string>
-	<string name="refresh">Refresh</string>
-	<string name="reload">Reload</string>
-	<string name="fetch">Fetch Calendar</string>
-	<string name="loading_msg">Please be patient. Cook some bacon or something.</string>
-	<string name="queue_size">Queue size</string>
-	<string name="queue_error">There was an error loading the next song. It has been removed from the queue.</string>
-	<string name="seek_title">Seek to position</string>
-	<string name="quit">Quit</string>
-	<string name="more">More</string>
-	<string name="bacon">BACON!</string>
-	<string name="release_notes">Release Notes</string>
-	<string name="no_events">No events found for this week. Try "Load More".</string>
-	<string name="list_empty">List is empty</string>
-	<string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>
-	<string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
-	<string name="enqueued">Enqueued</string>
-	<string name="stream">Stream</string>
-	<string name="beginning_download">Beginning download</string>
-	<string name="downloading">Downloading</string>
-	<string name="of">of</string>
-	<string name="play">Play</string>
-	<string name="delete">Delete</string>
-	<string name="cancel">Cancel</string>
-	<string name="resume">Resume</string>
-    <string name="queue">Queue</string>
+    <string name="of">of</string>
     <string name="clear">Clear</string>
-    <string name="mark">Mark</string>
-    <string name="mark_all">Mark all as</string>
-    <string name="filter">Filter</string>
-    <string name="unfilter">Unfilter</string>
+    <string name="download">Download</string>
+    <string name="downloads">Downloads</string>
+    <string name="beginning_download">Beginning download</string>
+    <string name="downloading">Downloading</string>
+    <string name="loading_msg">Please be patient. Cook some bacon or something.</string>
+    <string name="quit">Quit</string>
+    <string name="more">More</string>
+    <string name="play">Play</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="resume">Resume</string>
+    <string name="refresh">Refresh</string>
+    <string name="reload">Reload</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="list_empty">List is empty</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_clear">This will clear all your play statuses and saved positions. Are you sure?</string>
+
+    <!-- Queue -->
+    <string name="queue">Queue</string>
+    <string name="queue_size">Queue size</string>
+    <string name="queue_error">There was an error loading the next song. It has been removed from the queue.</string>
+
+    <!-- Control Plays -->
+    <string name="seek_title">Seek to position</string>
+
+    <!-- Downloads -->
+    <string name="active">Active</string>
+    <string name="complete">Complete</string>
+    <string name="pause">Pause</string>
+    <string name="clear_completed">Clear Completed</string>
+    <string name="cancel_active">Cancel Active</string>
+
+    <!-- Donate -->
+    <string name="donate">Donate</string>
+    <string name="choose_amount">Choose amount (USD)</string>
+    <string name="custom">Custom</string>
+    <string name="msg_to_jb">Message to Jupiter Broadcasting</string>
+    <string name="donate_note">
+        100% of your donation will go <i>directly</i> to Jupiter Broadcasting. Afterwards, if you \
+        want to donate to the app developer, buy the <a href="market://details?id=com.qweex.donation">donation app in the market</a>.
+    </string>
+    <string name="amount_not_valid">The amount you entered is not a valid number, you silly goose.</string>
+    <string name="payment_success">Payment was successful! Thanks so much for supporting JupiterBroadcasting!</string>
+    <string name="payment_failed">Payment was unsuccessful! Sorry, try the main website.</string>
+
+    <!-- Error messages (For popups) -->
+    <string name="no_sd_card">No SD Card</string>
+    <string name="no_external_storage">There is currently no external storage to write to.</string>
+    <string name="folder_not_exist">The storage directory does not exist, check its correctness in the preferences.</string>
+    <string name="file_written_to">File written to:</string>
+    <string name="unable_to_write_to">Unable to write to:</string>
+    <string name="verizon_warning">
+        It has been reported that your carrier actively blocks all IRC traffic, so wifi is recommended. \
+        \n\nOtherwise, unexpected behaviour may result, abandon all hope, ye who enter here.
+    </string>
+    <string name="carrier_warning">Carrier Warning</string>
+    <string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>
+    <string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
+
+    <!-- EpisodeDesc -->
+    <string name="share">Share</string>
+    <string name="share_subject">Thought I\'d share this with you!</string>
+    <string name="share_message" formatted="false">Check out this awesome episode of %s!\n\n%s</string>
+    <string name="enqueued">Enqueued</string>
+    <string name="stream">Stream</string>
+
+    <!-- Preferences -->
+    <string name="folder_moved">Moved, pray to the gods it has worked</string>
+    <string name="ringtone_prompt">Choose alarm tone</string>
+
+    <!-- Show List  &   All Shows-->
+    <string name="refresh_all">Refresh All</string>
+    <string name="no_results">No results found.</string>
+    <string name="mark">Mark</string>
+    <string name="mark_all">Mark all as</string>
     <string name="old">Old</string>
     <string name="new_">New</string>
-    <string name="powered_by">powered by</string>
-    <string name="upcoming_shows">Upcoming shows</string>
-    <string name="load_more">Load more</string>
-    <string name="plan">Plan</string>
-    <string name="chat">Chat</string>
-    <string name="contact">Contact</string>
-    <string name="donate">Donate</string>
-    <string name="refresh_all">Refresh All</string>
+    <string name="filter">Filter</string>
+    <string name="unfilter">Unfilter</string>
+
+    <!-- Updating -->
+    <string name="show_update_error">An error occurred updating the show</string>
     <string name="beginning_update">Beginning update. Please attempt to lick your elbow for the next 10 seconds.</string>
-	<string name="finished_update">Finished update!</string>
-	<string name="show_splash">Show splash screen</string>
-	<string name="splash_quote">Play splash quote</string>
-	<string name="settings">Settings</string>
-	<string name="playing">Playing</string>
-	<string name="today">Today</string>
-	<string name="share">Share</string>
-	<string name="search">Search Episodes</string>
-	<string name="payment_success">Payment was successful! Thanks so much for supporting JupiterBroadcasting!</string>
-	<string name="payment_failed">Payment was unsuccessful! Sorry, try the main website.</string>
-	
-	
+    <string name="finished_update">Finished update!</string>
+
+    <!-- Calendar -->
+    <string name="today">Today</string>
+    <string name="fetch">Fetch Calendar</string>
+    <string name="upcoming_shows">Upcoming Shows</string>
+    <string name="alarm_title">JupiterBroadcasting alarm!</string>
+    <string name="now">Now</string>
+    <string name="time_left">%s left</string>
+    <string name="creating_event">Creating event...</string>
+    <string name="set_alarm_notification">Set Alarm/Notification</string>
+    <string name="soon">Soon</string>
+    <string name="switch_to_live">Switch from playlist to live?</string>
+    <string name="no_events">No events found for this week. Try "Load More".</string>
     <string-array name="months">
         <item >January</item>
         <item >February</item>
@@ -95,7 +139,6 @@
         <item >November</item>
         <item >December</item>
     </string-array>
-    
     <string-array name="days">
         <item >Sun</item>
         <item >Mon</item>
@@ -106,8 +149,156 @@
         <item >Sat</item>
     </string-array>
 
-    <string name="stop">Stop</string>
+    <!-- Contact Form -->
+    <string name="contact">Contact</string>
+    <string name="save_draft">Save Draft</string>
+    <string name="contact_form_error">Error Loading Form</string>
+    <string name="contact_form_message">The page fetched does not seem to be the valid contact form. It might be your connection, or the end of the world</string>
+    <string name="message_saved_as_draft">Message saved as draft.</string>
 
-    <string name="ringtone_prompt">Choose alarm tone</string>
+
+    <!-- Main Screen -->
+    <string-array name="tablet_menu">
+        <item>Play</item>
+        <item>Live</item>
+        <item>Plan</item>
+        <item>Chat</item>
+        <item>Contact</item>
+        <item>Donate</item>
+    </string-array>
+    <string name="release_notes">Release Notes</string>
+    <string name="settings">Settings</string>
+
+    <!-- IRC messages -->
+    <string name="attempting_to_logon">Attempting to logon.....be patient you silly goose.</string>
+    <string name="join_complete">Join complete, you are now orbiting Jupiter Broadcasting!</string>
+    <string name="connection_complete">Connection complete</string>
+    <string name="irc_bracket_open">[</string>
+    <string name="irc_bracket_close">]</string>
+    <string name="is_away">%s is away</string>
+    <string name="has_changed_your_modes" formatted="false">%s has changed your personal modes:  %s</string>
+    <string name="no_topic_set">No Topic Set</string>
+    <string name="topic_set_by_on" formatted="false">(set by %s on %s)</string>
+    <string name="has_entered" formatted="false">%s has entered the room</string>
+    <string name="has_changed_nick" formatted="false">%s changed their nick to %s</string>
+    <string name="was_kicked_by" formatted="false">%s was kicked by %s</string>
+    <string name="is_in_use" formatted="false">%s is in use</string>
+    <string name="who_format" formatted="false">%s is %s@%s (%s)"</string>
+    <string name="who_channels" formatted="false">%s is a user on channels: %s</string>
+    <string name="who_idle" formatted="false">%s has been idle for %s seconds</string>
+    <string name="who_online" formatted="false">%s has been online since %s</string>
+    <string name="connection_was_lost">Connection was lost</string>
+    <string name="attempt">Connection was lost</string>
+    <string name="is_online" formatted="false">%s is online</string>
+    <string name="maximum_retries">Maximum amount of retries exceeded. Quitting.</string>
+    <string name="retrying_connection">Retrying Connection</string>
+    <string name="jb_limit_1">What, is the JB chat not enough for you?!</string>
+    <string name="jb_limit_2">What, is the JB chat not enough for them?!</string>
+    <string name="irc_command_unknown" formatted="false">The command \'%s\' is unknown. E-mail the developer if it\'s something that Callisto is missing.</string>
+    <string name="command_not_recognized">Command Not Recognized</string>
+
+    <!-- IRC title things -->
+    <string name="names">Names</string>
+    <string name="away">Away</string>
+    <string name="mode">Mode</string>
+    <string name="info">Info</string>
+    <string name="version">Version</string>
+    <string name="join">Join</string>
+    <string name="motd">MOTD</string>
+    <string name="nickserv">NickServ</string>
+    <string name="notice">Notice</string>
+    <string name="topic">Topic</string>
+    <string name="part">Part</string>
+    <string name="kick">Kick</string>
+    <string name="nick_in_use">Nick in use</string>
+    <string name="who">Who</string>
+    <string name="who_is">Who Is</string>
+    <string name="error">Error</string>
+    <string name="is_on">Is On</string>
+    <string name="map">Map</string>
+    <string name="lusers">LUsers</string>
+    <string name="rules">Rules</string>
+    <string name="links">Links</string>
+    <string name="user_host">User Host</string>
+    <string name="credits">Credits</string>
+    <string name="time">Time</string>
+    <string name="user_ip">User IP</string>
+
+    <!-- IRC channel modes -->
+    <string name="sets_channel_mode_to" formatted="false">%s sets channel mode to %s</string>
+    <string name="unmoderated">unmoderated</string>
+    <string name="moderated">moderated</string>
+    <string name="public_">public</string>
+    <string name="private_">private</string>
+    <string name="visible">visible</string>
+    <string name="secret">secret</string>
+    <string name="not_invite_only">not invite only</string>
+    <string name="invite_only">invite only</string>
+    <string name="no_messages_from_outside">no messages from outside</string>
+    <string name="allow_messages_from_outside">allow messages from outside</string>
+    <string name="no_topic_protection">no topic protection</string>
+    <string name="topic_protection">topic protection</string>
+    <string name="doesnt_require_register">doesn\'t require_register</string>
+    <string name="require_register">require_register</string>
+    <string name="no_colours">no colours</string>
+    <string name="colours">colours</string>
+    <string name="no_kicks_allowed">no kicks allowed</string>
+    <string name="kicks_allowed">kicks allowed</string>
+    <string name="not_ops_only">not Ops only</string>
+    <string name="ops_only">Ops only</string>
+    <string name="not_admins_only">not Admins only</string>
+    <string name="admins_only">Admins only</string>
+    <string name="no_knocking">no knocking</string>
+    <string name="knocking">knocking</string>
+    <string name="no_inviting">no inviting</string>
+    <string name="allow_inviting">allow inviting</string>
+    <string name="do_not_strip_colours">do not strip colours</string>
+    <string name="strip_colours">strip colours</string>
+    <string name="no_channel_limit">no channel limit</string>
+    <string name="channel_limit">channel limit</string>
+    <string name="users">users</string>
+    <string name="no_key_required">no key required</string>
+    <string name="key_required">key required</string>
+    <string name="no_nick_changes_allowed">no nick changes allowed</string>
+    <string name="nick_changes_allowed">nick changes allowed</string>
+    <string name="not_grated">not G-rated</string>
+    <string name="grated">G-rated</string>
+    <string name="not_auditorium">not auditorium</string>
+    <string name="auditorium">auditorium</string>
+    <!-- IRC user modes -->
+    <string name="gives" formatted="false">%s gives %s \'%s\'</string>
+    <string name="takes" formatted="false">%s takes %s \'%s\'</string>
+    <string name="owner">Owner</string>
+    <string name="operator">Operator</string>
+    <string name="voice">Voice</string>
+    <string name="admin">Admin</string>
+    <string name="halfop">Half Op</string>
+    <string name="sets" formatted="false">%s sets %s \'%s\'</string>
+    <!-- IRC bans -->
+    <string name="lifts" formatted="false">%s lifts %s \'%s\'</string>
+    <string name="a_ban_on">a ban on</string>
+    <string name="a_ban_exception_on">a ban exception on</string>
+    <!-- IRC Notifications -->
+    <string name="connecting_to_irc">Connecting to the JB Chat…</string>
+    <string name="in_the_irc">In the JB Chat</string>
+    <string name="one_new_mention">1 new mention</string>
+    <string name="x_new_mentions">%s new mentions</string>
+    <string name="no_new_mentions">No new mentions</string>
+    <!-- IRC Menu -->
+    <string name="log">Log</string>
+    <string name="change_nick">Change Nick</string>
+    <string name="nicklist">NickList</string>
+    <string name="save_to_file">Save to file</string>
+    <string name="logout">Logout</string>
+    <!-- IRC etc -->
+    <string name="initiating_connection">Initiating connection</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="timeout">Timeout</string>
+    <string name="must_enter_nick">Dude, you have to enter a nick.</string>
+    <string name="connection_timed_out">Connection timed out. Either check your connection, or set a longer timeout in the settings.</string>
+    <string name="terminated">Terminated</string>
+
+    <!-- Video -->
+    <string name="open_irc">Open IRC</string>
 </resources>
 

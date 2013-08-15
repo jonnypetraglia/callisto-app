@@ -40,6 +40,8 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+//TODO: R.Strings
+
 public class twit extends ListActivity
 {
     public static String user = "ChrisLAS";

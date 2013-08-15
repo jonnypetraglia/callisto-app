@@ -257,8 +257,9 @@ public class EpisodeDesc extends Activity
             case SHARE_ID:  //Sharing is caring (show the built-in Android dialog
                 Intent i=new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Thought I'd share this with you!");
-                i.putExtra(Intent.EXTRA_TEXT, "Check out this awesome episode of " + show + "!\n\n" + link);
+                i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject));
+                i.putExtra(Intent.EXTRA_TEXT,
+                        String.format(getResources().getString(R.string.share_message), show, link));
                 startActivity(Intent.createChooser(i, this.getResources().getString(R.string.share)));
                 return true;
             default:
@@ -377,18 +378,20 @@ public class EpisodeDesc extends Activity
             if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             {
                 new AlertDialog.Builder(v.getContext())
-                        .setTitle("No SD Card")
-                        .setMessage("There is currently no external storage to write to.")
-                        .setNegativeButton("Ok",null)
+                        .setTitle(R.string.no_sd_card)
+                        .setMessage(R.string.no_external_storage)
+                        .setNegativeButton(android.R.string.ok,null)
                         .create().show();
                 Log.w("EpisodeDesc:launchDownload", "No SD card");
                 return;
             }
             //http://www.androidsnippets.com/download-an-http-file-to-sdcard-with-progress-notification
-            StaticBlob.downloading_count++;
-            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + StaticBlob.downloading_count);
 
-            StaticBlob.databaseConnector.addDownload(id, vidSelected);
+            if(!StaticBlob.databaseConnector.addDownload(id, vidSelected))
+                return;
+
+            DownloadTask.downloading_count++;
+            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + DownloadTask.downloading_count);
 
             //Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
             Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
@@ -403,7 +406,7 @@ public class EpisodeDesc extends Activity
         }
     };
 
-    /** Listener for when the "download" button is pressed. */
+    /** Listener for when the "cancel" button is pressed. */
     private OnClickListener launchCancel = new OnClickListener()
     {
         @Override

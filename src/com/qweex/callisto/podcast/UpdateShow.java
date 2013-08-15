@@ -229,7 +229,7 @@ public class UpdateShow
         eventType2 = xpp_vid.next();
         while(eventType2!=XmlPullParser.END_DOCUMENT)
         {
-            Log.e("VIDEO? " + eventType2 + "==" + XmlPullParser.START_TAG + "/" + XmlPullParser.END_TAG, "?" + xpp_vid.getName() + " *" + "item".equals(xpp_vid.getName()));
+            Log.e("*:updateShow  VIDEO? " + eventType2 + "==" + XmlPullParser.START_TAG + "/" + XmlPullParser.END_TAG, "?" + xpp_vid.getName() + " *" + "item".equals(xpp_vid.getName()));
             if("title".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG)
             {
                 eventType2 = xpp_vid.next();
@@ -309,7 +309,7 @@ public class UpdateShow
         eventType = xpp.next();
         while(eventType!=XmlPullParser.END_DOCUMENT)
         {
-            Log.e("AUDIO? " + eventType + "==" + XmlPullParser.START_TAG, "?" + xpp.getName() );
+            Log.e("*:updateShow   AUDIO? " + eventType + "==" + XmlPullParser.START_TAG, "?" + xpp.getName() );
             if("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();

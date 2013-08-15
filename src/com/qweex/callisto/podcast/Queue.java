@@ -113,7 +113,7 @@ public class Queue extends ListActivity
                 Log.d("Queue:onOptionsItemSelected", "Cursor changed");
                 updateNowPlaying(0);
                 StaticBlob.playerInfo.isPaused = true;
-                Log.d("Queue:onOptionsItemSelected", "Derp");
+                Log.d("Queue:onOptionsItemSelected", "Done");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -241,7 +241,6 @@ public class Queue extends ListActivity
                     mainListView.mItemHeightHalf = mainListView.mItemHeightNormal / 2;
                     mainListView.mItemHeightExpanded = mainListView.mItemHeightNormal * 2;
                     mainListView.mItemColor = Queue.this.getResources().getColor(R.color.backClr);
-                    Log.d(":", "MEASURED");
                 } catch(NullPointerException e){}
             }
 
@@ -349,7 +348,7 @@ public class Queue extends ListActivity
             //int fromID = from+1, toID = to+1;
 
             StaticBlob.databaseConnector.moveQueue(Queue.FromID, toID+1);
-            Toast.makeText(Queue.this,"Moved, pray to the gods it has worked", Toast.LENGTH_SHORT);
+            Toast.makeText(Queue.this,R.string.folder_moved, Toast.LENGTH_SHORT);
             listAdapter.getCursor().requery();
             listAdapter.notifyDataSetChanged();
             Queue.FromID = -1;

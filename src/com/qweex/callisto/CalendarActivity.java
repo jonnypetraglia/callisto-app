@@ -78,90 +78,53 @@ import android.widget.Toast;
  */
 
 public class CalendarActivity extends Activity {
-    /**
-     * The Calendar variable that holds the current date that is selected. Like the month in the landscape view. Basically this is the most important variable in this activity.
-     */
+    /** The Calendar variable that holds the current date that is selected. Like the month in the landscape view.
+     * Basically this is the most important variable in this activity. */
     private Calendar current_cal = Calendar.getInstance();
-    /**
-     * Refresh menu item
-     */
+    /** Refresh menu item */
     private final int REFRESH_MENU_ID = Menu.FIRST;
-    /**
-     * The feed URL for the JB Google Calendar
-     */
+    /** The feed URL for the JB Google Calendar */
     private final static String CALENDAR_FEED_URL = "https://www.google.com/calendar/feeds/jalb5frk4cunnaedbfemuqbhv4@group.calendar.google.com/public/basic?singleevents=false&futureevents=true&&orderby=starttime&sortorder=a";
-    /**
-     * Dude come on, why are you even reading this.
-     */
+    /** Dude come on, why are you even reading this. */
     private final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
-    /**
-     * The Month and Year in the title
-     */
+    /** The Month and Year in the title */
     private TextView Tmonth, Tyear;
-    /**
-     * The buttons in the title bar
-     */
+    /** The buttons in the title bar */
     private Button Bnext, Bprev;
-    /**
-     * The months [January, February, etc]
-     */
+    /** The months [January, February, etc] */
     private String[] months;
-    /**
-     * The days [Sunday, Monday, etc]
-     */
+    /**  The days [Sunday, Monday, etc] */
     private String[] days;
-    /**
-     * The 7 day views
-     */
+    /** The 7 day views */
     private LinearLayout[] dayViews = new LinearLayout[7];
-    /**
-     * The dialog that is shown when an event is created or edited
-     */
+    /** The dialog that is shown when an event is created or edited */
     private Dialog createEventDialog;
-    /**
-     * The popup window that is shown when you press a show
-     */
+    /**  The popup window that is shown when you press a show */
     private PopupWindow popUp;
-    /**
-     * Used to determine if it's the agenga or week view
-     */
+    /** Used to determine if it's the agenga or week view */
     private boolean isLandscape = false;
-    /**
-     * A piece of information for the popup (i.e. the 'popUp' variable)
-     */
+    /** A piece of information for the popup (i.e. the 'popUp' variable) */
     private TextView popUp_title, popUp_type, popUp_date, popUp_time;
-    /**
-     * The progress dialog to show when refreshing the calendar
-     */
+    /** The progress dialog to show when refreshing the calendar */
     private ProgressDialog progressDialog;
-    /**
-     * The task to fetch the RSS file and insert it into the SQL database
-     */
+    /** The task to fetch the RSS file and insert it into the SQL database */
     private FetchEventsTask fetchTask;
-    /**
-     * A LinearLayout that will hold the individual shows. The activity uses this instead of a ListView.
-     */
+    /** A LinearLayout that will hold the individual shows. The activity uses this instead of a ListView. */
     private LinearLayout agenda;
 
-    /**
-     * Theoretically the date parsing should be able to parse PDT. However, apparently Android documentation and Stackoverflow and big goddamn liars. So we need this.
-     */
+    /** Theoretically the date parsing should be able to parse PDT. However, apparently Android documentation and Stackoverflow and big goddamn liars. So we need this. */
     boolean stupidBug = !(Arrays.asList(TimeZone.getAvailableIDs()).contains("PDT"));
-    /**
-     * The height of the popUp PopupWindow after it is shown
-     */
+    /** The height of the popUp PopupWindow after it is shown */
     int TheHeightOfTheFreakingPopup = 0;
 
 
-    /**
-     * Called when the activity is first created. Determines the orientation of the screen then initializes the appropriate view.
-     *
+    /** Called when the activity is first created. Determines the orientation of the screen then initializes the appropriate view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle(this.getResources().getString(R.string.agenda_title));
+        this.setTitle(this.getResources().getString(R.string.upcoming_shows));
 
         isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
         months = this.getResources().getStringArray(R.array.months);
@@ -239,9 +202,7 @@ public class CalendarActivity extends Activity {
         }
     }
 
-    /**
-     * Called when any key is pressed. Used do dismiss the event info popup when you press back.
-     *
+    /** Called when any key is pressed. Used do dismiss the event info popup when you press back.
      * @param keyCode I dunno
      * @param event   I dunno
      */
@@ -263,8 +224,7 @@ public class CalendarActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * Called when the activity is resumed, like when you return from another activity or also when it is first created.
+    /** Called when the activity is resumed, like when you return from another activity or also when it is first created.
      */
     @Override
     public void onResume() {
@@ -280,9 +240,7 @@ public class CalendarActivity extends Activity {
             });
     }
 
-    /**
-     * Called when it is time to create the menu.
-     *
+    /** Called when it is time to create the menu.
      * @param menu Um, the menu
      */
     @Override
@@ -292,9 +250,7 @@ public class CalendarActivity extends Activity {
         return true;
     }
 
-    /**
-     * Called when an item in the menu is pressed.
-     *
+    /** Called when an item in the menu is pressed.
      * @param item The menu item ID that was pressed
      */
     @Override
@@ -308,8 +264,7 @@ public class CalendarActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Called when the user press the '>>' button.
+    /** Called when the user press the '>>' button.
      */
     public OnClickListener nextWeek = new OnClickListener() {
         @Override
@@ -319,8 +274,7 @@ public class CalendarActivity extends Activity {
         }
     };
 
-    /**
-     * Called when the user press the '<<' button.
+    /** Called when the user press the '<<' button.
      */
     public OnClickListener prevWeek = new OnClickListener() {
         @Override
@@ -330,8 +284,7 @@ public class CalendarActivity extends Activity {
         }
     };
 
-    /**
-     * Resets the calendar to the current date.
+    /** Resets the calendar to the current date.
      */
     public OnClickListener resetCalender = new OnClickListener() {
         @Override
@@ -367,8 +320,7 @@ public class CalendarActivity extends Activity {
         return hourDifference;
     }
 
-    /**
-     * Performs database query outside GUI thread.
+    /** Performs database query outside GUI thread.
      */
     private class FetchEventsTask extends AsyncTask<Object, Object, Object> {
         @Override
@@ -538,15 +490,14 @@ public class CalendarActivity extends Activity {
                     Tmonth.performClick();  //Go to the current week
                 else
                 {
-                    ((Button) findViewById(R.id.loadmore)).setText(CalendarActivity.this.getResources().getString(R.string.load_more));       //The button has different text if you've never updated.
+                    ((Button) findViewById(R.id.loadmore)).setText(CalendarActivity.this.getResources().getString(R.string.more));       //The button has different text if you've never updated.
                     loadMoreAgenda(true);   //Load the first few event thingies after the update
                 }
             }
         }
     }
 
-    /**
-     * Updates the Weekly view after changing the current the week.
+    /** Updates the Weekly view after changing the current the week.
      */
     public void updateCalendar()
     {
@@ -640,8 +591,7 @@ public class CalendarActivity extends Activity {
         current_cal.add(Calendar.DATE, -7 + dayOfWeek);
     }
 
-    /**
-     * Called when the user the presses the "Edit" button for an existing alarm.
+    /** Called when the user the presses the "Edit" button for an existing alarm.
      */
     public OnClickListener editEvent = new OnClickListener() {
         @Override
@@ -654,7 +604,7 @@ public class CalendarActivity extends Activity {
             createEventDialog.setContentView(editEventView);
             if (isLandscape)
                 ((LinearLayout) editEventView.findViewById(R.id.landscapeRotate)).setOrientation(LinearLayout.HORIZONTAL);
-            createEventDialog.setTitle("Set Alarm/Notification");
+            createEventDialog.setTitle(R.string.set_alarm_notification);
             createEventDialog.show();
 
             //Create a number picker
@@ -758,7 +708,7 @@ public class CalendarActivity extends Activity {
                     i.putExtra("vibrate", vibrate);
                     i.putExtra("show", key.substring(0, key.length() - 14));
                     i.putExtra("key", key);
-                    Toast.makeText(CalendarActivity.this, "Creating event...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CalendarActivity.this, R.string.creating_event, Toast.LENGTH_SHORT).show();
                     PendingIntent pi = PendingIntent.getBroadcast(CalendarActivity.this.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
                     AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                     mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi);
@@ -775,8 +725,7 @@ public class CalendarActivity extends Activity {
         }
     };
 
-    /**
-     * Listener for play/pause button.
+    /** Listener for play/pause button.
      */
     public OnClickListener clickEvent = new OnClickListener()
     {
@@ -920,9 +869,7 @@ public class CalendarActivity extends Activity {
     };
 
 
-    /**
-     * Loads 7 more days worth of events into the Agenda view
-     *
+    /** Loads 7 more days worth of events into the Agenda view
      * @param thisWeek If it is this week
      */
     public void loadMoreAgenda(boolean thisWeek)
@@ -995,7 +942,7 @@ public class CalendarActivity extends Activity {
 
                 //Get the timeUntil
                 Calendar today = Calendar.getInstance();
-                String timeUntil = "NOW!";
+                String timeUntil = getResources().getString(R.string.now).toUpperCase();
                 int timeBetween = 24 * 60;
                 if(thisWeek && i==0)
                 {
@@ -1008,9 +955,9 @@ public class CalendarActivity extends Activity {
                     }
                     timeBetween -= 60;
                     if(timeBetween > 0)
-                        timeUntil = Callisto.formatTimeFromSeconds(timeBetween) + " left";
+                        timeUntil = String.format(getResources().getString(R.string.time_left),Callisto.formatTimeFromSeconds(timeBetween));
                     else
-                        timeUntil = "Now!";
+                        timeUntil = getResources().getString(R.string.now).toUpperCase();
                 }
                 Log.v("CalendarActivity:loadMoreAgenda", "Time Until: " + timeUntil);
 
@@ -1039,7 +986,7 @@ public class CalendarActivity extends Activity {
                 if (thisWeek && i == 0 && timeBetween <= 60 * 12)
                 {
                     ((TextView) v.findViewById(R.id.time)).setText(timeUntil);
-                    ((TextView) v.findViewById(R.id.soon)).setText("SOON");
+                    ((TextView) v.findViewById(R.id.soon)).setText(R.string.soon);
                 } else
                     ((TextView) v.findViewById(R.id.time)).setText(StaticBlob.sdfTime.format(eventDate.getTime()));
 

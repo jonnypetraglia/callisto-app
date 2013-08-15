@@ -52,7 +52,7 @@ import android.widget.LinearLayout.LayoutParams;
 public class Callisto extends Activity
 {
     /** Titles for the tabletMenu */
-    String[] tabletMenu = new String[] {"Play", "Live", "Plan", "Chat", "Contact", "Donate"};
+    String[] tabletMenu = getResources().getStringArray(R.array.tablet_menu);
     /** Ids used for onclicklisteners and the tablet launching activities */
     int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
     /** Menu ID for this activity */
@@ -93,9 +93,9 @@ public class Callisto extends Activity
         {
             if(StaticBlob.storage_path.startsWith(android.os.Environment.getExternalStorageDirectory().toString()) &&
                     !android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-                Toast.makeText(this, "There is currently no external storage to write to.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.no_external_storage, Toast.LENGTH_SHORT).show();
             else
-                Toast.makeText(this, "The storage directory does not exist, check its correctness in the preferences.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.folder_not_exist, Toast.LENGTH_SHORT).show();
         }
 
         //Create seek dialog
@@ -122,7 +122,6 @@ public class Callisto extends Activity
 
         if(Live.LIVE_PreparedListener.pd!=null)
             Live.LIVE_PreparedListener.pd.show();
-        Log.d("DERP:", Live.live_player + "!!!");
     }
 
     /** Initiating the activity for a Phone formfactor device OR for any device running 2.1 or earlier. (I dunno if Eclair tablets exist but if they do, they shouldn't.)
@@ -205,7 +204,7 @@ public class Callisto extends Activity
     public void onResume()
     {
         super.onResume();
-        System.out.println("onResume: " + Live.LIVE_PreparedListener.pd);
+        Log.v("Callisto:onResume", Live.LIVE_PreparedListener.pd + " ");
         if(Live.LIVE_PreparedListener.pd!=null)
             Live.LIVE_PreparedListener.pd.show();
         Log.v("Callisto:onResume", "Resuming main activity");
@@ -424,8 +423,8 @@ public class Callisto extends Activity
             if(StaticBlob.mplayer!=null)
             {
                 AlertDialog d = new AlertDialog.Builder(v.getContext())
-                        .setTitle("Switch from playlist to live?")
-                        .setPositiveButton("Yup", new DialogInterface.OnClickListener()
+                        .setTitle(R.string.switch_to_live)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
@@ -436,7 +435,7 @@ public class Callisto extends Activity
                                 v.performClick();
                             }
                         })
-                        .setNegativeButton("Nope", new DialogInterface.OnClickListener(){
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -549,9 +548,9 @@ public class Callisto extends Activity
         news = new Dialog(this);
         //Set the title with the version number if possible
         try {
-            news.setTitle("Version " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            news.setTitle(getResources().getString(R.string.version) + " " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
         } catch(Exception e) {
-            news.setTitle("Update notes");
+            news.setTitle(R.string.release_notes);
         }
         //Show it!
         news.addContentView(elv, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));

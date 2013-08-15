@@ -72,7 +72,7 @@ public class DownloadList extends ListActivity
             finish();
             return;
         }
-		setTitle("Downloads");
+		setTitle(R.string.downloads);
 
         //Empty view
 		TextView noResults = new TextView(this);
@@ -100,7 +100,7 @@ public class DownloadList extends ListActivity
         extendedCursor.moveToFirst();
         for(int i=0; i<extendedCursor.getCount(); i++)
         {
-            Log.i("Downloads: ", extendedCursor.getString(extendedCursor.getColumnIndex("identity")));
+            Log.i("DownloadList::onCreate", extendedCursor.getString(extendedCursor.getColumnIndex("identity")));
             extendedCursor.moveToNext();
         }
         listAdapter = new DownloadAdapter(this, 0, extendedCursor, new String[] {}, new int[] {}, 0);
@@ -180,9 +180,9 @@ public class DownloadList extends ListActivity
 
             TextView x = ((TextView)row.findViewById(R.id.heading));
             if(identity==-1)
-                x.setText("Active");
+                x.setText(R.string.active);
             else
-                x.setText("Completed");
+                x.setText(R.string.complete);
             x.setFocusable(false);
             x.setEnabled(false);
             return row;
@@ -267,7 +267,6 @@ public class DownloadList extends ListActivity
                     downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
                 else
                     downloadProgress = null;
-                Log.d("DERPPPPPP", downloadProgress + " !!!! " + position);
             }
 
             return row;
@@ -279,9 +278,9 @@ public class DownloadList extends ListActivity
     {
         //Pronounce this outloud
         boolean paoosay = (DownloadTask.running || StaticBlob.databaseConnector.getActiveDownloads().getCount()==0);
-        menu.add(0, PAUSE_ID, 0, paoosay ? "PAUSE" : "RESUME").setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
-        menu.add(0, CLEAR_COMP_ID, 0, "Clear Completed").setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getCompleteDownloads().getCount()>0);
-        menu.add(0, CLEAR_ACTIVE_ID, 0, "Cancel Active").setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
+        menu.add(0, PAUSE_ID, 0, paoosay ? R.string.pause : R.string.resume).setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
+        menu.add(0, CLEAR_COMP_ID, 0, R.string.clear_completed).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getCompleteDownloads().getCount()>0);
+        menu.add(0, CLEAR_ACTIVE_ID, 0, R.string.cancel_active).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
         return true;
     }
 
@@ -304,7 +303,7 @@ public class DownloadList extends ListActivity
                 if(DownloadTask.running)    //Pause
                 {
                     item.setIcon(R.drawable.ic_action_playback_play);
-                    item.setTitle("Resume");
+                    item.setTitle(R.string.resume);
                     EpisodeDesc.dltask.cancel(true);
                     DownloadTask.running = false;
                 }
@@ -314,16 +313,16 @@ public class DownloadList extends ListActivity
                     if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
                     {
                         new AlertDialog.Builder(this)
-                                .setTitle("No SD Card")
-                                .setMessage("There is currently no external storage to write to.")
-                                .setNegativeButton("Ok",null)
+                                .setTitle(R.string.no_sd_card)
+                                .setMessage(R.string.no_external_storage)
+                                .setNegativeButton(android.R.string.ok, null)
                                 .create().show();
                         Log.w("DownloadList:onOptionsItemSelected", "No SD card");
                         return true;
                     }
                     item.setIcon(R.drawable.ic_action_playback_pause);
-                    item.setTitle("Pause");
-                    StaticBlob.downloading_count = StaticBlob.databaseConnector.getActiveDownloads().getCount();
+                    item.setTitle(R.string.pause);
+                    DownloadTask.downloading_count = StaticBlob.databaseConnector.getActiveDownloads().getCount();
                     EpisodeDesc.dltask = new DownloadTask(DownloadList.this);
                     DownloadTask.running = true;
                     EpisodeDesc.dltask.execute();
@@ -342,9 +341,10 @@ public class DownloadList extends ListActivity
              View parent = (View)(v.getParent());
 			 TextView tv = (TextView) parent.findViewById(R.id.hiddenId);
 			 int id = Integer.parseInt((String) tv.getText());
-             StaticBlob.databaseConnector.removeDownload(id);
+             if(!StaticBlob.databaseConnector.removeDownload(id))
+                 return;
 
-			 StaticBlob.downloading_count--;
+             DownloadTask.downloading_count--;
              rebuildHeaderThings.sendEmptyMessage(0);
 		  }
     };

@@ -59,7 +59,7 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
             NotificationManager mNotificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             Intent notificationIntent = new Intent(context, Callisto.class);
     		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            StaticBlob.notification_alarm = new Notification(R.drawable.callisto, "JupiterBroadcasting alarm!", System.currentTimeMillis());
+            StaticBlob.notification_alarm = new Notification(R.drawable.callisto, context.getResources().getString(R.string.alarm_title), System.currentTimeMillis());
 
             //Set the notification options
             if(isAlarm>0)

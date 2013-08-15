@@ -21,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.*;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,7 +46,6 @@ import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.style.ForegroundColorSpan;
@@ -278,14 +276,13 @@ public class IRCChat extends Activity implements IRCEventListener
         changeNickDialog.setFocusable(true);
         changeNickDialog.setTouchable(true);
         Button l = (Button) fl.findViewById(R.id.login);
-        l.setText("Change");
+        l.setText(R.string.change_nick);
         l.setSingleLine();
         l.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 String nick = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.user)).getText().toString();
                 String pass = ((EditText)((LinearLayout)v.getParent()).findViewById(R.id.pass)).getText().toString();
-                Log.e("ADS", nick + "!");
                 if(nick.equals(""))
                 {
                     changeNickDialog.dismiss();
@@ -320,29 +317,12 @@ public class IRCChat extends Activity implements IRCEventListener
         int i = Arrays.asList(naughtyCarriers).indexOf(StaticBlob.teleMgr.getNetworkOperatorName());
         System.out.println("i=" + i + " " + StaticBlob.teleMgr.getNetworkOperatorName());
         if(i>=0)
-            new AlertDialog.Builder(this).setTitle("Warning for " + titleCase(naughtyCarriers[i]))
-                    .setMessage("It has been reported that your carrier actively blocks all IRC traffic, so wifi is recommended." +
-                        "\n\nOtherwise, unexpected behaviour may result, abandon all hope, ye who enter here.")
+            new AlertDialog.Builder(this).setTitle(R.string.carrier_warning)
+                    .setMessage(R.string.verizon_warning)
                     .setNegativeButton(android.R.string.ok, null)
                     .setIcon(R.drawable.ic_action_cancel)
                     .show();
 
-    }
-
-    public static String titleCase(String realName) {
-        String space = " ";
-        String[] names = realName.split(space);
-        StringBuilder b = new StringBuilder();
-        for (String name : names) {
-            if (name == null || name.isEmpty()) {
-                b.append(space);
-                continue;
-            }
-            b.append(name.substring(0, 1).toUpperCase())
-                    .append(name.substring(1).toLowerCase())
-                    .append(space);
-        }
-        return b.toString();
     }
 
     protected OnClickListener InitiateLogin= new OnClickListener(){
@@ -353,7 +333,7 @@ public class IRCChat extends Activity implements IRCEventListener
             System.out.println("profileNick: " + profileNick);
             if(profileNick==null || profileNick.trim().equals(""))
             {
-                Toast.makeText(IRCChat.this, "Dude, you have to enter a nick.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(IRCChat.this, R.string.must_enter_nick, Toast.LENGTH_SHORT).show();
                 return;
             }
             String profilePassword = pass.getText().toString();
@@ -379,11 +359,12 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        System.out.println("DERPY " + keyCode);
+        // Un-focus the IRC for mentions
         if (keyCode == KeyEvent.KEYCODE_HOME)
         {
             isFocused = false;
         }
+        // Unfocus the IRC for mentions
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
             if(session==null || true)
@@ -393,14 +374,18 @@ public class IRCChat extends Activity implements IRCEventListener
                 return true;
             }
         }
+        // Nick Completion
         if (keyCode == KeyEvent.KEYCODE_SEARCH)
         {
             if(nickList==null)
                 return true;
+            // There should be no text selection, just a cursor
             int i = input.getSelectionStart();
             int i2 = input.getSelectionEnd();
             if(i!=i2)
                 return false;
+
+            // Get the nick to search for if this is the start of a search and not cycling through
             if(nickSearch.equals(""))
             {
                 nickSearch = input.getText().toString();
@@ -408,32 +393,35 @@ public class IRCChat extends Activity implements IRCEventListener
                 lastNickSearched = nickSearch;
             }
 
+            // Check the nicklist
             String s = "";
-            System.out.println("Search: " + nickSearch + " | " + lastNickSearched);
             Iterator<String> iterator = nickList.iterator();
             while(iterator.hasNext())
             {
-                s = (String) iterator.next();
-                System.out.println("Herpaderp " + s);
+                s = iterator.next();
+                // Look for the last Nick Searched and grab the next one
                 if(s.toUpperCase().equals(lastNickSearched))
                 {
-                    s = (String) iterator.next();
-                    System.out.println("Herpaderpesque " + s);
+                    s = iterator.next();
+                    // If there is no next one, loop back around & find the first nick that starts with the term
                     if(s==null)
                     {
-                        System.out.println("Herpaderpeqsudsadsa " + s);
                         iterator = nickList.iterator();
                         s = iterator.next();
-                        while(!s.startsWith(nickSearch)); s = iterator.next();
+                        while(!s.startsWith(nickSearch) && iterator.hasNext()); s = iterator.next();
                     }
                     break;
+                } else {
+                    //TODO: I ain't sure this is correct. The 'if' looks for the lastNickSearched, and this 'else' looks otherwise if the current starts with the search term, but what if we have lastNickSearched='Bob', searchTerm='bo' and another nick in the list named 'boa'? Would hit 'boa' before getting to 'Bob'
+                    // If it does indeed start with our search term, we are done
+                    if(s.toUpperCase().startsWith(nickSearch))
+                        break;
                 }
-                if(s.toUpperCase().startsWith(nickSearch))
-                    break;
             }
+            // If we hit the end of the NickList, unset the result
             if(!iterator.hasNext())
                 s = null;
-            System.out.println("HerpaderOP " + s);
+            // If we have a result, insert it
             if(s!=null)
             {
                 String newt = input.getText().toString().substring(0,i-lastNickSearched.length())
@@ -465,12 +453,12 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log_MI = menu.add(0, LOG_ID, 0, "Log").setIcon(R.drawable.ic_action_import);
-        Change_MI = menu.add(0, CHANGE_ID, 0, "Change Nick").setIcon(R.drawable.ic_action_tag);
-        Nick_MI = menu.add(0, NICKLIST_ID, 0, "NickList").setIcon(R.drawable.ic_action_list);
-        Save_MI = menu.add(0, SAVE_ID, 0, "Save to file").setIcon(R.drawable.ic_action_inbox);
-        Logout_MI = menu.add(0, LOGOUT_ID, 0, "Logout").setIcon(R.drawable.ic_action_goleft);
-        JBTitle_MI = menu.add(0, JBTITLE_ID, 0, "JBTitle").setIcon(R.drawable.ic_action_like);
+        Log_MI = menu.add(0, LOG_ID, 0, R.string.log).setIcon(R.drawable.ic_action_import);
+        Change_MI = menu.add(0, CHANGE_ID, 0, R.string.change_nick).setIcon(R.drawable.ic_action_tag);
+        Nick_MI = menu.add(0, NICKLIST_ID, 0, R.string.nicklist).setIcon(R.drawable.ic_action_list);
+        Save_MI = menu.add(0, SAVE_ID, 0, R.string.save_to_file).setIcon(R.drawable.ic_action_inbox);
+        Logout_MI = menu.add(0, LOGOUT_ID, 0, R.string.logout).setIcon(R.drawable.ic_action_goleft);
+        JBTitle_MI = menu.add(0, JBTITLE_ID, 0, R.string.jbtitle).setIcon(R.drawable.ic_action_like);
         updateMenu();
         return true;
     }
@@ -484,9 +472,7 @@ public class IRCChat extends Activity implements IRCEventListener
     	    Logout_MI.setEnabled(session!=null);
             Save_MI.setEnabled(session!=null);
 
-            Log.d("DERP", session + "");
-
-            Change_MI.setTitle(this.getClass()== VideoActivity.class ? "Open IRC" : ((session!=null && session.getRetries()>1 ) ? "Reconnect" : "Change Nick"));
+            Change_MI.setTitle(this.getClass()== VideoActivity.class ? R.string.open_irc : ((session!=null && session.getRetries()>1 ) ? R.string.reconnect : R.string.change_nick));
             Change_MI.setEnabled(this.getClass()==VideoActivity.class || (session!=null));
         } catch(Exception e) {}
     }
@@ -503,8 +489,8 @@ public class IRCChat extends Activity implements IRCEventListener
                 ((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
                 return true;
             case CHANGE_ID:
-                System.out.println("Herpaderp");
-                if("Reconnect".equals(item.getTitle().toString()))
+                Log.i("IRCChat::onOptionsItemSelected", "CHANGE_ID...ing");
+                if(getResources().getString(R.string.reconnect).equals(item.getTitle().toString()))
                     actuallyConnect();
                 else
                     changeNickDialog.showAtLocation(findViewById(R.id.viewanimator), android.view.Gravity.CENTER, 0, 0);
@@ -527,10 +513,10 @@ public class IRCChat extends Activity implements IRCEventListener
                     FileOutputStream fOut = new FileOutputStream(fileLocation);
                     fOut.write(cs.toString().getBytes());
                     fOut.close();
-                    Toast.makeText(this, "File written to: \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getStr(R.string.file_written_to) + " \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                 } catch(Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Unable to write to: \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,  getStr(R.string.unable_to_write_to) + " \n" + fileLocation.getAbsolutePath(), Toast.LENGTH_LONG).show();
                 }
                 return true;
             case LOGOUT_ID:
@@ -692,14 +678,19 @@ public class IRCChat extends Activity implements IRCEventListener
         switch (status)
         {
             case connecting:
-                StaticBlob.notification_chat.setLatestEventInfo(this,  "Connecting to the JB Chat...",  "Using nick: " + profileNick, contentIntent);
+                StaticBlob.notification_chat.setLatestEventInfo(this, getStr(R.string.connecting_to_irc), profileNick, contentIntent);
                 break;
             case connected:
                 Log.i("IRCChat::updateNotifyText", "Status: " + status);
-                if(mentionCount>0)
-                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
+                if(mentionCount==1)
+                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), getStr(R.string.connecting_to_irc),
+                            getStr(R.string.one_new_mention), contentIntent);
+                else if(mentionCount>0)
+                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), getStr(R.string.connecting_to_irc),
+                            String.format(getStr(R.string.x_new_mentions), mentionCount), contentIntent);
                 else
-                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  "No new mentions", contentIntent);
+                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), getStr(R.string.connecting_to_irc),
+                            getStr(R.string.no_new_mentions), contentIntent);
                 break;
             case disconnected:
 
@@ -741,9 +732,9 @@ public class IRCChat extends Activity implements IRCEventListener
         }catch(Exception e){}
         session = manager.requestConnection(SERVER_NAME, port);
         session.setRejoinOnKick(false);
-        chatQueue.add(new IrcMessage("[Callisto]", "Attempting to logon.....be patient you silly goose.", SPECIAL_COLORS.ME));
+        chatQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.attempting_to_logon), SPECIAL_COLORS.ME));
         ircHandler.post(chatUpdater);
-        logQueue.add(new IrcMessage("[Callisto]", "Intiating connection to " + SERVER_NAME + " on port " + port, SPECIAL_COLORS.ME));
+        logQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.initiating_connection) + " - " + SERVER_NAME + ":" + port, SPECIAL_COLORS.ME));
 
         timeoutCount = 0;
         loopTask = new TimerTask()
@@ -755,14 +746,13 @@ public class IRCChat extends Activity implements IRCEventListener
                     this.cancel();
                     return;
                 }
-                System.out.println("TIMEOUT: " + timeoutCount);
                 if(timeoutCount>=SESSION_TIMEOUT)
                 {
                     manager.quit();
                     manager = null;
                     session = null;
                     updateMenu();
-                    chatQueue.add(new IrcMessage("[TIMEOUT]", "Connection timed out. Either check your connection, or set a longer timeout in the settings.", SPECIAL_COLORS.ME));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.timeout).toUpperCase(), getStr(R.string.connection_timed_out), SPECIAL_COLORS.ME));
                     ircHandler.post(chatUpdater);
                     this.cancel();
                 }
@@ -785,7 +775,7 @@ public class IRCChat extends Activity implements IRCEventListener
 
 
         status = IRC_STATUS.disconnected;
-        IrcMessage ircm = new IrcMessage("~~~~~[TERMINATED]~~~~~",null, SPECIAL_COLORS.ERROR);
+        IrcMessage ircm = new IrcMessage(getStr("~~~~~[",R.string.terminated,"]~~~~~").toUpperCase(),null, SPECIAL_COLORS.ERROR);
         chatQueue.add(ircm);
         ircHandler.post(chatUpdater);
 
@@ -851,12 +841,12 @@ public class IRCChat extends Activity implements IRCEventListener
                         allNicks = allNicks.concat("[" + s + "] ");
                         if(allNicks.length()>60)
                         {
-                            chatQueue.add(new IrcMessage("[NAMES]", allNicks, SPECIAL_COLORS.TOPIC));
+                            chatQueue.add(new IrcMessage(getStrBr(R.string.names), allNicks, SPECIAL_COLORS.TOPIC));
                             allNicks = "";
                         }
                     }
                     if(allNicks.length()>0)
-                        chatQueue.add(new IrcMessage("[NAMES]", allNicks, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.names), allNicks, SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 //TODO: This might not work. I dunno.
@@ -874,14 +864,16 @@ public class IRCChat extends Activity implements IRCEventListener
                 case AWAY_EVENT://This isn't even effing used! (for other people's away
                     AwayEvent a = (AwayEvent) e;
                     if(a.isYou())
-                    {
+                        //TODO: R.String
                         chatQueue.add(new IrcMessage("You are " + (a.isAway() ? " now " : " no longer ") + "away (" + a.getAwayMessage() + ")", null, SPECIAL_COLORS.TOPIC));
-                    }
-                    chatQueue.add(new IrcMessage("[AWAY]", a.getNick() + " is away: " + a.getAwayMessage(), SPECIAL_COLORS.TOPIC));
+                    else
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.away),
+                                String.format(getStr(R.string.is_away), a.getNick()) +
+                                ": " + a.getAwayMessage(),
+                                SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 case MODE_EVENT:
-                    Log.d("DERP;", e + "!");
                     List<ModeAdjustment> lm = ((ModeEvent) e).getModeAdjustments();
                     String setter = ((ModeEvent)e).setBy(), plus = "", minus = "";
                     ArrayList<String> prettified = new ArrayList<String>();
@@ -893,184 +885,121 @@ public class IRCChat extends Activity implements IRCEventListener
                             switch(ma.getMode())
                             {
                                 case 'm':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("un");
-                                    tmp = tmp.concat("moderated'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.unmoderated : R.string.moderated));
                                     break;
                                 case 'p':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("public'.");
-                                    else
-                                        tmp = tmp.concat("private'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.public_ : R.string.private_));
                                     break;
                                 case 's':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("visible'.");
-                                    else
-                                        tmp = tmp.concat("secret'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.visible : R.string.secret));
                                     break;
                                 case 'i':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("not ");
-                                    tmp = tmp.concat("invite only'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.not_invite_only : R.string.invite_only));
                                     break;
                                 case 'n':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    else
-                                        tmp = tmp.concat("allow ");
-                                    tmp = tmp.concat("messages from outside'");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_messages_from_outside : R.string.allow_messages_from_outside));
                                     break;
                                 case 't':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("topic protection'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_topic_protection : R.string.topic_protection));
                                     break;
                                 case 'R':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("doesn't ");
-                                    tmp = tmp.concat("require register'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.doesnt_require_register : R.string.require_register));
                                     break;
                                 case 'c':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("colours'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_colours : R.string.colours));
                                     break;
                                 case 'Q':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("kicks allowed'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_kicks_allowed : R.string.kicks_allowed));
                                     break;
                                 case 'O':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("not ");
-                                    tmp = tmp.concat("Ops only'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.not_ops_only : R.string.ops_only));
                                     break;
                                 case 'A':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("not ");
-                                    tmp = tmp.concat("Admins only'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.not_admins_only : R.string.admins_only));
                                     break;
                                 case 'K':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("knocking'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_knocking : R.string.knocking));
                                     break;
                                 case 'V':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("inviting'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_inviting : R.string.allow_inviting));
                                     break;
                                 case 'S':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("do not ");
-                                    tmp = tmp.concat("strip colours'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.do_not_strip_colours : R.string.strip_colours));
                                     break;
                                 case 'l':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("channel limit" + (ma.getArgument()!=null + " [" + ma.getArgument() + " users]") + "'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_channel_limit : R.string.channel_limit)
+                                                    + " [" + ma.getArgument() + " " + getStr(R.string.users) + "]");
                                     break;
                                 case 'k':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("key required'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_key_required : R.string.key_required));
                                     break;
                                 case 'L':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("key required'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_key_required : R.string.key_required));
                                     break;
                                 case 'N':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("no ");
-                                    tmp = tmp.concat("nick changes allowed'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.no_nick_changes_allowed : R.string.nick_changes_allowed));
                                     break;
                                 case 'G':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("not ");
-                                    tmp = tmp.concat("G-rated'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.not_grated : R.string.grated));
                                     break;
                                 case 'u':
-                                    tmp = tmp.concat(" sets channel mode to '");
-                                    if(ma.getAction().equals(ModeAdjustment.Action.MINUS))
-                                        tmp = tmp.concat("not ");
-                                    tmp = tmp.concat("auditorium'.");
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? R.string.not_auditorium : R.string.auditorium));
                                     break;
 
                                 //OoiwghskSaANTCcfrxebWqBFIHdvtGz
                                 case 'q':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" gives ");
-                                    else
-                                        tmp = tmp.concat(" takes ");
-                                    tmp = tmp.concat(ma.getArgument() + " '" + "Owner" + "'");
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.gives : R.string.takes),
+                                            setter, ma.getArgument(), getStr(R.string.owner));
                                     break;
                                 case 'o':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" gives ");
-                                    else
-                                        tmp = tmp.concat(" takes ");
-                                    tmp = tmp.concat(ma.getArgument() + " '" + "Operator" + "'");
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.gives : R.string.takes),
+                                            setter, ma.getArgument(), getStr(R.string.operator));
                                     break;
                                 case 'v':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" gives ");
-                                    else
-                                        tmp = tmp.concat(" takes ");
-                                    tmp = tmp.concat(ma.getArgument() + " '" + "Voice" + "'");
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.gives : R.string.takes),
+                                            setter, ma.getArgument(), getStr(R.string.voice));
                                     break;
                                 case 'a':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" gives ");
-                                    else
-                                        tmp = tmp.concat(" takes ");
-                                    tmp = tmp.concat(ma.getArgument() + " '" + "Admin" + "'");
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.gives : R.string.takes),
+                                            setter, ma.getArgument(), getStr(R.string.admin));
                                     break;
                                 case 'h':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" gives ");
-                                    else
-                                        tmp = tmp.concat(" takes ");
-                                    tmp = tmp.concat(ma.getArgument() + " '" + "Admin" + "'");
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.gives : R.string.takes),
+                                            setter, ma.getArgument(), getStr(R.string.halfop));
                                     break;
                                 case 'b':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" sets  ");
-                                    else
-                                        tmp = tmp.concat(" lifts ");
-                                    tmp = tmp.concat("a ban on " + ma.getArgument());
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.sets : R.string.lifts),
+                                            setter, getStr(R.string.a_ban_on), ma.getArgument());
                                     break;
                                 case 'e':
-                                    if(ma.getAction().equals(ModeAdjustment.Action.PLUS))
-                                        tmp = tmp.concat(" sets  ");
-                                    else
-                                        tmp = tmp.concat(" lifts ");
-                                    tmp = tmp.concat("a ban exception on " + ma.getArgument());
+                                    tmp = String.format(getStr(ma.getAction().equals(ModeAdjustment.Action.PLUS) ? R.string.sets : R.string.lifts),
+                                            setter, getStr(R.string.a_ban_exception_on), ma.getArgument());
                                     break;
 
                                 default:
                                     // L f O
-                                    tmp = tmp.concat(" sets channel mode: " + (ma.getAction().equals(ModeAdjustment.Action.MINUS)?'-':'+') + ma.getMode());
+                                    tmp = String.format(getStr(R.string.sets_channel_mode_to), setter,
+                                            getStr(ma.getAction().equals(ModeAdjustment.Action.MINUS) ? '-' : '+') + ma.getMode());
                             }
                             prettified.add(tmp);
                         }
@@ -1085,10 +1014,8 @@ public class IRCChat extends Activity implements IRCEventListener
                                     plus = plus.concat(ma.getMode() + "");
                             }
                         }
-                        Log.e("DERP:", ((ModeEvent)e).setBy() + " " + ma.getMode() + " " + ma.getAction() + " " + ma.getArgument() + ((ModeEvent)e).getChannel());
                     }
 
-                    Log.d("Derp...", "Hellooooo " + prettified.size());
                     for(String s : prettified)
                     {
                         chatQueue.add(new IrcMessage("***" + s, null, SPECIAL_COLORS.TOPIC));       //TODO: Different color?
@@ -1100,8 +1027,9 @@ public class IRCChat extends Activity implements IRCEventListener
                         minus = "-" + minus;
                     if((setter.toLowerCase().endsWith(".geekshed.net") || setter.equals("ChanServ")) && (!plus.equals("") || !minus.equals("")))
                     {;
-                        Log.d("Derp...", (setter.toLowerCase().endsWith(".geekshed.net")==true) + " " + (!plus.equals("")) + " " + (!minus.equals("")));
-                        logQueue.add(new IrcMessage("[MODE]", setter + " has changed your personal modes: " + plus + minus, SPECIAL_COLORS.TOPIC));       //TODO: Different color?
+                        logQueue.add(new IrcMessage(getStrBr(R.string.mode),
+                                String.format(getStr(R.string.has_changed_your_modes), setter, plus + minus),
+                                SPECIAL_COLORS.TOPIC));       //TODO: Different color?
                         ircHandler.post(logUpdater);
                     }
                     break;
@@ -1111,23 +1039,23 @@ public class IRCChat extends Activity implements IRCEventListener
                     //FORMAT
                     ServerInformationEvent s = (ServerInformationEvent) e;
                     ServerInformation S = s.getServerInformation();
-                    logQueue.add(new IrcMessage("[INFO]", S.getServerName(), SPECIAL_COLORS.TOPIC));
+                    logQueue.add(new IrcMessage(getStrBr(R.string.info), S.getServerName(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case SERVER_VERSION_EVENT:
                     ServerVersionEvent sv = (ServerVersionEvent) e;
-                    logQueue.add(new IrcMessage("[VERSION]", sv.getVersion(), SPECIAL_COLORS.TOPIC));
+                    logQueue.add(new IrcMessage(getStrBr(R.string.version), sv.getVersion(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case CONNECT_COMPLETE:
                     ConnectionCompleteEvent c = (ConnectionCompleteEvent) e;
-                    logQueue.add(new IrcMessage(null, c.getActualHostName() + "\nConnection complete", SPECIAL_COLORS.TOPIC));
+                    logQueue.add(new IrcMessage(null, c.getActualHostName() + "\n" + getStr(R.string.connection_complete), SPECIAL_COLORS.TOPIC));
                     e.getSession().join(CHANNEL_NAME);
                     ircHandler.post(logUpdater);
                     break;
                 case JOIN_COMPLETE:
                     //JoinCompleteEvent jce = (JoinCompleteEvent) e;
-                    chatQueue.add(new IrcMessage("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", SPECIAL_COLORS.TOPIC));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.join), getStr(R.string.join_complete), SPECIAL_COLORS.TOPIC));
                     if(profilePass!=null && profilePass!=null && !profilePass.equals(""))
                         parseOutgoing("/MSG NickServ identify " + profilePass);
                     ircHandler.post(chatUpdater);
@@ -1137,27 +1065,25 @@ public class IRCChat extends Activity implements IRCEventListener
                     break;
                 case MOTD:
                     MotdEvent mo = (MotdEvent) e;
-                    logQueue.add(new IrcMessage("[MOTD]", mo.getMotdLine(), SPECIAL_COLORS.TOPIC));
+                    logQueue.add(new IrcMessage(getStrBr(R.string.motd), mo.getMotdLine(), SPECIAL_COLORS.TOPIC));
                     ircHandler.post(logUpdater);
                     break;
                 case NOTICE:
                     if(e.getRawEventData().contains("Your nickname is now being changed"))
                     {
-                        System.out.println("Changing");
+                        Log.i("IRCChat:receiveEvent", "Nickname has been changed?");
                         //logout(null);
                         //session.changeNick("Callisto-app");
                     }
                     NoticeEvent ne = (NoticeEvent) e;
                     if((ne.byWho()!=null && ne.byWho().equals("NickServ")) || e.getRawEventData().startsWith(":NickServ"))
                     {
-                        chatQueue.add(new IrcMessage("[NICKSERV]", ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
-                        System.out.println("FUCK YEAH BANANAS " + chatQueue.size());
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.nickserv), ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     else
                     {
-                        logQueue.add(new IrcMessage("[NOTICE]", ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
-                        System.out.println("fuck no bananas");
+                        logQueue.add(new IrcMessage(getStrBr(R.string.notice), ne.getNoticeMessage(), SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                     }
 
@@ -1167,9 +1093,11 @@ public class IRCChat extends Activity implements IRCEventListener
                 case TOPIC:
                     TopicEvent t = (TopicEvent) e;
                     if(t.getTopic()=="")
-                        chatQueue.add(new IrcMessage("[TOPIC] ", "No Topic Set", SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.topic), getStr(R.string.no_topic_set), SPECIAL_COLORS.TOPIC));
                     else
-                        chatQueue.add(new IrcMessage("[TOPIC] " + t.getTopic() + " (set by " + t.getSetBy() + " on " + t.getSetWhen() + " )", null, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.topic) + t.getTopic() +
+                                String.format(getStr(R.string.topic_set_by_on), t.getSetBy(), t.getSetWhen()),
+                                null, SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
 
@@ -1180,47 +1108,56 @@ public class IRCChat extends Activity implements IRCEventListener
                         chatQueue.add(new IrcMessage("->" + m.getNick(), m.getMessage(), SPECIAL_COLORS.PM));
                     else
                         chatQueue.add(new IrcMessage(m.getNick(), m.getMessage(), SPECIAL_COLORS._OTHER));
-                    System.out.println("CHANNEL_MESSAGE: " + m.getMessage());
                     ircHandler.post(chatUpdater);
                     break;
                 case JOIN:
                     JoinEvent j = (JoinEvent) e;
                     nickList.add(j.getNick());
-                    chatQueue.add(new IrcMessage(j.getNick() + " entered the room.", null, SPECIAL_COLORS.JOIN));
+                    chatQueue.add(new IrcMessage(String.format(getStr(R.string.has_entered), j.getNick()), null, SPECIAL_COLORS.JOIN));
                     ircHandler.post(chatUpdater);
                     break;
                 case NICK_CHANGE:
                     NickChangeEvent ni = (NickChangeEvent) e;
-                    chatQueue.add(new IrcMessage(ni.getOldNick() + " changed their nick to " + ni.getNewNick(), null, SPECIAL_COLORS.NICK));
+                    chatQueue.add(new IrcMessage(String.format(getStr(R.string.has_entered), ni.getOldNick(), ni.getNewNick()),
+                            null, SPECIAL_COLORS.NICK));
                     ircHandler.post(chatUpdater);
                     break;
                 case PART:
                     PartEvent p = (PartEvent) e;
                     nickColors.remove(p.getNick());
                     nickList.remove(p.getNick());
-                    chatQueue.add(new IrcMessage("PART: " + p.getNick() + " (" + p.getPartMessage() + ")", null, SPECIAL_COLORS.PART));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.part) + " " + p.getNick() + " (" + p.getPartMessage() + ")",
+                            null, SPECIAL_COLORS.PART));
                     ircHandler.post(chatUpdater);
                     break;
                 case QUIT:
                     QuitEvent q = (QuitEvent) e;
                     nickColors.remove(q.getNick());
                     nickList.remove(q.getNick());
-                    chatQueue.add(new IrcMessage("QUIT:  " + q.getNick() + " (" + q.getQuitMessage() + ")", null, SPECIAL_COLORS.QUIT));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.quit) + " " + q.getNick() + " (" + q.getQuitMessage() + ")",
+                            null, SPECIAL_COLORS.QUIT));
                     ircHandler.post(chatUpdater);
                     break;
                 case KICK_EVENT:
                     KickEvent k = (KickEvent) e;
-                    chatQueue.add(new IrcMessage("KICK:  " + k.getWho() + " was kicked by " + k.byWho()  + ". (" + k.getMessage() + ")", null, SPECIAL_COLORS.KICK));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.kick) + " " +
+                            String.format(getStr(R.string.was_kicked_by), k.byWho(), k.getWho()) +
+                            " (" + k.getMessage() + ")",
+                            null, SPECIAL_COLORS.KICK));
                     ircHandler.post(chatUpdater);
                     break;
                 case NICK_IN_USE:
                     NickInUseEvent n = (NickInUseEvent) e;
-                    chatQueue.add(new IrcMessage("NICKINUSE:  " + n.getInUseNick() + " is in use.", null, SPECIAL_COLORS.ERROR));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.nick_in_use) + " " +
+                            String.format(getStr(R.string.is_in_use), n.getInUseNick()),
+                            null, SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHO_EVENT:
                     WhoEvent we = (WhoEvent) e;
-                    chatQueue.add(new IrcMessage("[WHO]", we.getNick() + " is " + we.getUserName() + "@" + we.getServerName() + " (" + we.getRealName() + ")", SPECIAL_COLORS.TOPIC));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who),
+                            String.format(getStr(R.string.who_format),  we.getNick(), we.getUserName(), we.getServerName(),  we.getRealName()),
+                            SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHOIS_EVENT:
@@ -1228,23 +1165,40 @@ public class IRCChat extends Activity implements IRCEventListener
                     String var = "";
                     for(String event : wie.getChannelNames())
                         var = var + " " + event;
-
-                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " is " + wie.getHost() + "@" + wie.whoisServer() + " (" + wie.getRealName() + ")", SPECIAL_COLORS.TOPIC ));
-                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " is a user on channels: " + var, SPECIAL_COLORS.TOPIC ));
-                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " has been idle for " + wie.secondsIdle() + " seconds", SPECIAL_COLORS.TOPIC ));
-                    chatQueue.add(new IrcMessage("[WHOIS]", wie.getUser() + " has been online since " + wie.signOnTime(), SPECIAL_COLORS.TOPIC ));
+                    //Who
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who_is),
+                            String.format(getStr(R.string.who_format),  wie.getUser(), wie.getHost(), wie.whoisServer(),  wie.getRealName()),
+                            SPECIAL_COLORS.TOPIC));
+                    //Channels
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who_is),
+                            String.format(getStr(R.string.who_channels),  wie.getUser(), var),
+                            SPECIAL_COLORS.TOPIC));
+                    //Idle
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who_is),
+                            String.format(getStr(R.string.who_idle),  wie.getUser(), wie.secondsIdle()),
+                            SPECIAL_COLORS.TOPIC));
+                    //Online
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who_is),
+                            String.format(getStr(R.string.who_idle),  wie.getUser(), wie.signOnTime()),
+                            SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
                 case WHOWAS_EVENT: //TODO: Fix?
                     WhowasEvent wwe = (WhowasEvent) e;
-                    chatQueue.add(new IrcMessage("[WHO]", wwe.getNick() + " is " + wwe.getUserName() + "@" + wwe.getHostName() + " (" + wwe.getRealName() + ")", SPECIAL_COLORS.TOPIC));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.who),
+                            String.format(getStr(R.string.who_format),  wwe.getNick(), wwe.getUserName(), wwe.getHostName(),  wwe.getRealName()),
+                            SPECIAL_COLORS.TOPIC));
                     break;
 
                 //Errors that display in both
                 case CONNECTION_LOST:
                     //ConnectionLostEvent co = (ConnectionLostEvent) e;
-                    chatQueue.add(new IrcMessage("CONNECTION WAS LOST - attempt " + session.getRetries(), null, SPECIAL_COLORS.ERROR));
-                    logQueue.add(new IrcMessage("CONNECTION WAS LOST - attempt " + session.getRetries(), null, SPECIAL_COLORS.ERROR));
+                    chatQueue.add(new IrcMessage(
+                            getStrBr(R.string.connection_was_lost) + " " + getStr(R.string.attempt) + " " +  session.getRetries(),
+                            null, SPECIAL_COLORS.ERROR));
+                    logQueue.add(new IrcMessage(
+                            getStrBr(R.string.connection_was_lost) + " " + getStr(R.string.attempt) + " " +  session.getRetries(),
+                            null, SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     ircHandler.post(logUpdater);
                     break;
@@ -1279,8 +1233,12 @@ public class IRCChat extends Activity implements IRCEventListener
                     String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                     this.loopTask.cancel();
                     loopTimer.purge();
-                    chatQueue.add(new IrcMessage("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), SPECIAL_COLORS.ERROR));
-                    logQueue.add(new IrcMessage("[ERROR]", rrealmsg + (retry ? " - attempt " + session.getRetries() : ""), SPECIAL_COLORS.ERROR));
+                    chatQueue.add(new IrcMessage(getStrBr(R.string.error),
+                            rrealmsg + (retry ? " -  " + getStr(R.string.attempt) + " " +  session.getRetries() : ""),
+                            SPECIAL_COLORS.ERROR));
+                    logQueue.add(new IrcMessage(getStrBr(R.string.error),
+                            rrealmsg + (retry ? " -  " + getStr(R.string.attempt) + " " +  session.getRetries() : ""),
+                            SPECIAL_COLORS.ERROR));
                     ircHandler.post(chatUpdater);
                     ircHandler.post(logUpdater);
                 /*
@@ -1316,7 +1274,8 @@ public class IRCChat extends Activity implements IRCEventListener
                         String name = e.getRawEventData().substring(e.getRawEventData().lastIndexOf(":")+1);
                         if(name.trim().equals(""))
                             return;
-                        chatQueue.add(new IrcMessage("[ISON]", name + " is online", SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.is_on),
+                                String.format(getStr(R.string.is_online), name), SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                         break;
                     }
@@ -1324,7 +1283,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     if(realType.equals("006"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(new IrcMessage("[MAP] " + realmsg, null, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.map),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1332,7 +1292,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     if((i>=250 && i<=255) || i==265 || i==266)
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(new IrcMessage("[LUSERS]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.lusers),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1350,7 +1311,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     if(realType.equals("232") || realType.equals("309"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(new IrcMessage("[RULES]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.rules),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1358,7 +1320,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(realType.equals("364") || realType.equals("365"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(new IrcMessage("[LINKS]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.links),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                         break;
                     }
@@ -1366,7 +1329,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(i>=256 && i<=259)
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(new IrcMessage("[ADMIN]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.admin),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                         break;
                     }
@@ -1374,7 +1338,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     else if(realType.equals("315"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(new IrcMessage("[WHO]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStrBr(R.string.who),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //WHOIS part 2
@@ -1383,7 +1348,8 @@ public class IRCChat extends Activity implements IRCEventListener
                         int ijk = e.getRawEventData().lastIndexOf(" ", e.getRawEventData().indexOf(":",2)-2)+1;
                         realmsg = e.getRawEventData().substring(ijk, e.getRawEventData().indexOf(":", 2)-1)
                                 + " " + e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(new IrcMessage("[WHOIS]", realmsg, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.who_is),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //USERHOST
@@ -1391,7 +1357,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                         realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
-                        chatQueue.add(new IrcMessage("[USERHOST]", realmsg, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.user_host),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //CREDITS
@@ -1399,21 +1366,24 @@ public class IRCChat extends Activity implements IRCEventListener
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
                         realmsg.replaceFirst(Pattern.quote("=+"), " is ");	//TODO: Not working? eh?
-                        logQueue.add(new IrcMessage("[CREDITS]", realmsg, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.credits),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                     }
                     //TIME
                     else if(realType.equals("391"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(new IrcMessage("[TIME]", realmsg, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.time),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //USERIP
                     else if(realType.equals("340"))
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        chatQueue.add(new IrcMessage("[USERIP]", realmsg, SPECIAL_COLORS.TOPIC));
+                        chatQueue.add(new IrcMessage(getStrBr(R.string.user_ip),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(chatUpdater);
                     }
                     //Nicklist? something else? MOTD
@@ -1454,7 +1424,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     else
                     {
                         realmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                        logQueue.add(new IrcMessage("[" + realType + "]", realmsg, SPECIAL_COLORS.TOPIC));
+                        logQueue.add(new IrcMessage(getStr(R.string.irc_bracket_open) + realType + getStr(R.string.irc_bracket_close),
+                                realmsg, SPECIAL_COLORS.TOPIC));
                         ircHandler.post(logUpdater);
                     }
                     break;
@@ -1464,20 +1435,23 @@ public class IRCChat extends Activity implements IRCEventListener
             }
         } catch(Exception e2)
         {
-            System.err.println("Dude what? " + e.getRawEventData());
+            Log.e("IRCChat::receiveEvent", "Weird error in e2: " + e2.getMessage());
             e2.printStackTrace();
         }
-        System.out.println("rETRY: " + session.getRetries());
+        Log.w("IRCChat::receiveEvent", "Retries: " + session.getRetries());
         if(session.getRetries()>0)
         {
             if(session.getRetries() >= manager.getRetries())
             {
-                chatQueue.add(new IrcMessage("[Callisto]", "Maximum amount of retries exceeded. Quitting.", SPECIAL_COLORS.TOPIC));
+                chatQueue.add(new IrcMessage(getStrBr(R.string.app_name),
+                        getStr(R.string.maximum_retries), SPECIAL_COLORS.TOPIC));
                 ircHandler.post(chatUpdater);
             }
             else if(false)
             {
-                chatQueue.add(new IrcMessage("[Callisto]", "Retrying connection: attempt " + session.getRetries(), SPECIAL_COLORS.TOPIC));
+                chatQueue.add(new IrcMessage(getStrBr(R.string.app_name),
+                        getStr(R.string.retrying_connection) + ": " + getStr(R.string.attempt) + " " + session.getRetries(),
+                        SPECIAL_COLORS.TOPIC));
                 ircHandler.post(chatUpdater);
             }
         }
@@ -1515,13 +1489,12 @@ public class IRCChat extends Activity implements IRCEventListener
                 msgColor+= specialColor;
         } catch(NullPointerException e) {
         }
-        System.out.println("getReceived: " + theMessage + " - " + mentionPattern.pattern());
         if( //!theTitle.equals("[004]") &&
                 ((theMessage!=null && session!=null && mentionPattern.matcher(theMessage).find())   //If it mentions you
                         || (theTitle!=null && theTitle.startsWith("->")))) //If it's a PM
         {
             msgColor = 0xFF000000 + CLR_MENTION;
-            System.out.println("MENTIONED" + isFocused);
+            Log.i("IRCChat::getReceived", "Nick has been mentioned: " + isFocused);
             if(!isFocused)
             {
                 if(StaticBlob.notification_chat==null)
@@ -1541,11 +1514,11 @@ public class IRCChat extends Activity implements IRCEventListener
         else
             msgColor = 0xFF000000 + CLR_TEXT;
 
+        //Format the Bold/Italic
         java.util.ArrayList<Integer[]> bold = new java.util.ArrayList<Integer[]>();
         java.util.ArrayList<Integer[]> underline = new java.util.ArrayList<Integer[]>();
         while(theMessage!=null && theMessage.contains(""))
         {
-            System.out.println("Nerts1" + theMessage);
             Integer temp[] = {theMessage.indexOf(""),
                     theMessage.indexOf("", theMessage.indexOf("")+1)};
             bold.add(temp);
@@ -1553,7 +1526,6 @@ public class IRCChat extends Activity implements IRCEventListener
         }
         while(theMessage!=null && theMessage.contains(""))
         {
-            System.out.println("Nerts2");
             Integer temp[] = {theMessage.indexOf(""),theMessage.indexOf("", theMessage.indexOf("")+1)};
             underline.add(temp);
             theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
@@ -1635,7 +1607,6 @@ public class IRCChat extends Activity implements IRCEventListener
                 else
                     rndm += ((randomGenerator.nextInt(0xF - 0x7 + background_avg) + 0x7 + background_avg) << (i*4));
             }
-            System.out.println("Rndm: " + rndm);
         } while(nickColors.containsValue(rndm));
         return rndm;
 		
@@ -1861,7 +1832,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 || msg.toUpperCase().startsWith("/LIST ")
                 || msg.toUpperCase().startsWith("/KNOCK "))
         {
-            Toast.makeText(IRCChat.this, "What, is the JB chat not enough for you?!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_1), Toast.LENGTH_SHORT).show();
             return false;
         }
         //Op stuff. Because I am an Op. SUCK IT, PEOPLE WHO ALWAYS SAID I WOULDN'T AMOUNT TO ANYTHING.
@@ -1879,9 +1850,9 @@ public class IRCChat extends Activity implements IRCEventListener
             msg = msg.substring("/INVITE ".length());
             String nick = msg.split("\\s+")[0];
             try {
-                if(!msg.substring(nick.length()+1).toLowerCase().equals("#jupiterbroadcasting"))
+                if(!msg.substring(nick.length()+1).toLowerCase().equals(CHANNEL_NAME))
                 {
-                    Toast.makeText(IRCChat.this, "What, is the JB chat not enough for them?!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_2), Toast.LENGTH_SHORT).show();
                     return false;
                 }
             }catch(Exception e){}
@@ -1914,7 +1885,9 @@ public class IRCChat extends Activity implements IRCEventListener
             }catch(Exception e){
                 unknown = unknown.substring(1);
             }
-            Toast.makeText(IRCChat.this, "The command '" + unknown + "' is unknown. E-mail the developer if it's something that Callisto is missing.", Toast.LENGTH_LONG).show();
+            Toast.makeText(IRCChat.this,
+                    String.format(getStr(R.string.irc_command_unknown), unknown)
+                    , Toast.LENGTH_LONG).show();
             return false;
         }
 		/*
@@ -1925,7 +1898,7 @@ public class IRCChat extends Activity implements IRCEventListener
 			return false;
 		}
 		*/
-        chatQueue.add(new IrcMessage("[CALLISTO]", "Command not recognized!", SPECIAL_COLORS.TOPIC));
+        chatQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.command_not_recognized), SPECIAL_COLORS.TOPIC));
         ircHandler.post(chatUpdater);
         return false;
     }
@@ -2100,5 +2073,21 @@ public class IRCChat extends Activity implements IRCEventListener
             ((TextView) convertView).setLinkTextColor(cls);
             return convertView;
         }
+    }
+
+    public String getStr(int id)
+    {
+        return getResources().getString(id);
+    }
+
+    public String getStr(String pre, int id, String post)
+    {
+        return pre + getResources().getString(id) + post;
+    }
+
+    public String getStrBr(int id)
+    {
+        android.content.res.Resources res = getResources();
+        return res.getString(R.string.irc_bracket_open) + res.getString(id).toUpperCase() + res.getString(R.string.irc_bracket_close);
     }
 }

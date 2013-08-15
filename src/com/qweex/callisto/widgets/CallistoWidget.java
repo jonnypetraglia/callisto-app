@@ -56,7 +56,7 @@ public class CallistoWidget extends AppWidgetProvider
             views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
 
             if(StaticBlob.playerInfo!=null)
-                System.out.println("WIDGET UPDATE" + StaticBlob.playerInfo.isPaused);
+                Log.v("CallistoWidget:onUpdate", "WIDGET UPDATE" + StaticBlob.playerInfo.isPaused);
             if((Live.live_player!=null && !StaticBlob.live_isPlaying) ||
                     (StaticBlob.playerInfo!=null && StaticBlob.playerInfo.isPaused))
                 views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);

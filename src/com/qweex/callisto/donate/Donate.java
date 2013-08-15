@@ -68,8 +68,6 @@ public class Donate extends ListActivity
     private CheckoutButton GiveChrisSomeHardEarnedMoney;
     /** An adapter for the prices in the ListView */
     private PricesAdapter mPricesAdapter;
-    /** The id for the Qweex donation app in the market */
-    public final String DONATION_APP_ID = "com.qweex.donation";
     /** A linearLayout for containing the ListView and buttons and notes and stuff*/
     private LinearLayout contentLayout;
     /** A MenuItem id */
@@ -137,7 +135,7 @@ public class Donate extends ListActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setTitle("Donate");
+        setTitle(R.string.donate);
 
         //Prepare the listview's appearance
         itemsList = getListView();
@@ -145,7 +143,7 @@ public class Donate extends ListActivity
 
         //Prepare the header's appearance
         TextView header = new TextView(this);
-        header.setText("Choose amount (USD)");
+        header.setText(R.string.choose_amount);
 
         //Blaaaargh, build the rest of the layout
         contentLayout = new LinearLayout(this);
@@ -162,7 +160,7 @@ public class Donate extends ListActivity
         CustomAmount = new EditText(this);
         CustomAmount.setId(NAME_ID);
         CustomAmount.setTextSize(20f);
-        CustomAmount.setHint("Custom");
+        CustomAmount.setHint(R.string.custom);
         CustomRadio = new RadioButton(this);
         CustomRadio.setId(RADIO_ID);
         CustomRadio.setClickable(true);
@@ -175,7 +173,7 @@ public class Donate extends ListActivity
         contentLayout.addView(customView);
 
         UserMemo = new EditText(this);
-        UserMemo.setHint("Message to Jupiter Broadcasting");
+        UserMemo.setHint(R.string.msg_to_jb);
         UserMemo.setMinLines(4);
         UserMemo.setGravity(Gravity.TOP);
         LinearLayout.LayoutParams x = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
@@ -223,11 +221,7 @@ public class Donate extends ListActivity
         msgView = new TextView(this);
         msgView.setTextColor(this.getResources().getColor(R.color.txtClr));
         msgView.setTextSize(12f);
-        msgView.setText(Html.fromHtml("100% of your donation will go "
-                + "<i>directly</i>"
-                + " to Jupiter Broadcasting. Afterwards, if you want to donate to the app developer, buy the "
-                + "<a href=\"market://details?id=" + DONATION_APP_ID + "\">donation app in the market</a>"
-                + "."));
+        msgView.setText(Html.fromHtml(this.getResources().getString(R.string.donate_note)));
         msgView.setMovementMethod(LinkMovementMethod.getInstance());
         msgView.setPadding(30, 0, 30, 15);
 		
@@ -435,7 +429,7 @@ public class Donate extends ListActivity
                 try {
                     new BigDecimal(CustomAmount.getText().toString());
                 } catch(NumberFormatException e){
-                    Toast.makeText(v.getContext(), "The amount you entered is not a valid number, you silly goose.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), R.string.amount_not_valid, Toast.LENGTH_SHORT).show();
                     //((CheckoutButton) v).updateButton();
                     return;
                 }

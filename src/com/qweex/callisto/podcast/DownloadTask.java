@@ -64,11 +64,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     /** Used for the notification */
     NotificationCompat.Builder mBuilder;
 
+    public static int downloading_count;
 
     public DownloadTask(Context c)
     {
         super();
         context = c;
+        downloading_count = StaticBlob.databaseConnector.getActiveDownloads().getCount();
     }
 
     @Override
@@ -82,7 +84,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setContentTitle( this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  this.context.getResources().getString(R.string.of) + " " + StaticBlob.downloading_count)
+        mBuilder.setContentTitle( this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download +
+                " " +  this.context.getResources().getString(R.string.of) + " " + downloading_count)
                 .setContentText(Show + ": " + Title)
                 .setSmallIcon(R.drawable.ic_action_download)
                 .setContentIntent(contentIntent)
@@ -160,8 +163,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 mBuilder.setProgress(100, 0, true)
                     .setContentTitle(this.context.getResources().getString(R.string.downloading) + " " +
                         StaticBlob.current_download + " " +
-                        this.context.getResources().getString(R.string.of) + " " +
-                        StaticBlob.downloading_count)
+                        this.context.getResources().getString(R.string.of) + " " + downloading_count)
                     .setContentText(Show + ": " + Title);
                 // Displays the progress bar for the first time.
                 mNotificationManager.notify(NOTIFICATION_ID,mBuilder.build() );
@@ -288,8 +290,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         mBuilder.setProgress((int)(TotalSize/1000), (int)(downloadedSize/1000), false)
                             .setContentTitle(this.context.getResources().getString(R.string.downloading) + " " +
                                 StaticBlob.current_download + " " +
-                                this.context.getResources().getString(R.string.of) + " " +
-                                StaticBlob.downloading_count +
+                                this.context.getResources().getString(R.string.of) + " " + downloading_count +
                                 " - " + percentDone + "%  (" +
                                 df.format(avg_speed) + "kb/s)")
                             .setContentText(Show + ": " + Title);
@@ -374,12 +375,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
         //Notification
         mNotificationManager.cancel(NOTIFICATION_ID);
-        if(StaticBlob.downloading_count>0)
+        if(downloading_count>0)
         {
 
 
             mBuilder.setProgress(100, 0, false)
-                    .setContentTitle("Finished downloading " + StaticBlob.downloading_count + " files");
+                    .setContentTitle("Finished downloading " + downloading_count + " files");
             if(failed>0)
                 mBuilder.setContentText(failed + " failed, try them again later");
             mBuilder.setAutoCancel(true);
@@ -387,12 +388,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
             mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
             StaticBlob.current_download=1;
-            StaticBlob.downloading_count=0;
+            downloading_count=0;
         }
         else
         {
             StaticBlob.current_download=1;
-            StaticBlob.downloading_count=0;
+            downloading_count=0;
             return false;
         }
         return true;

@@ -42,7 +42,7 @@ public class SearchResultsActivity extends ListActivity
         super.onCreate(savedInstanceState);
         handleIntent(getIntent());
         TextView empty = new TextView(this);
-        empty.setText("No results found.");
+        empty.setText(R.string.no_results);
         this.getListView().setEmptyView(empty);
         this.getListView().setBackgroundColor(this.getResources().getColor(R.color.backClr));
         this.getListView().setCacheColorHint(this.getResources().getColor(R.color.backClr));

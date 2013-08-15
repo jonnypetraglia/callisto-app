@@ -524,16 +524,20 @@ public class DatabaseConnector
         return c.getCount()>0;
     }
 
-    /** [DATABASE_DOWNLOADS] Adds a new active download */
-    public void addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
+    /** [DATABASE_DOWNLOADS] Adds a new active download
+     * @param identity The Identity (i.e. _id from EPISODES)
+     * @param video If the item is a video, otherwise it is audio
+     * @return If a new download was actually added
+     * */
+    public boolean addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
     {
         Log.d("DatabaseConnector::addDownload", "Adding: " + identity + " . " + video);
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
-                "identity='" + identity + "' AND video='" + video + "'", null, null, null, null);
+                "identity='" + identity + "' AND video='" + (video?1:0) + "'", null, null, null, null);
         if(c.getCount()>0)
         {
             Log.d("DatabaseConnector::addDownload", "Found duplicate when trying to add: " + identity + " . " + video);
-            return;
+            return false;
         }
 
         ContentValues newDownload = new ContentValues();
@@ -542,12 +546,16 @@ public class DatabaseConnector
         newDownload.put("active", 1);
 
         database.insert(DATABASE_DOWNLOADS, null, newDownload);
+        return true;
     }
 
-    /** [DATABASE_DOWNLOADS] Adds a new active download */
-    public void removeDownload(long id)     //note 'id' == the _id in DOWNLOADS table
+    /** [DATABASE_DOWNLOADS] Adds a new active download
+     * @param id The Identity (i.e. _id from DOWNLOADS)
+     * @return If a download was deleted
+     * */
+    public boolean removeDownload(long id)     //note 'id' == the _id in DOWNLOADS table
     {
-        database.delete(DATABASE_DOWNLOADS, "_id=" + id, null);
+        return database.delete(DATABASE_DOWNLOADS, "_id=" + id, null)>0;
     }
 
     /** [DATABASE_DOWNLOADS] Adds a new active download */

@@ -69,8 +69,6 @@ public class StaticBlob
     public static Notification notification_alarm;
     /** The path on the SD card to store downloaded episodes. Customizable via the settings dialog. */
     public static String storage_path;
-    /** The number of downloads that has been queued up. */
-    public static int downloading_count = 0;
     /** The current download number. */
     public static int current_download = 1;
     public static SimpleDateFormat sdfDestination;
