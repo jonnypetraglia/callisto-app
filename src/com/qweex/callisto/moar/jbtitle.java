@@ -129,18 +129,23 @@ public class jbtitle extends Activity
         public void CustomCSSApplier(String result)
         {
             //Replace Wufoo's CSS with our own
-            Log.d("DERDSFAFA", result);
             String str1 = "<link href=\"/css/960.css\" rel=\"stylesheet\">";
             String str2 = "<link href=\"/css/showbot.css?v=5\" rel=\"stylesheet\">";
             String str3 = "<!-- Modernizer -->";
             result = result.replace(str1,"");
-            String remove = result.substring(result.indexOf(str3),
-                    result.indexOf(str3)+str3.length());
+            int ind1 = result.indexOf(str3),
+                ind2 = result.indexOf(str3);
+
+            if(ind1<0 || ind2<0)
+            {
+                finish();
+                return;
+            }
+            String remove = result.substring(ind1, ind2+str3.length());
 
             result = result.replace(remove, customCSS);
 
             //Load the data into the webview
-            Log.d("DERDSFAFA", result);
             wv.setVisibility(View.INVISIBLE);
             wv.loadDataWithBaseURL(wv.getUrl(), result, "text/html", "utf-8", "about:blank");
         }

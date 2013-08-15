@@ -147,6 +147,9 @@ public class IRCChat extends Activity implements IRCEventListener
 
     enum SPECIAL_COLORS { ME, TOPIC, PM, JOIN, NICK, PART, KICK, ERROR, QUIT, _OTHER };
 
+    enum IRC_STATUS {connecting, connected, disconnected}
+    IRC_STATUS status;
+
     public class IrcMessage
     {
         String title, message, _otherNick;
@@ -154,7 +157,6 @@ public class IRCChat extends Activity implements IRCEventListener
         Date timestamp;
         int getColor()
         {
-            System.out.println("Butts: " + color);
             switch(color)
             {
                 case ME:
@@ -216,24 +218,24 @@ public class IRCChat extends Activity implements IRCEventListener
                 @Override
                 public void run()
                 {
-                    IrcMessage received;
-                    while(!chatQueue.isEmpty())
-                    {
-                        received = chatQueue.poll();
-                        if(received==null)
-                            return;
-
-                        StaticBlob.ircChat.add(received);
-                    }
                     runOnUiThread(new Runnable()
                     {
                         @Override
                         public void run()
                         {
+                            IrcMessage received;
+                            while(!chatQueue.isEmpty())
+                            {
+                                received = chatQueue.poll();
+                                if(received==null)
+                                    return;
+
+                                StaticBlob.ircChat.add(received);
+                            }
                             ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
+                            input.requestFocus();
                         }
                     });
-                    input.requestFocus();
                 }
             };
         }
@@ -661,7 +663,7 @@ public class IRCChat extends Activity implements IRCEventListener
             session.addIRCEventListener(this);
         if(StaticBlob.notification_chat!=null)
         {
-            StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            updateNotifyText();
             StaticBlob.notification_chat.defaults = 0;    //This will be over-written when a mention happens, but we have to set it to ALL to disable an annoying buzz when resuming the activity
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
@@ -678,10 +680,31 @@ public class IRCChat extends Activity implements IRCEventListener
     {
         if(StaticBlob.notification_chat!=null)
         {
-            StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+            updateNotifyText();
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
         super.onResume();
+    }
+
+    private void updateNotifyText()
+    {
+        Log.i("IRCChat::updateNotifyText", "Status: " + status);
+        switch (status)
+        {
+            case connecting:
+                StaticBlob.notification_chat.setLatestEventInfo(this,  "Connecting to the JB Chat...",  "Using nick: " + profileNick, contentIntent);
+                break;
+            case connected:
+                Log.i("IRCChat::updateNotifyText", "Status: " + status);
+                if(mentionCount>0)
+                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
+                else
+                    StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  "No new mentions", contentIntent);
+                break;
+            case disconnected:
+
+        }
+
     }
 
     /** called to first initiate the IRC chat. Called only when the user has not logged in yet. */
@@ -701,13 +724,14 @@ public class IRCChat extends Activity implements IRCEventListener
 
     protected void actuallyConnect()
     {
+        status = IRC_STATUS.connecting;
+
         Intent notificationIntent = new Intent(this, IRCChat.class);
         contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
         StaticBlob.notification_chat.flags = Notification.FLAG_ONGOING_EVENT;
-        StaticBlob.notification_chat.setLatestEventInfo(this,  "In the JB Chat",  "No new mentions", contentIntent);
+        updateNotifyText();
         mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
-
 
         manager = new ConnectionManager(new Profile(profileNick));
         manager.setAutoReconnect(RECONNECT_TRIES);
@@ -758,9 +782,9 @@ public class IRCChat extends Activity implements IRCEventListener
             quitMsg = PreferenceManager.getDefaultSharedPreferences(this).getString("irc_quit", null);
         else
             session.getChannel(CHANNEL_NAME).part(quitMsg);
-        System.out.println(1);
 
 
+        status = IRC_STATUS.disconnected;
         IrcMessage ircm = new IrcMessage("~~~~~[TERMINATED]~~~~~",null, SPECIAL_COLORS.ERROR);
         chatQueue.add(ircm);
         ircHandler.post(chatUpdater);
@@ -1106,8 +1130,10 @@ public class IRCChat extends Activity implements IRCEventListener
                     chatQueue.add(new IrcMessage("[JOIN]", "Join complete, you are now orbiting Jupiter Broadcasting!", SPECIAL_COLORS.TOPIC));
                     if(profilePass!=null && profilePass!=null && !profilePass.equals(""))
                         parseOutgoing("/MSG NickServ identify " + profilePass);
-                    System.out.println("Decrypted password: " + profilePass);
                     ircHandler.post(chatUpdater);
+                    status = IRC_STATUS.connected;
+                    updateNotifyText();
+                    mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
                     break;
                 case MOTD:
                     MotdEvent mo = (MotdEvent) e;
@@ -1459,9 +1485,7 @@ public class IRCChat extends Activity implements IRCEventListener
 
 
     /** Gets a Spanned (i.e. formatted) message from the title, message, and color.
-     * @param theTitle The title (e.g. a nick)
-     * @param theMessage The message
-     * @param specialColor The name of the color resource for the message, or null if it should be looked up from the color list
+     * @param ircm The message that has been received
      * @return
      */
     private Spanned getReceived(IrcMessage ircm)
@@ -1510,7 +1534,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound", true) &&
                         (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound_all", false)))
                     StaticBlob.notification_chat.defaults |= Notification.DEFAULT_SOUND;
-                StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), "In the JB Chat",  mentionCount + " new mentions", contentIntent);
+                updateNotifyText();
                 mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
             }
         }
@@ -1912,14 +1936,22 @@ public class IRCChat extends Activity implements IRCEventListener
         @Override
         public void run()
         {
-            Log.e("ASDSADSADS", logQueue.peek() + "1");
-            StaticBlob.ircLog.add(logQueue.remove());
             runOnUiThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
+                    IrcMessage received;
+                    while(!logQueue.isEmpty())
+                    {
+                        received = logQueue.poll();
+                        if(received==null)
+                            return;
+
+                        StaticBlob.ircLog.add(received);
+                    }
                     ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
+                    input.requestFocus();
                 }
             });
         };

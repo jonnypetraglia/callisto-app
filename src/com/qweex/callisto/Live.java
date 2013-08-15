@@ -39,13 +39,6 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created with IntelliJ IDEA.
- * User: notbryant
- * Date: 4/15/13
- * Time: 8:37 PM
- * To change this template use File | Settings | File Templates.
- */
 public class Live
 {
     public static MediaPlayer live_player;
@@ -112,8 +105,9 @@ public class Live
                         StaticBlob.errorDialog.show();
                 }catch(Exception e){}
 
-                System.out.println(whatWhat);
+                try {
                 SendErrorReport(whatWhat);
+                } catch(Exception e) {}
                 return true;
             }
         });
