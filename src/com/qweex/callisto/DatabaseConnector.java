@@ -228,16 +228,17 @@ public class DatabaseConnector
 	 */
 	public void appendToQueue(long identity, boolean isStreaming, boolean isVideo)
 	{
-		   if(database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + identity, null, null, null, null).getCount()==0)
-		   {
-			   ContentValues newEntry = new ContentValues();
-			   newEntry.put("identity", identity);
-			   newEntry.put("current", 0);
-			   newEntry.put("streaming", isStreaming ? 1 : 0);
-               newEntry.put("video", isVideo ? 1 : 0);
-			   database.insert(DATABASE_QUEUE, null, newEntry);
-		   } else
-			   Log.w("*:appendToQueue", "Song is already in queue: " + identity);
+        if(database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + identity + " AND video='" + (isVideo?1:0) + "'",
+                null, null, null, null).getCount()==0)
+        {
+            ContentValues newEntry = new ContentValues();
+            newEntry.put("identity", identity);
+            newEntry.put("current", 0);
+            newEntry.put("streaming", isStreaming ? 1 : 0);
+            newEntry.put("video", isVideo ? 1 : 0);
+            database.insert(DATABASE_QUEUE, null, newEntry);
+        } else
+            Log.w("*:appendToQueue", "Item is already in queue: " + identity);
 	}
 	
 	/** [DATABASE_QUEUE] Updates a queue item.
@@ -525,10 +526,14 @@ public class DatabaseConnector
     /** [DATABASE_DOWNLOADS] Adds a new active download */
     public void addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
     {
+        Log.d("DatabaseConnector::addDownload", "Adding: " + identity + " . " + video);
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
                 "identity='" + identity + "' AND video='" + video + "'", null, null, null, null);
         if(c.getCount()>0)
+        {
+            Log.d("DatabaseConnector::addDownload", "Found duplicate when trying to add: " + identity + " . " + video);
             return;
+        }
 
         ContentValues newDownload = new ContentValues();
         newDownload.put("identity", identity);
