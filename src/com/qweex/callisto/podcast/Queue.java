@@ -196,14 +196,8 @@ public class Queue extends ListActivity
                 updateNowPlaying(c.getLong(c.getColumnIndex("identity")));
                 if(id==current_id)
                 {
-                    Log.d("Queue:removeItem", "Removing the current item; advancing to next");
-                    boolean isPlaying = (StaticBlob.mplayer!=null && !StaticBlob.mplayer.isPlaying());
+                    Log.d("Queue:removeItem", "Removing the current item; advancing to next; should start playing? " + !StaticBlob.playerInfo.isPaused);
                     PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
-                    if(isPlaying)
-                    {
-                        Log.d("Queue:removeItem", "Track is playing");
-                        StaticBlob.playerInfo.isPaused = true;
-                    }
                 }
             }
             StaticBlob.databaseConnector.move(id, 0);
@@ -303,7 +297,7 @@ public class Queue extends ListActivity
             //Determine if local or streaming
             try {
 
-                File localfile = new File(StaticBlob.storage_path + File.separator + c_actualEpisode.getColumnIndex("show"));
+                File localfile = new File(StaticBlob.storage_path + File.separator + c_actualEpisode.getString(c_actualEpisode.getColumnIndex("show")));
                 Date tempDate = StaticBlob.sdfRaw.parse(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("date")));   //Need this for file location
                 if(isVideo) {
                     localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("vidlink"))));

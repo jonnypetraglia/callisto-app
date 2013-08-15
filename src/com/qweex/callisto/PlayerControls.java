@@ -229,7 +229,6 @@ public class PlayerControls
         String media_location;
         if(StaticBlob.playerInfo==null)
             StaticBlob.playerInfo = new PlayerInfo(c);
-        System.out.println("DERP: " + theTargetTrack + " | " + StaticBlob.playerInfo);
 
         StaticBlob.playerInfo.title = theTargetTrack.getString(theTargetTrack.getColumnIndex("title"));
         StaticBlob.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
@@ -289,7 +288,7 @@ public class PlayerControls
 
         //Create the notification for this new track
         createNotification(c, identity);
-
+        Log.e("*:changeToTrack", "ok, finally preparing to play: " + media_location);
 
         //Here is where we FINALLY actually play the track.
         if(isVideo && sp)
@@ -317,12 +316,17 @@ public class PlayerControls
             Log.i("*:changeToTrack", "Setting source: " + media_location);
             StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
-            StaticBlob.mplayerPrepared.startPlaying = sp;
             StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
-            Log.i("*:changeToTrack", "Preparing..." + sp);
+            Log.i("*:changeToTrack", "Preparing...? " + sp);
             //Streaming requires a dialog
             if(isStreaming)
             {
+                if(!sp)
+                {
+                    StaticBlob.mplayer = null;
+                    return;
+                }
+                StaticBlob.mplayerPrepared.startPlaying = sp;
                 StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, c.getResources().getString(R.string.loading), c.getResources().getString(R.string.loading_msg), true, false);
                 StaticBlob.mplayerPrepared.pd.setCancelable(true);
                 StaticBlob.mplayerPrepared.pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -406,6 +410,7 @@ public class PlayerControls
             StaticBlob.mplayer = new MediaPlayer();
             StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
+            StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
             changeToTrack(c, 0, true);
         }
         else
@@ -421,7 +426,10 @@ public class PlayerControls
                 {
                     if(StaticBlob.audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
                         StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
-                    StaticBlob.mplayer.start();
+                    if(StaticBlob.playerInfo.isPaused)
+                        StaticBlob.mplayer.start();
+                    else
+                        StaticBlob.mplayer.prepareAsync();
                 }
                 Log.d("*:playPause","Playing!!!!!");
                 if(v!=null)
