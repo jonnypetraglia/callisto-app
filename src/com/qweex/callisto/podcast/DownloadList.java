@@ -166,7 +166,7 @@ public class DownloadList extends ListActivity
 
             if(_id<0)
                 return getViewHeader(convertView, parent, identity);
-            return getViewRow(pos, convertView, parent, identity, video);
+            return getViewRow(pos, convertView, parent, _id, identity, video);
         }
 
         public View getViewHeader(View convertView, ViewGroup parent, long identity)
@@ -179,7 +179,6 @@ public class DownloadList extends ListActivity
             }
 
             TextView x = ((TextView)row.findViewById(R.id.heading));
-            System.out.println("ViewHeader: " + identity);
             if(identity==-1)
                 x.setText("Active");
             else
@@ -189,7 +188,7 @@ public class DownloadList extends ListActivity
             return row;
         }
 
-        public View getViewRow(int position, View convertView, ViewGroup parent, long id, boolean isVideo)
+        public View getViewRow(int position, View convertView, ViewGroup parent, long _id, long identity, boolean isVideo)
         {
             View row = convertView;
 
@@ -204,7 +203,7 @@ public class DownloadList extends ListActivity
             }
 
 
-            Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
+            Cursor c = StaticBlob.databaseConnector.getOneEpisode(identity);
             if(c.getCount()==0)
                 return row;
             c.moveToFirst();
@@ -213,9 +212,9 @@ public class DownloadList extends ListActivity
             String title = c.getString(c.getColumnIndex("title"));
             String show = c.getString(c.getColumnIndex("show"));
             String media_size = EpisodeDesc.formatBytes(c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));	//IDEA: adjust for watch if needed
-            ((TextView)row.findViewById(R.id.hiddenId)).setText(Long.toString(id));
+            ((TextView)row.findViewById(R.id.hiddenId)).setText(Long.toString(_id));
             ((TextView)row.findViewById(R.id.rowTextView)).setText(title);
-            ((TextView)row.findViewById(R.id.rowTextView)).setTag(id);
+            ((TextView)row.findViewById(R.id.rowTextView)).setTag(identity);
             ((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
             ((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
             ((ImageButton)row.findViewById(R.id.remove)).setOnClickListener(removeItem);
@@ -343,11 +342,10 @@ public class DownloadList extends ListActivity
              View parent = (View)(v.getParent());
 			 TextView tv = (TextView) parent.findViewById(R.id.hiddenId);
 			 int id = Integer.parseInt((String) tv.getText());
-             Log.d("DownloadList:removeItem", "Removing item at: " + id);
              StaticBlob.databaseConnector.removeDownload(id);
 
-			 listAdapter.notifyDataSetChanged();
 			 StaticBlob.downloading_count--;
+             rebuildHeaderThings.sendEmptyMessage(0);
 		  }
     };
 
