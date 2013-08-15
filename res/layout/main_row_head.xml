@@ -28,7 +28,6 @@
     android:paddingBottom="0dp"
     android:paddingLeft="5dp"
     android:paddingTop="0dp"
-    android:text="Heading"
     android:textColor="@color/ltgray"
     android:textSize="12dp" />
 

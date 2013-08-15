@@ -53,7 +53,6 @@
                         android:paddingLeft="10dp"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
-                        android:text="Title"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textColor="@color/txtClr" />
 
@@ -69,7 +68,6 @@
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Date"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:textColor="@color/txtClr" />
@@ -92,7 +90,7 @@
                     android:id="@+id/audio_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Audio"
+                    android:text="@string/audio"
                     android:textColor="@color/txtClr"
                     android:textSize="17dp"
                     android:layout_margin="5dp"
@@ -103,7 +101,7 @@
                     android:id="@+id/video_tab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Video"
+                    android:text="@string/video"
                     android:textColor="@color/txtClr"
                     android:textSize="17dp"
                     android:layout_margin="5dp"
@@ -122,7 +120,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Size: "
+                            android:text="@string/file_size"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="@color/txtClr" />
 
@@ -131,7 +129,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text=">9000"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:textColor="@color/txtClr" />
 
@@ -140,7 +137,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text=">9000"
                                 android:visibility="gone"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:textColor="@color/txtClr" />
@@ -182,7 +178,6 @@
                 android:id="@+id/description"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Description"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/txtClr" />
         </ScrollView>

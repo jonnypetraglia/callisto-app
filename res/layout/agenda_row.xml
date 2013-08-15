@@ -43,7 +43,7 @@
                 android:layout_weight="1"
                 android:duplicateParentState="true"
                 android:gravity="center_horizontal"
-                android:text="Date"
+                android:text="@string/date"
                 android:textColor="@color/txtClr"
                 android:textSize="14sp" />
 
@@ -54,7 +54,7 @@
                 android:layout_weight="1"
                 android:duplicateParentState="true"
                 android:gravity="center_horizontal"
-                android:text="Time"
+                android:text="@string/time"
                 android:textColor="@color/txtClr"
                 android:textSize="10sp" />
 
@@ -68,7 +68,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:duplicateParentState="true"
-            android:text="Show"
+            android:text="@string/show"
             android:textColor="@color/txtClr"
             android:textSize="18sp" />
 
@@ -90,7 +90,7 @@
             android:layout_gravity="center_vertical"
             android:duplicateParentState="true"
             android:paddingRight="7dp"
-            android:text="Type"
+            android:text="@string/type"
             android:textColor="@color/txtClr"
             android:textSize="10sp" />
 
@@ -108,7 +108,6 @@
         android:id="@+id/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:visibility="gone" />
 
 </LinearLayout>

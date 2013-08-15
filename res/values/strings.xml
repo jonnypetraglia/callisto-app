@@ -44,14 +44,17 @@
     <string name="list_empty">List is empty</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_clear">This will clear all your play statuses and saved positions. Are you sure?</string>
+    <string name="audio">Audio</string>
+    <string name="video">Video</string>
 
     <!-- Queue -->
     <string name="queue">Queue</string>
     <string name="queue_size">Queue size</string>
     <string name="queue_error">There was an error loading the next song. It has been removed from the queue.</string>
 
-    <!-- Control Plays -->
+    <!-- Controls -->
     <string name="seek_title">Seek to position</string>
+    <string name="playlist_empty">Playlist is empty</string>
 
     <!-- Downloads -->
     <string name="active">Active</string>
@@ -86,6 +89,7 @@
     <string name="carrier_warning">Carrier Warning</string>
     <string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>
     <string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
+    <string name="video_warning">Video support is VERY untested. Please do not 1-star the app if it is wonky. If you do I will personally hunt you down and make you wear a sock monkey costume for a month as punishment.</string>
 
     <!-- EpisodeDesc -->
     <string name="share">Share</string>
@@ -93,10 +97,12 @@
     <string name="share_message" formatted="false">Check out this awesome episode of %s!\n\n%s</string>
     <string name="enqueued">Enqueued</string>
     <string name="stream">Stream</string>
+    <string name="file_size">Size:  </string>
 
     <!-- Preferences -->
     <string name="folder_moved">Moved, pray to the gods it has worked</string>
     <string name="ringtone_prompt">Choose alarm tone</string>
+    <string name="press_color_to_apply">Press Color To Apply</string>
 
     <!-- Show List  &   All Shows-->
     <string name="refresh_all">Refresh All</string>
@@ -107,6 +113,7 @@
     <string name="new_">New</string>
     <string name="filter">Filter</string>
     <string name="unfilter">Unfilter</string>
+    <string name="search">Search Episodes</string>
 
     <!-- Updating -->
     <string name="show_update_error">An error occurred updating the show</string>
@@ -125,6 +132,16 @@
     <string name="soon">Soon</string>
     <string name="switch_to_live">Switch from playlist to live?</string>
     <string name="no_events">No events found for this week. Try "Load More".</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="show">Show</string>
+    <string name="type">Type</string>
+    <string name="notification">Notification</string>
+    <string name="alarm">Alarm</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="save">Save</string>
+    <string name="no_alarm_set">No Alarm Set</string>
+    <string name="edit">Edit</string>
     <string-array name="months">
         <item >January</item>
         <item >February</item>
@@ -148,6 +165,13 @@
         <item >Fri</item>
         <item >Sat</item>
     </string-array>
+    <string name="day1">Sun</string>
+    <string name="day2">Mon</string>
+    <string name="day3">Tue</string>
+    <string name="day4">Wed</string>
+    <string name="day5">Thu</string>
+    <string name="day6">Fri</string>
+    <string name="day7">Sat</string>
 
     <!-- Contact Form -->
     <string name="contact">Contact</string>
@@ -155,7 +179,6 @@
     <string name="contact_form_error">Error Loading Form</string>
     <string name="contact_form_message">The page fetched does not seem to be the valid contact form. It might be your connection, or the end of the world</string>
     <string name="message_saved_as_draft">Message saved as draft.</string>
-
 
     <!-- Main Screen -->
     <string-array name="tablet_menu">
@@ -168,6 +191,13 @@
     </string-array>
     <string name="release_notes">Release Notes</string>
     <string name="settings">Settings</string>
+    <string name="plan">Plan</string>
+    <string name="chat">Chat</string>
+
+    <!-- IRC login -->
+    <string name="nick">Nick</string>
+    <string name="nickserv_pass">NickServ pass</string>
+    <string name="login">Login</string>
 
     <!-- IRC messages -->
     <string name="attempting_to_logon">Attempting to logon.....be patient you silly goose.</string>

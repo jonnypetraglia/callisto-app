@@ -47,7 +47,6 @@
             android:layout_weight="50"
             android:gravity="right|center_vertical"
             android:paddingRight="5dp"
-            android:text="Month"
             android:textColor="@color/calHdrClr"
             android:textSize="25dp" />
 
@@ -58,7 +57,6 @@
             android:layout_weight="50"
             android:gravity="left|center_vertical"
             android:paddingLeft="5dp"
-            android:text="Year"
             android:textColor="@color/calHdrClr"
             android:textSize="25dp" />
 
@@ -100,7 +98,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Sun"
+                android:text="@string/day1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -129,7 +127,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Mon"
+                android:text="@string/day2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -158,7 +156,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Tue"
+                android:text="@string/day3"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -187,7 +185,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Wed"
+                android:text="@string/day4"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -216,7 +214,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Thu"
+                android:text="@string/day5"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -245,7 +243,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Fri"
+                android:text="@string/day6"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 
@@ -273,7 +271,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:text="Sat"
+                android:text="@string/day7"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/calWeekClr" />
 

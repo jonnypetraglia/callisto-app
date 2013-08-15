@@ -67,7 +67,7 @@
                 android:paddingBottom="1dp"
                 android:paddingTop="10dp"
                 android:singleLine="true"
-                android:text="Row"
+                android:text="|"
                 android:textColor="@color/txtClr"
                 android:textSize="16sp"
                 android:paddingLeft="15dp"/>
@@ -87,7 +87,7 @@
                 android:layout_weight="1.0"
                 android:paddingBottom="10dp"
                 android:paddingTop="1dp"
-                android:text="Subrow"
+                android:text="|"
                 android:textColor="@color/txtClr"
                 android:textSize="13sp" />
             <ImageView

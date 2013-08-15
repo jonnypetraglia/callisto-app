@@ -30,7 +30,7 @@
           android:layout_height="wrap_content"
           style="@style/btnStyleBreakerBay"
           android:id="@+id/audio"
-          android:text="Audio"
+          android:text="@string/audio"
           android:padding="20dp"
           android:drawable="@drawable/ic_action_music_1"
           android:layout_gravity="left|center_vertical" android:background="@drawable/blue_button"
@@ -40,7 +40,7 @@
           android:layout_height="wrap_content"
           style="@style/btnStyleBreakerBay"
           android:id="@+id/video"
-          android:text="Video"
+          android:text="@string/video"
           android:padding="20dp"
           android:drawable="@drawable/ic_action_movie"
           android:layout_gravity="right|center_vertical" android:background="@drawable/blue_button"
@@ -51,7 +51,7 @@
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="Video support is VERY untested. Please do not 1-star the app if it is wonky. If you do I will personally hunt you down and make you wear a sock monkey costume for a month as punishment."
+            android:text="@string/video_warning"
             android:textColor="#aa000000"
             android:padding="3dp"
             />

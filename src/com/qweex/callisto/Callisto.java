@@ -52,7 +52,7 @@ import android.widget.LinearLayout.LayoutParams;
 public class Callisto extends Activity
 {
     /** Titles for the tabletMenu */
-    String[] tabletMenu = getResources().getStringArray(R.array.tablet_menu);
+    String[] tabletMenu;
     /** Ids used for onclicklisteners and the tablet launching activities */
     int[] buttonIds = new int[] {R.id.listen, R.id.live, R.id.plan, R.id.chat, R.id.contact, R.id.donate};
     /** Menu ID for this activity */
@@ -156,6 +156,8 @@ public class Callisto extends Activity
     void initTablet()
     {
         setContentView(R.layout.main_tablet);
+
+        tabletMenu = getResources().getStringArray(R.array.tablet_menu);
 
         ((View)findViewById(R.id.listView).getParent()).setBackgroundResource(R.drawable.tabback);
         XBMCStyleListViewMenu slvm = (XBMCStyleListViewMenu) this.findViewById(R.id.listView);

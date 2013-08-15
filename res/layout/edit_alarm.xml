@@ -36,7 +36,6 @@
         </com.qweex.utils.NumberPicker>
 
         <LinearLayout
-            android:id="@+id/fasfefgea"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -54,14 +53,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="Notification"
+                    android:text="@string/notification"
                     android:textColor="@color/txtClr" />
 
                 <RadioButton
                     android:id="@+id/isAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alarm"
+                    android:text="@string/alarm"
                     android:textColor="@color/txtClr" />
             </RadioGroup>
 
@@ -76,7 +75,7 @@
                 android:id="@+id/vibrate"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Vibrate"
+                android:text="@string/vibrate"
                 android:layout_margin="10dp"
                 android:textColor="@color/txtClr" />
 
@@ -88,7 +87,7 @@
         android:id="@+id/save"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:textColor="@color/txtClr" />
 
 </LinearLayout>
