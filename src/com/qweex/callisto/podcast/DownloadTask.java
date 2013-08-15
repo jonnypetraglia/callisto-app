@@ -84,7 +84,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setContentTitle( this.context.getResources().getString(R.string.downloading) + " " + StaticBlob.current_download + " " +  this.context.getResources().getString(R.string.of) + " " + StaticBlob.downloading_count)
                 .setContentText(Show + ": " + Title)
-                .setSmallIcon(R.drawable.bacon)
+                .setSmallIcon(R.drawable.ic_action_download)
                 .setContentIntent(contentIntent)
                 .setOngoing(true);
     }
