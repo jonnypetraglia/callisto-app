@@ -164,11 +164,11 @@ public class EpisodeDesc extends Activity
             Log.e(TAG+":ParseException", "(This should SERIOUSLY never happen).");
         }
         file_location_audio = new File(StaticBlob.storage_path + File.separator + show);
-        file_location_audio = new File(file_location_audio, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(mp3_link));
+        file_location_audio = new File(file_location_audio, date + "__" + StaticBlob.makeFileFriendly(title) + getExtension(mp3_link));
         if(vid_link!=null)  //Only offer a download for video if one exists.
         {
             file_location_video = new File(StaticBlob.storage_path + File.separator + show);
-            file_location_video = new File(file_location_video, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(vid_link));
+            file_location_video = new File(file_location_video, date + "__" + StaticBlob.makeFileFriendly(title) + getExtension(vid_link));
         }
 
         streamButton = ((Button)this.findViewById(R.id.stream));

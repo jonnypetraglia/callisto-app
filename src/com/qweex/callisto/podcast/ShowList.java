@@ -18,7 +18,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import android.app.Dialog;
-import android.preference.PreferenceManager;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
@@ -33,7 +32,6 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -181,9 +179,9 @@ public class ShowList extends Activity
                     mp3_link = c.getString(c.getColumnIndex("mp3link")),     //Need this for file extension
                     vid_link = c.getString(c.getColumnIndex("vidlink"));     // ^
             File music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
-            music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+            music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
             File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
-            video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+            video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
             boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
             if(inDLQueue || music_file_location.exists() || video_file_location.exists())   //If it's in DL queue or either format exists
@@ -505,7 +503,7 @@ public class ShowList extends Activity
                     complete = false;
             try {
                 File music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
-                music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
+                music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
                 exists |= music_file_location.exists();
                 complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
             }catch(NullPointerException npe)
@@ -516,7 +514,7 @@ public class ShowList extends Activity
             {
                 try {
                     File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
-                    video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+                    video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
                     exists |= video_file_location.exists();
                     complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));
                 }catch(NullPointerException npe)

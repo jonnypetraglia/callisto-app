@@ -236,7 +236,7 @@ public class DownloadList extends ListActivity
             try {
                 String date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
                 File file_location = new File(StaticBlob.storage_path + File.separator + show);
-                file_location = new File(file_location, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
+                file_location = new File(file_location, date + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex(isVideo?"vidlink":"mp3link")))); //IDEA: Adjust for watch
                 ProgressBar progress = ((ProgressBar)row.findViewById(R.id.progress));
                 int x = (int)(file_location.length()*100/c.getLong(c.getColumnIndex(isVideo?"vidsize":"mp3size")));
                 progress.setMax(100);
@@ -346,11 +346,4 @@ public class DownloadList extends ListActivity
     };
 
     //Integer.MAX_VALUE
-    /** Makes a string friendly to the filesystem by replacing offending characters with underscores
-     * @param input The input. DUH. GOD. DO I HAVE TO TELL YOU EVERYTHING.
-     * */
-    public static String makeFileFriendly(String input)
-    {
-        return input.replaceAll("[\\?]", "_"); //[\\?:;\*"<>\|]
-    }
 }

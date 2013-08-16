@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.qweex.callisto.podcast.DownloadList;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.utils.ArrayListWithMaximum;
 import com.qweex.callisto.irc.IRCChat;
@@ -119,6 +118,14 @@ public class StaticBlob
     public static OnAudioFocusChangeListenerImpl audioFocus;
 
     public static PhoneStateListenerImpl phoneStateListener;
+
+    /** Makes a string friendly to the filesystem by replacing offending characters with underscores
+     * @param input The input. DUH. GOD. DO I HAVE TO TELL YOU EVERYTHING.
+     * */
+    public static String makeFileFriendly(String input)
+    {
+        return input.replaceAll("[\\?]", "_"); //[\\?:;\*"<>\|]
+    }
 
     public enum PauseCause { PhoneCall, FocusChange, AudioJack, User};
     public static PauseCause pauseCause;
@@ -305,7 +312,7 @@ public class StaticBlob
         String ext = EpisodeDesc.getExtension(c.getString(c.getColumnIndex(video?"vidlink":"mp3link")));
 
         File target = new File(StaticBlob.storage_path + File.separator + show);
-        target = new File(target, date + "__" + DownloadList.makeFileFriendly(title) + ext);
+        target = new File(target, date + "__" + makeFileFriendly(title) + ext);
 
         //2. Delete file
         target.delete();

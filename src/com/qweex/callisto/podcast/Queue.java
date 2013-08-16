@@ -302,10 +302,10 @@ public class Queue extends ListActivity
                 File localfile = new File(StaticBlob.storage_path + File.separator + c_actualEpisode.getString(c_actualEpisode.getColumnIndex("show")));
                 Date tempDate = StaticBlob.sdfRaw.parse(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("date")));   //Need this for file location
                 if(isVideo) {
-                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("vidlink"))));
+                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("vidlink"))));
                     isStreaming = !localfile.exists() || localfile.length()!=c_actualEpisode.getLong(c_actualEpisode.getColumnIndex("vidsize"));
                 } else {
-                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("mp3link"))));
+                    localfile = new File(localfile, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(c_actualEpisode.getString(c_actualEpisode.getColumnIndex("mp3link"))));
                     isStreaming = !localfile.exists() || localfile.length()!=c_actualEpisode.getLong(c_actualEpisode.getColumnIndex("mp3size"));
                 }
             } catch(Exception e) {

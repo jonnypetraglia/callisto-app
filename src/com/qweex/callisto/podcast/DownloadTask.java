@@ -135,7 +135,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 if(Title.indexOf("|")>0)
                     Title = Title.substring(0, Title.indexOf("|"));
                 Title=Title.trim();
-                Target = new File(Target, Date + "__" + DownloadList.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
+                Target = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
 
 
                 //Prepare the HTTP

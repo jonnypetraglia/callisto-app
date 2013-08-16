@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -29,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.qweex.callisto.listeners.OnAudioFocusChangeListenerImpl;
-import com.qweex.callisto.podcast.DownloadList;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -267,7 +265,7 @@ public class PlayerControls
                     StaticBlob.storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + StaticBlob.storage_path;
             }
             File target = new File(StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
-            target = new File(target, StaticBlob.playerInfo.date + "__" + DownloadList.makeFileFriendly(StaticBlob.playerInfo.title) +
+            target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.makeFileFriendly(StaticBlob.playerInfo.title) +
                     EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
             //If it doesn't exist, we must halt.
             if(!target.exists())
