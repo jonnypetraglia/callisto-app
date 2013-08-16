@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.qweex.callisto.irc.ArrayListWithMaximum;
+import com.qweex.utils.ArrayListWithMaximum;
 import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.listeners.*;
 import com.qweex.callisto.receivers.AudioJackReceiver;

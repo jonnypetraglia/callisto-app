@@ -1,15 +1,25 @@
-package com.qweex.callisto.irc;
+/*
+        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                    Version 2, December 2004
+
+ Copyright (C) 2013 Jon Petraglia <MrQweex@qweex.com>
+
+ Everyone is permitted to copy and distribute verbatim or modified
+ copies of this license document, and changing it is allowed as long
+ as the name is changed.
+
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+ */
+package com.qweex.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Created with IntelliJ IDEA.
- * User: notbryant
- * Date: 6/22/13
- * Time: 8:42 PM
- * To change this template use File | Settings | File Templates.
- */
+/** An ArrayList that has a maximum; when the maximum is reached, it is trimmed */
+
 public class ArrayListWithMaximum<E> extends ArrayList<E>
 {
     private int maximum;

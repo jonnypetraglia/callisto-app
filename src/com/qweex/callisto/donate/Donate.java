@@ -180,18 +180,13 @@ public class Donate extends ListActivity
         x.setMargins(10, 10, 10, 10);
         contentLayout.addView(UserMemo, x);
 
-        //A text changed listener, I don't bloody know.
+        //Makes sure that the amount in the custom box is valid
         CustomAmount.addTextChangedListener(new TextWatcher() {
 
-
             @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-
+            public void afterTextChanged(Editable arg0) {/* Not needed */}
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* Not needed */ }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -207,7 +202,6 @@ public class Donate extends ListActivity
                         cashAmountBuilder.insert(0, '0');
                     }
                     cashAmountBuilder.insert(cashAmountBuilder.length()-2, '.');
-                    //cashAmountBuilder.insert(0, '$');
 
                     CustomAmount.setText(cashAmountBuilder.toString());
                     // keeps the cursor always to the right
@@ -271,6 +265,7 @@ public class Donate extends ListActivity
 
     }
 
+    /** Listener to hide the loading dialog */
     Handler hideBacon = new Handler()
     {
         @Override
@@ -284,9 +279,12 @@ public class Donate extends ListActivity
     /** An adapter to update the donation options to the listview */
     private class PricesAdapter extends ArrayAdapter<String>
     {
+        /** The names and prices of the listview entry; used generally with CATALOG */
         private PriceListEntry[] priceCatalog;
+        /** Context for the adapter */
         private Context context;
 
+        /** Constructor; adds the elements from the catalog */
         public PricesAdapter(Context context, PriceListEntry[] catalog)
         {
             super(context, android.R.layout.simple_spinner_item);
@@ -297,12 +295,14 @@ public class Donate extends ListActivity
                 add(element.name);
         }
 
+        /** Create the view of a listview */
         @Override
         public View getView(int pos, View inView, ViewGroup parent) {
             View v = inView;
             TextView name;
             RadioButton select;
 
+            // If we are not recycling the view
             if(v == null)
             {
                 //CREATE NEW ROW
@@ -323,11 +323,13 @@ public class Donate extends ListActivity
                 v.setPadding(50, 0, 50, 0);
                 ((LinearLayout) v).addView(name);
                 ((LinearLayout) v).addView(select);
+                //Select it if it was the last one selected
                 if(lastChecked==null)
                 {
                     lastChecked = select;
                     donationChoice = priceCatalog[pos].name.substring(1);
                 }
+            //If we are recycling the view
             } else {
                 name = (TextView) v.findViewById(NAME_ID);
                 select = (RadioButton) v.findViewById(RADIO_ID);
@@ -335,7 +337,7 @@ public class Donate extends ListActivity
             name.setText(priceCatalog[pos].name);
             name.setContentDescription(priceCatalog[pos].sku);
 
-            //s  will be the NAME_ID, that is the identified in the prices list
+            //s  will be the NAME_ID, that is the identifier in the prices list
             String s =((String) ((TextView)(v.findViewById(NAME_ID))).getText()).substring(1);
             if(s.equals(donationChoice))
                 select.setChecked(true);

@@ -67,9 +67,7 @@ public class twit extends ListActivity
         View headerView;
         twit thisTwit;
         @Override
-        protected void onPreExecute()
-        {
-        }
+        protected void onPreExecute() { /* Not Needed */ }
 
         @Override
         protected void onPostExecute(String errorMsg)
@@ -258,19 +256,6 @@ public class twit extends ListActivity
                 return r + " min";
             }
 
-            //X minutes
-
-            //1 hour
-
-            //X hours
-
-            //yesterday
-
-            //X days
-
-            //1 year ago
-
-            //X years ago
         } catch(Exception e)
         {
             return null;

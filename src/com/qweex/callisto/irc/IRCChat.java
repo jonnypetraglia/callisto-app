@@ -17,16 +17,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.*;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.text.*;
-import android.text.style.ImageSpan;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
@@ -81,18 +75,28 @@ import android.widget.TextView.OnEditorActionListener;
  */
 public class IRCChat extends Activity implements IRCEventListener
 {
+    /** Menu ID */
     protected static final int LOG_ID=Menu.FIRST+1;
     protected static final int CHANGE_ID=LOG_ID+1;
     protected static final int LOGOUT_ID=CHANGE_ID+1;
     protected static final int NICKLIST_ID=LOGOUT_ID+1;
     protected static final int SAVE_ID=NICKLIST_ID+1;
     protected static final int JBTITLE_ID=SAVE_ID+1;
+    private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI, Change_MI, JBTitle_MI;
+
+    /** Constants */
     private final String SERVER_NAME = "irc.geekshed.net";
     private final String CHANNEL_NAME = "#qweex"; //"#jupiterbroadcasting";
+    final private int RECONNECT_TRIES = 5;
+    private int SESSION_TIMEOUT = 40;
+
+    /** User info */
     private String profileNick;
     private String profilePass;
+
+    /** Preferences */
     private boolean SHOW_TIME = true;
-    private static int CLR_TEXT,
+    public static int CLR_TEXT,
             CLR_BACK,
             CLR_TOPIC,
             CLR_ME,
@@ -106,51 +110,71 @@ public class IRCChat extends Activity implements IRCEventListener
             CLR_MENTION,
             CLR_PM,
             CLR_LINKS;
+    private int IRSSI_GREEN = 0x00B000;
+    private boolean irssi;
+
+    /** Jerklib stuff */
     private static ConnectionManager manager;
     public static Session session;
+
+    /** Notification stuff */
     private static NotificationManager mNotificationManager;
     private static int mentionCount = 0;
     private static PendingIntent contentIntent;
     private static boolean isFocused = false;
-    private static int lastScroll_chat, lastScroll_log;
-    private EditText input;
 
-    private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
+    /** Useful variables for resuming the activity */
+    private static int lastScroll_chat, lastScroll_log;
     private boolean isLandscape;
+
+    /** Widgets */
+    private EditText input;
+    private EditText user, pass;
+    private ListView chatListview, logListview;
+
+    /** Info trackers; keep track of information about the session */
     private static HashMap<String, Integer> nickColors = new HashMap<String, Integer>();
     public static List<String> nickList;
+
+    /** Handlers to update the UI */
     private static Handler ircHandler = null;
     private static Runnable chatUpdater;
-    private boolean irssi;
-    private int IRSSI_GREEN = 0x00B000;
-    private MenuItem Nick_MI, Logout_MI, Log_MI, Save_MI, Change_MI, JBTitle_MI;
+
     private WifiLock IRC_wifiLock;
-    final private int RECONNECT_TRIES = 5;
-    private int SESSION_TIMEOUT = 40;
-    private EditText user, pass;
     private PopupWindow changeNickDialog;
+
+    /** Pertaining to timeout handling */
     private int timeoutCount;
-    private Timer loopTimer = new Timer();
-    private TimerTask loopTask;
+    private Timer timeoutTimer = new Timer();
+    private TimerTask timeoutTask;
+
+    /** Nick completion */
     private String nickSearch = "", lastNickSearched = "";
+
+    /** Mention finding */
     private Pattern mentionPattern;
     //Stole these from nirc; https://github.com/cjstewart88/nirc/blob/master/public/javascripts/client.js
     private String mention_before = "(^|[^a-zA-Z0-9\\[\\]{}\\^`|])",
             mention_after = "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)";
+
+
+    /** EXPERIMENTAL: Whether or not the User has OP permissions for the OP Channel; NOT set by the user */
     private boolean IRCOpPermission;
 
-    private ListView chatListview, logListview;
+    /** Queues that messages will be pushed onto, then pulled off when it is time to update */
     private static java.util.Queue<IrcMessage> chatQueue = new java.util.LinkedList<IrcMessage>(),
             logQueue = new java.util.LinkedList<IrcMessage>();
 
+    /** Misc */
     enum SPECIAL_COLORS { ME, TOPIC, PM, JOIN, NICK, PART, KICK, ERROR, QUIT, _OTHER };
-
     enum IRC_STATUS {connecting, connected, disconnected}
     IRC_STATUS status;
+    private SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
 
+    /** Class (basically a struct) to contain all information about a message: title, message, color, and timestamp */
     public class IrcMessage
     {
-        String title, message, _otherNick;
+        String title, message;
         SPECIAL_COLORS color;
         Date timestamp;
         int getColor()
@@ -185,18 +209,6 @@ public class IRCChat extends Activity implements IRCEventListener
             this.message = message;
             this.color = clr;
             timestamp = new Date();
-        }
-    }
-
-
-    @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-        if(chatListview!=null)
-        {
-            lastScroll_chat = chatListview.getFirstVisiblePosition();
-            lastScroll_log = logListview.getFirstVisiblePosition();
         }
     }
 
@@ -325,17 +337,31 @@ public class IRCChat extends Activity implements IRCEventListener
 
     }
 
+    /** Called when the user exits the activity; saves the scroll state */
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if(chatListview!=null)
+        {
+            lastScroll_chat = chatListview.getFirstVisiblePosition();
+            lastScroll_log = logListview.getFirstVisiblePosition();
+        }
+    }
+
+    /** Called when the user presses the "Login" button */
     protected OnClickListener InitiateLogin= new OnClickListener(){
         @Override
         public void onClick(View v) {
             profileNick = user.getText().toString();
-            mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
-            System.out.println("profileNick: " + profileNick);
             if(profileNick==null || profileNick.trim().equals(""))
             {
                 Toast.makeText(IRCChat.this, R.string.must_enter_nick, Toast.LENGTH_SHORT).show();
                 return;
             }
+            // Create the mention pattern
+            mentionPattern = Pattern.compile(mention_before + profileNick + mention_after);
+            // Save the info into preferences
             String profilePassword = pass.getText().toString();
             SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(v.getContext()).edit();
             e.putString("irc_nick", Rot47(profileNick));
@@ -346,6 +372,7 @@ public class IRCChat extends Activity implements IRCEventListener
     };
 
 
+    /** called when the activity loses focus, but is not destroyed; useful for knowing if one should notify on mention */
     @Override
     public void onPause(){
         super.onPause();
@@ -353,8 +380,8 @@ public class IRCChat extends Activity implements IRCEventListener
     }
 
     /** Called when any key is pressed. Used to prevent the activity from finishing if the user is logged in.
-     * @param keyCode I dunno
-     * @param event I dunno
+     * @param keyCode Code for the key that is pressed; interesting ones are HOME, BACk, and SEARCH
+     * @param event Info about the event; e.g. if it was held or just pressed
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -466,6 +493,7 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Updates the menu items because invalidateOptionsMenu() is not supported on all APIs. */
     private void updateMenu()
     {
+        String TAG = StaticBlob.TAG();
         try {
             Log_MI.setEnabled(session!=null);
             Nick_MI.setEnabled(session!=null);
@@ -474,7 +502,9 @@ public class IRCChat extends Activity implements IRCEventListener
 
             Change_MI.setTitle(this.getClass()== VideoActivity.class ? R.string.open_irc : ((session!=null && session.getRetries()>1 ) ? R.string.reconnect : R.string.change_nick));
             Change_MI.setEnabled(this.getClass()==VideoActivity.class || (session!=null));
-        } catch(Exception e) {}
+        } catch(Exception e) {
+            Log.w(TAG, "A proble occurred while updating the menu: " + e.getMessage());
+        }
     }
 
     /** Called when an item in the menu is pressed.
@@ -486,9 +516,11 @@ public class IRCChat extends Activity implements IRCEventListener
         String TAG = StaticBlob.TAG();
         switch(item.getItemId())
         {
+            //Switch between Log and Chat
             case LOG_ID:
                 ((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
                 return true;
+            // Change Nick OR Reconnect
             case CHANGE_ID:
                 Log.i(TAG, "CHANGE_ID...ing");
                 if(getResources().getString(R.string.reconnect).equals(item.getTitle().toString()))
@@ -496,9 +528,11 @@ public class IRCChat extends Activity implements IRCEventListener
                 else
                     changeNickDialog.showAtLocation(findViewById(R.id.viewanimator), android.view.Gravity.CENTER, 0, 0);
                 return true;
+            // Show Nicklist
             case NICKLIST_ID:
                 this.startActivityForResult(new Intent(this, NickList.class), 1);
                 return true;
+            // Save to file
             case SAVE_ID:
                 CharSequence cs = "";
                 IrcMessage ircm;
@@ -534,7 +568,7 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Called when an activity is called via startActivityForResult(); called when a nicklist item is selected;
      * @param requestCode The request code that is passed to startActivityForResult(); to determine what activity is returning a result
      * @param resultCode The result code set by setResult() in the activity
-     * @param data I dunno
+     * @param data I dunno; not needed
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -572,6 +606,7 @@ public class IRCChat extends Activity implements IRCEventListener
         }
         else
         {
+            // Read the colors AND reserve them in the color list
             IRCChat.nickColors.put("",
                     CLR_TEXT = PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_text", 0x000000));
             IRCChat.nickColors.put("",
@@ -603,6 +638,7 @@ public class IRCChat extends Activity implements IRCEventListener
         isFocused = true;
         mentionCount = 0;
         nickColors.put(profileNick, CLR_MYNICK);
+        // Do special stuff if it's a video class
         if(this.getClass() == VideoActivity.class)
         {
             LinearLayout p= ((LinearLayout)findViewById(R.id.mainVideo));
@@ -611,10 +647,11 @@ public class IRCChat extends Activity implements IRCEventListener
             p.findViewById(R.id.videoIrc).setVisibility(View.VISIBLE);
         }
         else
-        {
             setContentView(R.layout.irc);
-        }
 
+
+        //------------------Stuff pertaining the the UI
+        // Input box
         input = new EditText(this);
         //input.getLayoutParams().width = ViewGroup.LayoutParams.FILL_PARENT;
         input.setEms(10);
@@ -625,10 +662,8 @@ public class IRCChat extends Activity implements IRCEventListener
         input.setFocusable(true);
         input.setImeOptions(EditorInfo.IME_ACTION_SEND);
         input = (EditText) findViewById(R.id.inputField);
-
-
         if(android.os.Build.VERSION.SDK_INT >= 11)
-            input.setImeOptions( input.getImeOptions() | EditorInfo.IME_FLAG_NAVIGATE_NEXT); //TODO: Version
+            input.setImeOptions( input.getImeOptions() | EditorInfo.IME_FLAG_NAVIGATE_NEXT); //TODO: Version; what
         input.setOnEditorActionListener(new OnEditorActionListener(){
             @Override
             public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
@@ -636,32 +671,37 @@ public class IRCChat extends Activity implements IRCEventListener
                 return true;
             }
         });
+        if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
+            input.setTextColor(0xff000000 + IRSSI_GREEN);
 
+        // ListViews
         chatListview = (ListView) findViewById(R.id.chatView);
         chatListview.setVerticalFadingEdgeEnabled(false);
         logListview = (ListView) findViewById(R.id.logView);
         logListview.setVerticalFadingEdgeEnabled(false);
-//        chatListview.addFooterView(input);
+
+        chatListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircChat).setIRCCHat(IRCChat.this));
+        chatListview.smoothScrollToPosition(lastScroll_chat);
+        logListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircLog).setIRCCHat(IRCChat.this));
+        logListview.smoothScrollToPosition(lastScroll_log);
 
         ((ViewAnimator)findViewById(R.id.viewanimator)).setBackgroundColor(0xFF000000 + CLR_BACK);
-        if(irssi && android.os.Build.VERSION.SDK_INT>12) //android.os.Build.VERSION_CODES.GINGERBREAD_MR1
-            input.setTextColor(0xff000000 + IRSSI_GREEN);
+
+        // --------------- End UI section
+
+
         if(session!=null && session.getIRCEventListeners().size()==0)
             session.addIRCEventListener(this);
+        // Notification
         if(StaticBlob.notification_chat!=null)
         {
             updateNotifyText();
             StaticBlob.notification_chat.defaults = 0;    //This will be over-written when a mention happens, but we have to set it to ALL to disable an annoying buzz when resuming the activity
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
         }
-
-
-        chatListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircChat));
-        chatListview.smoothScrollToPosition(lastScroll_chat);
-        logListview.setAdapter(new IrcAdapter<IrcMessage>(this,R.layout.irc_line,StaticBlob.ircLog));
-        logListview.smoothScrollToPosition(lastScroll_log);
     }
 
+    /** Called when the activity resumes; reset the notification */
     @Override
     public void onResume()
     {
@@ -673,6 +713,7 @@ public class IRCChat extends Activity implements IRCEventListener
         super.onResume();
     }
 
+    /** Update the text on the notification, depending on state and/or how many mentions */
     private void updateNotifyText()
     {
         String TAG = StaticBlob.TAG();
@@ -697,10 +738,9 @@ public class IRCChat extends Activity implements IRCEventListener
             case disconnected:
 
         }
-
     }
 
-    /** called to first initiate the IRC chat. Called only when the user has not logged in yet. */
+    /** Called to first initiate the IRC chat. Called only when the user has not logged in yet. */
     public void initiate()
     {
         updateMenu();
@@ -715,10 +755,13 @@ public class IRCChat extends Activity implements IRCEventListener
         updateMenu();
     }
 
+    /** Actually do the connecting */
     protected void actuallyConnect()
     {
+        String TAG = StaticBlob.TAG();
         status = IRC_STATUS.connecting;
 
+        // Create the notification
         Intent notificationIntent = new Intent(this, IRCChat.class);
         contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
@@ -726,20 +769,27 @@ public class IRCChat extends Activity implements IRCEventListener
         updateNotifyText();
         mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
 
+        // Create the Jerklib objects
         manager = new ConnectionManager(new Profile(profileNick));
         manager.setAutoReconnect(RECONNECT_TRIES);
         int port = 6667;
         try {
             port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("irc_port", "6667"));
-        }catch(Exception e){}
+        }catch(Exception e){
+            Log.w(TAG, "Error occurred reading port from prefs (this should never happen): " + e.getMessage());
+        }
         session = manager.requestConnection(SERVER_NAME, port);
         session.setRejoinOnKick(false);
+
+        // Add the initial messages
         chatQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.attempting_to_logon), SPECIAL_COLORS.ME));
         ircHandler.post(chatUpdater);
         logQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.initiating_connection) + " - " + SERVER_NAME + ":" + port, SPECIAL_COLORS.ME));
+        ircHandler.post(logUpdater);
 
+        // Create a timer to detect a timeout
         timeoutCount = 0;
-        loopTask = new TimerTask()
+        timeoutTask = new TimerTask()
         {
             public void run()
             {
@@ -761,8 +811,8 @@ public class IRCChat extends Activity implements IRCEventListener
                 timeoutCount++;
             }
         };
-        loopTimer.purge();
-        loopTimer.schedule(loopTask, 0, 1000);
+        timeoutTimer.purge();
+        timeoutTimer.schedule(timeoutTask, 0, 1000);
 
         session.addIRCEventListener(this);
     }
@@ -790,6 +840,7 @@ public class IRCChat extends Activity implements IRCEventListener
         finish();
     }
 
+    // WHY IS THIS HERE
     private class QuitPlz extends android.os.AsyncTask<Void, Void, Void>
     {
         @Override
@@ -803,10 +854,514 @@ public class IRCChat extends Activity implements IRCEventListener
         }
     }
 
+    /** Gets the nick color from the list, adding it if necessary.
+     * @param nickInQ The nick in question
+     * @return The name of the color resource for that specific nick
+     */
+    public Integer getNickColor(String nickInQ)
+    {
+        if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("nick_colors", true))
+            return PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_etcnick", 0x2E8B91);
+        if(irssi)
+            return IRSSI_GREEN;
+        if(!nickColors.containsKey(nickInQ))
+            nickColors.put(nickInQ, getRandomColor());
+        return (Integer) nickColors.get(nickInQ);
+    }
+
+    /** Generates a random color.
+     * @return An integer with the hex value of a random color. */
+    public Integer getRandomColor()
+    {
+        int back = CLR_BACK;
+        int background_avg = 0;
+        for(int i=0; i<6; ++i)
+        {
+            background_avg += back % 16;
+            back %= 16;
+        }
+        background_avg /= 6;
+
+        int rndm;
+        Random randomGenerator = new Random();
+        do {
+            rndm = 0;
+            for(int i=0; i<6; ++i)
+            {
+                if(background_avg>0x7)
+                    rndm += ((randomGenerator.nextInt(background_avg - 0x7) + 0x0) << (i*4));
+                else
+                    rndm += ((randomGenerator.nextInt(0xF - 0x7 + background_avg) + 0x7 + background_avg) << (i*4));
+            }
+        } while(nickColors.containsValue(rndm));
+        return rndm;
+    }
+
+    /** Determines if a random color is acceptable.
+     * @param rgb The RGB (hex) color to examine
+     * @return True if it's acceptable, false otherwise. */
+    private boolean isAcceptable(int rgb)
+    {
+        int red = (rgb >> 16) & 0x000000FF;
+        int green = (rgb >> 8) & 0x000000FF;
+        int blue = (rgb) & 0x000000FF;
+
+        int ans = ((red*299)+(green*587)+(blue*114))/1000;
+        return (ans >= 128) ? true : false;
+    }
+
+    /** Runnable to send a message in the UI thread. */
+    Runnable sendMessage = new Runnable(){
+        @Override
+        public void run() {
+            String newMessage = input.getText().toString();
+            if(newMessage.length()==0)
+                return;
+
+            if(parseOutgoing(newMessage))
+            {
+                StaticBlob.ircChat.add(new IrcMessage(session.getNick(), newMessage, SPECIAL_COLORS.ME));
+                ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
+            }
+
+            chatListview.smoothScrollToPosition(StaticBlob.ircChat.size()-1); //TODO: For some reason
+            input.requestFocus();
+            input.setText("");
+        }
+    };
+
+    /** A runnable to update the log */
+    Runnable logUpdater = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    IrcMessage received;
+                    while(!logQueue.isEmpty())
+                    {
+                        received = logQueue.poll();
+                        if(received==null)
+                            return;
+
+                        StaticBlob.ircLog.add(received);
+                        ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
+                    }
+                    input.requestFocus();
+                }
+            });
+        };
+
+    };
+
+    /** A function object to flash the background of an EditText control.
+     *  Changes the background, waits a certain amount of time, then changes it back
+     * @author notbryant */
+    class EditTextFlash
+    {
+        SpannableString inputText;
+        android.text.style.BackgroundColorSpan flash;
+        EditText view;
+        Handler H;
+        int selA, selB;
+        /**
+         * @param color The color the flash the background; Salmon (0xFA8072) is a good choice
+         * @param view The EditText to be flashed
+         * @param time The time in milliseconds to flash it
+         * @param H A handler to use to update the view
+         */
+        EditTextFlash(int color, EditText view, int time, Handler H)
+        {
+            this.view = view;
+            this.H = H;
+            color = IRCChat.this.getResources().getColor(com.qweex.callisto.R.color.Salmon);
+            flash = new android.text.style.BackgroundColorSpan(color);
+
+            inputText = new SpannableString(view.getText().toString());
+            selA = view.getSelectionStart();
+            selB = view.getSelectionEnd();
+            inputText.setSpan(flash, 0, inputText.length(), 0);
+            view.setText(inputText);
+            view.setSelection(selA, selB);
+            H.postDelayed(R, time);
+        }
+        private Runnable R = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                inputText.removeSpan(flash);
+                view.setText(inputText);
+                view.setSelection(selA, selB);;
+            }
+        };
+    }
+
+    /** A simple but effective obfusication cypher.
+     * https://svn.apache.org/repos/asf/cayenne/main/branches/cayenne-jdk1.5-generics-unpublished/src/main/java/org/apache/cayenne/conf/Rot47PasswordEncoder.java
+     * Used under the Apache license
+     * I took the relevant function and extracted it out of the class. I also removed comments to make the code size smaller.
+     */
+    public String Rot47(String value)
+    {
+        if(value==null)
+            return null;
+        int length = value.length();
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < length; i++)
+        {
+            char c = value.charAt(i);
+
+            // Process letters, numbers, and symbols -- ignore spaces.
+            if (c != ' ')
+            {
+                // Add 47 (it is ROT-47, after all).
+                c += 47;
+
+                if (c > '~')
+                    c -= 94;
+            }
+
+            result.append(c);
+        }
+
+        return result.toString();
+    }
+
+    /** Shorthand function */
+    public String getStr(int id)
+    {   return getResources().getString(id);    }
+
+    /** Shorthand function */
+    public String getStr(String pre, int id, String post)
+    {   return pre + getResources().getString(id) + post;   }
+
+    /** Shorthand function */
+    public String getStrBr(int id)
+    {
+        android.content.res.Resources res = getResources();
+        return res.getString(R.string.irc_bracket_open) + res.getString(id).toUpperCase() + res.getString(R.string.irc_bracket_close);
+    }
+
+    /** Parses the outgoing message to determine its type.
+     * @param msg The message to be sent
+     * @return True if the output should be appended to the chat log, false otherwise.
+     */
+    private boolean parseOutgoing(String msg)
+    {
+        msg = msg.replace("\n", "");
+
+        if(!msg.startsWith("/"))
+        {
+            session.getChannel(CHANNEL_NAME).say(msg);
+            return true;
+        }
+
+        if(msg.toUpperCase().startsWith("/NS "))
+            msg = "/MSG NickServ " + msg.substring("/NS ".length());
+
+        if(msg.toUpperCase().startsWith("/NICK "))
+        {
+            msg =  msg.substring("/NICK ".length());
+            session.changeNick(msg);
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/QUIT") || msg.toUpperCase().startsWith("/PART"))
+        {
+            if(msg.equals("/QUIT") || msg.equals("/PART"))
+                logout(null);
+            else
+                logout(msg.substring("/QUIT ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/WHO "))
+        {
+            session.who(msg.substring("/WHO ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/WHOIS "))
+        {
+            session.whois(msg.substring("/WHOIS ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/WHOWAS "))
+        {
+            session.whoWas(msg.substring("/WHOWAS ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/MSG "))
+        {
+            String targetNick = "";
+            String targetMsg = "";
+            try {
+                targetNick = msg.substring("/MSG ".length());
+                targetNick = msg.substring(("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
+                targetMsg = msg.substring("/MSG ".length() + targetNick.length());
+            }catch(Exception e){}
+            session.sayPrivate(targetNick, targetMsg);
+            if(!targetNick.toUpperCase().equals("NICKSERV") && targetMsg.toUpperCase().startsWith("IDENTIFY"))
+            {
+                chatQueue.add(new IrcMessage("<-" + targetNick, targetMsg, SPECIAL_COLORS.PM));
+                ircHandler.post(chatUpdater);
+            }
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/ISON ")
+                || msg.toUpperCase().equals("/MOTD")
+                || msg.toUpperCase().equals("/RULES")
+                || msg.toUpperCase().equals("/LUSERS")
+                || msg.toUpperCase().startsWith("/MAP")
+                || msg.toUpperCase().startsWith("/VERSION")
+                || msg.toUpperCase().startsWith("/LINKS")
+                || msg.toUpperCase().startsWith("/IDENTIFY ")
+                || msg.toUpperCase().startsWith("/ADMIN")
+                || msg.toUpperCase().startsWith("/USERHOST")
+                || msg.toUpperCase().startsWith("/TOPIC ")
+                || msg.toUpperCase().startsWith("/CREDITS")
+                || msg.toUpperCase().startsWith("/TIME")
+                || msg.toUpperCase().startsWith("/DNS")		//Denied
+                || msg.toUpperCase().startsWith("/USERIP ")
+                || msg.toUpperCase().startsWith("/STATS ")	//Denied
+                || msg.toUpperCase().startsWith("/MODULE")	//Posts as "Notice", not "Module". I am ok with this.
+                || msg.toUpperCase().startsWith("/LICENSE")
+                || msg.toUpperCase().startsWith("/NAMES")
+                || msg.toUpperCase().startsWith("/ISON ")
+                || msg.toUpperCase().startsWith("/PING ")
+                || msg.toUpperCase().startsWith("/PONG ")
+                || msg.toUpperCase().startsWith("/STATS ")
+                || msg.toUpperCase().startsWith("/HELPOP")
+                || msg.toUpperCase().startsWith("/SETNAME")
+                || msg.toUpperCase().startsWith("/VHOST")
+                )
+        {
+            session.sayRaw(msg.substring(1) + " " + CHANNEL_NAME);
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/ME "))
+        {
+            session.action(CHANNEL_NAME, "ACTION" + msg.substring(3));
+            chatQueue.add(new IrcMessage("* " + session.getNick() + msg.substring(3), null, SPECIAL_COLORS.ME));
+            ircHandler.post(chatUpdater);
+            return false;
+        }
+
+        if(msg.toUpperCase().startsWith("/PING ")) //TODO: I have no clue if this works right.
+        {
+            session.action(CHANNEL_NAME, "PING" + msg.substring("/PING".length()));
+            //session.ctcp(msg.substring("/PING ".length()), "ping");
+            return true;
+        }
+        else if(msg.toUpperCase().startsWith("/AWAY "))
+        {
+            session.setAway(msg.toUpperCase().substring("/AWAY ".length()));
+            return false;	//TODO: CHECK
+        }
+        else if(msg.toUpperCase().equals("/AWAY"))
+        {
+            if(session.isAway())
+                session.unsetAway();
+            else
+                session.setAway("Gone away for now");
+            return false;
+        }
+
+        else if(msg.toUpperCase().startsWith("/JOIN ")
+                || msg.toUpperCase().startsWith("/CYCLE ")
+                || msg.toUpperCase().startsWith("/LIST ")
+                || msg.toUpperCase().startsWith("/KNOCK "))
+        {
+            Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_1), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        //Op stuff. Because I am an Op. SUCK IT, PEOPLE WHO ALWAYS SAID I WOULDN'T AMOUNT TO ANYTHING.
+        else if(msg.toUpperCase().startsWith("/KICK "))
+        {
+            msg = msg.substring("/KICK ".length());
+            String nick = msg.split("\\s+")[0];
+            String reason = nick.length()<msg.length()?msg.substring(nick.length()+1) : session.getNick();
+            Log.e("DERP!:", nick + " | " + reason);
+            session.getChannel(CHANNEL_NAME).kick(nick, reason);
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/INVITE "))
+        {
+            msg = msg.substring("/INVITE ".length());
+            String nick = msg.split("\\s+")[0];
+            try {
+                if(!msg.substring(nick.length()+1).toLowerCase().equals(CHANNEL_NAME))
+                {
+                    Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_2), Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }catch(Exception e){}
+            session.invite(nick, session.getChannel(CHANNEL_NAME));
+            return true;
+        }
+        else if(msg.toUpperCase().startsWith("/OPER "))
+        {
+            session.getChannel(CHANNEL_NAME).op(msg.substring("/OPER ".length()));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/WATCH"))
+        {
+            session.sayRaw(msg.substring(1));
+            return false;
+        }
+        else if(msg.toUpperCase().startsWith("/MODE "))
+        {
+            session.getChannel(CHANNEL_NAME).mode(msg.substring("/MODE ".length()));
+            return false;
+        }
+        else if(msg.startsWith("/"))
+        {
+            //PRIVMSG
+            //NOTICE?
+
+            String unknown = msg;
+            try {
+                unknown = msg.substring(1, msg.indexOf(" "));
+            }catch(Exception e){
+                unknown = unknown.substring(1);
+            }
+            Toast.makeText(IRCChat.this,
+                    String.format(getStr(R.string.irc_command_unknown), unknown)
+                    , Toast.LENGTH_LONG).show();
+            return false;
+        }
+		/*
+		if(msg.toUpperCase().startsWith("/MOTD ")
+		|| msg.toUpperCase().startsWith("/LUSERS "))
+		{
+			Toast.makeText(IRCChat.this, "Stop that, you're trying to break stuff", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		*/
+        chatQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.command_not_recognized), SPECIAL_COLORS.TOPIC));
+        ircHandler.post(chatUpdater);
+        return false;
+    }
+
+    /** Gets a Spanned (i.e. formatted) message from the title, message, and color.
+     * @param ircm The message that has been received
+     * @return The result
+     */
+    public Spanned getReceived(IrcMessage ircm)
+    {
+        String TAG = StaticBlob.TAG();
+        String theTitle = ircm.title,
+                theMessage = ircm.message;
+        int specialColor = ircm.getColor();
+        int titleColor = 0xFF000000;
+        int msgColor = 0xFF000000;
+        try {
+            titleColor+= (ircm.color!=SPECIAL_COLORS._OTHER ? specialColor :	getNickColor(theTitle));
+            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_modes", false)
+                    && ircm.color==SPECIAL_COLORS._OTHER)
+            {
+                if(NickList.Owners.contains(theTitle.toLowerCase()))
+                    theTitle = "~" + theTitle;
+                else if(NickList.Admins.contains(theTitle.toLowerCase()))
+                    theTitle = "&" + theTitle;
+                else if(NickList.Operators.contains(theTitle.toLowerCase()))
+                    theTitle = "@" + theTitle;
+                else if(NickList.HalfOperators.contains(theTitle.toLowerCase()))
+                    theTitle = "%" + theTitle;
+                else if(NickList.Voices.contains(theTitle.toLowerCase()))
+                    theTitle = "+" + theTitle;
+            }
+            if(theMessage!=null)
+                msgColor+= specialColor;
+        } catch(NullPointerException e) {
+        }
+        if( //!theTitle.equals("[004]") &&
+                ((theMessage!=null && session!=null && mentionPattern.matcher(theMessage).find())   //If it mentions you
+                        || (theTitle!=null && theTitle.startsWith("->")))) //If it's a PM
+        {
+            msgColor = 0xFF000000 + CLR_MENTION;
+            Log.i(TAG, "Nick has been mentioned: " + isFocused);
+            if(!isFocused)
+            {
+                if(StaticBlob.notification_chat==null)
+                    StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
+                mentionCount++;
+                StaticBlob.notification_chat.defaults = 0;
+                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", true) &&
+                        (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false)))
+                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
+                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound", true) &&
+                        (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound_all", false)))
+                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_SOUND;
+                updateNotifyText();
+                mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
+            }
+        }
+        else
+            msgColor = 0xFF000000 + CLR_TEXT;
+
+        //Format the Bold/Italic
+        java.util.ArrayList<Integer[]> bold = new java.util.ArrayList<Integer[]>();
+        java.util.ArrayList<Integer[]> underline = new java.util.ArrayList<Integer[]>();
+        while(theMessage!=null && theMessage.contains(""))
+        {
+            Integer temp[] = {theMessage.indexOf(""),
+                    theMessage.indexOf("", theMessage.indexOf("")+1)};
+            bold.add(temp);
+            theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
+        }
+        while(theMessage!=null && theMessage.contains(""))
+        {
+            Integer temp[] = {theMessage.indexOf(""),theMessage.indexOf("", theMessage.indexOf("")+1)};
+            underline.add(temp);
+            theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
+        }
+
+        SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
+        SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
+        try {
+            if(theTitle!=null)
+            {
+                if(theMessage!=null)
+                    tit = new SpannableString(tit + ": ");
+                tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
+                tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
+            }
+            if(theMessage!=null)
+            {
+                mes.setSpan(new ForegroundColorSpan(msgColor), 0, mes.length(), 0);
+                while(!bold.isEmpty() && true)
+                {
+                    mes.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                            bold.get(0)[0],
+                            bold.get(0)[1],
+                            0);
+                    bold.remove(0);
+                }
+                while(!underline.isEmpty() && true)
+                {
+                    mes.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),
+                            bold.get(0)[0],
+                            bold.get(0)[1],
+                            0);
+                    underline.remove(0);
+                }
+            }
+        } catch(Exception ie) {
+        }
+
+        return (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
+                , tit, mes);
+    }
+
+
     //INVITE_EVENT
     //NUMERIC_ERROR_EVENT
     //UnresolvedHostnameErrorEvent
-    
+
 	/*
 	 *what
 	 * WATCH???
@@ -814,7 +1369,7 @@ public class IRCChat extends Activity implements IRCEventListener
 	 * SETNAME???
 	 * VHOST???
 	 * MODE???
-	 * 
+	 *
 	 *mod
 	 * INVITE
 	 * KICK
@@ -872,7 +1427,7 @@ public class IRCChat extends Activity implements IRCEventListener
                     else
                         chatQueue.add(new IrcMessage(getStrBr(R.string.away),
                                 String.format(getStr(R.string.is_away), a.getNick()) +
-                                ": " + a.getAwayMessage(),
+                                        ": " + a.getAwayMessage(),
                                 SPECIAL_COLORS.TOPIC));
                     ircHandler.post(chatUpdater);
                     break;
@@ -1234,8 +1789,8 @@ public class IRCChat extends Activity implements IRCEventListener
                     }
 
                     String rrealmsg = e.getRawEventData().substring(e.getRawEventData().indexOf(":", 2)+1);
-                    this.loopTask.cancel();
-                    loopTimer.purge();
+                    this.timeoutTask.cancel();
+                    timeoutTimer.purge();
                     chatQueue.add(new IrcMessage(getStrBr(R.string.error),
                             rrealmsg + (retry ? " -  " + getStr(R.string.attempt) + " " +  session.getRetries() : ""),
                             SPECIAL_COLORS.ERROR));
@@ -1458,640 +2013,5 @@ public class IRCChat extends Activity implements IRCEventListener
                 ircHandler.post(chatUpdater);
             }
         }
-    }
-
-
-    /** Gets a Spanned (i.e. formatted) message from the title, message, and color.
-     * @param ircm The message that has been received
-     * @return
-     */
-    private Spanned getReceived(IrcMessage ircm)
-    {
-        String TAG = StaticBlob.TAG();
-        String theTitle = ircm.title,
-               theMessage = ircm.message;
-        int specialColor = ircm.getColor();
-        int titleColor = 0xFF000000;
-        int msgColor = 0xFF000000;
-        try {
-            titleColor+= (ircm.color!=SPECIAL_COLORS._OTHER ? specialColor :	getNickColor(theTitle));
-            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_modes", false)
-                    && ircm.color==SPECIAL_COLORS._OTHER)
-            {
-                if(NickList.Owners.contains(theTitle.toLowerCase()))
-                    theTitle = "~" + theTitle;
-                else if(NickList.Admins.contains(theTitle.toLowerCase()))
-                    theTitle = "&" + theTitle;
-                else if(NickList.Operators.contains(theTitle.toLowerCase()))
-                    theTitle = "@" + theTitle;
-                else if(NickList.HalfOperators.contains(theTitle.toLowerCase()))
-                    theTitle = "%" + theTitle;
-                else if(NickList.Voices.contains(theTitle.toLowerCase()))
-                    theTitle = "+" + theTitle;
-            }
-            if(theMessage!=null)
-                msgColor+= specialColor;
-        } catch(NullPointerException e) {
-        }
-        if( //!theTitle.equals("[004]") &&
-                ((theMessage!=null && session!=null && mentionPattern.matcher(theMessage).find())   //If it mentions you
-                        || (theTitle!=null && theTitle.startsWith("->")))) //If it's a PM
-        {
-            msgColor = 0xFF000000 + CLR_MENTION;
-            Log.i(TAG, "Nick has been mentioned: " + isFocused);
-            if(!isFocused)
-            {
-                if(StaticBlob.notification_chat==null)
-                    StaticBlob.notification_chat = new Notification(R.drawable.ic_action_dialog, null, System.currentTimeMillis());
-                mentionCount++;
-                StaticBlob.notification_chat.defaults = 0;
-                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate", true) &&
-                        (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_vibrate_all", false)))
-                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_VIBRATE;
-                if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound", true) &&
-                        (mentionCount==1 || PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_sound_all", false)))
-                    StaticBlob.notification_chat.defaults |= Notification.DEFAULT_SOUND;
-                updateNotifyText();
-                mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_chat);
-            }
-        }
-        else
-            msgColor = 0xFF000000 + CLR_TEXT;
-
-        //Format the Bold/Italic
-        java.util.ArrayList<Integer[]> bold = new java.util.ArrayList<Integer[]>();
-        java.util.ArrayList<Integer[]> underline = new java.util.ArrayList<Integer[]>();
-        while(theMessage!=null && theMessage.contains(""))
-        {
-            Integer temp[] = {theMessage.indexOf(""),
-                    theMessage.indexOf("", theMessage.indexOf("")+1)};
-            bold.add(temp);
-            theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
-        }
-        while(theMessage!=null && theMessage.contains(""))
-        {
-            Integer temp[] = {theMessage.indexOf(""),theMessage.indexOf("", theMessage.indexOf("")+1)};
-            underline.add(temp);
-            theMessage = theMessage.replaceFirst("", "").replaceFirst("", "");
-        }
-
-        SpannableString tit = new SpannableString(theTitle==null ? "" : theTitle);
-        SpannableString mes = new SpannableString(theMessage==null ? "" : theMessage);
-        try {
-            if(theTitle!=null)
-            {
-                if(theMessage!=null)
-                    tit = new SpannableString(tit + ": ");
-                tit.setSpan(new ForegroundColorSpan(titleColor), 0, tit.length(), 0);
-                tit.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, tit.length(), 0);
-            }
-            if(theMessage!=null)
-            {
-                mes.setSpan(new ForegroundColorSpan(msgColor), 0, mes.length(), 0);
-                while(!bold.isEmpty() && true)
-                {
-                    mes.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                            bold.get(0)[0],
-                            bold.get(0)[1],
-                            0);
-                    bold.remove(0);
-                }
-                while(!underline.isEmpty() && true)
-                {
-                    mes.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC),
-                            bold.get(0)[0],
-                            bold.get(0)[1],
-                            0);
-                    underline.remove(0);
-                }
-            }
-        } catch(Exception ie) {
-        }
-
-        return (Spanned) TextUtils.concat(Html.fromHtml((SHOW_TIME ? ("<small>" + sdfTime.format(new Date()) + "</small> ") : ""))
-                , tit, mes);
-    }
-
-    /** Gets the nick color from the list, adding it if necessary.
-     * @param nickInQ The nick in question
-     * @return The name of the color resource for that specific nick
-     */
-    public Integer getNickColor(String nickInQ)
-    {
-        if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("nick_colors", true))
-            return PreferenceManager.getDefaultSharedPreferences(this).getInt("irc_color_etcnick", 0x2E8B91);
-        if(irssi)
-            return IRSSI_GREEN;
-        if(!nickColors.containsKey(nickInQ))
-            nickColors.put(nickInQ, getRandomColor());
-        return (Integer) nickColors.get(nickInQ);
-    }
-
-    /** Generates a random color.
-     * @return An integer with the hex value of a random color. */
-    public Integer getRandomColor()
-    {
-        int back = CLR_BACK;
-        int background_avg = 0;
-        for(int i=0; i<6; ++i)
-        {
-            background_avg += back % 16;
-            back %= 16;
-        }
-        background_avg /= 6;
-
-        int rndm;
-        Random randomGenerator = new Random();
-        do {
-            rndm = 0;
-            for(int i=0; i<6; ++i)
-            {
-                if(background_avg>0x7)
-                    rndm += ((randomGenerator.nextInt(background_avg - 0x7) + 0x0) << (i*4));
-                else
-                    rndm += ((randomGenerator.nextInt(0xF - 0x7 + background_avg) + 0x7 + background_avg) << (i*4));
-            }
-        } while(nickColors.containsValue(rndm));
-        return rndm;
-		
-		/*
-		int rndm = 0xFFFFFF;
-		do {
-			rndm = 0 + (int)(Math.random() * ((0xFFFFFF - 0) + 1));
-		} while(!isAcceptable(rndm) && nickColors.containsValue(rndm));
-		return rndm;
-		//*/
-    }
-
-    /** Determines if a random color is acceptable.
-     * @param rgb The RGB (hex) color to examine
-     * @return True if it's acceptable, false otherwise. */
-    private boolean isAcceptable(int rgb)
-    {
-        int red = (rgb >> 16) & 0x000000FF;
-        int green = (rgb >> 8) & 0x000000FF;
-        int blue = (rgb) & 0x000000FF;
-
-        int ans = ((red*299)+(green*587)+(blue*114))/1000;
-        return (ans >= 128) ? true : false;
-    }
-
-    /** Runnable to send a message in the UI thread. */
-    Runnable sendMessage = new Runnable(){
-        @Override
-        public void run() {
-            String newMessage = input.getText().toString();
-            if(newMessage.length()==0)
-                return;
-
-            if(parseOutgoing(newMessage))
-            {
-                StaticBlob.ircChat.add(new IrcMessage(session.getNick(), newMessage, SPECIAL_COLORS.ME));
-                ((ArrayAdapter)chatListview.getAdapter()).notifyDataSetChanged();
-            }
-
-            chatListview.smoothScrollToPosition(StaticBlob.ircChat.size()-1); //TODO: For some reason
-            input.requestFocus();
-            input.setText("");
-        }
-    };
-
-    private static HashMap<String, Integer> smilyRegexMap = null;
-    public CharSequence parseEmoticons(Spanned s)
-    {
-        if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("irc_emoticons", false))
-            return s;
-
-        //ORDER HERE MATTERS
-        if(smilyRegexMap==null)
-        {
-            smilyRegexMap = new HashMap<String, Integer>();
-            //smilyRegexMap.put( "<3", R.drawable.ic_action_heart);                  //  <3
-            smilyRegexMap.put( ">:(D|\\))", R.drawable.ic_action_emo_evil);        //  >:D or >:)
-            smilyRegexMap.put( ":-?\\)", R.drawable.ic_action_emo_basic);          //  :-) or :)
-            smilyRegexMap.put( ">:-?(\\(|\\|)", R.drawable.ic_action_emo_angry);   //  >:| or >:( or >:-| or >:-(
-            smilyRegexMap.put( "B-\\)", R.drawable.ic_action_emo_basic);           //  B-)
-            smilyRegexMap.put( ":'-?\\(", R.drawable.ic_action_emo_cry);           //  :'-( or :'(
-            smilyRegexMap.put( ":-?(\\\\|/)", R.drawable.ic_action_emo_err);       //  :\ or :/ or :-\ or :-/
-            smilyRegexMap.put( ":-\\*", R.drawable.ic_action_emo_kiss);            //  :-*
-            smilyRegexMap.put( ":-?D", R.drawable.ic_action_emo_laugh);            //  :-D or :D
-            smilyRegexMap.put( "(x|X)D", R.drawable.ic_action_emo_laugh);          //  XD or xD
-            smilyRegexMap.put( ":-?(\\(|\\[)", R.drawable.ic_action_emo_sad);      //  :( or :-( or :[ or :-[
-            smilyRegexMap.put( ":-?S", R.drawable.ic_action_emo_shame);            //  :S or :-S
-            smilyRegexMap.put( "(:|X|x)-?P", R.drawable.ic_action_emo_tongue);     //  :P or :-P or xP or XP or X-P or x-P
-            smilyRegexMap.put( ";-?\\)", R.drawable.ic_action_emo_wink);           //  ;-) or ;)
-
-            smilyRegexMap.put( ":-?(O|o)", R.drawable.ic_action_emo_wonder);       //  :O or :o or :-O or :-o
-        }
-        SpannableStringBuilder builder = new SpannableStringBuilder(s);
-
-        @SuppressWarnings("rawtypes")
-        Iterator it = smilyRegexMap.entrySet().iterator();
-        while (it.hasNext())
-        {
-            @SuppressWarnings("rawtypes")
-            Map.Entry pairs = (Map.Entry) it.next();
-            Pattern mPattern = Pattern.compile((String) pairs.getKey(),Pattern.CASE_INSENSITIVE);
-            Matcher matcher = mPattern.matcher(s);
-
-            while (matcher.find())
-            {
-                Bitmap smiley = BitmapFactory.decodeResource(this.getResources(), ((Integer) pairs.getValue()));
-                Object[] spans = builder.getSpans(matcher.start(), matcher.end(), ImageSpan.class);
-                if (spans == null || spans.length == 0)
-                {
-                    builder.setSpan(new ImageSpan(smiley), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            }
-        }
-        return builder;
-    }
-
-
-
-    /** Parses the outgoing message to determine its type.
-     * @param msg The message to be sent
-     * @return True if the output should be appended to the chat log, false otherwise.
-     */
-    private boolean parseOutgoing(String msg)
-    {
-        msg = msg.replace("\n", "");
-
-        if(!msg.startsWith("/"))
-        {
-            session.getChannel(CHANNEL_NAME).say(msg);
-            return true;
-        }
-
-        if(msg.toUpperCase().startsWith("/NS "))
-            msg = "/MSG NickServ " + msg.substring("/NS ".length());
-
-        if(msg.toUpperCase().startsWith("/NICK "))
-        {
-            msg =  msg.substring("/NICK ".length());
-            session.changeNick(msg);
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/QUIT") || msg.toUpperCase().startsWith("/PART"))
-        {
-            if(msg.equals("/QUIT") || msg.equals("/PART"))
-                logout(null);
-            else
-                logout(msg.substring("/QUIT ".length()));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/WHO "))
-        {
-            session.who(msg.substring("/WHO ".length()));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/WHOIS "))
-        {
-            session.whois(msg.substring("/WHOIS ".length()));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/WHOWAS "))
-        {
-            session.whoWas(msg.substring("/WHOWAS ".length()));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/MSG "))
-        {
-            String targetNick = "";
-            String targetMsg = "";
-            try {
-                targetNick = msg.substring("/MSG ".length());
-                targetNick = msg.substring(("/MSG ").length(), msg.indexOf(" ", "/MSG ".length()+1));
-                targetMsg = msg.substring("/MSG ".length() + targetNick.length());
-            }catch(Exception e){}
-            session.sayPrivate(targetNick, targetMsg);
-            if(!targetNick.toUpperCase().equals("NICKSERV") && targetMsg.toUpperCase().startsWith("IDENTIFY"))
-            {
-                chatQueue.add(new IrcMessage("<-" + targetNick, targetMsg, SPECIAL_COLORS.PM));
-                ircHandler.post(chatUpdater);
-            }
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/ISON ")
-                || msg.toUpperCase().equals("/MOTD")
-                || msg.toUpperCase().equals("/RULES")
-                || msg.toUpperCase().equals("/LUSERS")
-                || msg.toUpperCase().startsWith("/MAP")
-                || msg.toUpperCase().startsWith("/VERSION")
-                || msg.toUpperCase().startsWith("/LINKS")
-                || msg.toUpperCase().startsWith("/IDENTIFY ")
-                || msg.toUpperCase().startsWith("/ADMIN")
-                || msg.toUpperCase().startsWith("/USERHOST")
-                || msg.toUpperCase().startsWith("/TOPIC ")
-                || msg.toUpperCase().startsWith("/CREDITS")
-                || msg.toUpperCase().startsWith("/TIME")
-                || msg.toUpperCase().startsWith("/DNS")		//Denied
-                || msg.toUpperCase().startsWith("/USERIP ")
-                || msg.toUpperCase().startsWith("/STATS ")	//Denied
-                || msg.toUpperCase().startsWith("/MODULE")	//Posts as "Notice", not "Module". I am ok with this.
-                || msg.toUpperCase().startsWith("/LICENSE")
-                || msg.toUpperCase().startsWith("/NAMES")
-                || msg.toUpperCase().startsWith("/ISON ")
-                || msg.toUpperCase().startsWith("/PING ")
-                || msg.toUpperCase().startsWith("/PONG ")
-                || msg.toUpperCase().startsWith("/STATS ")
-                || msg.toUpperCase().startsWith("/HELPOP")
-                || msg.toUpperCase().startsWith("/SETNAME")
-                || msg.toUpperCase().startsWith("/VHOST")
-                )
-        {
-            session.sayRaw(msg.substring(1) + " " + CHANNEL_NAME);
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/ME "))
-        {
-            session.action(CHANNEL_NAME, "ACTION" + msg.substring(3));
-            chatQueue.add(new IrcMessage("* " + session.getNick() + msg.substring(3), null, SPECIAL_COLORS.ME));
-            ircHandler.post(chatUpdater);
-            return false;
-        }
-
-        if(msg.toUpperCase().startsWith("/PING ")) //TODO: I have no clue if this works right.
-        {
-            session.action(CHANNEL_NAME, "PING" + msg.substring("/PING".length()));
-            //session.ctcp(msg.substring("/PING ".length()), "ping");
-            return true;
-        }
-        else if(msg.toUpperCase().startsWith("/AWAY "))
-        {
-            session.setAway(msg.toUpperCase().substring("/AWAY ".length()));
-            return false;	//TODO: CHECK
-        }
-        else if(msg.toUpperCase().equals("/AWAY"))
-        {
-            if(session.isAway())
-                session.unsetAway();
-            else
-                session.setAway("Gone away for now");
-            return false;
-        }
-
-        else if(msg.toUpperCase().startsWith("/JOIN ")
-                || msg.toUpperCase().startsWith("/CYCLE ")
-                || msg.toUpperCase().startsWith("/LIST ")
-                || msg.toUpperCase().startsWith("/KNOCK "))
-        {
-            Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_1), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        //Op stuff. Because I am an Op. SUCK IT, PEOPLE WHO ALWAYS SAID I WOULDN'T AMOUNT TO ANYTHING.
-        else if(msg.toUpperCase().startsWith("/KICK "))
-        {
-            msg = msg.substring("/KICK ".length());
-            String nick = msg.split("\\s+")[0];
-            String reason = nick.length()<msg.length()?msg.substring(nick.length()+1) : session.getNick();
-            Log.e("DERP!:", nick + " | " + reason);
-            session.getChannel(CHANNEL_NAME).kick(nick, reason);
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/INVITE "))
-        {
-            msg = msg.substring("/INVITE ".length());
-            String nick = msg.split("\\s+")[0];
-            try {
-                if(!msg.substring(nick.length()+1).toLowerCase().equals(CHANNEL_NAME))
-                {
-                    Toast.makeText(IRCChat.this, getStr(R.string.jb_limit_2), Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            }catch(Exception e){}
-            session.invite(nick, session.getChannel(CHANNEL_NAME));
-            return true;
-        }
-        else if(msg.toUpperCase().startsWith("/OPER "))
-        {
-            session.getChannel(CHANNEL_NAME).op(msg.substring("/OPER ".length()));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/WATCH"))
-        {
-            session.sayRaw(msg.substring(1));
-            return false;
-        }
-        else if(msg.toUpperCase().startsWith("/MODE "))
-        {
-            session.getChannel(CHANNEL_NAME).mode(msg.substring("/MODE ".length()));
-            return false;
-        }
-        else if(msg.startsWith("/"))
-        {
-            //PRIVMSG
-            //NOTICE?
-
-            String unknown = msg;
-            try {
-                unknown = msg.substring(1, msg.indexOf(" "));
-            }catch(Exception e){
-                unknown = unknown.substring(1);
-            }
-            Toast.makeText(IRCChat.this,
-                    String.format(getStr(R.string.irc_command_unknown), unknown)
-                    , Toast.LENGTH_LONG).show();
-            return false;
-        }
-		/*
-		if(msg.toUpperCase().startsWith("/MOTD ")
-		|| msg.toUpperCase().startsWith("/LUSERS "))
-		{
-			Toast.makeText(IRCChat.this, "Stop that, you're trying to break stuff", Toast.LENGTH_SHORT).show();
-			return false;
-		}
-		*/
-        chatQueue.add(new IrcMessage(getStrBr(R.string.app_name), getStr(R.string.command_not_recognized), SPECIAL_COLORS.TOPIC));
-        ircHandler.post(chatUpdater);
-        return false;
-    }
-
-    /** A runnable to update the log */
-    Runnable logUpdater = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    IrcMessage received;
-                    while(!logQueue.isEmpty())
-                    {
-                        received = logQueue.poll();
-                        if(received==null)
-                            return;
-
-                        StaticBlob.ircLog.add(received);
-                        ((ArrayAdapter)logListview.getAdapter()).notifyDataSetChanged();
-                    }
-                    input.requestFocus();
-                }
-            });
-        };
-
-    };
-
-    /** A function object to flash the background of an EditText control.
-     *  Changes the background, waits a certain amount of time, then changes it back
-     * @author notbryant */
-    class EditTextFlash
-    {
-        SpannableString inputText;
-        android.text.style.BackgroundColorSpan flash;
-        EditText view;
-        Handler H;
-        int selA, selB;
-        /**
-         * @param color The color the flash the background; Salmon (0xFA8072) is a good choice
-         * @param view The EditText to be flashed
-         * @param time The time in milliseconds to flash it
-         * @param H A handler to use to update the view
-         */
-        EditTextFlash(int color, EditText view, int time, Handler H)
-        {
-            this.view = view;
-            this.H = H;
-            color = IRCChat.this.getResources().getColor(com.qweex.callisto.R.color.Salmon);
-            flash = new android.text.style.BackgroundColorSpan(color);
-
-            inputText = new SpannableString(view.getText().toString());
-            selA = view.getSelectionStart();
-            selB = view.getSelectionEnd();
-            inputText.setSpan(flash, 0, inputText.length(), 0);
-            view.setText(inputText);
-            view.setSelection(selA, selB);
-            H.postDelayed(R, time);
-        }
-        private Runnable R = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                inputText.removeSpan(flash);
-                view.setText(inputText);
-                view.setSelection(selA, selB);;
-            }
-        };
-    }
-
-
-    /** A simple but effective obfusication cypher.
-     * https://svn.apache.org/repos/asf/cayenne/main/branches/cayenne-jdk1.5-generics-unpublished/src/main/java/org/apache/cayenne/conf/Rot47PasswordEncoder.java
-     * Used under the Apache license
-     * I took the relevant function and extracted it out of the class. I also removed comments to make the code size smaller.
-     */
-    public String Rot47(String value)
-    {
-        if(value==null)
-            return null;
-        int length = value.length();
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < length; i++)
-        {
-            char c = value.charAt(i);
-
-            // Process letters, numbers, and symbols -- ignore spaces.
-            if (c != ' ')
-            {
-                // Add 47 (it is ROT-47, after all).
-                c += 47;
-
-                if (c > '~')
-                    c -= 94;
-            }
-
-            result.append(c);
-        }
-
-        return result.toString();
-    }
-
-
-    public class IrcAdapter<E> extends ArrayAdapter<E>
-    {
-        ArrayListWithMaximum<E> data;
-        ColorStateList cls;
-        int textViewResourceId;
-        void init(int i)
-        {
-            this.textViewResourceId = i;
-            cls = new ColorStateList(
-                    new int[][] {
-                            new int[] { android.R.attr.state_pressed},
-                            new int[] { android.R.attr.state_focused},
-                            new int[] {}
-                    },
-                    new int [] {
-                            Color.BLUE,
-                            0xFF000000 + CLR_LINKS,
-                            0xFF000000 + CLR_LINKS,
-                    }
-            );
-        }
-
-        public IrcAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            init(textViewResourceId);
-        }
-
-        public IrcAdapter(Context context, int resource, int textViewResourceId) {
-            super(context, resource, textViewResourceId);
-            init(textViewResourceId);
-        }
-
-        public IrcAdapter(Context context, int textViewResourceId, E[] objects) {
-            super(context, textViewResourceId, objects);
-            init(textViewResourceId);
-        }
-
-        public IrcAdapter(Context context, int resource, int textViewResourceId, E[] objects) {
-            super(context, resource, textViewResourceId, objects);
-            init(textViewResourceId);
-        }
-
-        public IrcAdapter(Context context, int textViewResourceId, List<E> objects) {
-            super(context, textViewResourceId, objects);
-            data = (ArrayListWithMaximum<E>) objects;
-            init(textViewResourceId);
-        }
-
-        public IrcAdapter(Context context, int resource, int textViewResourceId, List<E> objects) {
-            super(context, resource, textViewResourceId, objects);
-            data = (ArrayListWithMaximum<E>) objects;
-            init(textViewResourceId);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            if(convertView==null)
-                convertView = getLayoutInflater().inflate(textViewResourceId, null, false);
-
-            ((TextView)convertView).setText( parseEmoticons((Spanned) getReceived((IrcMessage)data.get(position))) );
-            ((TextView) convertView).setTextColor(0xff000000 + CLR_TEXT);
-            ((TextView) convertView).setLinkTextColor(cls);
-            return convertView;
-        }
-    }
-
-    public String getStr(int id)
-    {
-        return getResources().getString(id);
-    }
-
-    public String getStr(String pre, int id, String post)
-    {
-        return pre + getResources().getString(id) + post;
-    }
-
-    public String getStrBr(int id)
-    {
-        android.content.res.Resources res = getResources();
-        return res.getString(R.string.irc_bracket_open) + res.getString(id).toUpperCase() + res.getString(R.string.irc_bracket_close);
     }
 }

@@ -36,8 +36,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import com.qweex.callisto.podcast.ShowList;
-//import com.qweex.utils.TitleExtractor;
 
 
 /** The activity that allows the user to change the preferences.
