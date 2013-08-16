@@ -367,17 +367,17 @@ public class DatabaseConnector
 	 * @param identity The ID of an item in the DATABASE_EPISODES to check for.
 	 * @return
 	 */
-	public boolean isInQueue(long identity, boolean video)
+	public Cursor findInQueue(long identity, boolean video)
 	{
-	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id"},
+	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},
 			   					"identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
-	   return (c.getCount()>0);
+	   return c;
 	}
 	
 	/** [DATABASE_QUEUE] Removes one item from the queue
-	 * @param id The ID of the item from the DATABASE_QUEUE table to remove.
+	 * @param id The ID from the DATABASE_QUEUE table to remove.
 	 */
-	public void deleteQueueItem(long id) 
+	public void deleteQueueItem(long id)
 	{
 	   database.delete(DATABASE_QUEUE, "_id=" + id, null);
 	}

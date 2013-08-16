@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
@@ -32,6 +33,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.qweex.callisto.podcast.DownloadList;
+import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.utils.ArrayListWithMaximum;
 import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.listeners.*;
@@ -39,6 +42,7 @@ import com.qweex.callisto.receivers.AudioJackReceiver;
 import com.qweex.callisto.widgets.CallistoWidget;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
@@ -275,4 +279,53 @@ public class StaticBlob
         stacktrace.getClassName().substring("com.qweex.callisto".length()+1) + ":" + stacktrace.getMethodName()
                 + "::" + stacktrace.getLineNumber();
     }
+
+    public static void deleteItem(Context con, long id, boolean video)      //id is from EPISODES
+    {
+        String TAG = TAG();
+        //1. Get track info & create path
+        Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
+        if(c.getCount()==0)
+        {
+            Log.e(TAG, "Trying to delete an item that does not exist in the db");
+            return;
+        }
+        c.moveToFirst();
+        String show = c.getString(c.getColumnIndex("show"));
+        String date = c.getString(c.getColumnIndex("date"));
+        SimpleDateFormat sdfDestination = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = sdfDestination.format(StaticBlob.sdfRaw.parse(date));
+        } catch (ParseException e) {
+            Log.e(TAG+":ParseException", "Error parsing a date that has already been parsed:");
+            Log.e(TAG+":ParseException", date);
+            Log.e(TAG+":ParseException", "(This should SERIOUSLY never happen).");
+        }
+        String title = c.getString(c.getColumnIndex("title"));
+        String ext = EpisodeDesc.getExtension(c.getString(c.getColumnIndex(video?"vidlink":"mp3link")));
+
+        File target = new File(StaticBlob.storage_path + File.separator + show);
+        target = new File(target, date + "__" + DownloadList.makeFileFriendly(title) + ext);
+
+        //2. Delete file
+        target.delete();
+        //3. Remove from Queue
+        Cursor q = StaticBlob.databaseConnector.findInQueue(id,video);
+        if(q.getCount()>0)
+        {
+            long idq;
+            q.moveToFirst();
+            do {
+                idq = q.getLong(q.getColumnIndex("_id"));
+                //4. If it was the current item in the queue AND player was playing, move to next
+                if(q.getInt(q.getColumnIndex("current"))>0)
+                {
+                    PlayerControls.changeToTrack(con, 1, StaticBlob.mplayer!=null && !StaticBlob.playerInfo.isPaused);
+                }
+                StaticBlob.databaseConnector.deleteQueueItem(idq);
+            } while(q.moveToNext());
+        }
+    }
+
+
 }

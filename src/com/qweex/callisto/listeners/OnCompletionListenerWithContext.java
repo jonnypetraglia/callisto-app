@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.StaticBlob;
+import com.qweex.callisto.podcast.DownloadList;
 
 /** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener
@@ -51,20 +52,20 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 		if(r!=null)
 			r.run();
 		
-		boolean del = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
-		if(del)
-		{
-	        File target = new File(StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
-	        target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title + ".mp3");
-	        target.delete();
-		}
-		Cursor c = StaticBlob.databaseConnector.currentQueueItem();
-		if(c.getCount()==0)
-			return;
-		c.moveToFirst();
-		long id = c.getLong(c.getColumnIndex("identity"));
-		StaticBlob.databaseConnector.updatePosition(id, 0);
-		
-		PlayerControls.changeToTrack(this.c, 1, true);
+		boolean shouldDelete = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
+
+        Cursor c = StaticBlob.databaseConnector.currentQueueItem();
+        if(c.getCount()==0)
+        {
+            Log.e(TAG, "Track completed but queue is empty. wut");
+            return;
+        }
+        c.moveToFirst();
+        long identity = c.getLong(c.getColumnIndex("identity"));
+        boolean isVideo = c.getInt(c.getColumnIndex("video"))>0;
+
+        StaticBlob.databaseConnector.updatePosition(identity, 0);
+		if(shouldDelete)
+		    StaticBlob.deleteItem(this.c, identity, isVideo);       //SHOULD automatically advance the queue
 	}
 }

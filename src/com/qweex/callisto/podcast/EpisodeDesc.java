@@ -30,8 +30,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
@@ -81,6 +79,8 @@ public class EpisodeDesc extends Activity
     private static final String[] SUFFIXES = new String[] {"", "K", "M", "G", "T"};
     /** The AsyncTask to download ALL the things in the download queue */
     public static DownloadTask dltask;
+    /** Reference to the current EpisodeDesc instance; used to update the buttons by non-user events */
+    public static EpisodeDesc currentInstance;
 
     /** Called when the activity is first created. Sets up the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -208,7 +208,7 @@ public class EpisodeDesc extends Activity
         //If the current playing track finishes, redetermine the buttons
         StaticBlob.trackCompleted.setRunnable(new Runnable(){
             public void run() {
-                determineButtons(false);
+                determineButtons();
             }
         });
 
@@ -280,9 +280,20 @@ public class EpisodeDesc extends Activity
         Log.v(TAG, "Resuming main activity");
         EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(EpisodeDesc.this);
-        determineButtons(false);
+        determineButtons();
         if(dltask!=null)
             dltask.context = this;
+
+        currentInstance = this;
+    }
+
+    /** Called when the activity is going to be destroyed. */
+    @Override
+    public void onDestroy()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onDestroy();
+        currentInstance = null;
     }
 
     /** Listener for when the episode's "New" status is toggled. */
@@ -334,44 +345,9 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            String TAG = StaticBlob.TAG();
-            Log.v(TAG, "Deleting item: " + id + " vid: " + vidSelected);
-            if(vidSelected)
-                file_location_video.delete();
-            else
-                file_location_audio.delete();
-            int tempId = -1;
 
-            //Check to see if it is currently playing. If it is, go to the next one
-            Cursor c = StaticBlob.databaseConnector.currentQueueItem();
-            if(c.getCount()!=0)
-            {
-                c.moveToFirst();
-                tempId = c.getInt(c.getColumnIndex("_id"));
-            }
-            if(id==tempId)
-            {
-                PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
-                StaticBlob.databaseConnector.advanceQueue(1);
-                boolean isPlaying = (StaticBlob.mplayer!=null && !StaticBlob.mplayer.isPlaying());
-                PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
-                if(isPlaying)
-                {
-                    StaticBlob.playerInfo.isPaused = true;
-                    StaticBlob.mplayer.pause();
-                }
-                StaticBlob.databaseConnector.advanceQueue(1);
-            }
-
-            //Delete item from the queue if it is in it
-            StaticBlob.databaseConnector.deleteQueueItem(id);
-
-            //Update the buttons
-            streamButton.setText(EpisodeDesc.this.getResources().getString(R.string.stream));
-            streamButton.setOnClickListener(launchStream);
-            downloadButton.setText(EpisodeDesc.this.getResources().getString(R.string.download));
-            downloadButton.setOnClickListener(launchDownload);
-
+            StaticBlob.deleteItem(EpisodeDesc.this, id, vidSelected);
+            determineButtons();
             StaticBlob.playerInfo.update(v.getContext()); //Update the player controls
         }
     };
@@ -411,7 +387,7 @@ public class EpisodeDesc extends Activity
                 dltask = new DownloadTask(EpisodeDesc.this);
                 dltask.execute();
             }
-            determineButtons(false);
+            determineButtons();
         }
     };
 
@@ -424,7 +400,7 @@ public class EpisodeDesc extends Activity
             String TAG = StaticBlob.TAG();
             Log.i(TAG, "Removing Download: " + id);
             StaticBlob.databaseConnector.addDownload(id, vidSelected);
-            determineButtons(true);
+            determineButtons();
         }
     };
 
@@ -453,14 +429,13 @@ public class EpisodeDesc extends Activity
                 findViewById(R.id.video_size).setVisibility(View.VISIBLE);
                 vidSelected=true;
             }
-            determineButtons(false);
+            determineButtons();
         }
     };
 
     //TODO: Fix this
-    /** Determines the buttons' text and listeners depending on the status of whether the episode has been downloaded already.
-     * @param forceNotThere Set to True to force the function to believe that the file for the episode is not there */
-    private void determineButtons(boolean forceNotThere)
+    /** Determines the buttons' text and listeners depending on the status of whether the episode has been downloaded already. */
+    private void determineButtons()
     {
         File curr = (vidSelected ? file_location_video : file_location_audio);
         long curr_size = (vidSelected ? vid_size : mp3_size);
@@ -473,14 +448,14 @@ public class EpisodeDesc extends Activity
 
         // 1. It is in the download queue
         //      buttons:  *Downloading*  Cancel
-        if(StaticBlob.databaseConnector.isInDownloadQueue(id, vidSelected) && !forceNotThere)
+        if(StaticBlob.databaseConnector.isInDownloadQueue(id, vidSelected))
         {
             streamButton.setText(this.getResources().getString(R.string.downloading));
             streamButton.setEnabled(false);
             downloadButton.setText(this.getResources().getString(R.string.cancel));
             downloadButton.setOnClickListener(launchCancel);
         }
-        else if(curr.exists() && !forceNotThere)
+        else if(curr.exists())
         {
             // 2. It is not in the DL queue, it exists, AND it is not the right file size
             //      buttons:  Stream  Delete
@@ -490,7 +465,7 @@ public class EpisodeDesc extends Activity
                 streamButton.setOnClickListener(launchDownload);
             // 3. It is not in the DL queue, it exists, it is the right size, BUT it is in the queue
             //      buttons:  *Enqueued*  Delete
-            } else if(StaticBlob.databaseConnector.isInQueue(id, vidSelected))
+            } else if(StaticBlob.databaseConnector.findInQueue(id, vidSelected).getCount()>0)
             {
                 streamButton.setText(this.getResources().getString(R.string.enqueued));
                 streamButton.setEnabled(false);
