@@ -140,9 +140,9 @@ public class StaticBlob
 
     public static void init(final Context c)
     {
+        String TAG = StaticBlob.TAG();
         if(StaticBlob.playerInfo!=null)
             return;
-        Log.e("12345", "!");
         //Get the main app settings (static variables)
         StaticBlob.SHOW_LIST_VIDEO = c.getResources().getStringArray(R.array.shows_video);
         StaticBlob.SHOW_LIST_AUDIO = c.getResources().getStringArray(R.array.shows_audio);
@@ -156,7 +156,7 @@ public class StaticBlob
             StaticBlob.storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + StaticBlob.storage_path;
         new File(StaticBlob.storage_path).mkdirs();
 
-        Log.i("StaticBlob:init", "Path is: " + StaticBlob.storage_path + ", " + new File(StaticBlob.storage_path).exists());
+        Log.i(TAG, "Path is: " + StaticBlob.storage_path + ", " + new File(StaticBlob.storage_path).exists());
 
 
         try {
@@ -188,9 +188,9 @@ public class StaticBlob
         //Creates the dialog for live error
         StaticBlob.errorDialog = new Dialog(c);
         TextView t = new TextView(c);
-        t.setText("An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.");
+        t.setText(R.string.live_error);
         StaticBlob.errorDialog.setContentView(t);
-        StaticBlob.errorDialog.setTitle("By the beard of Zeus!");
+        StaticBlob.errorDialog.setTitle(R.string.live_error_title);
 
         //Create the wifi lock
         WifiManager wm = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
@@ -199,7 +199,7 @@ public class StaticBlob
 
         //Create the dialog for live selection
         StaticBlob.liveDg = new AlertDialog.Builder(c)
-                .setTitle("Switch from playlist to live?")
+                .setTitle(R.string.switch_to_live)
                 .setView(((LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.live_select, null))
                 .create();
 
@@ -226,27 +226,27 @@ public class StaticBlob
         {
             @Override
             public void onPrepared(MediaPlayer arg0) {
+                String TAG = StaticBlob.TAG();
 
-                Log.i("*:mplayer:onPrepared", "Prepared, seeking to " + StaticBlob.playerInfo.position);
+                Log.i(TAG, "Prepared, seeking to " + StaticBlob.playerInfo.position);
                 StaticBlob.mplayer.seekTo(StaticBlob.playerInfo.position);
                 StaticBlob.playerInfo.length = StaticBlob.mplayer.getDuration()/1000;
                 StaticBlob.databaseConnector.putLength(StaticBlob.playerInfo.title, StaticBlob.mplayer.getDuration());
 
-                Log.i("*:mplayer:onPrepared", "Prepared, length is " + StaticBlob.playerInfo.length);
+                Log.i(TAG, "Prepared, length is " + StaticBlob.playerInfo.length);
                 try {
                     ImageButton ib = ((ImageButton)((Activity)c).findViewById(R.id.playPause));
                     ib.setImageDrawable(StaticBlob.pauseDrawable);
                 } catch(NullPointerException e) {
-                    Log.w("*:mplayer:onPrepared", "Could not find the button");
+                    Log.w(TAG, "Could not find the button");
                 } //Case for when ib is not found
                 catch(ClassCastException e) {} //Case for when it's the widget
-                Log.i("*:mplayer:onPrepared", (startPlaying ? "" : "NOT ") + "Starting to play: " + StaticBlob.playerInfo.title);
+                Log.i(TAG, (startPlaying ? "" : "NOT ") + "Starting to play: " + StaticBlob.playerInfo.title);
                 if(!startPlaying)
                 {
                     StaticBlob.playerInfo.update(c);
                     return;
                 }
-                Log.i("*:mplayer:onPrepared", "HERP");
 
                 if(audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
                     audioFocus = new OnAudioFocusChangeListenerImpl(c);

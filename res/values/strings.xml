@@ -96,6 +96,8 @@
     <string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
     <string name="video_warning">Video support is VERY untested. Please do not 1-star the app if it is wonky. If you do I will personally hunt you down and make you wear a sock monkey costume for a month as punishment.</string>
     <string name="move_folder_error">An error occurred while trying to rename the folder. You might have to do it manually.</string>
+    <string name="live_error">An error occurred. This may be a one time thing, or your device does not support the stream. You can try going to JBlive.info to see if it's just this app.</string>
+    <string name="live_error_title">By the beard of Zeus!</string>
 
     <!-- EpisodeDesc -->
     <string name="share">Share</string>
