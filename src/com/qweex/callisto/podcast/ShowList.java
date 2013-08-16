@@ -66,7 +66,7 @@ import com.qweex.callisto.StaticBlob;
 public class ShowList extends Activity
 {
     /** The number of the show (according to the AllShows array) that is the current show. */
-    public static int currentShow = -1;
+    public static String currentShow = "", currentShowAudio = "", currentShowVideo = "";
     /** Used to adjust the watched status and downloaded status of an episode in the OnResume" */
     public static View current_episode = null;
 
@@ -102,12 +102,14 @@ public class ShowList extends Activity
         Callisto.build_layout(this, mainListView);
 
         //Get the settings for this show
-        currentShow = getIntent().getExtras().getInt("current_show");
-        showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[currentShow], 0);
+        currentShow = getIntent().getExtras().getString("current_show");
+        currentShowAudio = getIntent().getExtras().getString("current_show_audio");
+        currentShowVideo = getIntent().getExtras().getString("current_show_video");
+        showSettings = getSharedPreferences(currentShow, 0);
         filter = showSettings.getBoolean("filter", false);
         loading = (TextView) findViewById(android.R.id.empty);
         //If it has been checked before but there are no episodes, show that it is empty, not just loading.
-        if(StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter).getCount()==0)
+        if(StaticBlob.databaseConnector.getShow(currentShow, filter).getCount()==0)
             loading.setText(this.getResources().getString(R.string.list_empty));
         else
             loading.setText(this.getResources().getString(R.string.loading));
@@ -142,10 +144,10 @@ public class ShowList extends Activity
         mainListView.setOnItemClickListener(selectEpisode);
         mainListView.setBackgroundColor(getResources().getColor(R.color.backClr));
         mainListView.setCacheColorHint(getResources().getColor(R.color.backClr));
-        setTitle(StaticBlob.SHOW_LIST[currentShow]);
+        setTitle(currentShow);
         //Get the shows from the SQL; make it async because of reasons
         new GetShowTask().execute((Object[]) null);
-        Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+        Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
         showAdapter = new ShowListCursorAdapter(ShowList.this, R.layout.row, r);
         mainListView.setAdapter(showAdapter);
         return;
@@ -178,9 +180,9 @@ public class ShowList extends Activity
             String title = c.getString(c.getColumnIndex("title")),
                     mp3_link = c.getString(c.getColumnIndex("mp3link")),     //Need this for file extension
                     vid_link = c.getString(c.getColumnIndex("vidlink"));     // ^
-            File music_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+            File music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
             music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-            File video_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+            File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
             video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
             boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
@@ -213,7 +215,7 @@ public class ShowList extends Activity
     @Override
     public boolean onSearchRequested ()
     {
-        SearchResultsActivity.searchShow = StaticBlob.SHOW_LIST[currentShow];
+        SearchResultsActivity.searchShow = currentShow;
         startSearch(null, false, null, false);
         return true;
     }
@@ -263,8 +265,8 @@ public class ShowList extends Activity
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
-                                StaticBlob.databaseConnector.clearShow(StaticBlob.SHOW_LIST[currentShow]);
-                                Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+                                StaticBlob.databaseConnector.clearShow(currentShow);
+                                Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                                 SharedPreferences.Editor editor = showSettings.edit();
@@ -280,7 +282,7 @@ public class ShowList extends Activity
                     item.setTitle(this.getResources().getString(R.string.unfilter));
                 else
                     item.setTitle(this.getResources().getString(R.string.filter));
-                Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+                Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
                 SharedPreferences.Editor editor = showSettings.edit();
@@ -292,15 +294,15 @@ public class ShowList extends Activity
                         .setTitle(this.getResources().getString(R.string.mark_all))
                         .setPositiveButton(this.getResources().getString(R.string.new_), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                StaticBlob.databaseConnector.markAllNew(StaticBlob.SHOW_LIST[currentShow], true);
-                                Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+                                StaticBlob.databaseConnector.markAllNew(currentShow, true);
+                                Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }})
                         .setNegativeButton(this.getResources().getString(R.string.old), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                StaticBlob.databaseConnector.markAllNew(StaticBlob.SHOW_LIST[currentShow], false);
-                                Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+                                StaticBlob.databaseConnector.markAllNew(currentShow, false);
+                                Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();
                             }}).show();
@@ -337,7 +339,7 @@ public class ShowList extends Activity
             String TAG = StaticBlob.TAG();
             if(msg.arg1!=0)
             {
-                Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
+                Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
                 Log.i(TAG, "Changing cursor");
@@ -365,7 +367,7 @@ public class ShowList extends Activity
         protected Message doInBackground(Object... params)
         {
             UpdateShow us = new UpdateShow();
-            return us.doUpdate(currentShow, showSettings);
+            return us.doUpdate(currentShow, showSettings, currentShowAudio, currentShowVideo);
         }
 
         @Override
@@ -392,7 +394,7 @@ public class ShowList extends Activity
         @Override
         protected Cursor doInBackground(Object... params)
         {
-            return StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], ShowList.this.filter);
+            return StaticBlob.databaseConnector.getShow(currentShow, ShowList.this.filter);
         }
 
         @Override
@@ -502,7 +504,7 @@ public class ShowList extends Activity
             boolean exists = false,
                     complete = false;
             try {
-                File music_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+                File music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
                 music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
                 exists |= music_file_location.exists();
                 complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
@@ -513,7 +515,7 @@ public class ShowList extends Activity
             if(!complete)
             {
                 try {
-                    File video_file_location = new File(StaticBlob.storage_path + File.separator + StaticBlob.SHOW_LIST[currentShow]);
+                    File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
                     video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + DownloadList.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
                     exists |= video_file_location.exists();
                     complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));

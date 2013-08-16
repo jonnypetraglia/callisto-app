@@ -105,7 +105,7 @@
     <string name="share_message" formatted="false">Check out this awesome episode of %s!\n\n%s</string>
     <string name="enqueued">Enqueued</string>
     <string name="stream">Stream</string>
-    <string name="file_size">Size:  </string>
+    <string name="file_size">Size:</string>
 
     <!-- Show List  &   All Shows-->
     <string name="refresh_all">Refresh All</string>
@@ -219,6 +219,9 @@
     <string name="play_on_replug_desc">Resume playback when headphone jack is plugged back in</string>
     <string name="tablet_screen">New (tablet) main screen</string>
     <string name="auto_save_contact_draft">Auto-save Contact Draft</string>
+    <string name="custom_feeds">Custom Feeds</string>
+    <string name="title">Title</string>
+    <string name="rss_url">RSS URL</string>
 
     <!-- Preferences for IRC -->
     <string name="port">Port</string>
@@ -246,6 +249,7 @@
     <string name="use_emoticons_desc">May slow performance, but is shiny</string>
     <string name="random_nick_colors">Random nick colors</string>
     <string name="random_nick_colors_desc">Generate a random color for each nick.</string>
+    <string name="irc_settings">IRC Settings</string>
 
     <!-- IRC color settings -->
     <string name="text_color">Text Color</string>

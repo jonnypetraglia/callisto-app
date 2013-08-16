@@ -13,7 +13,12 @@
  */
 package com.qweex.callisto;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.database.Cursor;
 import android.preference.*;
@@ -23,14 +28,16 @@ import android.os.Environment;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.*;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import com.qweex.callisto.podcast.ShowList;
+//import com.qweex.utils.TitleExtractor;
 
 
 /** The activity that allows the user to change the preferences.
@@ -46,7 +53,11 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	private String oldRadioForLiveQuality;
     /** A button to do the play/pausing; essentially calls methods already in place rather than trying to do it from scratch. */
 	private ImageButton MagicButtonThatDoesAbsolutelyNothing;	//This has to be an imagebutton because it is defined as such in Callisto.playPause
-	
+
+    private AlertDialog customFeedDialog, newCustomFeedDialog;
+    private LinearLayout customFeedDialogView;
+    private EditText newCustomFeed;
+
 	/** Called when the activity is created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {        
@@ -61,8 +72,9 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(PlayerControls.playPauseListener);
 
         this.getPreferenceScreen().findPreference("irc_settings").setOnPreferenceClickListener(setSubpreferenceBG);
+        this.getPreferenceScreen().findPreference("custom_feeds").setOnPreferenceClickListener(customFeedScreen);
 
-        //Show a dialog when the user presses th reset IRC colors
+        //Show a dialog when the user presses the reset IRC colors
         this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener()
         {
 			@Override
@@ -99,8 +111,24 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 		       		return true;
 			}
         });
-
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        //Create dialog for custom feeds
+        customFeedDialogView = (LinearLayout) QuickPrefsActivity.this.getLayoutInflater().inflate(R.layout.custom_feed_dialog, null);
+        customFeedDialogView.findViewById(R.id.delete).setOnClickListener(removeShow);
+        customFeedDialog = new AlertDialog.Builder(this)
+                .setView(customFeedDialogView)
+                .setPositiveButton(android.R.string.yes, customFeedDialogConfirm)
+                .setNegativeButton(android.R.string.no, null).create();
+
+        //New dialog for custom feeds
+        newCustomFeed = new EditText(this);
+        newCustomFeed.setHint(R.string.rss_url);
+        newCustomFeedDialog = new AlertDialog.Builder(this)
+                .setView(newCustomFeed)
+                .setTitle(R.string.new_)
+                .setPositiveButton(android.R.string.yes, addCustomFeed)
+                .setNegativeButton(android.R.string.no, null).create();
     }
 
     /** Sets the preference background color for theming. http://stackoverflow.com/a/3223676/1526210 */
@@ -198,4 +226,179 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         	return (!newValue.toString().equals("")  &&  newValue.toString().matches("\\d*")); 
         }
     };
+
+    /** Builds the custom feeds when clicked */
+    Preference.OnPreferenceClickListener customFeedScreen = new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            String TAG = StaticBlob.TAG();
+            setSubpreferenceBG.onPreferenceClick(preference);
+
+            PreferenceScreen ps = (PreferenceScreen) getPreferenceScreen().findPreference("custom_feeds");
+            ps.removeAll();
+
+            //Add the custom feeds
+            Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+            if(c.getCount()>0)
+            {
+                c.moveToFirst();
+                do {
+                    Preference newPref = new Preference(preference.getContext());
+                    newPref.setTitle(c.getString(c.getColumnIndex("title")));
+                    newPref.setKey(c.getString(c.getColumnIndex("_id")));      //TODO Is this creating junk keys???
+                    newPref.setOnPreferenceClickListener(customFeedListener);
+                    ps.addItemFromInflater(newPref);
+                } while(c.moveToNext());
+            }
+
+            Preference newPref = new Preference(preference.getContext());
+            newPref.setTitle(R.string.new_);
+            newPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    newCustomFeedDialog.show();
+                    return false;
+                }
+            });
+            ps.addItemFromInflater(newPref);
+
+            return true;
+        }
+    };
+
+    /** Click custom feed */
+    Preference.OnPreferenceClickListener customFeedListener = new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference p) {
+            String TAG = StaticBlob.TAG();
+
+            Cursor c = StaticBlob.databaseConnector.getCustomFeed(Long.parseLong(p.getKey()));
+            if(c.getCount()==0)
+                return false;
+
+            c.moveToFirst();
+
+            ((EditText) customFeedDialogView.findViewById(R.id.title)).setTag(p.getKey());
+            ((EditText) customFeedDialogView.findViewById(R.id.title)).setText(p.getTitle());
+            ((EditText) customFeedDialogView.findViewById(R.id.rssurl)).setText(c.getString(c.getColumnIndex("url")));
+
+            customFeedDialog.setTitle(p.getTitle());
+            customFeedDialog.show();
+            return false;
+        }
+    };
+
+    /** Modifies an existing feed */
+    DialogInterface.OnClickListener customFeedDialogConfirm = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+
+            long id = Long.parseLong((String) customFeedDialog.findViewById(R.id.title).getTag());
+            String title = ((EditText) customFeedDialog.findViewById(R.id.title)).getText().toString(),
+                    url = ((EditText) customFeedDialog.findViewById(R.id.rssurl)).getText().toString();
+
+            //Check to make sure it ain't empty
+            if(title.trim().length()==0)
+                return;
+            //Check to make sure it's not the name of a JB show
+            for(int i=0; i<StaticBlob.SHOW_LIST.length; i++)
+                if(StaticBlob.SHOW_LIST[i].toUpperCase().equals(title.toUpperCase()))
+                {
+                    title = title + "2";
+                    break;
+                }
+
+
+            StaticBlob.databaseConnector.updateCustomFeed(id, title, url);
+            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+        }
+    };
+
+    /** Confirms adding custom feed */
+    DialogInterface.OnClickListener addCustomFeed = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            String url = newCustomFeed.getText().toString();
+            String title;
+            try {
+                title = getPageTitle(new URL(url));
+            } catch(Exception e) {
+                Toast.makeText(QuickPrefsActivity.this, "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                title = "New Feed";
+            }
+            StaticBlob.databaseConnector.addCustomFeed(title, url);
+            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+        }
+    };
+
+    View.OnClickListener removeShow = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            AlertDialog d = new AlertDialog.Builder(view.getContext())
+                    .setTitle(R.string.confirm)
+                    .setMessage(R.string.confirm_clear)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            String title = ((TextView) customFeedDialog.findViewById(R.id.title)).getText().toString();
+                            SharedPreferences.Editor editor = getSharedPreferences(title, 0).edit();
+                            editor.remove("last_checked");
+                            editor.commit();
+
+                            long id = Long.parseLong((String) customFeedDialog.findViewById(R.id.title).getTag());
+                            StaticBlob.databaseConnector.removeCustomFeed(id);
+
+                            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+                            customFeedDialog.dismiss();
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
+            StaticBlob.formatAlertDialogButtons(d);
+        }
+    };
+
+
+    String getPageTitle(URL url) throws Exception
+    {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(url.openStream()));
+
+        Pattern pHead = Pattern.compile("(?i)</HEAD>");
+        Matcher mHead;
+        Pattern pTitle = Pattern.compile("(?i)</TITLE>");
+        Matcher mTitle;
+
+        String inputLine;
+        boolean found=false;
+        boolean notFound=false;
+        String html = "";
+        String title=new String();
+        try{
+            while (!(((inputLine = in.readLine()) == null) || found || notFound)){
+                html=html+inputLine;
+                mHead=pHead.matcher(inputLine);
+                if(mHead.find()){
+                    notFound=true;
+                }
+                else{
+                    mTitle=pTitle.matcher(inputLine);
+                    if(mTitle.find()){
+                        found=true;
+                    }
+                }
+            }
+            in.close();
+
+            html = html.replaceAll("\\s+", " ");
+            if(found){
+                Pattern p = Pattern.compile("(?i)<TITLE.*?>(.*?)</TITLE>");
+                Matcher m = p.matcher(html);
+                while (m.find() == true) {
+                    title=m.group(1);
+                }
+            }
+        }catch(Exception e){
+        }
+        return title;
+    }
 }

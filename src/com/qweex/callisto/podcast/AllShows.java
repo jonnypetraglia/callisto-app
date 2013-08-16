@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.database.Cursor;
 import com.qweex.callisto.Callisto;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.R;
@@ -98,6 +99,16 @@ public class AllShows extends Activity {
                 headerThings.add(new AllShowsHeader());
             else
                 headerThings.add(new AllShowsRow());
+        }
+
+        Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+        if(c.getCount()>0)
+        {
+            headerThings.add(new AllShowsHeader());
+            c.moveToFirst();
+            do {
+                headerThings.add(new AllShowsRow());
+            } while(c.moveToNext());
         }
 
         //Ok set up the ListView
@@ -220,7 +231,7 @@ public class AllShows extends Activity {
         @Override
         protected void onPreExecute()
         {
-            Toast.makeText(AllShows.this, AllShows.this.getResources().getString(R.string.beginning_update), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AllShows.this, R.string.beginning_update, Toast.LENGTH_SHORT).show();
             setProgressBarIndeterminateVisibility(true);
         }
 
@@ -228,7 +239,8 @@ public class AllShows extends Activity {
         @Override
         protected Object doInBackground(Object... params)
         {
-            boolean done = false,
+            String TAG = StaticBlob.TAG();
+            boolean doneWithActive = false,
                     skip_inactive = PreferenceManager.getDefaultSharedPreferences(AllShows.this).getBoolean("skip_inactive", false);
             boolean error_happened = false;
             for(int i=0; i< StaticBlob.SHOW_LIST_AUDIO.length; i++)
@@ -236,16 +248,31 @@ public class AllShows extends Activity {
                 current_view = mainListView.getChildAt(i);
                 if(StaticBlob.SHOW_LIST_AUDIO[i]==null)
                 {
-                    if(done && skip_inactive)
+                    if(doneWithActive && skip_inactive)
                         break;
-                    done = true;
+                    doneWithActive = true;
                     continue;
                 }
                 current_showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[i], 0);
                 UpdateShow us = new UpdateShow();
-                Message m = us.doUpdate(i, current_showSettings);
+                Message m = us.doUpdate(StaticBlob.SHOW_LIST[i], current_showSettings, StaticBlob.SHOW_LIST_AUDIO[i], StaticBlob.SHOW_LIST_VIDEO[i]);
                 error_happened |= (m.arg1==-1);
                 UpdateAdapter.sendEmptyMessage(0);
+            }
+            Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+            if(c.getCount()>0)
+            {
+                c.moveToFirst();
+                do {
+                    String show = c.getString(c.getColumnIndex("title"));
+                    Log.v(TAG, "Updating custom feed: " + show);
+                    String url = c.getString(c.getColumnIndex("url"));
+                    current_showSettings = getSharedPreferences(show, 0);
+                    UpdateShow us = new UpdateShow();
+                    Message m = us.doUpdate(show, current_showSettings, url, null);
+                    error_happened |= (m.arg1==-1);
+                    UpdateAdapter.sendEmptyMessage(0);
+                } while(c.moveToNext());
             }
             if(error_happened)
                 return null;    //failure
@@ -279,16 +306,35 @@ public class AllShows extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
             String TAG = StaticBlob.TAG();
-            Log.d(TAG, "Selected show at position: " + position);
-            if(StaticBlob.SHOW_LIST[position].charAt(0)==' ')
+            //"Custom" header
+            if(position==StaticBlob.SHOW_LIST.length)
                 return;
-            else
+            //Builtin show
+            if(position<StaticBlob.SHOW_LIST.length)
             {
+                if(StaticBlob.SHOW_LIST[position].charAt(0)==' ')
+                    return;
                 current_view = view;
+                Log.d(TAG, "Selected show: " + StaticBlob.SHOW_LIST[position]);
                 Intent viewShow = new Intent(AllShows.this, ShowList.class);
-                viewShow.putExtra("current_show", position);
+                viewShow.putExtra("current_show", StaticBlob.SHOW_LIST[position]);
+                viewShow.putExtra("current_show_audio", StaticBlob.SHOW_LIST_AUDIO[position]);
+                viewShow.putExtra("current_show_video", StaticBlob.SHOW_LIST_VIDEO[position]);
                 setProgressBarIndeterminateVisibility(true);
                 startActivity(viewShow);
+            } else {
+                Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+                try {
+                    Intent viewShow = new Intent(AllShows.this, ShowList.class);
+
+                    c.moveToPosition(position - StaticBlob.SHOW_LIST.length - 1);   //-1 is to adjust for the header
+                    viewShow.putExtra("current_show", c.getString(c.getColumnIndex("title")));
+                    viewShow.putExtra("current_show_audio", c.getString(c.getColumnIndex("url")));
+                    setProgressBarIndeterminateVisibility(true);
+                    startActivity(viewShow);
+                } catch(Exception e) {
+                    Log.v(TAG, "ERROR selecting custom feed");
+                }
             }
         }
     };
@@ -316,9 +362,13 @@ public class AllShows extends Activity {
             }
 
             TextView x = ((TextView)row.findViewById(R.id.heading));
-            x.setText(StaticBlob.SHOW_LIST[position]);
             x.setFocusable(false);
             x.setEnabled(false);
+            // Title from show list
+            if(position < StaticBlob.SHOW_LIST.length)
+                x.setText(StaticBlob.SHOW_LIST[position]);
+            else
+                x.setText(R.string.custom);
             return row;
         }
     }
@@ -343,18 +393,37 @@ public class AllShows extends Activity {
                 row = inflater.inflate(R.layout.main_row, parent, false);
             }
 
-            //Get the show icon
+            String show;
+            // Title from show list
+            if(position < StaticBlob.SHOW_LIST.length)
+                show = StaticBlob.SHOW_LIST[position];
+            // Custom feed
+            else
+            {
+                Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+                try {
+                    c.moveToPosition(position - StaticBlob.SHOW_LIST.length - 1);   //-1 is to adjust for the header
+                    show = c.getString(c.getColumnIndex("title"));
+                } catch(Exception e)
+                {
+                    Log.e(TAG, "MAJOR error: could not get custom show for position: " + position + "  --  " + e.getMessage());
+                    return row;
+                }
+            }
+
+                    //Get the show icon
             String[] exts = {".jpg", ".gif", ".png"};	//Technically, this can be removed since the images are all shrunken and re-compressed to JPGs when they are downloaded
             File f;
+            ImageView img = (ImageView) row.findViewById(R.id.img);
+            img.setImageBitmap(null);
             for(String ext : exts)
             {
                 f = new File(
                         StaticBlob.storage_path + File.separator +
-                        StaticBlob.SHOW_LIST[position] + ext);
+                        show + ext);
                 if(f.exists())
                 {
                     Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                    ImageView img = (ImageView) row.findViewById(R.id.img);
                     if(img!=null) //TODO: This should never happen why did it happen once
                         img.setImageBitmap(bitmap);
                     break;
@@ -362,15 +431,15 @@ public class AllShows extends Activity {
             }
 
             //Set the unwatched count & color
-            int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[position], true).getCount();
+            int currentShowUnwatchedCount = StaticBlob.databaseConnector.getShow(show, true).getCount();
             ((TextView)row.findViewById(R.id.showUnwatched)).setTextColor((currentShowUnwatchedCount>0 ? 0xff000000 : 0x11000000) + AllShows.this.getResources().getColor(R.color.txtClr));
             ((TextView)row.findViewById(R.id.showUnwatched)).setText(Integer.toString(currentShowUnwatchedCount));
 
             //Set the show text
-            ((TextView)row.findViewById(R.id.rowTextView)).setText(StaticBlob.SHOW_LIST[position]);
+            ((TextView)row.findViewById(R.id.rowTextView)).setText(show);
 
             //Set the lastChecked view
-            SharedPreferences showSettings = getSharedPreferences(StaticBlob.SHOW_LIST[position], 0);
+            SharedPreferences showSettings = getSharedPreferences(show, 0);
             String lastChecked = showSettings.getString("last_checked", null);
             if(lastChecked!=null)
             {

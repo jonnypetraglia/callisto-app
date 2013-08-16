@@ -222,6 +222,9 @@ public class EpisodeDesc extends Activity
         videoTab = (TextView) findViewById(R.id.video_tab);
         audioTab.setOnClickListener(changeTab);
         videoTab.setOnClickListener(changeTab);
+
+        if(vid_link==null || vid_link.equals(""))
+            findViewById(R.id.tabs).setVisibility(View.GONE);
     }
 
     /** Finds the file extension of a path.
@@ -461,7 +464,16 @@ public class EpisodeDesc extends Activity
     {
         File curr = (vidSelected ? file_location_video : file_location_audio);
         long curr_size = (vidSelected ? vid_size : mp3_size);
-        if(StaticBlob.databaseConnector.isInDownloadQueue(id) && !forceNotThere)
+
+        //Four factors
+        //   * is in DL queue
+        //   * exists
+        //   * is the right size (i.e. fully downloaded)
+        //   * is in the Queue
+
+        // 1. It is in the download queue
+        //      buttons:  *Downloading*  Cancel
+        if(StaticBlob.databaseConnector.isInDownloadQueue(id, vidSelected) && !forceNotThere)
         {
             streamButton.setText(this.getResources().getString(R.string.downloading));
             streamButton.setEnabled(false);
@@ -470,15 +482,21 @@ public class EpisodeDesc extends Activity
         }
         else if(curr.exists() && !forceNotThere)
         {
+            // 2. It is not in the DL queue, it exists, AND it is not the right file size
+            //      buttons:  Stream  Delete
             if(curr.length()!=curr_size)
             {
                 streamButton.setText(this.getResources().getString(R.string.resume));
                 streamButton.setOnClickListener(launchDownload);
-            } else if(StaticBlob.databaseConnector.isInQueue(id))
+            // 3. It is not in the DL queue, it exists, it is the right size, BUT it is in the queue
+            //      buttons:  *Enqueued*  Delete
+            } else if(StaticBlob.databaseConnector.isInQueue(id, vidSelected))
             {
                 streamButton.setText(this.getResources().getString(R.string.enqueued));
                 streamButton.setEnabled(false);
             }
+            // 4. It is not in the DL queue, it exists, it is not the right size, and it is not in the queue
+            //      buttons:  Play  Delete
             else
             {
                 streamButton.setEnabled(true);
@@ -488,6 +506,8 @@ public class EpisodeDesc extends Activity
             downloadButton.setText(this.getResources().getString(R.string.delete));
             downloadButton.setOnClickListener(launchDelete);
         }
+        // 5. It is not in the DL queue and it does not exist
+        //      buttons:  Stream  Download
         else
         {
             streamButton.setEnabled(true);

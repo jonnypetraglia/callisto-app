@@ -19,7 +19,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -76,7 +75,6 @@ public class ImgTxtButton extends LinearLayout
             txt.setTextSize(type, Float.parseFloat(x));
         } catch(Exception e){}
 
-        Log.e("DADSADSADSADA", attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "gravity", Gravity.LEFT) + " ");
         txt.setTextColor(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "textColor", 0xff000000));
         setOrientation(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "orientation", VERTICAL));
         txt.setGravity(attrs.getAttributeUnsignedIntValue("http://schemas.android.com/apk/res/android", "gravity", Gravity.CENTER));

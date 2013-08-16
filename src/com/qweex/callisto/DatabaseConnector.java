@@ -39,7 +39,8 @@ public class DatabaseConnector
                                 DATABASE_QUEUE = "queue",
                                 DATABASE_CALENDAR = "calendar",
                                 DATABASE_DOWNLOADS = "downloads",
-                                DATABASE_STATS = "stats";
+                                DATABASE_STATS = "stats",
+                                DATABASE_CUSTOM_FEEDS = "custom_feeds";
     /** The database for the app. */
 	private SQLiteDatabase database;
     /** A tool to help with the opening of the database. It's in the Android doc examples, yo.*/
@@ -366,10 +367,10 @@ public class DatabaseConnector
 	 * @param identity The ID of an item in the DATABASE_EPISODES to check for.
 	 * @return
 	 */
-	public boolean isInQueue(long identity) 
+	public boolean isInQueue(long identity, boolean video)
 	{
 	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id"},
-			   					"identity=" + identity, null, null, null, null);
+			   					"identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
 	   return (c.getCount()>0);
 	}
 	
@@ -518,11 +519,20 @@ public class DatabaseConnector
                 "active<1", null, null, null, "_id ASC");
     }
 
-    /** [DATABASE_DOWNLOADS] Tests if an id is in the download queue */
-    public boolean isInDownloadQueue(long id)
+    /** [DATABASE_DOWNLOADS] Tests if an identity is in the download queue */
+    public boolean isInDownloadQueue(long identity, boolean video)
     {
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
-                "_id='" + id + "'", null, null, null, null);
+                "identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
+        return c.getCount()>0;
+    }
+
+    /** [DATABASE_DOWNLOADS] Tests if an identity is in the download queue
+     *  NOTE: ONLY use this if you want to know if an episode is in the queue IN ANY FORM */
+    public boolean isInDownloadQueue(long identity)
+    {
+        Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "identity=" + identity, null, null, null, null);
         return c.getCount()>0;
     }
 
@@ -578,6 +588,48 @@ public class DatabaseConnector
     public void clearCompleteDownloads()
     {
         database.execSQL("DELETE FROM " + DATABASE_DOWNLOADS + " WHERE active<1;");
+    }
+
+    /** [DATABASE_CUSTOM_FEEDS] Adds a custom feed */
+    public void addCustomFeed(String title, String url)
+    {
+        ContentValues newFeed = new ContentValues();
+        newFeed.put("title", title);
+        newFeed.put("url", url);
+        database.insert(DATABASE_CUSTOM_FEEDS, null, newFeed);
+    }
+
+    /** [DATABASE_CUSTOM_FEEDS] Gets the list of custom feeds */
+    public Cursor getCustomFeeds()
+    {
+        return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"}, null, null, null, null, null);
+    }
+
+    /** [DATABASE_CUSTOM_FEEDS] Gets the list of custom feeds */
+    public Cursor getCustomFeed(long id)
+    {
+        return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"},
+                "_id=" + id, null, null, null, null);
+    }
+
+    public void updateCustomFeed(long id, String title, String url)
+    {
+        Cursor c = getCustomFeed(id);
+        c.moveToFirst();
+        String oldTitle = c.getString(c.getColumnIndex("title"));
+        database.execSQL("UPDATE " + DATABASE_EPISODES + " SET show='" + title + "'" +
+                " WHERE show='" + oldTitle + "'");
+        database.execSQL("UPDATE " + DATABASE_CUSTOM_FEEDS + " SET title='" + title + "', url='" + url + "'" +
+                " WHERE _id='" + id + "'");
+    }
+
+    public void removeCustomFeed(long id)
+    {
+        Cursor c = getCustomFeed(id);
+        c.moveToFirst();
+        String title = c.getString(c.getColumnIndex("title"));
+        clearShow(title);
+        database.delete(DATABASE_CUSTOM_FEEDS, "_id='" + id + "'", null);
     }
 
 	/** Helper open class for DatabaseConnector */
@@ -638,6 +690,12 @@ public class DatabaseConnector
                    "audio_seconds INTEGER, " +
                    "video_seconds INTEGER);";
            db.execSQL(createQuery5);
+
+           String createQuery6 = "CREATE TABLE " + DATABASE_CUSTOM_FEEDS + " " +
+                   "(_id integer primary key autoincrement, " +
+                   "title TEXT, " +
+                   "url TEXT);";
+           db.execSQL(createQuery6);
 	   }
 
 	   @Override
@@ -662,12 +720,16 @@ public class DatabaseConnector
            } catch(SQLiteException e){}
 
            try {
-               String createQuery4 = "CREATE TABLE " + DATABASE_DOWNLOADS + " " +
+               String createQuery6 = "CREATE TABLE " + DATABASE_CUSTOM_FEEDS + " " +
                        "(_id integer primary key autoincrement, " +
-                       "identity INTEGER, " +
-                       "video INTEGER, " +
-                       "active INTEGER);";        //An ID that is in the DATABASE_EPISODES table. Essentially it should be a foreign key, but it's not because I am teh dumb with databases.
-               db.execSQL(createQuery4);
+                       "title TEXT, " +
+                       "url TEXT);";
+               db.execSQL(createQuery6);
+           } catch(SQLiteException e){}
+
+           try {
+               String sql = "ALTER TABLE " + DATABASE_QUEUE + " DROP COLUMN streaming";
+               db.execSQL(sql);
            } catch(SQLiteException e){}
 	   }
 	}
