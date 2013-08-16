@@ -76,8 +76,9 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     @Override
     protected void onPreExecute()
     {
+        String TAG = StaticBlob.TAG();
         running = true;
-        Log.i("EpisodeDesc:DownloadTask", "Beginning downloads");
+        Log.i(TAG, "Beginning downloads");
 
         //Show notification
         Intent notificationIntent = new Intent(context, DownloadList.class);
@@ -96,11 +97,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
     @Override
     protected Boolean doInBackground(String... params)
     {
+        String TAG = StaticBlob.TAG();
         boolean isVideo;
         Cursor current;
 
         long id = 0, identity = 0;
-        Log.e("DownloadTask:doInBackground", "Preparing to start");
+        Log.e(TAG, "Preparing to start");
         boolean canceled = false;
         while(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0)
         {
@@ -124,7 +126,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Title = current.getString(current.getColumnIndex("title"));
                 Date = current.getString(current.getColumnIndex("date"));
                 Show = current.getString(current.getColumnIndex("show"));
-                Log.i("EpisodeDesc:DownloadTask", "Starting download: " + Link);
+                Log.i(TAG, "Starting download: " + Link);
                 Date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(Date));
 
                 //Getting target
@@ -137,7 +139,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
 
                 //Prepare the HTTP
-                Log.i("EpisodeDesc:DownloadTask", "Path: " + Target.getPath());
+                Log.i(TAG, "Path: " + Target.getPath());
                 URL url = new URL(Link);
 
 
@@ -146,7 +148,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 ///////////////////////TEST
 
 
-                Log.i("EpisodeDesc:DownloadTask", "Opening the connection...");
+                Log.i(TAG, "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
                 String lastModified = ucon.getHeaderField("Last-Modified");
                 ucon = (HttpURLConnection) url.openConnection();
@@ -174,13 +176,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
                 FileOutputStream outStream;
                 byte buff[];
-                Log.i("EpisodeDesc:DownloadTask", "mmk skipping the downloaded..." + Target.length() + " of " + TotalSize);
+                Log.i(TAG, "mmk skipping the downloaded..." + Target.length() + " of " + TotalSize);
                 if(Target.exists()) //Append if it exists
                     outStream = new FileOutputStream(Target, true);
                 else
                     outStream = new FileOutputStream(Target);
                 buff = new byte[5 * 1024];
-                Log.i("EpisodeDesc:DownloadTask", "Getting content length (size)");
+                Log.i(TAG, "Getting content length (size)");
                 int len = 0;
                 long downloadedSize = Target.length(),
                         percentDone = 0;
@@ -204,7 +206,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 if(!DownloadList.Download_wifiLock.isHeld())
                     DownloadList.Download_wifiLock.acquire();
 
-                Log.i("EpisodeDesc:DownloadTask", "FINALLY starting the download");
+                Log.i(TAG, "FINALLY starting the download");
                 inner_failures = 0;
                 //-----------------Here is where the actual downloading happens----------------
                 while (len != -1)
@@ -219,7 +221,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                     }
                     if(canceled)
                     {
-                        Log.i("EpisodeDesc:DownloadTask", "Download has been canceled, deleting.");
+                        Log.i(TAG, "Download has been canceled, deleting.");
                         Target.delete();
                         break;
                     }
@@ -252,7 +254,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         }
 
                     } catch (IOException e) {
-                        Log.e("EpisodeDesc:DownloadTask:IOException", "IO is a moon - " + inner_failures);
+                        Log.e(TAG+":IOException", "IO is a moon - " + inner_failures);
                         inner_failures++;
                         if(inner_failures==INNER_LIMIT)
                             break;
@@ -264,7 +266,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         lastTime = (new java.util.Date()).getTime();
 
                     } catch (Exception e) {
-                        Log.e("EpisodeDesc:DownloadTask:??Exception", e.getClass() + " : " + e.getMessage());
+                        Log.e(TAG+":??Exception", e.getClass() + " : " + e.getMessage());
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e1) {}
@@ -318,17 +320,17 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 }
                 if(!canceled)
                 {
-                    Log.i("EpisodeDesc:DownloadTask", "Trying to finish with " + Target.length() + "==" + TotalSize);
+                    Log.i(TAG, "Trying to finish with " + Target.length() + "==" + TotalSize);
                     if(Target.length()==TotalSize)
                     {
                         StaticBlob.current_download++;
 
-                        Log.i("EpisodeDesc:DownloadTask", (inner_failures<INNER_LIMIT?"Successfully":"FAILED") + " downloaded to : " + Target.getPath());
+                        Log.i(TAG, (inner_failures<INNER_LIMIT?"Successfully":"FAILED") + " downloaded to : " + Target.getPath());
 
                         //Move the download from active to completed.
                         StaticBlob.databaseConnector.markDownloadComplete(id);
 
-                        Log.i("EpisodeDesc:DownloadTask", " " + DownloadList.rebuildHeaderThings);
+                        Log.i(TAG, " " + DownloadList.rebuildHeaderThings);
                         if(DownloadList.rebuildHeaderThings !=null)
                             DownloadList.rebuildHeaderThings.sendEmptyMessage(0);
 
@@ -339,14 +341,14 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 } else
                     Target.delete();
             }catch (ParseException e) {
-                Log.e("EpisodeDesc:DownloadTask:ParseException", "Error parsing a date from the SQLite db: ");
-                Log.e("EpisodeDesc:DownloadTask:ParseException", Date);
-                Log.e("EpisodeDesc:DownloadTask:ParseException", "(This should never happen).");
+                Log.e(TAG+":ParseException", "Error parsing a date from the SQLite db: ");
+                Log.e(TAG+":ParseException", Date);
+                Log.e(TAG+":ParseException", "(This should never happen).");
                 outer_failures++;
                 e.printStackTrace();
             } catch(Exception e) {
                 outer_failures++;
-                Log.e("EpisodeDesc:DownloadTask:Exception " + e.getClass(), "[" + outer_failures + "] Msg: " + e.getMessage());
+                Log.e(TAG+":Exception " + e.getClass(), "[" + outer_failures + "] Msg: " + e.getMessage());
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
@@ -367,7 +369,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                     break;
             }
         }
-        Log.i("EpisodeDesc:DownloadTask", "Finished Downloading");
+        Log.i(TAG, "Finished Downloading");
 
         //Wifi lock
         if(DownloadList.Download_wifiLock!=null && DownloadList.Download_wifiLock.isHeld())

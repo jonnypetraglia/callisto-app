@@ -40,6 +40,7 @@ public class VideoActivity extends IRCChat
 
     public void onCreate(Bundle savedInstanceState)
     {
+        String TAG = StaticBlob.TAG();
         //Do some create things
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -87,7 +88,7 @@ public class VideoActivity extends IRCChat
         */
         videoView = (VideoView) findViewById(R.id.videoView);
 
-        Log.d("VideoActivity:onCreate", " " + videoView);
+        Log.d(TAG, " " + videoView);
         // Getting the path to the video (either URL or local path)
         Bundle b = getIntent().getExtras();
         if(b==null)
@@ -115,7 +116,7 @@ public class VideoActivity extends IRCChat
                 }
             });
             d.show();
-            Log.d("VideoActivity:onCreate", "URI: " + path);
+            Log.d(TAG, "URI: " + path);
             Uri pathToVideo = Uri.parse(path);
             videoView.setVideoURI(pathToVideo);
 
@@ -126,7 +127,8 @@ public class VideoActivity extends IRCChat
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    Log.d("VideoActivity:onCreate", "Seeking to " + seekto + "/" + videoView.getDuration());
+                    String TAG = StaticBlob.TAG();
+                    Log.d(TAG, "Seeking to " + seekto + "/" + videoView.getDuration());
                     if(seekto<videoView.getDuration())
                         videoView.seekTo(seekto);
                     d.hide();

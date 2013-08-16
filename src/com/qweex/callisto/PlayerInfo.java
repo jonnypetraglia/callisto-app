@@ -55,9 +55,10 @@ public class PlayerInfo
      */
     public PlayerInfo(Context c)
     {
+        String TAG = StaticBlob.TAG();
         try {
             TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
-            Log.v("PlayerInfo()", "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
+            Log.v(TAG, "Initializing PlayerInfo, queue size=" + StaticBlob.databaseConnector.queueCount());
             titleView.setText(c.getResources().getString(R.string.queue_size) + ": " + StaticBlob.databaseConnector.queueCount());
         }
         catch(ClassCastException IfBeingCalledByWidget) {}
@@ -69,6 +70,7 @@ public class PlayerInfo
      */
     public void update(Context c)
     {
+        String TAG = StaticBlob.TAG();
         //Update the context for the receiver, unrelated
         //CallistoService.audioJackReceiver.contextForPreferences = c;
 
@@ -86,7 +88,7 @@ public class PlayerInfo
         {
             length = VideoActivity.videoView.getDuration()/1000;
             position = VideoActivity.videoView.getCurrentPosition()/1000;
-            Log.v("*:update", "Length=" + length + " | Position=" + position);
+            Log.v(TAG, "Length=" + length + " | Position=" + position);
         }
         else if(StaticBlob.mplayer!=null)
         {
@@ -94,12 +96,12 @@ public class PlayerInfo
             position = StaticBlob.mplayer.getCurrentPosition()/1000;
         }
 
-        Log.v("*:update", "Update - Title: " + title);
+        Log.v(TAG, "Update - Title: " + title);
 
         //titleView
         TextView titleView = (TextView) ((Activity)c).findViewById(R.id.titleBar);
         if(titleView==null)
-            Log.w("Callisto:update", "Could not find view: " + "titleView");
+            Log.w(TAG, "Could not find view: " + "titleView");
         else
         if(title==null && Live.live_player==null)
             titleView.setText("Playlist size: " + StaticBlob.databaseConnector.queueCount());
@@ -111,7 +113,7 @@ public class PlayerInfo
         //timeView
         StaticBlob.timeView = (TextView) ((Activity)c).findViewById(R.id.timeAt);
         if(StaticBlob.timeView==null)
-            Log.w("Callisto:update", "Could not find view: " + "TimeView");
+            Log.w(TAG, "Could not find view: " + "TimeView");
         else if(Live.live_player!=null)
         {
             StaticBlob.timeView.setText("Next ");
@@ -126,7 +128,7 @@ public class PlayerInfo
         //lengthView
         TextView lengthView = (TextView) ((Activity)c).findViewById(R.id.length);
         if(lengthView==null)
-            Log.w("Callisto:update", "Could not find view: " + "lengthView");
+            Log.w(TAG, "Could not find view: " + "lengthView");
         else if(Live.live_player!=null)
         {
             lengthView.setText(show);
@@ -141,7 +143,7 @@ public class PlayerInfo
         //timeProgress
         StaticBlob.timeProgress = (ProgressBar) ((Activity)c).findViewById(R.id.timeProgress);
         if(StaticBlob.timeProgress==null)
-            Log.w("Callisto:update", "Could not find view: " + "timeProgress");
+            Log.w(TAG, "Could not find view: " + "timeProgress");
         else if(Live.live_player!=null)
         {
             StaticBlob.timeProgress.setMax(1);
@@ -158,7 +160,7 @@ public class PlayerInfo
 
         ImageButton play = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
         if(play==null)
-            Log.w("Callisto:update", "Could not find view: " + "playPause");
+            Log.w(TAG, "Could not find view: " + "playPause");
         else if(Live.live_player!=null)
         {
             if(StaticBlob.live_isPlaying)
@@ -183,7 +185,7 @@ public class PlayerInfo
 
         if(timeTimer==null)
         {
-            Log.i("Callisto:PlayerInfo:update","Starting timer");
+            Log.i(TAG,"Starting timer");
             timeTimer = new Timer();
             timeTimer.schedule(new TimerTask() {
                 @Override
@@ -221,6 +223,7 @@ public class PlayerInfo
         public int i=0;
         public void run()
         {
+            String TAG = StaticBlob.TAG();
             i++;
             if(Live.live_player!=null && StaticBlob.live_isPlaying)
             {
@@ -268,20 +271,20 @@ public class PlayerInfo
                 {
                     i=0;
                     try {
-                        Log.v("Callisto:TimerMethod", "Updating position: " + StaticBlob.playerInfo.position);
+                        Log.v(TAG, "Updating position: " + StaticBlob.playerInfo.position);
                         Cursor queue = StaticBlob.databaseConnector.currentQueueItem();
                         queue.moveToFirst();
                         Long identity = queue.getLong(queue.getColumnIndex("identity"));
                         StaticBlob.databaseConnector.updatePosition(identity, StaticBlob.playerInfo.position);
                     } catch(NullPointerException e)
                     {
-                        Log.e("*:TimerRunnable", "NullPointerException when trying to update timer!");
+                        Log.e(TAG, "NullPointerException when trying to update timer!");
                     }
                 }
 
             } catch(Exception e)
             {
-                Log.e("PlayerInfo:TimerRunnable","Error whilst trying to update time: " + e.getClass());
+                Log.e(TAG,"Error whilst trying to update time: " + e.getClass());
             }
         }
     };

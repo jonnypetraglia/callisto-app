@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import com.qweex.callisto.StaticBlob;
 import com.qweex.callisto.receivers.AlarmNotificationReceiver;
 
 /** Receives the boot-up message; re-creates the alarms. */
@@ -37,24 +38,25 @@ public class BootNotificationReceiver extends BroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
+        String TAG = StaticBlob.TAG();
 		SharedPreferences alarmPrefs = context.getApplicationContext().getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
 		Map<String,?> alarms = alarmPrefs.getAll();
 		SharedPreferences.Editor edit = alarmPrefs.edit();
-		Log.d("BootNotify", "Begin");
+		Log.d(TAG, "Begin");
 		for (Map.Entry<String, ?> entry : alarms.entrySet())
 		{
-			Log.d("BootNotify", "Entry: " + entry);
+			Log.d(TAG, "Entry: " + entry);
 			String show = entry.getKey().substring(0, entry.getKey().length()-14);
 			Calendar time = Calendar.getInstance();
 			String value = (String) entry.getValue();
 			
-			Log.d("BootNotify", "Getting things");
+			Log.d(TAG, "Getting things");
 			int min = Integer.parseInt(value.substring(0,value.indexOf("_")));
-			Log.d("BootNotify", "Thing1: " + min);
+			Log.d(TAG, "Thing1: " + min);
 			String tone = value.substring(value.indexOf("_")+1,value.lastIndexOf("_"));
-			Log.d("BootNotify", "Thing1: " + tone);
+			Log.d(TAG, "Thing1: " + tone);
 			int isAlarm_and_vibrate = Integer.parseInt(value.substring(value.lastIndexOf("_")+1));
-			Log.d("BootNotify", "Thing1: " + isAlarm_and_vibrate);
+			Log.d(TAG, "Thing1: " + isAlarm_and_vibrate);
 			int isAlarm = isAlarm_and_vibrate>10?1:0;
 			int vibrate = isAlarm_and_vibrate%2!=0?1:0;
 			//min_tone_isAlarmvibrate
@@ -70,7 +72,7 @@ public class BootNotificationReceiver extends BroadcastReceiver
 			}
 			time.add(Calendar.MINUTE, -1*min);
 			
-			Log.d("BootNotify", "Creating intent");
+			Log.d(TAG, "Creating intent");
 			Intent i = new Intent(context, AlarmNotificationReceiver.class);
 		    i.putExtra("tone", tone);
 		    i.putExtra("min", min);
@@ -78,11 +80,11 @@ public class BootNotificationReceiver extends BroadcastReceiver
 		    i.putExtra("vibrate", vibrate);
 		    i.putExtra("show", show);
 		    PendingIntent pi = PendingIntent.getBroadcast(context.getApplicationContext(), 234324246, i, PendingIntent.FLAG_UPDATE_CURRENT);
-		    Log.d("BootNotify", "Setting Alarm");
+		    Log.d(TAG, "Setting Alarm");
 		    AlarmManager mAlarm = (AlarmManager) context.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 		    mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi); //DEBUG
 		}
 		edit.commit();
-		Log.d("BootNotify", "Done");
+		Log.d(TAG, "Done");
 	}
 }

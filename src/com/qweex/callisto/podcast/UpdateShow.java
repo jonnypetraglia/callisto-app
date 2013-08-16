@@ -51,7 +51,8 @@ public class UpdateShow
      */
     public Message doUpdate(int currentShow, SharedPreferences showSettings)
     {
-        Log.i("*:updateShow", "Beginning update");
+        String TAG = StaticBlob.TAG();
+        Log.i(TAG, "Beginning update");
         lastChecked = showSettings.getString("last_checked", null);
         String showErrorToast = null;
         this.currentShow=currentShow;
@@ -67,13 +68,13 @@ public class UpdateShow
             //URL url = new URL(isVideo ? AllShows.SHOW_LIST_VIDEO[currentShow] : AllShows.SHOW_LIST_AUDIO[currentShow]);
             URL url = new URL(StaticBlob.SHOW_LIST_AUDIO[currentShow]);
             URL url2 = new URL(StaticBlob.SHOW_LIST_VIDEO[currentShow]);
-            Log.v("*:updateShow", "URL: " + url + " | " + url2);
+            Log.v(TAG, "URL: " + url + " | " + url2);
             InputStream input = url.openConnection().getInputStream();
             InputStream input2 = url2.openConnection().getInputStream();
             xpp.setInput(input, null);
             xpp_vid.setInput(input2, null);
 
-            Log.v("*:updateShow", "Parser is prepared");
+            Log.v(TAG, "Parser is prepared");
             eventType = xpp.getEventType();
             eventType2 = xpp_vid.getEventType();
 
@@ -131,7 +132,7 @@ public class UpdateShow
                     imgurl = "http://www.jupiterbroadcasting.com/images/LASBadge-Audio144.jpg";
                 new downloadImage().execute(imgurl, StaticBlob.SHOW_LIST[currentShow]);
                 //downloadImage(imgurl, AllShows.SHOW_LIST[currentShow]);
-                Log.v("*:updateShow", "Parser is downloading image for " + StaticBlob.SHOW_LIST[currentShow] + ":" + imgurl);
+                Log.v(TAG, "Parser is downloading image for " + StaticBlob.SHOW_LIST[currentShow] + ":" + imgurl);
             }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -158,28 +159,28 @@ public class UpdateShow
             }
 
         } catch (XmlPullParserException e) {
-            Log.e("*:update:XmlPullParserException", "Parser error");
+            Log.e(TAG+":XmlPullParserException", "Parser error");
             e.printStackTrace();
             showErrorToast = "XMLPullParser";
         } catch (MalformedURLException e) {
-            Log.e("*:update:MalformedURLException", "Malformed URL? That should never happen.");
+            Log.e(TAG+":MalformedURLException", "Malformed URL? That should never happen.");
             e.printStackTrace();
             showErrorToast = "Bad URL";
         } catch (UnknownHostException e)
         {
-            Log.e("*:update:UnknownHostException", "Unable to initiate a connection");
+            Log.e(TAG+":UnknownHostException", "Unable to initiate a connection");
             showErrorToast = "UnknownHost: " + e.getMessage();
         }  catch (IOException e) {
             //FIXME: EXCEPTION: IOException
-            Log.e("*:update:IOException", "IO is a moon");
+            Log.e(TAG+":IOException", "IO is a moon");
             e.printStackTrace();
             showErrorToast = "I/O";
         } catch (ParseException e) {
             //FIXME: EXCEPTION: ParseException
-            Log.e("*:update:ParseException", "Date Parser error");
+            Log.e(TAG+":ParseException", "Date Parser error");
             showErrorToast = "Date Parse";
         } catch (UnfinishedParseException e) {
-            Log.w("*:update:UnfinishedParseException",e.toString());
+            Log.w(TAG+":UnfinishedParseException",e.toString());
             showErrorToast = "UnfinishedParse";
         }
 
@@ -199,19 +200,19 @@ public class UpdateShow
             }
             if(newLastChecked==null)
             {
-                Log.v("*:updateShow", "Not updating lastChecked: " + newLastChecked);
+                Log.v(TAG, "Not updating lastChecked: " + newLastChecked);
                 m.arg1=0;
             }
             else
             {
-                Log.v("*:updateShow", "Updating lastChecked for:" + StaticBlob.SHOW_LIST[currentShow] + "| " + newLastChecked);
+                Log.v(TAG, "Updating lastChecked for:" + StaticBlob.SHOW_LIST[currentShow] + "| " + newLastChecked);
                 SharedPreferences.Editor editor = showSettings.edit();
                 editor.putString("last_checked", newLastChecked);
                 editor.commit();
                 m.arg1=1;
             }
         }
-        Log.i("*:updateShow", "Finished update");
+        Log.i(TAG, "Finished update");
         return m;
     }
 
@@ -219,9 +220,10 @@ public class UpdateShow
     //XmlPullParser.END_TAG==3
     public void extractData() throws UnfinishedParseException, XmlPullParserException, IOException, ParseException
     {
+        String TAG = StaticBlob.TAG();
         EpisodeFromRSS ep = new EpisodeFromRSS();
         int numOfDone = 0, numOfDoneVid=0;
-        Log.v("*:updateShow", "Starting new episode");
+        Log.v(TAG, "Starting new episode");
         String titleConfirm = null, dateConfirm = null;
         boolean delicious = false;
 
@@ -229,12 +231,11 @@ public class UpdateShow
         eventType2 = xpp_vid.next();
         while(eventType2!=XmlPullParser.END_DOCUMENT)
         {
-            Log.e("*:updateShow  VIDEO? " + eventType2 + "==" + XmlPullParser.START_TAG + "/" + XmlPullParser.END_TAG, "?" + xpp_vid.getName() + " *" + "item".equals(xpp_vid.getName()));
             if("title".equals(xpp_vid.getName()) && eventType2 == XmlPullParser.START_TAG)
             {
                 eventType2 = xpp_vid.next();
                 titleConfirm = xpp_vid.getText();
-                Log.d("*:updateShow", "CONFIRM(1): " + titleConfirm);
+                Log.d(TAG, "CONFIRM(1): " + titleConfirm);
                 if(titleConfirm==null)
                     throw(new UnfinishedParseException("Confirm Title"));
                 //!!!!Special case!!!!!!
@@ -242,12 +243,12 @@ public class UpdateShow
                 //I hate the idea of this.
                 if(titleConfirm.contains("[del.icio.us]"))
                 {
-                    Log.d("*:updateShow", "Delicious detected; prepare to spin");
+                    Log.d(TAG, "Delicious detected; prepare to spin");
                     numOfDoneVid = 0;
                     while(eventType2!=XmlPullParser.END_DOCUMENT && !"item".equals(xpp_vid.getName())
                             && eventType2 != XmlPullParser.END_TAG)
                     {
-                        Log.d("*:updateShow", "Spinning..." +  xpp_vid.getName());
+                        Log.d(TAG, "Spinning..." +  xpp_vid.getName());
                         //Wait for </item>
                         eventType2 = xpp_vid.next();
                     }
@@ -269,7 +270,7 @@ public class UpdateShow
             {
                 eventType2 = xpp_vid.next();
                 dateConfirm = xpp_vid.getText();
-                Log.d("*:updateShow", "CONFIRM(2): " + dateConfirm);
+                Log.d(TAG, "CONFIRM(2): " + dateConfirm);
                 if(dateConfirm==null)
                     throw(new UnfinishedParseException("Confirm Date"));
                 if((numOfDoneVid & 0x8)==0x8)
@@ -281,12 +282,12 @@ public class UpdateShow
                 ep.VideoLink = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"url");
                 if(ep.VideoLink==null)
                     throw(new UnfinishedParseException("VideoLink"));
-                Log.d("*:updateShow", "   V Link: " + ep.VideoLink);
+                Log.d(TAG, "   V Link: " + ep.VideoLink);
                 String temp = xpp_vid.getAttributeValue(xpp_vid.getNamespace(),"length");
                 if(temp==null)
                     throw(new UnfinishedParseException("VideoSize"));
                 ep.VideoSize = Long.parseLong(temp);
-                Log.d("*:updateShow", "   V Size: " + ep.VideoSize);
+                Log.d(TAG, "   V Size: " + ep.VideoSize);
                 if((numOfDoneVid & 0x10)==0x10)
                     throw(new UnfinishedParseException("Video 2times"));
                 numOfDoneVid |= 0x10;
@@ -297,7 +298,7 @@ public class UpdateShow
                 int want = (0x1 | 0x8 | 0x10);
                 if((numOfDoneVid & want)!=want) //Not 0x2 because some items miss <link>
                     throw(new UnfinishedParseException("</item> before finished video"));
-                Log.d("*:updateShow", "FINISHED W/ VIDEO");
+                Log.d(TAG, "FINISHED W/ VIDEO");
                 eventType2 = xpp_vid.next();
                 break;
             }
@@ -309,7 +310,6 @@ public class UpdateShow
         eventType = xpp.next();
         while(eventType!=XmlPullParser.END_DOCUMENT)
         {
-            Log.e("*:updateShow   AUDIO? " + eventType + "==" + XmlPullParser.START_TAG, "?" + xpp.getName() );
             if("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();
@@ -320,13 +320,13 @@ public class UpdateShow
                 //Again, spin until they are out of the system
                 if(ep.Title.contains("[del.icio.us]"))
                 {
-                    Log.d("*:updateShow", "Delicious detected; prepare to spin " + xpp.getName());
+                    Log.d(TAG, "Delicious detected; prepare to spin " + xpp.getName());
                     numOfDone = 0;
                     while(eventType!=XmlPullParser.END_DOCUMENT
                             && !("item".equals(xpp.getName())
                             && (eventType != XmlPullParser.END_TAG)))
                     {
-                        Log.d("*:updateShow", "Spinning..." +  xpp.getName());
+                        Log.d(TAG, "Spinning..." +  xpp.getName());
                         //Wait for </item>
                         eventType = xpp.next();
                     }
@@ -341,7 +341,7 @@ public class UpdateShow
                 }
                 if(ep.Title.indexOf("|")>0)
                     ep.Title = ep.Title.substring(0, ep.Title.indexOf("|")).trim();
-                Log.d("*:updateShow", "Title: " + ep.Title);
+                Log.d(TAG, "Title: " + ep.Title);
                 if((numOfDone & 0x1)==0x1)
                     throw(new UnfinishedParseException("Title 2times"));
                 numOfDone |= 0x1;
@@ -352,7 +352,7 @@ public class UpdateShow
                 ep.Link = xpp.getText();
                 if(ep.Link==null)
                     throw(new UnfinishedParseException("Link"));
-                Log.d("*:updateShow", "  Link: " + ep.Link);
+                Log.d(TAG, "  Link: " + ep.Link);
                 if((numOfDone & 0x2)==0x2)
                     throw(new UnfinishedParseException("Link 2times"));
                 numOfDone |= 0x2;
@@ -363,7 +363,7 @@ public class UpdateShow
                 ep.Desc = xpp.getText();
                 //if(epDesc==null)
                     //throw(new UnfinishedParseException("Description"));
-                Log.d("*:updateShow", "  Desc: " + ep.Desc);
+                Log.d(TAG, "  Desc: " + ep.Desc);
                 if((numOfDone & 0x4)==0x4)
                     throw(new UnfinishedParseException("Description 2times"));
                 if(ep.Desc!=null)
@@ -373,7 +373,7 @@ public class UpdateShow
             {
                 eventType = xpp.next();
                 ep.Date = xpp.getText();
-                Log.d("*:updateShow", "Date: " + ep.Date);
+                Log.d(TAG, "Date: " + ep.Date);
                 if(ep.Date==null)
                     throw(new UnfinishedParseException("Date"));
                 if(lastChecked!=null && !StaticBlob.sdfSource.parse(ep.Date).after(StaticBlob.sdfSource.parse(lastChecked)))
@@ -390,7 +390,7 @@ public class UpdateShow
             else if("enclosure".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 ep.AudioLink = xpp.getAttributeValue(xpp.getNamespace(),"url");
-                Log.d("*:updateShow", "  A Link: " + ep.AudioLink);
+                Log.d(TAG, "  A Link: " + ep.AudioLink);
                 if(ep.AudioLink==null)
                     throw(new UnfinishedParseException("AudioLink"));
                 //Sizes
@@ -398,7 +398,7 @@ public class UpdateShow
                 if(temp==null)
                     throw(new UnfinishedParseException("MediaSize"));
                 ep.AudioSize = Long.parseLong(temp);
-                Log.d("*:updateShow", "A Size: " + ep.AudioSize);
+                Log.d(TAG, "A Size: " + ep.AudioSize);
                 if((numOfDone & 0x10)==0x10)
                     throw(new UnfinishedParseException("Media 2times"));
                 numOfDone |= 0x10;
@@ -410,10 +410,10 @@ public class UpdateShow
                 int want = (0x1 | 0x4 | 0x8 | 0x10);
                 if((numOfDone & want)==want) //Not 0x2 because some items miss <link>
                 {
-                    Log.d("*:updateShow", "CONFIRMING(1a) " + ep.Title);
-                    Log.d("*:updateShow", "CONFIRMING(1a) " + titleConfirm);
-                    Log.d("*:updateShow", "CONFIRMING(2a) " + ep.Date.substring(0,16));
-                    Log.d("*:updateShow", "CONFIRMING(2b) " + dateConfirm.substring(0, 16));
+                    Log.d(TAG, "CONFIRMING(1a) " + ep.Title);
+                    Log.d(TAG, "CONFIRMING(1a) " + titleConfirm);
+                    Log.d(TAG, "CONFIRMING(2a) " + ep.Date.substring(0,16));
+                    Log.d(TAG, "CONFIRMING(2b) " + dateConfirm.substring(0, 16));
                     //if(!epTitle.equals(titleConfirm))
                     //    throw(new UnfinishedParseException("Video does not match audio: " + epTitle + "==" +titleConfirm));
                     //if(!epDate.substring(0,16).equals(dateConfirm.substring(0,16)))
@@ -421,7 +421,7 @@ public class UpdateShow
                     ep.Date = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(ep.Date));
                     //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
                     //isVideo, epMediaLink, epMediaSize))
-                    Log.v("*:updateShow", "Inserting episode: " + ep.Title);
+                    Log.v(TAG, "Inserting episode: " + ep.Title);
                     EpisodesRetrieved.push(ep);
                     xpp.next();
                     return;
@@ -460,6 +460,7 @@ public class UpdateShow
         @Override
         protected Void doInBackground(String... s)
         {
+            String TAG = StaticBlob.TAG();
             //public static void downloadImage(String img_url, String show) throws IOException, NullPointerException
             //{
             try {
@@ -470,7 +471,7 @@ public class UpdateShow
                 File f = new File(
                         StaticBlob.storage_path + File.separator +
                         show + EpisodeDesc.getExtension(img_url));
-                Log.i("UpdateShow:downloadImage", "Download Path is: " + f.toString() + ", " + f.exists());
+                Log.i(TAG, "Download Path is: " + f.toString() + ", " + f.exists());
                 if(f.exists())
                     return null;
                 (new File(StaticBlob.storage_path)).mkdirs();
@@ -496,7 +497,7 @@ public class UpdateShow
                 OutputStream fOut = new FileOutputStream(f);
                 scale.compress(Bitmap.CompressFormat.JPEG, 85, fOut);//*/
             } catch(Exception e) {
-                Log.v("*:updateShow", "Failed to download image");
+                Log.v(TAG, "Failed to download image");
             }
             return null;
         }

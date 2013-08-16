@@ -229,6 +229,7 @@ public class DatabaseConnector
 	 */
 	public void appendToQueue(long identity, boolean isStreaming, boolean isVideo)
 	{
+        String TAG = StaticBlob.TAG();
         if(database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + identity + " AND video='" + (isVideo?1:0) + "'",
                 null, null, null, null).getCount()==0)
         {
@@ -239,7 +240,7 @@ public class DatabaseConnector
             newEntry.put("video", isVideo ? 1 : 0);
             database.insert(DATABASE_QUEUE, null, newEntry);
         } else
-            Log.w("*:appendToQueue", "Item is already in queue: " + identity);
+            Log.w(TAG, "Item is already in queue: " + identity);
 	}
 	
 	/** [DATABASE_QUEUE] Updates a queue item.
@@ -386,13 +387,14 @@ public class DatabaseConnector
 	 */
 	public Cursor advanceQueue(int forward)
 	{
+        String TAG = StaticBlob.TAG();
 		long id;
 		Cursor c = currentQueueItem();
 
         //No current item is found
 		if(c==null || c.getCount()==0)
 		{
-			Log.v("DatabaseConnector:advanceQueue", "No current found in queue.");
+			Log.v(TAG, "No current found in queue.");
 			c = getQueue();
 			if(c.getCount()==0)
 				return null;
@@ -404,7 +406,7 @@ public class DatabaseConnector
         //Update the queue database
 		if(forward!=0)
 		{
-			Log.v("DatabaseConnector:advanceQueue", "An old current was found in the queue");
+			Log.v(TAG, "An old current was found in the queue");
 			c.moveToFirst();
 			id = c.getLong(c.getColumnIndex("_id"));
 			//Set the old one to be not current
@@ -416,7 +418,7 @@ public class DatabaseConnector
 				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "_id>" + id, null, null, null, null, "1");
 			if(c.moveToFirst())
 			{
-				Log.v("DatabaseConnector:advanceQueue", "A new current was found in the queue");
+				Log.v(TAG, "A new current was found in the queue");
 				id = c.getLong(c.getColumnIndex("_id"));
 				database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current='1'" + " WHERE _id='" + id + "'");
 			}
@@ -531,12 +533,13 @@ public class DatabaseConnector
      * */
     public boolean addDownload(long identity, boolean video)     //note 'identity' == the _id in EPISODES table
     {
-        Log.d("DatabaseConnector::addDownload", "Adding: " + identity + " . " + video);
+        String TAG = StaticBlob.TAG();
+        Log.d(TAG, "Adding: " + identity + " . " + video);
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
                 "identity='" + identity + "' AND video='" + (video?1:0) + "'", null, null, null, null);
         if(c.getCount()>0)
         {
-            Log.d("DatabaseConnector::addDownload", "Found duplicate when trying to add: " + identity + " . " + video);
+            Log.d(TAG, "Found duplicate when trying to add: " + identity + " . " + video);
             return false;
         }
 
@@ -640,8 +643,9 @@ public class DatabaseConnector
 	   @Override
 	   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
 	   {
+           String TAG = StaticBlob.TAG();
            //I really should have taken my Database class before trying to mess with databases.
-           Log.e("DatabaseConnector:onUpgrade", "Upgrading DB");
+           Log.e(TAG, "Upgrading DB");
            try {
            String sql = "ALTER TABLE " + DATABASE_EPISODES + " ADD COLUMN length INTEGER";
            db.execSQL(sql);

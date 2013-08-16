@@ -34,16 +34,17 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
     /** Builds it && grabs; essentially the same as "setContext(); grab();" */
     public OnAudioFocusChangeListenerImpl(Context c)
     {
-        super();
+        super();String TAG = StaticBlob.TAG();
         setContext(c);
         int r = grab();
-        Log.d("OnAudioFocusChangeListenerImpl", "Creating a new one: " + r);
+        Log.d(TAG, "Creating a new one: " + r);
     }
 
     /** Handles the change; there are 3 types of loss and 3 types of gain. */
     @Override
     public void onAudioFocusChange(int i)
     {
+        String TAG = StaticBlob.TAG();
         switch(i)
         {
             case AudioManager.AUDIOFOCUS_GAIN:
@@ -52,19 +53,19 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
                 if(StaticBlob.playerInfo.isPaused && StaticBlob.pauseCause == StaticBlob.PauseCause.FocusChange)
                 {
                     PlayerControls.playPause(c, null);
-                    Log.d("OnAudioFocusChangeListenerImpl:onAudioFocusChange", "GAIN");
+                    Log.d(TAG, "GAIN");
                 }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:                  //STOP
-                Log.d("OnAudioFocusChangeListenerImpl:onAudioFocusChange", "LOSS");
+                Log.d(TAG, "LOSS");
                 PlayerControls.stop(c);
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:        //PAUSE
                 if(!StaticBlob.playerInfo.isPaused)
                 {
-                    Log.d("OnAudioFocusChangeListenerImpl:onAudioFocusChange", "LOSS_TRANSIENT");
+                    Log.d(TAG, "LOSS_TRANSIENT");
                     PlayerControls.playPause(c, null);
                     StaticBlob.pauseCause = StaticBlob.PauseCause.FocusChange;
                 }

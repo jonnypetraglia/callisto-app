@@ -43,6 +43,7 @@ public class AudioJackReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
+        String TAG = StaticBlob.TAG();
         if(!pastInitialCreate)
         {
             pastInitialCreate=true;
@@ -59,7 +60,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                 PlayerControls.playPause(contextForPreferences, v);
                 StaticBlob.pauseCause = StaticBlob.PauseCause.AudioJack;
             }
-            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN DISCONNECTED");
+            Log.i(TAG, "HEADSET IS OR HAS BEEN DISCONNECTED");
         }else
         {
             if(PreferenceManager.getDefaultSharedPreferences(contextForPreferences).getBoolean("play_replugged", true)
@@ -68,7 +69,7 @@ public class AudioJackReceiver extends BroadcastReceiver
             {
                 PlayerControls.playPause(contextForPreferences, v);
             }
-            Log.i("AudioJackReceiver:onReceive", "HEADSET IS OR HAS BEEN RECONNECTED");
+            Log.i(TAG, "HEADSET IS OR HAS BEEN RECONNECTED");
         }
     }
 }

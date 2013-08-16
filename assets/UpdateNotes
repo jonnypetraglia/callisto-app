@@ -1,4 +1,4 @@
-This semi-major version update is one step closer to a stable 1.0 release.
+This semi-minor version update is one step closer to a stable 1.0 release.
 It includes several fixes to issues submitted to Github page, but please remember that the 'Protostar' means 'Beta'.
 
     NEW SHOW: Linux Unplugged! -- Jupiter Broadcasting's new show about Linux and the community.
@@ -6,7 +6,7 @@ It includes several fixes to issues submitted to Github page, but please remembe
     Fix: Widget -- The widget should now be themed to match the app, and hopefully work more reliably.
     Fix: IRC commands -- Some commands (e.g. /NAMES) would crash the app, and have hopefully been fixed. Thanks, nogal!
     Feature: JBTitle -- Preliminary support for the JBTitles voting system.
-	Special Thanks -- ??? -- JupiterBroadcasting, for being awesome, as always.
+	Special Thanks -- rikai & wd-40 & nekinie, for filing isssuuuuueeees -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Github or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
 

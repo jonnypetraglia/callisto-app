@@ -122,7 +122,9 @@ public class CalendarActivity extends Activity {
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
+        String TAG = StaticBlob.TAG();
         super.onCreate(savedInstanceState);
         this.setTitle(this.getResources().getString(R.string.upcoming_shows));
 
@@ -143,10 +145,10 @@ public class CalendarActivity extends Activity {
 
         //Weekly View
         if (!isLandscape) {
-            Log.v("CalendarActivity:OnCreate", "Layout is portrait -> agenda");
+            Log.v(TAG, "Layout is portrait -> agenda");
             setContentView(R.layout.agenda);
             agenda = (LinearLayout) findViewById(R.id.agenda);
-            Log.i("CalendarActivity:OnCreate", "Loading the first week on the agenda");
+            Log.i(TAG, "Loading the first week on the agenda");
 
             (findViewById(R.id.scrollView1)).setOnTouchListener(new OnTouchListener() {
 
@@ -173,7 +175,7 @@ public class CalendarActivity extends Activity {
             });
             //Agenda View
         } else {
-            Log.v("CalendarActivity:OnCreate", "Layout is landscape -> calendar");
+            Log.v(TAG, "Layout is landscape -> calendar");
             setContentView(R.layout.calendar);
 
             //Create the day views
@@ -227,9 +229,11 @@ public class CalendarActivity extends Activity {
     /** Called when the activity is resumed, like when you return from another activity or also when it is first created.
      */
     @Override
-    public void onResume() {
+    public void onResume()
+    {
+        String TAG = StaticBlob.TAG();
         super.onResume();
-        Log.v("CalendarActivity:OnResume", "Resuming Calendar");
+        Log.v(TAG, "Resuming Calendar");
         //Show the popUp really quickly so we can measure it later
         if (!isLandscape)
             findViewById(R.id.mainAgenda).post(new Runnable() {
@@ -325,11 +329,12 @@ public class CalendarActivity extends Activity {
     private class FetchEventsTask extends AsyncTask<Object, Object, Object> {
         @Override
         protected void onPreExecute() {
+            String TAG = StaticBlob.TAG();
             super.onPreExecute();
             //If it's Agenda, remove the show event views
             if (!isLandscape)
                 agenda.removeAllViews();
-            Log.v("CalendarActivity:FetchEventsTask", "Preparing to fetch new events");
+            Log.v(TAG, "Preparing to fetch new events");
             //Build the progress dialog for fetching
             progressDialog = ProgressDialog.show(CalendarActivity.this, CalendarActivity.this.getResources().getString(R.string.loading), CalendarActivity.this.getResources().getString(R.string.loading_msg), true, false);
             progressDialog.setCancelable(true);
@@ -338,8 +343,9 @@ public class CalendarActivity extends Activity {
         @Override
         protected Object doInBackground(Object... params)
         {
+            String TAG = StaticBlob.TAG();
             try {
-                Log.v("CalendarActivity:FetchEventsTask", "Initializing the Xml pulling");
+                Log.v(TAG, "Initializing the Xml pulling");
                 //Initialize the XML pulling
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(true);
@@ -360,7 +366,7 @@ public class CalendarActivity extends Activity {
                 StaticBlob.databaseConnector.clearCalendar();
 
                 //Skip the first heading
-                Log.v("CalendarActivity:FetchEventsTask", "Skipping the first heading");
+                Log.v(TAG, "Skipping the first heading");
                 while (!("entry".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)) {
                     eventType = xpp.next();
                     if (eventType == XmlPullParser.END_DOCUMENT)
@@ -368,12 +374,12 @@ public class CalendarActivity extends Activity {
                 }
                 eventType = xpp.next();
 
-                Log.v("CalendarActivity:FetchEventsTask", "Entering the main loop");
+                Log.v(TAG, "Entering the main loop");
                 while (eventType != XmlPullParser.END_DOCUMENT)
                 {
                     eventType = xpp.next(); //TODO: what is this here for
 
-                    Log.v("CalendarActivity:FetchEventsTask", "(skipping the first part)");
+                    Log.v(TAG, "(skipping the first part)");
                     // (skip the first part)
                     while (!("title".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)) {
                         eventType = xpp.next();
@@ -384,14 +390,14 @@ public class CalendarActivity extends Activity {
                     //Show
                     eventType = xpp.next();
                     String evShow = xpp.getText();
-                    Log.v("CalendarActivity:FetchEventsTask", "Getting show: " + evShow);
+                    Log.v(TAG, "Getting show: " + evShow);
                     if (evShow == null)
                         break;
                     String evType = evShow.substring(0, evShow.indexOf(":")).trim();
                     evShow = evShow.substring(evShow.indexOf(":") + 1, evShow.length()).trim();
 
                     // (skip the unnecessary data)
-                    Log.v("CalendarActivity:FetchEventsTask", "(skipping the summary parts)");
+                    Log.v(TAG, "(skipping the summary parts)");
                     while (!("summary".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG))
                     {
                         eventType = xpp.next();
@@ -402,7 +408,7 @@ public class CalendarActivity extends Activity {
                     // (the START of the Date; this is not the end)
                     eventType = xpp.next();
                     String evDate = xpp.getText();
-                    Log.v("CalendarActivity:FetchEventsTask", "Starting to get the date: " + evDate);
+                    Log.v(TAG, "Starting to get the date: " + evDate);
                     if (evDate == null)
                         break;
                     boolean evRecurring = evDate.startsWith("Recurring");
@@ -448,8 +454,8 @@ public class CalendarActivity extends Activity {
                     //Date (FINALLY) and Time
                     String evTime = evDate.substring(8).trim();
                     evDate = evDate.substring(0, 8).trim();
-                    Log.v("CalendarActivity:FetchEventsTask", "Getting date: " + evDate);
-                    Log.v("CalendarActivity:FetchEventsTask", "Getting time: " + evTime);
+                    Log.v(TAG, "Getting date: " + evDate);
+                    Log.v(TAG, "Getting time: " + evTime);
 
                     //Chriiiiiiis fix this
                     if (evShow.equals("The Linux Action Show!"))
@@ -477,12 +483,13 @@ public class CalendarActivity extends Activity {
 
         @Override
         protected void onPostExecute(Object result) {   //The result will be a string if there was an error, null otherwise
-
+            String TAG = StaticBlob.TAG();
             progressDialog.hide();
             if (result != null)     //Display an error message if there was an error
             {
-                Toast.makeText(CalendarActivity.this, result + " occurred. Maybe your connection might be flaky?", Toast.LENGTH_LONG).show();
-                Log.v("CalendarActivity:FetchEventsTask", "ERROR: " + result);
+                Toast.makeText(CalendarActivity.this,
+                        String.format(getResources().getString(R.string.calendar_fetch_error), result), Toast.LENGTH_LONG).show();
+                Log.v(TAG, "ERROR: " + result);
             }
             else
             {
@@ -501,7 +508,8 @@ public class CalendarActivity extends Activity {
      */
     public void updateCalendar()
     {
-        Log.v("CalendarActivity:updateCalendar", "Starting to update the Calendar");
+        String TAG = StaticBlob.TAG();
+        Log.v(TAG, "Starting to update the Calendar");
         //Update some of the views
         Tmonth.setText(months[current_cal.get(Calendar.MONTH)]);
         Tyear.setText(Integer.toString(current_cal.get(Calendar.YEAR)));
@@ -564,7 +572,7 @@ public class CalendarActivity extends Activity {
                 String show = events.getString(events.getColumnIndex("show"));
                 String _id = events.getString(events.getColumnIndex("_id"));
 
-                Log.v("CalendarActivity:updateCalendar", "Getting show for: " + show);
+                Log.v(TAG, "Getting show for: " + show);
                 TextView event = (TextView) dayViews[i].findViewById(this.getResources().getIdentifier("event" + numberOfEvents, "id", "com.qweex.callisto"));
                 View w = (View) event.getParent();
                 TextView id = (TextView) w.findViewById(this.getResources().getIdentifier("id", "id", "com.qweex.callisto"));
@@ -596,7 +604,8 @@ public class CalendarActivity extends Activity {
     public OnClickListener editEvent = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.v("CalendarActivity:editEvent", "Editing an event");
+            String TAG = StaticBlob.TAG();
+            Log.v(TAG, "Editing an event");
             //Create the dialog
             LayoutInflater inflater = (LayoutInflater) CalendarActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View editEventView = inflater.inflate(R.layout.edit_alarm, null);
@@ -642,7 +651,7 @@ public class CalendarActivity extends Activity {
             boolean vibrate = false, isAlarm = false;
             if(!key.equals(""))
             {
-                Log.v("CalendarActivity:editEvent", "There is a previous alarm. Adding it.");
+                Log.v(TAG, "There is a previous alarm. Adding it.");
                 try {
                     //Get the info about this existing alarm
                     min = Integer.parseInt(key.substring(0, key.indexOf("_")));
@@ -669,7 +678,7 @@ public class CalendarActivity extends Activity {
                     ((CheckBox) editEventView.findViewById(R.id.vibrate)).setChecked(vibrate);
                     ((NumberPicker) editEventView.findViewById(R.id.minutesBefore)).setValue(min);
                 } catch(Exception e) {
-                    Log.e("CalendarActivity:editEvent", "Error Happened: " + e.getClass());
+                    Log.e(TAG, "Error Happened: " + e.getClass());
                     e.printStackTrace();
                 }
             }
@@ -680,7 +689,8 @@ public class CalendarActivity extends Activity {
                 @Override
                 public void onClick(View v)
                 {
-                    Log.v("CalendarActivity:editEvent:Save", "Getting info of new alarm");
+                    String TAG = StaticBlob.TAG();
+                    Log.v(TAG, "Getting info of new alarm");
                     View editEventView = (View) v.getParent();
 
                     //Get the info for the alarm
@@ -713,7 +723,7 @@ public class CalendarActivity extends Activity {
                     AlarmManager mAlarm = (AlarmManager) CalendarActivity.this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                     mAlarm.set(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pi);
 
-                    Log.v("CalendarActivity:editEvent:Save", "Saving the alarm");
+                    Log.v(TAG, "Saving the alarm");
                     //Save the alarm to the preferences
                     SharedPreferences.Editor edit = StaticBlob.alarmPrefs.edit();
                     edit.putString(key, Integer.toString(min) + "_" + uri + "/" + tone + "_" + isAlarm + "" + vibrate);
@@ -731,7 +741,8 @@ public class CalendarActivity extends Activity {
     {
         @Override
         public void onClick(View v) {
-            Log.v("CalendarActivity:clickEvent", "Event has been clicked");
+            String TAG = StaticBlob.TAG();
+            Log.v(TAG, "Event has been clicked");
             if (popUp.isShowing())
                 popUp.dismiss();
             int[] pos = new int[2];
@@ -746,7 +757,7 @@ public class CalendarActivity extends Activity {
             try {
                 _id = Long.parseLong(id);
             } catch (NumberFormatException e) {
-                Log.e("CalendarActivity:clickEvent", "A number parse error occurred: " + _id);
+                Log.e(TAG, "A number parse error occurred: " + _id);
                 return;
             }
             Cursor c = StaticBlob.databaseConnector.getOneEvent(_id);
@@ -760,7 +771,7 @@ public class CalendarActivity extends Activity {
             String title = show;
             show = c.getString(c.getColumnIndex("type"));
             popUp_type.setText(show);
-            Log.v("CalendarActivity:clickEvent", "The show is: " + show);
+            Log.v(TAG, "The show is: " + show);
 
             //Get the actual date; the methods depends on the current layout
             try {
@@ -816,7 +827,7 @@ public class CalendarActivity extends Activity {
                         }
                     }
                 }
-                Log.v("CalendarActivity:clickEvent", "The date is: " + date);
+                Log.v(TAG, "The date is: " + date);
 
                 show = StaticBlob.sdfDestination.format(StaticBlob.sdfRawSimple1.parse(date));
                 popUp_date.setText(show);
@@ -825,7 +836,7 @@ public class CalendarActivity extends Activity {
                 show = StaticBlob.sdfTime.format(StaticBlob.sdfRawSimple2.parse(time));
                 popUp_time.setText(show);
             } catch (ParseException e) {
-                Log.v("CalendarActivity:clickEvent", "ParseException");
+                Log.v(TAG, "ParseException");
             }
 
             //TODO: Dude I don't even know
@@ -850,7 +861,7 @@ public class CalendarActivity extends Activity {
             popUp.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             TheHeightOfTheFreakingPopup = popUp.getContentView().getMeasuredHeight();
             boolean isLowerHalf = pos[1] > getWindowManager().getDefaultDisplay().getHeight() / 2;
-            Log.v("CalendarActivity:clickEvent", "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
+            Log.v(TAG, "Height of the freaking popup: " + TheHeightOfTheFreakingPopup);
 
             //Show the popup
             if(isLandscape)
@@ -874,14 +885,15 @@ public class CalendarActivity extends Activity {
      */
     public void loadMoreAgenda(boolean thisWeek)
     {
-        Log.v("CalendarActivity:loadMoreAgenda", "Loading more agenda");
+        String TAG = StaticBlob.TAG();
+        Log.v(TAG, "Loading more agenda");
         int dayOfWeek = current_cal.get(Calendar.DAY_OF_WEEK) - 1;
         TextView loading = (TextView) findViewById(R.id.empty);
 
         //Check to see if there are any more events. Hint: there should be.
         if(StaticBlob.databaseConnector.eventCount() == 0)
         {
-            Log.v("CalendarActivity:loadMoreAgenda", "eventCount() has returned 0");
+            Log.v(TAG, "eventCount() has returned 0");
             if(thisWeek)
             {
                 loading.setText(this.getResources().getString(R.string.no_events));
@@ -913,7 +925,7 @@ public class CalendarActivity extends Activity {
             if (temp < 10)
                 targetDate += "0";
             targetDate += Integer.toString(temp);
-            Log.v("CalendarActivity:loadMoreAgenda", "Target date: " + targetDate);
+            Log.v(TAG, "Target date: " + targetDate);
 
 
             //Get a cursor containing the valid events for that day
@@ -959,7 +971,7 @@ public class CalendarActivity extends Activity {
                     else
                         timeUntil = getResources().getString(R.string.now).toUpperCase();
                 }
-                Log.v("CalendarActivity:loadMoreAgenda", "Time Until: " + timeUntil);
+                Log.v(TAG, "Time Until: " + timeUntil);
 
                 //Set the date
                 if(thisWeek)

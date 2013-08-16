@@ -91,10 +91,10 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 		       		};
 
 		       		AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
-		       		builder.setTitle("Dude wait");
-		       		builder.setMessage("Are you sure you want to reset the IRC colors to their default values?");
-		       		builder.setPositiveButton("Yup", dialogClickListener);
-		       		builder.setNegativeButton("Nope", dialogClickListener);
+		       		builder.setTitle(R.string.reset_colors_title);
+		       		builder.setMessage(R.string.reset_colors_message);
+		       		builder.setPositiveButton(android.R.string.yes, dialogClickListener);
+		       		builder.setNegativeButton(android.R.string.no, dialogClickListener);
 		       		builder.show();
 		       		return true;
 			}
@@ -116,8 +116,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-    Log.d("DERPYINGH","!" + StaticBlob.playerInfo.isPaused);
-
+        String TAG = StaticBlob.TAG();
         //Move files to new storage_path
     	if("storage_path".equals(key))
     	{
@@ -133,8 +132,8 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	    	File olddir = new File(StaticBlob.storage_path);
 	    	if(!olddir.renameTo(new File(new_path)))
 	    	{
-	    		Toast.makeText(this, "An error occurred while trying to rename the folder. You might have to do it manually.", Toast.LENGTH_SHORT).show();
-	    		Log.e("QuickPrefsActivity:onSharedPreferenceChanged", "Oh crap, a file couldn't be moved");
+	    		Toast.makeText(this, R.string.move_folder_error, Toast.LENGTH_SHORT).show();
+	    		Log.e(TAG, "Oh crap, a file couldn't be moved");
 	    	}
 		    StaticBlob.storage_path = new_path;
     	}

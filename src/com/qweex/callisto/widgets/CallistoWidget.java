@@ -38,9 +38,10 @@ public class CallistoWidget extends AppWidgetProvider
      */
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
     {
+        String TAG = StaticBlob.TAG();
         final int N = appWidgetIds.length;
 
-        Log.v("CallistoWidget:onUpdate",  "Updating widgets " + Arrays.asList(appWidgetIds));
+        Log.v(TAG,  "Updating widgets " + Arrays.asList(appWidgetIds));
         for (int i = 0; i < N; i++)
         {
             int appWidgetId = appWidgetIds[i];
@@ -56,7 +57,7 @@ public class CallistoWidget extends AppWidgetProvider
             views.setOnClickPendingIntent(R.id.widgetButton, pendingIntent);
 
             if(StaticBlob.playerInfo!=null)
-                Log.v("CallistoWidget:onUpdate", "WIDGET UPDATE" + StaticBlob.playerInfo.isPaused);
+                Log.v(TAG, "WIDGET UPDATE" + StaticBlob.playerInfo.isPaused);
             if((Live.live_player!=null && !StaticBlob.live_isPlaying) ||
                     (StaticBlob.playerInfo!=null && StaticBlob.playerInfo.isPaused))
                 views.setImageViewResource(R.id.widgetButton, R.drawable.ic_action_playback_play);
@@ -75,7 +76,7 @@ public class CallistoWidget extends AppWidgetProvider
             else
             {
                 views.setTextViewText(R.id.widgetTitle, "Callisto");
-                views.setTextViewText(R.id.widgetShow, "(Press to enqueue episodes)");
+                views.setTextViewText(R.id.widgetShow, context.getText(R.string.widget_text));
             }
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
@@ -99,11 +100,12 @@ public class CallistoWidget extends AppWidgetProvider
     @Override
     public void onReceive(Context context, Intent intent)
     {
+        String TAG = StaticBlob.TAG();
         super.onReceive(context, intent);
         if("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())
                 || "android.appwidget.action.APPWIDGET_ENABLED".equals(intent.getAction()))
             return;
-        Log.i("CallistoWidget:onReceive", "A button has been pressed on a widget" + intent.getAction());
+        Log.i(TAG, "A button has been pressed on a widget" + intent.getAction());
         StaticBlob.init(context);
         StaticBlob.is_widget = true;
         StaticBlob.pauseCause = StaticBlob.PauseCause.User;

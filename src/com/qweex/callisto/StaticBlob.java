@@ -266,4 +266,12 @@ public class StaticBlob
             }
         };
     }
+
+    public static String TAG()
+    {
+        StackTraceElement stacktrace = Thread.currentThread().getStackTrace()[3];
+        return
+        stacktrace.getLineNumber() + "::" +
+        stacktrace.getClassName().substring("com.qweex.callisto".length()+1) + ":" + stacktrace.getMethodName();
+    }
 }

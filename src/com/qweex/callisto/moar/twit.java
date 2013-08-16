@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.qweex.callisto.R;
+import com.qweex.callisto.StaticBlob;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,12 +74,13 @@ public class twit extends ListActivity
         @Override
         protected void onPostExecute(String errorMsg)
         {
+            String TAG = StaticBlob.TAG();
             if(errorMsg!=null)
             {
                 TextView derp = new TextView(thisTwit);
                 derp.setText("Sorry, an error occurred: " + errorMsg);
                 thisTwit.getListView().setEmptyView(derp);
-                Log.e("Error", errorMsg);
+                Log.e(TAG + ":Error", errorMsg);
                 //thisTwit.finish();
             }
             else
@@ -118,7 +120,6 @@ public class twit extends ListActivity
 
 
     public static String callURL(String myURL) {
-        System.out.println("Requested URL:" + myURL);
         StringBuilder sb = new StringBuilder();
         URLConnection urlConn = null;
         InputStreamReader in = null;
@@ -181,6 +182,7 @@ public class twit extends ListActivity
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
+            String TAG = StaticBlob.TAG();
             if(view==null)
             {
                 LayoutInflater inflater=getLayoutInflater();
@@ -210,7 +212,7 @@ public class twit extends ListActivity
 
             } catch(JSONException j)
             {
-                Log.e("DERP", "!" + j.getClass());
+                Log.e(TAG + ":JSONException", "!" + j.getClass());
                 return view;
             }
 

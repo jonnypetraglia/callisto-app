@@ -75,10 +75,11 @@ public class AllShows extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        String TAG = StaticBlob.TAG();
         //DO create stuff
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        Log.v("AllShows:OnCreate", "Launching Activity");
+        Log.v(TAG, "Launching Activity");
 
         mainListView = new ListView(this);
         Callisto.build_layout(this, mainListView);
@@ -110,8 +111,9 @@ public class AllShows extends Activity {
     @Override
     public void onResume()
     {
+        String TAG = StaticBlob.TAG();
         super.onResume();
-        Log.v("AllShows:onResume", "Resuming AllShows");
+        Log.v(TAG, "Resuming AllShows");
         setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(AllShows.this);      //Update the player controls
 
@@ -131,21 +133,21 @@ public class AllShows extends Activity {
             //Updated the "last_checked" time for this show in the view, not in the preferences. It was updated in the preferences by the update AsyncTask.
             SharedPreferences showSettings = getSharedPreferences(the_current_show, 0);
             String lastChecked = showSettings.getString("last_checked", null);
-            Log.v("AllShows:onResume", "Resuming after:" + the_current_show + "| " + lastChecked);
+            Log.v(TAG, "Resuming after:" + the_current_show + "| " + lastChecked);
             if(lastChecked!=null)
             {
                 try {
                     lastChecked = StaticBlob.sdfDestination.format(StaticBlob.sdfSource.parse(lastChecked));
                     ((TextView)current_view.findViewById(R.id.rowSubTextView)).setText(lastChecked);
                 } catch (ParseException e) {
-                    Log.e("AllShows:OnResume:ParseException", "Error parsing a date from the SharedPreferences..");
-                    Log.e("AllShows:OnResume:ParseException", lastChecked);
-                    Log.e("AllShows:OnResume:ParseException", "(This should never happen).");
+                    Log.e(TAG + ":ParseException", "Error parsing a date from the SharedPreferences..");
+                    Log.e(TAG + ":ParseException", lastChecked);
+                    Log.e(TAG + ":ParseException", "(This should never happen).");
                 }
             }
         }catch(NullPointerException npe)
         {
-            Log.e("AllShows:onResume", "Null Pointer: " + npe.getMessage() + " (this should never happen)");
+            Log.e(TAG, "Null Pointer: " + npe.getMessage() + " (this should never happen)");
         }
         current_view=null;
     }
@@ -276,7 +278,8 @@ public class AllShows extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
-            Log.d("AllShows:selectShow", "Selected show at position: " + position);
+            String TAG = StaticBlob.TAG();
+            Log.d(TAG, "Selected show at position: " + position);
             if(StaticBlob.SHOW_LIST[position].charAt(0)==' ')
                 return;
             else
@@ -332,6 +335,7 @@ public class AllShows extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
+            String TAG = StaticBlob.TAG();
             View row = convertView;
             if(row == null)
             {
@@ -373,9 +377,9 @@ public class AllShows extends Activity {
                 try {
                     lastChecked = StaticBlob.sdfDestination.format(StaticBlob.sdfSource.parse(lastChecked));
                 } catch (ParseException e) {
-                    Log.e("AllShows:AllShowsAdapter:ParseException", "Error parsing a date from the SharedPreferences..");
-                    Log.e("AllShows:AllShowsAdapter:ParseException", lastChecked);
-                    Log.e("AllShows:AllShowsAdapter:ParseException", "(This should never happen).");
+                    Log.e(TAG+":ParseException", "Error parsing a date from the SharedPreferences..");
+                    Log.e(TAG+":ParseException", lastChecked);
+                    Log.e(TAG+":ParseException", "(This should never happen).");
                     e.printStackTrace();
                 }
                 ((TextView)row.findViewById(R.id.rowSubTextView)).setText(lastChecked);

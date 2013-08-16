@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.qweex.callisto.listeners.OnAudioFocusChangeListenerImpl;
+import com.qweex.callisto.podcast.DownloadList;
 import com.qweex.callisto.podcast.EpisodeDesc;
 import com.qweex.callisto.podcast.Queue;
 import com.qweex.callisto.widgets.CallistoWidget;
@@ -121,8 +122,8 @@ public class PlayerControls
             {
                 psychV = v;
                 AlertDialog dg = new AlertDialog.Builder(v.getContext())
-                        .setTitle("Switch from live back to playlist?")
-                        .setPositiveButton("Yup", new DialogInterface.OnClickListener()
+                        .setTitle(R.string.switch_to_live)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)
@@ -135,7 +136,7 @@ public class PlayerControls
                                 StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
                             }
                         })
-                        .setNegativeButton("Nope", new DialogInterface.OnClickListener(){
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -202,12 +203,13 @@ public class PlayerControls
      */
     public static void changeToTrack(Context c, int previousOrNext, boolean sp)
     {
+        String TAG = StaticBlob.TAG();
         Cursor queue = StaticBlob.databaseConnector.advanceQueue(previousOrNext);
 
         //If there are no items in the queue, stop the player
         if(queue==null || queue.getCount()==0)
         {
-            Log.v("*:changeToTrack", "Queue is empty. Pausing.");
+            Log.v(TAG, "Queue is empty. Pausing.");
             ImageButton x = (ImageButton) ((Activity)c).findViewById(R.id.playPause);
             if(x!=null)
                 x.setImageDrawable(StaticBlob.pauseDrawable);
@@ -216,7 +218,7 @@ public class PlayerControls
             return;
         }
 
-        Log.v("*:changeToTrack", "Queue Size: " + queue.getCount());
+        Log.v(TAG, "Queue Size: " + queue.getCount());
         queue.moveToFirst();
         //The queue merely stores the identity (_id) of the entrie's position in the main SQL
         //After obtaining it, we can get all the information about it
@@ -236,7 +238,7 @@ public class PlayerControls
         StaticBlob.playerInfo.position = theTargetTrack.getInt(theTargetTrack.getColumnIndex("position"));
         StaticBlob.playerInfo.date = theTargetTrack.getString(theTargetTrack.getColumnIndex("date"));
         StaticBlob.playerInfo.show = theTargetTrack.getString(theTargetTrack.getColumnIndex("show"));
-        Log.i("*:changeToTrack", "Loading info: " + StaticBlob.playerInfo.title + " | " + StaticBlob.playerInfo.date);
+        Log.i(TAG, "Loading info: " + StaticBlob.playerInfo.title + " | " + StaticBlob.playerInfo.date);
         //Retrieve the location of the new track
         if(isStreaming)
         {
@@ -248,9 +250,9 @@ public class PlayerControls
             try {
                 StaticBlob.playerInfo.date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(StaticBlob.playerInfo.date));
             } catch (ParseException e) {
-                Log.e("*changeToTrack:ParseException", "Error parsing a date from the SQLite db:");
-                Log.e("*changeToTrack:ParseException", StaticBlob.playerInfo.date);
-                Log.e("*changeToTrack:ParseException", "(This should never happen).");
+                Log.e(TAG+":ParseException", "Error parsing a date from the SQLite db:");
+                Log.e(TAG+":ParseException", StaticBlob.playerInfo.date);
+                Log.e(TAG+":ParseException", "(This should never happen).");
                 e.printStackTrace();
                 Toast.makeText(c, c.getResources().getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
                 StaticBlob.databaseConnector.deleteQueueItem(id);
@@ -265,7 +267,7 @@ public class PlayerControls
                     StaticBlob.storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + StaticBlob.storage_path;
             }
             File target = new File(StaticBlob.storage_path + File.separator + StaticBlob.playerInfo.show);
-            target = new File(target, StaticBlob.playerInfo.date + "__" + StaticBlob.playerInfo.title +
+            target = new File(target, StaticBlob.playerInfo.date + "__" + DownloadList.makeFileFriendly(StaticBlob.playerInfo.title) +
                     EpisodeDesc.getExtension(theTargetTrack.getString(theTargetTrack.getColumnIndex(isVideo ? "vidlink" : "mp3link"))));
             //If it doesn't exist, we must halt.
             if(!target.exists())
@@ -273,9 +275,9 @@ public class PlayerControls
                 if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
                 {
                     new AlertDialog.Builder(c)
-                            .setTitle("No SD Card")
-                            .setMessage("There is currently no external storage to write to.")
-                            .setNegativeButton("Ok",null)
+                            .setTitle(R.string.no_sd_card)
+                            .setMessage(R.string.no_external_storage)
+                            .setNegativeButton(android.R.string.ok,null)
                             .create().show();
                     return;
                 }
@@ -290,7 +292,7 @@ public class PlayerControls
 
         //Create the notification for this new track
         createNotification(c, identity);
-        Log.e("*:changeToTrack", "ok, finally preparing to play: " + media_location);
+        Log.d(TAG, "ok, finally preparing to play: " + media_location);
 
         //Here is where we FINALLY actually play the track.
         if(isVideo && sp)
@@ -300,26 +302,26 @@ public class PlayerControls
                 x.setImageDrawable(StaticBlob.pauseDrawable);
             if(StaticBlob.mplayer!=null)
                 StaticBlob.mplayer.stop();
-            Log.i("*:changeToTrack", "New track is a video, creating intent");
+            Log.i(TAG, "New track is a video, creating intent");
             Intent intent= new Intent(c, VideoActivity.class);
             intent.putExtra("uri", media_location);
-            Log.i("*:changeToTrack", "seek " + StaticBlob.playerInfo.position);
+            Log.i(TAG, "seek " + StaticBlob.playerInfo.position);
             intent.putExtra("seek", StaticBlob.playerInfo.position);
             c.startActivity(intent);
             return;
         }
         try {
-            Log.i("*:changeToTrack", "New track is an audio, doing MediaPlayer things");
+            Log.i(TAG, "New track is an audio, doing MediaPlayer things");
             if(StaticBlob.mplayer==null)
                 StaticBlob.mplayer = new MediaPlayer(); //This could be a problem
             StaticBlob.mplayer.reset();
             StaticBlob.mplayerPrepared.setContext(c);
             StaticBlob.mplayer.setDataSource(media_location);
-            Log.i("*:changeToTrack", "Setting source: " + media_location);
+            Log.i(TAG, "Setting source: " + media_location);
             StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
             StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
-            Log.i("*:changeToTrack", "Preparing...? " + sp);
+            Log.i(TAG, "Preparing...? " + sp);
             //Streaming requires a dialog
             if(isStreaming)
             {
@@ -345,14 +347,14 @@ public class PlayerControls
             StaticBlob.mplayer.prepareAsync();
             //Picks up at the mplayerPrepared listener
         } catch (IllegalArgumentException e) {
-            Log.e("*changeToTrack:IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
-            Log.e("*changeToTrack:IllegalArgumentException", media_location);
+            Log.e(TAG+":IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
+            Log.e(TAG+":IllegalArgumentException", media_location);
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            Log.e("*changeToTrack:IllegalStateException", "Error in State for MediaPlayer:");
+            Log.e(TAG+":IllegalStateException", "Error in State for MediaPlayer:");
         } catch (IOException e) {
-            Log.e("*changeToTrack:IOException", "IO is another of Jupiter's moons. Did you know that?");
+            Log.e(TAG+":IOException", "IO is another of Jupiter's moons. Did you know that?");
             e.printStackTrace();
         }
     }
@@ -374,7 +376,8 @@ public class PlayerControls
     /** Plays or pauses the currently playing track; does not adjust what is the current track **/
     public static void playPause(Context c, View v)
     {
-        Log.d("*:playPause","PlayPause()");
+        String TAG = StaticBlob.TAG();
+        Log.d(TAG,"PlayPause()");
         //-----Live-----
         String live_url = "";
         try {
@@ -410,7 +413,7 @@ public class PlayerControls
         }
         if(StaticBlob.mplayer==null)
         {
-            Log.d("*:playPause","PlayPause initiated");
+            Log.d(TAG,"PlayPause initiated");
             StaticBlob.mplayer = new MediaPlayer();
             StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
@@ -419,7 +422,7 @@ public class PlayerControls
         }
         else
         {
-            Log.d("*:playPause","PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
+            Log.d(TAG,"PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
             if(StaticBlob.playerInfo.isPaused)
             {
                 Cursor isvid = StaticBlob.databaseConnector.currentQueueItem();
@@ -435,7 +438,7 @@ public class PlayerControls
                     else
                         StaticBlob.mplayer.prepareAsync();
                 }
-                Log.d("*:playPause","Playing!!!!!");
+                Log.d(TAG,"Playing!!!!!");
                 if(v!=null)
                     ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
 

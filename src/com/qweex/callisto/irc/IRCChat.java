@@ -483,13 +483,14 @@ public class IRCChat extends Activity implements IRCEventListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        String TAG = StaticBlob.TAG();
         switch(item.getItemId())
         {
             case LOG_ID:
                 ((ViewAnimator) findViewById(R.id.viewanimator)).showNext();
                 return true;
             case CHANGE_ID:
-                Log.i("IRCChat::onOptionsItemSelected", "CHANGE_ID...ing");
+                Log.i(TAG, "CHANGE_ID...ing");
                 if(getResources().getString(R.string.reconnect).equals(item.getTitle().toString()))
                     actuallyConnect();
                 else
@@ -674,14 +675,15 @@ public class IRCChat extends Activity implements IRCEventListener
 
     private void updateNotifyText()
     {
-        Log.i("IRCChat::updateNotifyText", "Status: " + status);
+        String TAG = StaticBlob.TAG();
+        Log.i(TAG, "Status: " + status);
         switch (status)
         {
             case connecting:
                 StaticBlob.notification_chat.setLatestEventInfo(this, getStr(R.string.connecting_to_irc), profileNick, contentIntent);
                 break;
             case connected:
-                Log.i("IRCChat::updateNotifyText", "Status: " + status);
+                Log.i(TAG, "Status: " + status);
                 if(mentionCount==1)
                     StaticBlob.notification_chat.setLatestEventInfo(getApplicationContext(), getStr(R.string.connecting_to_irc),
                             getStr(R.string.one_new_mention), contentIntent);
@@ -821,9 +823,10 @@ public class IRCChat extends Activity implements IRCEventListener
     /** Called when the this class receives any type of IRC event. */
     public void receiveEvent(IRCEvent e)
     {
+        String TAG = StaticBlob.TAG();
         try {
-            Log.d("IRCCHat:receiveEvent", e.getRawEventData());
-            Log.d("IRCCHat:receiveEvent", "---" + e.getType());
+            Log.d(TAG, e.getRawEventData());
+            Log.d(TAG, "---" + e.getType());
             switch(e.getType())
             {
                 //Misc events
@@ -1071,7 +1074,7 @@ public class IRCChat extends Activity implements IRCEventListener
                 case NOTICE:
                     if(e.getRawEventData().contains("Your nickname is now being changed"))
                     {
-                        Log.i("IRCChat:receiveEvent", "Nickname has been changed?");
+                        Log.i(TAG, "Nickname has been changed?");
                         //logout(null);
                         //session.changeNick("Callisto-app");
                     }
@@ -1217,7 +1220,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         retry = true;
                     else {
                         int errorCode = Integer.parseInt(e.getRawEventData().split(" ")[1]);
-                        Log.e("ERROR: ", "Code: " + errorCode);
+                        Log.e(TAG + " - ERROR", "Code: " + errorCode);
                         switch(errorCode)
                         {
                             case ERR_NOSUCHNICK:
@@ -1262,7 +1265,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         i = Integer.parseInt(realType);
                     } catch(Exception asdf) {}
 
-                    Log.d("IRCChat:receiveEvent:DEFAULT", realType);
+                    Log.d(TAG + ":DEFAULT", realType);
                     //PING     //TEST
                     if(realType.equals("PING"))
                     {
@@ -1435,10 +1438,10 @@ public class IRCChat extends Activity implements IRCEventListener
             }
         } catch(Exception e2)
         {
-            Log.e("IRCChat::receiveEvent", "Weird error in e2: " + e2.getMessage());
+            Log.e(TAG, "Weird error in e2: " + e2.getMessage());
             e2.printStackTrace();
         }
-        Log.w("IRCChat::receiveEvent", "Retries: " + session.getRetries());
+        Log.w(TAG, "Retries: " + session.getRetries());
         if(session.getRetries()>0)
         {
             if(session.getRetries() >= manager.getRetries())
@@ -1464,6 +1467,7 @@ public class IRCChat extends Activity implements IRCEventListener
      */
     private Spanned getReceived(IrcMessage ircm)
     {
+        String TAG = StaticBlob.TAG();
         String theTitle = ircm.title,
                theMessage = ircm.message;
         int specialColor = ircm.getColor();
@@ -1494,7 +1498,7 @@ public class IRCChat extends Activity implements IRCEventListener
                         || (theTitle!=null && theTitle.startsWith("->")))) //If it's a PM
         {
             msgColor = 0xFF000000 + CLR_MENTION;
-            Log.i("IRCChat::getReceived", "Nick has been mentioned: " + isFocused);
+            Log.i(TAG, "Nick has been mentioned: " + isFocused);
             if(!isFocused)
             {
                 if(StaticBlob.notification_chat==null)

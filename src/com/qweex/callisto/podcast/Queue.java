@@ -102,18 +102,19 @@ public class Queue extends ListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        String TAG = StaticBlob.TAG();
         switch (item.getItemId())
         {
             case Menu.FIRST:
-                Log.d("Queue:onOptionsItemSelected", "Clearing queue");
+                Log.d(TAG, "Clearing queue");
                 if(StaticBlob.mplayer!=null)
                     StaticBlob.mplayer.stop();
                 StaticBlob.databaseConnector.clearQueue();
                 listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
-                Log.d("Queue:onOptionsItemSelected", "Cursor changed");
+                Log.d(TAG, "Cursor changed");
                 updateNowPlaying(0);
                 StaticBlob.playerInfo.isPaused = true;
-                Log.d("Queue:onOptionsItemSelected", "Done");
+                Log.d(TAG, "Done");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -180,7 +181,8 @@ public class Queue extends ListActivity
         @Override
         public void onClick(View v)
         {
-            Log.d("Queue:removeItem", "Clicked to remove an item in the queue");
+            String TAG = StaticBlob.TAG();
+            Log.d(TAG, "Clicked to remove an item in the queue");
             TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
             long id = Long.parseLong((String) tv.getText());
             long current_id = id;
@@ -196,13 +198,13 @@ public class Queue extends ListActivity
                 updateNowPlaying(c.getLong(c.getColumnIndex("identity")));
                 if(id==current_id)
                 {
-                    Log.d("Queue:removeItem", "Removing the current item; advancing to next; should start playing? " + !StaticBlob.playerInfo.isPaused);
+                    Log.d(TAG, "Removing the current item; advancing to next; should start playing? " + !StaticBlob.playerInfo.isPaused);
                     PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
                 }
             }
             StaticBlob.databaseConnector.move(id, 0);
             listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
-            Log.d("Queue:removeItem", "Done");
+            Log.d(TAG, "Done");
         }
     };
 
@@ -225,6 +227,7 @@ public class Queue extends ListActivity
 
         public View getView(int pos, View inView, ViewGroup parent)
         {
+            String TAG = StaticBlob.TAG();
             View v = inView;
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -326,7 +329,7 @@ public class Queue extends ListActivity
                 currentProgress = ((ProgressBar)v.findViewById(R.id.progress));
             else if(((ProgressBar)v.findViewById(R.id.progress))==currentProgress)
                 currentProgress=null;
-            Log.i("Queue:QueueAdapter", "isCurrent: " + isCurrent + " / " + currentProgress);
+            Log.i(TAG, "isCurrent: " + isCurrent + " / " + currentProgress);
 
             up.setVisibility(View.GONE);
             down.setVisibility(View.GONE);

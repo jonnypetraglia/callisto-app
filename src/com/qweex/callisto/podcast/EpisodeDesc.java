@@ -88,11 +88,12 @@ public class EpisodeDesc extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        String TAG = StaticBlob.TAG();
         /** Create stuff */
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
-        Log.v("EpisodeDesc:OnCreate", "Launching Activity");
+        Log.v(TAG, "Launching Activity");
         View info = ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.episode, null, false);
         Callisto.build_layout(this, info);
 
@@ -101,7 +102,7 @@ public class EpisodeDesc extends Activity
         Bundle b = getIntent().getExtras();
         if(b==null)
         {
-            Log.e("EpisodeDesc:OnCreate", "Bundle is null. No extra could be retrieved.");
+            Log.e(TAG, "Bundle is null. No extra could be retrieved.");
             Toast.makeText(EpisodeDesc.this, EpisodeDesc.this.getResources().getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -111,7 +112,7 @@ public class EpisodeDesc extends Activity
         Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
         if(id==0 || c.getCount()==0)
         {
-            Log.e("EpisodeDesc:OnCreate", "Id is invalid/blank");
+            Log.e(TAG, "Id is invalid/blank");
             Toast.makeText(EpisodeDesc.this, EpisodeDesc.this.getResources().getString(R.string.song_error), Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -142,9 +143,9 @@ public class EpisodeDesc extends Activity
         try {
             ((TextView)findViewById(R.id.date)).setText(StaticBlob.sdfDestination.format(StaticBlob.sdfRaw.parse(date)));
         } catch (ParseException e1) {
-            Log.e("EpisodeDesc:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
-            Log.e("EpisodeDesc:ShowListAdapter:ParseException", date);
-            Log.e("EpisodeDesc:ShowListAdapter:ParseException", "(This should never happen).");
+            Log.e(TAG+":ParseException", "Error parsing a date from the SQLite db: ");
+            Log.e(TAG+":ParseException", date);
+            Log.e(TAG+":ParseException", "(This should never happen).");
             e1.printStackTrace();
         }
         //Sizes
@@ -158,9 +159,9 @@ public class EpisodeDesc extends Activity
         try {
             date = sdfDestination.format(StaticBlob.sdfRaw.parse(date));
         } catch (ParseException e) {
-            Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date that has already been parsed:");
-            Log.e("ShowList:ShowListAdapter:ParseException", date);
-            Log.e("ShowList:ShowListAdapter:ParseException", "(This should SERIOUSLY never happen).");
+            Log.e(TAG+":ParseException", "Error parsing a date that has already been parsed:");
+            Log.e(TAG+":ParseException", date);
+            Log.e(TAG+":ParseException", "(This should SERIOUSLY never happen).");
         }
         file_location_audio = new File(StaticBlob.storage_path + File.separator + show);
         file_location_audio = new File(file_location_audio, date + "__" + DownloadList.makeFileFriendly(title) + getExtension(mp3_link));
@@ -271,8 +272,9 @@ public class EpisodeDesc extends Activity
     @Override
     public void onResume()
     {
+        String TAG = StaticBlob.TAG();
         super.onResume();
-        Log.v("EpisodeDesc:onResume", "Resuming main activity");
+        Log.v(TAG, "Resuming main activity");
         EpisodeDesc.this.setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(EpisodeDesc.this);
         determineButtons(false);
@@ -295,7 +297,8 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            Log.v("EpisodeDesc:launchPlay", "Appending item to queue: " + id + " stream: " + false + " vid: " + vidSelected);
+            String TAG = StaticBlob.TAG();
+            Log.v(TAG, "Appending item to queue: " + id + " stream: " + false + " vid: " + vidSelected);
             StaticBlob.databaseConnector.appendToQueue(id, false, vidSelected);
             if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
@@ -311,7 +314,8 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            Log.v("EpisodeDesc:launchStream", "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
+            String TAG = StaticBlob.TAG();
+            Log.v(TAG, "Appending item to queue: " + id + " stream: " + true + " vid: " + vidSelected);
             StaticBlob.databaseConnector.appendToQueue(id, true, vidSelected);
             if(StaticBlob.databaseConnector.queueCount()==1)
                 PlayerControls.changeToTrack(v.getContext(), 1, true);
@@ -327,7 +331,8 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            Log.v("EpisodeDesc:launchDelete", "Deleting item: " + id + " vid: " + vidSelected);
+            String TAG = StaticBlob.TAG();
+            Log.v(TAG, "Deleting item: " + id + " vid: " + vidSelected);
             if(vidSelected)
                 file_location_video.delete();
             else
@@ -374,6 +379,7 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
+            String TAG = StaticBlob.TAG();
             //Check for internal storage
             if(!android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
             {
@@ -382,7 +388,7 @@ public class EpisodeDesc extends Activity
                         .setMessage(R.string.no_external_storage)
                         .setNegativeButton(android.R.string.ok,null)
                         .create().show();
-                Log.w("EpisodeDesc:launchDownload", "No SD card");
+                Log.w(TAG, "No SD card");
                 return;
             }
             //http://www.androidsnippets.com/download-an-http-file-to-sdcard-with-progress-notification
@@ -391,14 +397,14 @@ public class EpisodeDesc extends Activity
                 return;
 
             DownloadTask.downloading_count++;
-            Log.i("EpisodeDesc:launchDownload", "Updated download count: " + DownloadTask.downloading_count);
+            Log.i(TAG, "Updated download count: " + DownloadTask.downloading_count);
 
             //Callisto.download_queue.add(EpisodeDesc.this.id * (vidSelected?-1:1));
-            Log.i("EpisodeDesc:launchDownload", "Adding download: " + (vidSelected ? vid_link : mp3_link));
+            Log.i(TAG, "Adding download: " + (vidSelected ? vid_link : mp3_link));
 
             if(!DownloadTask.running)
             {
-                Log.i("EpisodeDesc:launchDownload", "Executing downloads");
+                Log.i(TAG, "Executing downloads");
                 dltask = new DownloadTask(EpisodeDesc.this);
                 dltask.execute();
             }
@@ -412,7 +418,8 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            Log.i("EpisodeDesc:launchDownload", "Removing Download: " + id);
+            String TAG = StaticBlob.TAG();
+            Log.i(TAG, "Removing Download: " + id);
             StaticBlob.databaseConnector.addDownload(id, vidSelected);
             determineButtons(true);
         }

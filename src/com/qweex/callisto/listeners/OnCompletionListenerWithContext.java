@@ -43,8 +43,10 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
 	}
 	
 	@Override
-	public void onCompletion(MediaPlayer mp) {
-		Log.i("*:mplayer:onCompletion", "Playing next track");
+	public void onCompletion(MediaPlayer mp)
+    {
+        String TAG = StaticBlob.TAG();
+		Log.i(TAG, "Playing next track");
 		
 		if(r!=null)
 			r.run();

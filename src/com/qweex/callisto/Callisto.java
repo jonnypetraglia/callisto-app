@@ -70,10 +70,11 @@ public class Callisto extends Activity
     {
         super.onCreate(savedInstanceState);
 
+
         //This is the most reliable way I've found to determine if it is landscape
         boolean isLandscape = getWindowManager().getDefaultDisplay().getWidth() > getWindowManager().getDefaultDisplay().getHeight();
 
-        Log.d("CALLISTO: This is my PID", "There are many like it, but this one is mine.");
+        Log.d("CALLISTO: This is my PID", "There are many like it, but this one is mine.  " + StaticBlob.TAG());
         StaticBlob.init(this);
 
         //Update shows
@@ -191,10 +192,11 @@ public class Callisto extends Activity
     @Override
     public void onDestroy()
     {
+        String TAG = StaticBlob.TAG();
         super.onDestroy();
         if(news!=null)
             news.dismiss();
-        Log.v("Callisto:onDestroy", "Destroying main activity");
+        Log.v(TAG, "Destroying main activity");
         if(StaticBlob.errorDialog !=null)
             StaticBlob.errorDialog.dismiss();
         if(Live.LIVE_PreparedListener.pd!=null)
@@ -205,11 +207,12 @@ public class Callisto extends Activity
     @Override
     public void onResume()
     {
+        String TAG = StaticBlob.TAG();
         super.onResume();
-        Log.v("Callisto:onResume", Live.LIVE_PreparedListener.pd + " ");
+        Log.v(TAG, Live.LIVE_PreparedListener.pd + " ");
         if(Live.LIVE_PreparedListener.pd!=null)
             Live.LIVE_PreparedListener.pd.show();
-        Log.v("Callisto:onResume", "Resuming main activity");
+        Log.v(TAG, "Resuming main activity");
         if(CallistoService.audioJackReceiver!=null)
             CallistoService.audioJackReceiver.contextForPreferences = Callisto.this;
         if(StaticBlob.playerInfo!=null)
@@ -219,12 +222,12 @@ public class Callisto extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, STOP_ID, 0, this.getResources().getString(R.string.stop)).setIcon(R.drawable.ic_action_playback_stop);
-        menu.add(0, SETTINGS_ID, 0, this.getResources().getString(R.string.settings)).setIcon(R.drawable.ic_action_settings);
-        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, this.getResources().getString(R.string.more)).setIcon(R.drawable.ic_action_more);
-        theSubMenu.add(0, TITLE_ID, 0, "JBTitle").setIcon(R.drawable.ic_action_like);
+        menu.add(0, STOP_ID, 0, R.string.stop).setIcon(R.drawable.ic_action_playback_stop);
+        menu.add(0, SETTINGS_ID, 0, R.string.settings).setIcon(R.drawable.ic_action_settings);
+        SubMenu theSubMenu = menu.addSubMenu(0, MORE_ID, 0, R.string.more).setIcon(R.drawable.ic_action_more);
+        theSubMenu.add(0, TITLE_ID, 0, R.string.jbtitle).setIcon(R.drawable.ic_action_like);
         //theSubMenu.add(0, TWITTER_ID, 0, "Twitter").setIcon(R.drawable.ic_action_twitter);
-        theSubMenu.add(0, RELEASE_ID, 0, this.getResources().getString(R.string.release_notes)).setIcon(R.drawable.ic_action_info);
+        theSubMenu.add(0, RELEASE_ID, 0, R.string.release_notes).setIcon(R.drawable.ic_action_info);
 
         //Stuffs for the donations stuffs
         //if(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP,this))
@@ -236,7 +239,7 @@ public class Callisto extends Activity
             //theSubMenu.add(0, CHRISROLL_ID, 0, "Chrisrolled!").setEnabled(QuickPrefsActivity.packageExists(QuickPrefsActivity.DONATION_APP, this));
         //}
 
-        menu.add(0, QUIT_ID, 0, this.getResources().getString(R.string.quit)).setIcon(R.drawable.ic_action_io);
+        menu.add(0, QUIT_ID, 0, R.string.quit).setIcon(R.drawable.ic_action_io);
         return true;
     }
 
@@ -277,7 +280,8 @@ public class Callisto extends Activity
      */
     public static void build_layout(Context c, View mainView)
     {
-        Log.v("*:build_layout", "Building the layout");
+        String TAG = StaticBlob.TAG();
+        Log.v(TAG, "Building the layout");
 
         // Inflate the controls and the empty view
         View controls = ((LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.controls, null, false);
@@ -314,7 +318,7 @@ public class Callisto extends Activity
         controls.findViewById(R.id.seek).setOnClickListener(PlayerControls.seekDialog);
         controls.findViewById(R.id.next).setOnClickListener(PlayerControls.next);
         controls.findViewById(R.id.previous).setOnClickListener(PlayerControls.previous);
-        Log.v("*:build_layout", "Finished building the layout");
+        Log.v(TAG, "Finished building the layout");
     }
 
     //*********************************** On Click Listeners ***********************************//
@@ -371,10 +375,11 @@ public class Callisto extends Activity
     {
         @Override
         public void onClick(View v) {
+            String TAG = StaticBlob.TAG();
             StaticBlob.liveDg.dismiss();
             if(Live.live_player == null || !StaticBlob.live_isPlaying)
             {
-                Log.d("LiveStream:playButton", "Live player does not exist, creating it.");
+                Log.d(TAG, "Live player does not exist, creating it.");
                 if(StaticBlob.mplayer!=null)
                     StaticBlob.mplayer.reset();
                 StaticBlob.mplayer=null;
@@ -382,7 +387,7 @@ public class Callisto extends Activity
                 Live.live_player.setOnPreparedListener(Live.LIVE_PreparedListener);
                 Live.LIVE_PreparedListener.setContext(v.getContext());
                 String live_url = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("live_url", "http://jbradio.out.airtime.pro:8000/jbradio_b");
-                Log.d("LiveStream:playButton", "Alright so getting url");
+                Log.d(TAG, "Alright so getting url");
                 try {
                     Live.live_player.setDataSource(live_url);
                     if(!StaticBlob.Live_wifiLock.isHeld())
@@ -396,22 +401,22 @@ public class Callisto extends Activity
             }
             else
             {
-                Log.d("LiveStream:playButton", "Live player does exist.");
+                Log.d(TAG, "Live player does exist.");
                 if(StaticBlob.live_isPlaying)
                 {
-                    Log.d("LiveStream:playButton", "Pausing.");
+                    Log.d(TAG, "Pausing.");
                     Live.live_player.pause();
                 }
                 else
                 {
                     if(!StaticBlob.Live_wifiLock.isHeld())
                         StaticBlob.Live_wifiLock.acquire();
-                    Log.d("LiveStream:playButton", "Playing.");
+                    Log.d(TAG, "Playing.");
                     Live.live_player.start();
                 }
                 StaticBlob.live_isPlaying = !StaticBlob.live_isPlaying;
             }
-            Log.d("LiveStream:playButton", "Done");
+            Log.d(TAG, "Done");
         }
     };
 
@@ -421,7 +426,8 @@ public class Callisto extends Activity
         @Override
         public void onClick(final View v)
         {
-            Log.d("LiveStream:playButton", "Clicked play button");
+            String TAG = StaticBlob.TAG();
+            Log.d(TAG, "Clicked play button");
             if(StaticBlob.mplayer!=null)
             {
                 AlertDialog d = new AlertDialog.Builder(v.getContext())

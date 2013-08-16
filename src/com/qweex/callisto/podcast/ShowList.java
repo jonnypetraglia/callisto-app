@@ -93,10 +93,11 @@ public class ShowList extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        String TAG = StaticBlob.TAG();
         //General create stuff
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        Log.v("ShowList:OnCreate", "Launching Activity");
+        Log.v(TAG, "Launching Activity");
         mainListView = new ListView(this);
         Callisto.build_layout(this, mainListView);
 
@@ -154,6 +155,7 @@ public class ShowList extends Activity
     @Override
     public void onResume()
     {
+        String TAG = StaticBlob.TAG();
         super.onResume();
         setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(ShowList.this);      //Update player controls
@@ -200,7 +202,7 @@ public class ShowList extends Activity
             }
         }catch(Exception e)
         {
-            Log.e("ShowList:onResume", "Error: " + e.getClass() + " - " + e.getMessage() + "(this should never happen...?)");
+            Log.e(TAG, "Error: " + e.getClass() + " - " + e.getMessage() + "(this should never happen...?)");
         }
         current_episode=null;
     }
@@ -332,16 +334,17 @@ public class ShowList extends Activity
         @Override
         public void handleMessage(Message msg)
         {
+            String TAG = StaticBlob.TAG();
             if(msg.arg1!=0)
             {
                 Cursor r = StaticBlob.databaseConnector.getShow(StaticBlob.SHOW_LIST[currentShow], filter);
                 ShowList.this.showAdapter.changeCursor(r);
                 ShowList.this.showAdapter.notifyDataSetChanged();
-                Log.i("ShowList:handleMessage", "Changing cursor");
+                Log.i(TAG, "Changing cursor");
             }
             else
             {
-                Log.i("ShowList:handleMessage", "Not Changing cursor");
+                Log.i(TAG, "Not Changing cursor");
                 loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
             }
         }
@@ -368,11 +371,12 @@ public class ShowList extends Activity
         @Override
         protected void onPostExecute(Message result)
         {
+            String TAG = StaticBlob.TAG();
             TextView loading = (TextView) ShowList.this.findViewById(android.R.id.empty);
             loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
             if(result.arg1==-1)
             {
-                Log.w("ShowList:UpdateShowTask", "An error occurred while updating the show " + currentShow);
+                Log.w(TAG, "An error occurred while updating the show " + currentShow);
                 Toast.makeText(ShowList.this, getResources().getString(R.string.show_update_error) + ":\n\n" + result.getData().getString("ERROR"),
                         Toast.LENGTH_LONG).show();
             }
@@ -404,11 +408,12 @@ public class ShowList extends Activity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
         {
+            String TAG = StaticBlob.TAG();
             current_episode = view;
             Intent viewEpisode = new Intent(ShowList.this, EpisodeDesc.class);
             long clickedID = Long.parseLong((String)((TextView)view.findViewById(R.id.hiddenId)).getText());
             viewEpisode.putExtra("id", clickedID);
-            Log.v("ShowList:selectEpisode", "Selected ID: " + clickedID);
+            Log.v(TAG, "Selected ID: " + clickedID);
             setProgressBarIndeterminateVisibility(true);
             startActivity(viewEpisode);
         }
@@ -420,12 +425,13 @@ public class ShowList extends Activity
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
         {
+            String TAG = StaticBlob.TAG();
             Long id = Long.parseLong((String)
                     ((TextView)((View) buttonView.getParent()).findViewById(R.id.hiddenId)).getText());
             StaticBlob.databaseConnector.markNew(
                     id
                     , isChecked);
-            Log.v("ShowList:toggleNew", "Toggling new for:" + id + " is " + isChecked);
+            Log.v(TAG, "Toggling new for:" + id + " is " + isChecked);
             Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
             c.moveToFirst();
         }
@@ -447,6 +453,7 @@ public class ShowList extends Activity
 
         public View getView(int pos, View inView, ViewGroup parent)
         {
+            String TAG = StaticBlob.TAG();
             View v = inView;
             if (v == null) {
                 LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -482,9 +489,9 @@ public class ShowList extends Activity
                     d = StaticBlob.sdfHumanLong.format(tempDate);
                 //d = Callisto.sdfDestination.format();
             } catch (ParseException e) {
-                Log.e("ShowList:ShowListAdapter:ParseException", "Error parsing a date from the SQLite db: ");
-                Log.e("ShowList:ShowListAdapter:ParseException", d);
-                Log.e("ShowList:ShowListAdapter:ParseException", "(This should never happen).");
+                Log.e(TAG+":ParseException", "Error parsing a date from the SQLite db: ");
+                Log.e(TAG+":ParseException", d);
+                Log.e(TAG+":ParseException", "(This should never happen).");
                 e.printStackTrace();
             }
             ((TextView) v.findViewById(R.id.rowSubTextView)).setText(d);
@@ -501,7 +508,7 @@ public class ShowList extends Activity
                 complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
             }catch(NullPointerException npe)
             {
-                Log.e("ShowList:ShowListCursorAdapter", "Null pointer when determining file status: Audio");
+                Log.e(TAG, "Null pointer when determining file status: Audio");
             }
             if(!complete)
             {
@@ -512,7 +519,7 @@ public class ShowList extends Activity
                     complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));
                 }catch(NullPointerException npe)
                 {
-                    Log.e("ShowList:ShowListCursorAdapter", "Null pointer when determining file status: Video");
+                    Log.e(TAG, "Null pointer when determining file status: Video");
                 }
             }
             if(inDLQueue || exists)

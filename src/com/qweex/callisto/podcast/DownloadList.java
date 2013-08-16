@@ -58,6 +58,7 @@ public class DownloadList extends ListActivity
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
+        String TAG = StaticBlob.TAG();
         //Do some create things
 		super.onCreate(savedInstanceState);
 		mainListView = getListView();
@@ -66,9 +67,9 @@ public class DownloadList extends ListActivity
         } catch(NullPointerException e) //TODO: This should NEVER happen. Seriously, what the hell.
         {
             if(mainListView==null)
-                Log.e("DownloadList:onCreate", "mainListView is null for some dumb reason");
+                Log.e(TAG, "mainListView is null for some dumb reason");
             if(this.getResources()==null)
-                Log.e("DownloadList:onCreate", "RESOURCES is null for some dumb reason");
+                Log.e(TAG, "RESOURCES is null for some dumb reason");
             finish();
             return;
         }
@@ -97,12 +98,6 @@ public class DownloadList extends ListActivity
             completeHeader.addRow(new String[] { "-2", "-2", "-2", "-2" });
         Cursor[] cursors = new Cursor[] {activeHeader, active, completeHeader, complete};
         Cursor extendedCursor = new MergeCursor(cursors);
-        extendedCursor.moveToFirst();
-        for(int i=0; i<extendedCursor.getCount(); i++)
-        {
-            Log.i("DownloadList::onCreate", extendedCursor.getString(extendedCursor.getColumnIndex("identity")));
-            extendedCursor.moveToNext();
-        }
         listAdapter = new DownloadAdapter(this, 0, extendedCursor, new String[] {}, new int[] {}, 0);
         mainListView.setAdapter(listAdapter);
 
@@ -287,6 +282,7 @@ public class DownloadList extends ListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        String TAG = StaticBlob.TAG();
         switch (item.getItemId())
         {
             case CLEAR_COMP_ID:     //Clears completed
@@ -317,7 +313,7 @@ public class DownloadList extends ListActivity
                                 .setMessage(R.string.no_external_storage)
                                 .setNegativeButton(android.R.string.ok, null)
                                 .create().show();
-                        Log.w("DownloadList:onOptionsItemSelected", "No SD card");
+                        Log.w(TAG, "No SD card");
                         return true;
                     }
                     item.setIcon(R.drawable.ic_action_playback_pause);

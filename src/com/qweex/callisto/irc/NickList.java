@@ -44,13 +44,14 @@ public class NickList extends ListActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+        String TAG = StaticBlob.TAG();
 		super.onCreate(savedInstanceState);
 		setTitle(R.string.nicklist);
-        Log.d("NickList::onCreate", "begin");
+        Log.d(TAG, "begin");
         getListView().setBackgroundResource(R.color.backClr);
 		this.setListAdapter(new NickListAdapter(this, android.R.layout.simple_list_item_1, IRCChat.nickList));
 		setResult(-1);
-        Log.d("NickList::onCreate", "end");
+        Log.d(TAG, "end");
 	}
 	
 	@Override

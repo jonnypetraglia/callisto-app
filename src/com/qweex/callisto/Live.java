@@ -53,8 +53,8 @@ public class Live
     {
         @Override
         public void onPrepared(MediaPlayer arg0) {
-
-            Log.d("Live:LIVE_PreparedListener:", "PREPARED! " + pd);
+            String TAG = StaticBlob.TAG();
+            Log.d(TAG, "PREPARED! " + pd);
             if(pd==null)    //The loading has been canceled
                 return;
             pd.cancel();
@@ -76,11 +76,12 @@ public class Live
     /** Initiates the live player. Can be called across activities. */
     static public void LIVE_Init()
     {
-        Log.d("LiveStream:liveInit", "Initiating the live player.");
+        String TAG = StaticBlob.TAG();
+        Log.d(TAG, "Initiating the live player.");
         live_player = new MediaPlayer();
-        Log.d("LiveStream:liveInit", "Initiating the live player.");
+        Log.d(TAG, "Initiating the live player.");
         live_player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        Log.d("LiveStream:liveInit", "Initiating the live player.");
+        Log.d(TAG, "Initiating the live player.");
         live_player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 if(LIVE_PreparedListener.pd!=null)
@@ -111,13 +112,14 @@ public class Live
                 return true;
             }
         });
-        Log.d("LiveStream:liveInit", "Initiating the live player.");
+        Log.d(TAG, "Initiating the live player.");
     }
 
     /** Method to prepare the live player; shows a dialog and then sets it up to be transfered to livePreparedListenerOther. */
     static public void LIVE_Prepare(Context c)
     {
-        Log.d("LiveStream:LIVE_Prepare", "Preparing the live player.");
+        String TAG = StaticBlob.TAG();
+        Log.d(TAG, "Preparing the live player.");
         if(c!=null)
         {
             LIVE_PreparedListener.pd = Callisto.BaconDialog(c, "Buffering...", null);

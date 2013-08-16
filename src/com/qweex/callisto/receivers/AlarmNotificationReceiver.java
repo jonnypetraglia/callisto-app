@@ -72,9 +72,13 @@ public class AlarmNotificationReceiver extends BroadcastReceiver
 
             //Show the notification
             if(min==0)
-            	StaticBlob.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is on right now!", contentIntent);
+            	StaticBlob.notification_alarm.setLatestEventInfo(context, context.getResources().getString(R.string.alarm),
+                        String.format(context.getResources().getString(R.string.is_on_right_now), show),
+                        contentIntent);
             else
-            	StaticBlob.notification_alarm.setLatestEventInfo(context, "Alarm!", show + " is in " + min + " minutes", contentIntent);
+            	StaticBlob.notification_alarm.setLatestEventInfo(context, context.getResources().getString(R.string.alarm),
+                        String.format(context.getResources().getString(R.string.is_on_in_minutes), show, min),
+                        contentIntent);
             mNotificationManager.notify(StaticBlob.NOTIFICATION_ID, StaticBlob.notification_alarm);
 
             //Remove the alarm

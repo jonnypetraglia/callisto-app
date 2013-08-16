@@ -185,7 +185,6 @@ public class ContactForm extends Activity
         @Override
         public void onPageFinished(WebView view, String url)
         {
-            Log.d("derp", "Loading: " + url);
             if(!url.startsWith("http://wufoo.com/"))
                 view.loadUrl("javascript:window.HTMLOUT.CustomCSSApplier(document.getElementsByTagName('html')[0].innerHTML);");
             else
@@ -203,13 +202,14 @@ public class ContactForm extends Activity
         @Override
         public void onPageFinished(WebView view, String url)
         {
+            String TAG = StaticBlob.TAG();
             super.onPageFinished(view, url);
             if(!url.startsWith("http://wufoo.com/")) //In this case the super's method is going to re-load the page to trigger the JS handler
                 return;                             //so we don't need to do anything.
 
             baconPDialog.hide();
             String draft =  PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getString("ContactDraft", null);
-            Log.i("ContactForm:RestoreDraftClient", "Restoring draft.");
+            Log.i(TAG, "Restoring draft.");
             if(draft!=null)
             {
                 String javascript = "javascript:";
@@ -229,13 +229,13 @@ public class ContactForm extends Activity
                     {
                         javascript = javascript.concat("document.getElementById('" + element + "').checked='true'; ");
                     }
-                    Log.i("ContactForm:RestoreDraftClient", element + " = " + value);
+                    Log.i(TAG, element + " = " + value);
                 }
-                Log.i("ContactForm:RestoreDraftClient", javascript);
+                Log.i(TAG, javascript);
                 view.loadUrl(javascript);
                 PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit().remove("ContactDraft").commit();
             }
-            Log.i("ContactForm:RestoreDraftClient", "Changing wvClient");
+            Log.i(TAG, "Changing wvClient");
             //view.setWebViewClient(new MyWebViewClient());
         }
     }
@@ -295,7 +295,8 @@ public class ContactForm extends Activity
         @SuppressWarnings("unused")
         public void saveDraft(String result)
         {
-            Log.i("ContactForm:JavascriptInterface:saveDraft", "Draft: " + result);
+            String TAG = StaticBlob.TAG();
+            Log.i(TAG, "Draft: " + result);
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactForm.this).edit();
             editor.putString("ContactDraft", result);
             editor.commit();

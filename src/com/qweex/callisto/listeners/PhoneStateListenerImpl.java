@@ -35,10 +35,11 @@ public class PhoneStateListenerImpl extends PhoneStateListener
     @Override
     public void onCallStateChanged(int state, String incomingNumber)
     {
+        String TAG = StaticBlob.TAG();
         if (state == TelephonyManager.CALL_STATE_RINGING)
         {
             //Incoming call: Pause music
-            Log.d("StaticBlob::onCallStateChanged", "State: RINGING");
+            Log.d(TAG, "State: RINGING");
             if(StaticBlob.live_isPlaying
                     || !StaticBlob.playerInfo.isPaused)
             {
@@ -51,7 +52,7 @@ public class PhoneStateListenerImpl extends PhoneStateListener
         } else if(state == TelephonyManager.CALL_STATE_OFFHOOK || state == TelephonyManager.CALL_STATE_IDLE)
         {
             //Not in call: Play music
-            Log.d("StaticBlob::onCallStateChanged", "State: OFFHOOK/IDLE");
+            Log.d(TAG, "State: OFFHOOK/IDLE");
             if(StaticBlob.pauseCause == StaticBlob.PauseCause.PhoneCall &&
                     StaticBlob.playerInfo.isPaused)
             {

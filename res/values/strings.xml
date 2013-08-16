@@ -46,6 +46,11 @@
     <string name="confirm_clear">This will clear all your play statuses and saved positions. Are you sure?</string>
     <string name="audio">Audio</string>
     <string name="video">Video</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+
+    <!-- Widget -->
+    <string name="widget_text">(Press to enqueue episodes)</string>
 
     <!-- Queue -->
     <string name="queue">Queue</string>
@@ -90,6 +95,7 @@
     <string name="song_error">There was an error loading this song. Will it make you feel better if I flatter you, beautiful?</string>
     <string name="update_error">There was an error loading the feed. Either try again later, or denounce technology and become a monk.</string>
     <string name="video_warning">Video support is VERY untested. Please do not 1-star the app if it is wonky. If you do I will personally hunt you down and make you wear a sock monkey costume for a month as punishment.</string>
+    <string name="move_folder_error">An error occurred while trying to rename the folder. You might have to do it manually.</string>
 
     <!-- EpisodeDesc -->
     <string name="share">Share</string>
@@ -103,6 +109,8 @@
     <string name="folder_moved">Moved, pray to the gods it has worked</string>
     <string name="ringtone_prompt">Choose alarm tone</string>
     <string name="press_color_to_apply">Press Color To Apply</string>
+    <string name="reset_colors_title">Dude wait</string>
+    <string name="reset_colors_message">Are you sure you want to reset the IRC colors to their default values?</string>
 
     <!-- Show List  &   All Shows-->
     <string name="refresh_all">Refresh All</string>
@@ -132,8 +140,6 @@
     <string name="soon">Soon</string>
     <string name="switch_to_live">Switch from playlist to live?</string>
     <string name="no_events">No events found for this week. Try "Load More".</string>
-    <string name="date">Date</string>
-    <string name="time">Time</string>
     <string name="show">Show</string>
     <string name="type">Type</string>
     <string name="notification">Notification</string>
@@ -142,6 +148,9 @@
     <string name="save">Save</string>
     <string name="no_alarm_set">No Alarm Set</string>
     <string name="edit">Edit</string>
+    <string name="calendar_fetch_error" formatted="false">%s occurred. Maybe your connection might be flaky?</string>
+    <string name="is_on_right_now" formatted="false">%s is on right now!</string>
+    <string name="is_on_in_minutes" formatted="false">%s is in %s minutes",</string>
     <string-array name="months">
         <item >January</item>
         <item >February</item>
@@ -251,7 +260,6 @@
     <string name="links">Links</string>
     <string name="user_host">User Host</string>
     <string name="credits">Credits</string>
-    <string name="time">Time</string>
     <string name="user_ip">User IP</string>
 
     <!-- IRC channel modes -->
