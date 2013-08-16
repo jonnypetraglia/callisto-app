@@ -315,7 +315,8 @@ public class StaticBlob
         target = new File(target, date + "__" + makeFileFriendly(title) + ext);
 
         //2. Delete file
-        target.delete();
+        if(target.exists())
+            target.delete();
         //3. Remove from Queue
         Cursor q = StaticBlob.databaseConnector.findInQueue(id,video);
         if(q.getCount()>0)

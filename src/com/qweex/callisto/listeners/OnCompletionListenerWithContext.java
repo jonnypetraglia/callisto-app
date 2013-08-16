@@ -63,9 +63,10 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
         c.moveToFirst();
         long identity = c.getLong(c.getColumnIndex("identity"));
         boolean isVideo = c.getInt(c.getColumnIndex("video"))>0;
+        boolean isStreaming = c.getInt(c.getColumnIndex("streaming"))>0;
 
         StaticBlob.databaseConnector.updatePosition(identity, 0);
-		if(shouldDelete)
+		if(shouldDelete && !isStreaming)
 		    StaticBlob.deleteItem(this.c, identity, isVideo);       //SHOULD automatically advance the queue
 	}
 }
