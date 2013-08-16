@@ -16,69 +16,69 @@
     android:title="Preferences">
 
     <com.qweex.utils.PathPreference
-        android:title="Storage path"
+        android:title="@string/storage_path"
         android:key="storage_path"
         prefix="/mnt/sdcard"
         android:defaultValue="callisto"
         />
 
 	    <ListPreference 
-	        android:title="Live audio quality"
+	        android:title="@string/live_audio_quality"
 	        android:key="live_url"
             android:entries="@array/live_quality"
             android:entryValues="@array/live_sources"
             android:defaultValue="http://jbradio.out.airtime.pro:8000/jbradio_b"
 	        />
         <ListPreference
-                android:title="Live video source"
+                android:title="@string/live_video_source"
                 android:key="live_video"
                 android:entries="@array/live_video"
                 android:entryValues="@array/live_video_source"
                 android:defaultValue="rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream"
                 />
         <CheckBoxPreference
+            android:title="@string/hide_notification_when_paused"
             android:key="hide_notification_when_paused"
-            android:title="Hide notification when paused"
             android:layout="@layout/smaller_preference"
             />
-	    <CheckBoxPreference 
+	    <CheckBoxPreference
+            android:title="@string/delete_upon_completion"
 	        android:key="completion_delete"
-	        android:title="Delete upon completion"
             android:layout="@layout/smaller_preference"
 	        />
-	    <CheckBoxPreference 
+	    <CheckBoxPreference
+            android:title="@string/append_downloads_to_queue"
 	        android:key="download_to_queue"
             android:textSize="20px"
-	        android:title="Append downloads to queue"
             android:layout="@layout/smaller_preference"
 	        />
         <CheckBoxPreference
+            android:title="@string/skip_inactive"
             android:key="skip_inactive"
-            android:title="'Update All' skips inactive"
             android:layout="@layout/smaller_preference"
             />
         <CheckBoxPreference
+            android:title="@string/pause_on_unplug"
+            android:summary="@string/pause_on_unplug_desc"
             android:key="pause_unplugged"
-            android:title="Pause on unplug"
-            android:summary="Pause playback when headphone jack is unplugged"
             android:defaultValue="true"
             android:widgetLayout="@layout/smaller_preference_check"
             />
         <CheckBoxPreference
+            android:title="@string/play_on_replug"
+            android:summary="@string/play_on_replug_desc"
             android:key="play_plugged"
-            android:title="Play on re-plug"
-            android:summary="Resume playback when headphone jack is plugged back in"
             android:widgetLayout="@layout/smaller_preference_check"
             android:dependency="pause_unplugged"
             />
         <CheckBoxPreference
+            android:title="@string/tablet_screen"
             android:key="new_mainscreen"
-            android:title="New (tablet) main screen"
             android:layout="@layout/smaller_preference"
             />
         <CheckBoxPreference
+            android:title="@string/auto_save_contact_draft"
             android:key="contact_draft"
-            android:title="Auto-save Contact Draft"
             android:layout="@layout/smaller_preference"
             android:defaultValue="true"
             />
@@ -86,61 +86,61 @@
 	    
 	    <PreferenceScreen android:title="IRC Settings" android:key="irc_settings">
             <ListPreference
-                    android:title="Port"
-                    android:summary="Default is 6667"
+                    android:title="@string/port"
+                    android:summary="@string/port"
                     android:defaultValue="6667"
                     android:key="irc_port"
                     android:entries="@array/irc_ports"
                     android:entryValues="@array/irc_ports"
                     />
-	        <EditTextPreference android:title="Nickname" android:key="irc_nick" android:summary="Your nickname!"/>
-	        <EditTextPreference android:title="Password" android:key="irc_pass" android:summary="Optional - If your nick is registered with NickServ"/>
-	        <EditTextPreference android:title="Quit msg" android:key="irc_quit" android:summary="Optional - Message to be shown when you leave"/>
-	        <CheckBoxPreference android:key="irc_time" android:title="Show timestamps" android:widgetLayout="@layout/smaller_preference_check"/>
-            <CheckBoxPreference android:key="irc_modes" android:title="Show modes" android:summary="Prepends symbols for OPs and such" android:widgetLayout="@layout/smaller_preference_check"/>
-	        <EditTextPreference android:key="irc_max_scrollback" android:numeric="integer" android:title="Max scrollback" android:summary="Maximum number of lines to display" android:defaultValue="500"/>
-            <CheckBoxPreference android:key="irc_sound" android:title="Sound on first mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
-            <CheckBoxPreference android:key="irc_sound_all" android:title="Sound on EVERY mention" android:summary="When anyone mentions you at all" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_sound"/>
-            <CheckBoxPreference android:key="irc_vibrate" android:title="Vibrate on first mention" android:summary="When you receive an unread mention." android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
-            <CheckBoxPreference android:key="irc_vibrate_all" android:title="Vibrate on EVERY mention" android:summary="When anyone mentions you at all" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_vibrate"/>
-            <CheckBoxPreference android:key="irc_emoticons" android:title="Use Emoticons" android:summary="May slow performance, but is shiny" android:widgetLayout="@layout/smaller_preference_check"/>
+	        <EditTextPreference android:key="irc_nick" android:title="@string/nickname" android:summary="@string/nickname_desc"/>
+	        <EditTextPreference android:key="irc_pass" android:title="@string/password" android:summary="@string/password_desc"/>
+	        <EditTextPreference android:key="irc_quit" android:title="@string/quit_msg" android:summary="@string/quit_msg_desc"/>
+	        <CheckBoxPreference android:key="irc_time" android:title="@string/show_timestamps" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_modes" android:title="@string/show_modes" android:summary="@string/show_modes_desc" android:widgetLayout="@layout/smaller_preference_check"/>
+	        <EditTextPreference android:key="irc_max_scrollback" android:title="@string/max_scrollback" android:summary="@string/max_scrollback_desc" android:numeric="integer" android:defaultValue="500"/>
+            <CheckBoxPreference android:key="irc_sound" android:title="@string/sound_on_first" android:summary="@string/sound_on_first_desc" android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_sound_all" android:title="@string/sound_on_every" android:summary="@string/sound_on_every_desc" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_sound"/>
+            <CheckBoxPreference android:key="irc_vibrate" android:title="@string/vibrate_on_first" android:summary="@string/vibrate_on_first_desc" android:defaultValue="true" android:widgetLayout="@layout/smaller_preference_check"/>
+            <CheckBoxPreference android:key="irc_vibrate_all" android:title="@string/vibrate_on_every" android:summary="@string/vibrate_on_every_desc" android:widgetLayout="@layout/smaller_preference_check" android:dependency="irc_vibrate"/>
+            <CheckBoxPreference android:key="irc_emoticons" android:title="@string/use_emoticons" android:summary="@string/use_emoticons_desc" android:widgetLayout="@layout/smaller_preference_check"/>
 	        
 	        <PreferenceCategory android:title="Colors">
-	            <CheckBoxPreference android:key="irc_irssi" android:title="irssi mode" android:summary="Simple green-on-black, no nick colors." android:disableDependentsState="true" android:widgetLayout="@layout/smaller_preference_check"/>
-	            <CheckBoxPreference android:key="nick_colors" android:title="Random nick colors" android:defaultValue="true" android:summary="Generate a random color for each nick." android:disableDependentsState="true" android:dependency="irc_irssi" android:widgetLayout="@layout/smaller_preference_check"/>
+	            <CheckBoxPreference android:key="irc_irssi" android:title="@string/irssi_mode" android:summary="@string/irssi_mode_desc" android:disableDependentsState="true" android:widgetLayout="@layout/smaller_preference_check"/>
+	            <CheckBoxPreference android:key="nick_colors" android:title="@string/random_nick_colors" android:summary="@string/random_nick_colors_desc" android:defaultValue="true" android:disableDependentsState="true" android:dependency="irc_irssi" android:widgetLayout="@layout/smaller_preference_check"/>
 	            <net.margaritov.preference.colorpicker.ColorPickerPreference
 	            	android:key="irc_color_etcnick" android:title="Other nick color" android:defaultValue="#2E8B91"  alphaSlider="false" android:dependency="nick_colors"/>
 				
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-				    android:key="irc_color_text" android:title="Text Color" android:defaultValue="#000000"  alphaSlider="false" android:dependency="irc_irssi"/>
+				    android:key="irc_color_text" android:title="@string/text_color" android:defaultValue="#000000"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-				    android:key="irc_color_back" android:title="Background Color" android:defaultValue="#FFFFFF"  alphaSlider="false" android:dependency="irc_irssi"/>
+				    android:key="irc_color_back" android:title="@string/background_color" android:defaultValue="#FFFFFF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-				    android:key="irc_color_topic" android:title="Topic Color" android:defaultValue="#B8860B"  alphaSlider="false" android:dependency="irc_irssi"/>
+				    android:key="irc_color_topic" android:title="@string/topic_color" android:defaultValue="#B8860B"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_mynick" android:title="Your Nick Color" android:defaultValue="#2E8B57"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_mynick" android:title="@string/your_nick_color" android:defaultValue="#2E8B57"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_me" android:title="/me Color" android:defaultValue="#9400D3"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_me" android:title="@string/me_color" android:defaultValue="#9400D3"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_links" android:title="URL Color" android:defaultValue="#0000EE"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_links" android:title="@string/url_color" android:defaultValue="#0000EE"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_pm" android:title="PM Color" android:defaultValue="#008B8B"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_pm" android:title="@string/pm_color" android:defaultValue="#008B8B"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_join" android:title="Join Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_join" android:title="@string/join_color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_nick" android:title="Nick Change Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_nick" android:title="@string/nick_change_color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_part" android:title="Part Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_part" android:title="@string/part_color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_quit" android:title="Quit Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_quit" android:title="@string/quit_color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_kick" android:title="Kick Color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_kick" android:title="@string/kick_color" android:defaultValue="#0000FF"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_mention" android:title="Mention Color" android:defaultValue="#F08080"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_mention" android:title="@string/mention_color" android:defaultValue="#F08080"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <net.margaritov.preference.colorpicker.ColorPickerPreference
-		        	android:key="irc_color_error" android:title="Error Color" android:defaultValue="#800000"  alphaSlider="false" android:dependency="irc_irssi"/>
+		        	android:key="irc_color_error" android:title="@string/error_color" android:defaultValue="#800000"  alphaSlider="false" android:dependency="irc_irssi"/>
 		        <Preference 
-		            android:title="Reset colors" android:key="reset_colors"/>
+		            android:key="reset_colors" android:title="@string/reset_colors"/>
 	        </PreferenceCategory>
 	    </PreferenceScreen>
 
