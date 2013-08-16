@@ -150,6 +150,27 @@ public class DatabaseConnector
 	 */
 	public void clearShow(String show)
 	{
+        //TODO: THIS IS HORRIBLY INEFFICIENT
+        Cursor c = database.query(DATABASE_EPISODES,
+                new String[] {"_id", "show"},
+                "show='" + show + "'",
+                null,
+                null,
+                null,
+                "_id");
+        if(c.getCount()>0)
+        {
+            c.moveToFirst();
+            long id;
+            do {
+                id = c.getLong(c.getColumnIndex("_id"));
+                Cursor q = database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + id,
+                        null, null, null, null);
+                if(q.getCount()>0)
+                    move(q.getLong(q.getColumnIndex("_id")), 0);
+            } while(c.moveToNext());
+        }
+
 		database.delete(DATABASE_EPISODES, "show = '" + show + "'", null);
 	}
 	
