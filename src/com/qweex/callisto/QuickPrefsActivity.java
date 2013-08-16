@@ -298,15 +298,6 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
             //Check to make sure it ain't empty
             if(title.trim().length()==0)
                 return;
-            //Check to make sure it's not the name of a JB show
-            for(int i=0; i<StaticBlob.SHOW_LIST.length; i++)
-                if(StaticBlob.SHOW_LIST[i].toUpperCase().equals(title.toUpperCase()))
-                {
-                    title = title + "2";
-                    break;
-                }
-
-
             StaticBlob.databaseConnector.updateCustomFeed(id, title, url);
             customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
         }

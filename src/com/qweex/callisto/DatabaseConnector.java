@@ -605,15 +605,36 @@ public class DatabaseConnector
         return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"}, null, null, null, null, null);
     }
 
-    /** [DATABASE_CUSTOM_FEEDS] Gets the list of custom feeds */
+    /** [DATABASE_CUSTOM_FEEDS] Gets 1 feed */
     public Cursor getCustomFeed(long id)
     {
         return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"},
                 "_id=" + id, null, null, null, null);
     }
 
+    /** [DATABASE_CUSTOM_FEEDS] Gets 1 feed by the title*/
+    public Cursor getCustomFeedByTitle(String title)
+    {
+        return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"},
+                "title" + title, null, null, null, null);
+    }
+
+    /** [DATABASE_CUSTOM_FEEDS] Updates a custom feed title & url */
     public void updateCustomFeed(long id, String title, String url)
     {
+        //Check to make sure it's not the name of a JB show
+        for(int i=0; i<StaticBlob.SHOW_LIST.length; i++)
+        {
+            if(StaticBlob.SHOW_LIST[i].toUpperCase().equals(title.toUpperCase()))
+            {
+                title = title + "~";
+                break;
+            }
+        }
+        //Get it to not be the name of an existing custom
+        while(getCustomFeedByTitle(title).getCount()>0)
+            title = title + "~";
+
         Cursor c = getCustomFeed(id);
         c.moveToFirst();
         String oldTitle = c.getString(c.getColumnIndex("title"));
