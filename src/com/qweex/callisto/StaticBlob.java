@@ -273,6 +273,6 @@ public class StaticBlob
         return
         "CALLISTO:" +
         stacktrace.getClassName().substring("com.qweex.callisto".length()+1) + ":" + stacktrace.getMethodName()
-                + stacktrace.getLineNumber() + "::";
+                + "::" + stacktrace.getLineNumber();
     }
 }

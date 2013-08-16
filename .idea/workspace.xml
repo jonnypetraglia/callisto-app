@@ -52,8 +52,6 @@
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -214,7 +212,7 @@
       <file leaf-file-name="StaticBlob.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="201" column="49" selection-start="10574" selection-end="10574" vertical-scroll-proportion="0.17824773">
+            <state line="275" column="25" selection-start="13839" selection-end="13839" vertical-scroll-proportion="0.76888216">
               <folding>
                 <element signature="e#11640#13537#0" expanded="true" />
                 <element signature="e#13526#13527#0" expanded="true" />
@@ -986,7 +984,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="201" column="49" selection-start="10574" selection-end="10574" vertical-scroll-proportion="0.17824773">
+        <state line="275" column="25" selection-start="13839" selection-end="13839" vertical-scroll-proportion="0.76888216">
           <folding>
             <element signature="e#11640#13537#0" expanded="true" />
             <element signature="e#13526#13527#0" expanded="true" />
