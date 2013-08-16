@@ -84,7 +84,8 @@
             />
 
 	    
-	    <PreferenceScreen android:title="@string/irc_settings" android:key="irc_settings">
+	    <PreferenceScreen android:title="@string/irc_settings" android:key="irc_settings"
+                android:background="@color/white">
             <ListPreference
                     android:title="@string/port"
                     android:summary="@string/port_default"

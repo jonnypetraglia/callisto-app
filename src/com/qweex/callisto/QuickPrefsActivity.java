@@ -20,7 +20,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.preference.*;
 
 import android.os.Bundle;
@@ -108,7 +110,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 		       		builder.show();
 		       		return true;
 			}
-        });
+             });
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         //Create dialog for custom feeds
@@ -127,6 +129,26 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
                 .setTitle(R.string.new_)
                 .setPositiveButton(android.R.string.yes, addCustomFeed)
                 .setNegativeButton(android.R.string.no, null).create();
+
+
+
+        getListView().setBackgroundColor(Color.TRANSPARENT);
+
+        getListView().setCacheColorHint(Color.TRANSPARENT);
+
+        getListView().setBackgroundColor(Color.rgb(4, 26, 55));
+    }
+
+    /** Stops the activity from being re-created from  */
+    @Override
+    public void onContentChanged() {
+        String TAG = StaticBlob.TAG();
+        Log.i(TAG, "Rotating?");
+        super.onContentChanged();
+        try {
+        setSubpreferenceBG.onPreferenceClick(getPreferenceScreen().findPreference("irc_settings"));
+        setSubpreferenceBG.onPreferenceClick(getPreferenceScreen().findPreference("custom_feeds"));
+        }catch(Exception e){}
     }
 
     /** Sets the preference background color for theming. http://stackoverflow.com/a/3223676/1526210 */
