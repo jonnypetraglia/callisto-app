@@ -26,21 +26,16 @@ import android.util.Log;
 import com.qweex.callisto.PlayerControls;
 import com.qweex.callisto.StaticBlob;
 import com.qweex.callisto.podcast.DownloadList;
+import com.qweex.callisto.podcast.EpisodeDesc;
 
 /** Silly class that just adds a context; on finishing a track it tries to move to the next track */
 public class OnCompletionListenerWithContext implements OnCompletionListener
 {
 	Context c;
-	Runnable r;
 
 	public void setContext(Context c)
 	{
 		this.c = c;
-	}
-	
-	public void setRunnable(Runnable r)
-	{
-		this.r = r;
 	}
 	
 	@Override
@@ -48,10 +43,7 @@ public class OnCompletionListenerWithContext implements OnCompletionListener
     {
         String TAG = StaticBlob.TAG();
 		Log.i(TAG, "Playing next track");
-		
-		if(r!=null)
-			r.run();
-		
+
 		boolean shouldDelete = PreferenceManager.getDefaultSharedPreferences(this.c).getBoolean("completion_delete", false);
 
         Cursor c = StaticBlob.databaseConnector.currentQueueItem();

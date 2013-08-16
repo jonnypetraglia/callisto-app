@@ -91,6 +91,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 .setSmallIcon(R.drawable.ic_action_download)
                 .setContentIntent(contentIntent)
                 .setOngoing(true);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
 
@@ -141,12 +142,6 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 //Prepare the HTTP
                 Log.i(TAG, "Path: " + Target.getPath());
                 URL url = new URL(Link);
-
-
-                ///////////////////////TEST
-
-                ///////////////////////TEST
-
 
                 Log.i(TAG, "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -299,14 +294,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         // Displays the progress bar for the first time.
                         mNotificationManager.notify(NOTIFICATION_ID,mBuilder.build() );
                     }
-                }
+                }   // END download of single file
 
                 outStream.flush();
                 outStream.close();
                 inStream.close();
                 if(inner_failures==INNER_LIMIT)
                 {
-
                     throw new Exception("Inner exception has passed " + INNER_LIMIT);
                 }
 
@@ -336,11 +330,16 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
 
                         boolean queue = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("download_to_queue", false);
                         if(queue)
+                        {
                             StaticBlob.databaseConnector.appendToQueue(identity, false, isVideo);
+                            StaticBlob.playerInfo.update(context);
+                        }
+                        if(EpisodeDesc.currentInstance!=null)
+                            EpisodeDesc.currentInstance.determineButtons();
                     }
                 } else
                     Target.delete();
-            }catch (ParseException e) {
+            } catch (ParseException e) {
                 Log.e(TAG+":ParseException", "Error parsing a date from the SQLite db: ");
                 Log.e(TAG+":ParseException", Date);
                 Log.e(TAG+":ParseException", "(This should never happen).");

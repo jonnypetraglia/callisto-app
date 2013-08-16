@@ -523,7 +523,7 @@ public class DatabaseConnector
     public boolean isInDownloadQueue(long identity, boolean video)
     {
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
-                "identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
+                "active>0 AND identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
         return c.getCount()>0;
     }
 
@@ -532,7 +532,7 @@ public class DatabaseConnector
     public boolean isInDownloadQueue(long identity)
     {
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
-                "identity=" + identity, null, null, null, null);
+                "active>0 AND identity=" + identity, null, null, null, null);
         return c.getCount()>0;
     }
 
@@ -569,6 +569,16 @@ public class DatabaseConnector
     public boolean removeDownload(long id)     //note 'id' == the _id in DOWNLOADS table
     {
         return database.delete(DATABASE_DOWNLOADS, "_id=" + id, null)>0;
+    }
+
+    public boolean removeDownloadByContents(long identity, boolean video)
+    {
+        Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
+                "identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
+        if(c.getCount()==0)
+            return false;
+        c.moveToFirst();
+        return removeDownload(c.getLong(c.getColumnIndex("_id")));
     }
 
     /** [DATABASE_DOWNLOADS] Adds a new active download */

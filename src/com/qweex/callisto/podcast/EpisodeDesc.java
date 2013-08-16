@@ -205,13 +205,6 @@ public class EpisodeDesc extends Activity
             this.findViewById(R.id.headLin).setPadding(0,0,0,0);
         }
 
-        //If the current playing track finishes, redetermine the buttons
-        StaticBlob.trackCompleted.setRunnable(new Runnable(){
-            public void run() {
-                determineButtons();
-            }
-        });
-
         //Set 'new?'
         CheckBox rb = ((CheckBox)findViewById(R.id.newImg));
         rb.setChecked(is_new);
@@ -346,8 +339,7 @@ public class EpisodeDesc extends Activity
         public void onClick(View v)
         {
 
-            StaticBlob.deleteItem(EpisodeDesc.this, id, vidSelected);
-            determineButtons();
+            StaticBlob.deleteItem(EpisodeDesc.this, id, vidSelected);       //Updating buttons is taken care of here
             StaticBlob.playerInfo.update(v.getContext()); //Update the player controls
         }
     };
@@ -397,9 +389,8 @@ public class EpisodeDesc extends Activity
         @Override
         public void onClick(View v)
         {
-            String TAG = StaticBlob.TAG();
-            Log.i(TAG, "Removing Download: " + id);
-            StaticBlob.databaseConnector.addDownload(id, vidSelected);
+            StaticBlob.databaseConnector.removeDownloadByContents(id, vidSelected);
+            StaticBlob.deleteItem(EpisodeDesc.this, id, vidSelected);
             determineButtons();
         }
     };
@@ -433,9 +424,8 @@ public class EpisodeDesc extends Activity
         }
     };
 
-    //TODO: Fix this
     /** Determines the buttons' text and listeners depending on the status of whether the episode has been downloaded already. */
-    private void determineButtons()
+    public void determineButtons()
     {
         File curr = (vidSelected ? file_location_video : file_location_audio);
         long curr_size = (vidSelected ? vid_size : mp3_size);

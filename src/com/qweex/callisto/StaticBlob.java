@@ -333,7 +333,10 @@ public class StaticBlob
                 StaticBlob.databaseConnector.deleteQueueItem(idq);
             } while(q.moveToNext());
         }
-    }
 
+        //5. Update EpisodeDesc buttons
+        if(EpisodeDesc.currentInstance!=null)
+            EpisodeDesc.currentInstance.determineButtons();
+    }
 
 }
