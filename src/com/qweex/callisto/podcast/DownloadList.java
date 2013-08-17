@@ -40,7 +40,10 @@ import com.qweex.callisto.StaticBlob;
 public class DownloadList extends ListActivity
 {
 	/** Menu items */
-    private static final int CLEAR_COMP_ID =Menu.FIRST+1, CLEAR_ACTIVE_ID = CLEAR_COMP_ID +1, PAUSE_ID= CLEAR_ACTIVE_ID +1;
+    private final int CLEAR_COMP_ID = Menu.FIRST+1,
+                            CLEAR_ACTIVE_ID = CLEAR_COMP_ID +1,
+                            PAUSE_ID = CLEAR_ACTIVE_ID +1;
+    private MenuItem compMI, activeMI, pauseMI;
     /** The Progressbar view of the current download; used for updating as it is downloaded */
 	private ProgressBar downloadProgress = null;
     /** Instance tracker to be used when updating the progress */
@@ -315,14 +318,23 @@ public class DownloadList extends ListActivity
         }
     }
 
+    public void updateMenu()
+    {
+        pauseMI.setIcon(R.drawable.ic_action_playback_play);
+        pauseMI.setTitle(R.string.resume);
+        pauseMI.setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
+        activeMI.setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
+        compMI.setEnabled(StaticBlob.databaseConnector.getCompleteDownloads().getCount()>0);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         //Pronounce this outloud
         boolean paoosay = (DownloadTask.running || StaticBlob.databaseConnector.getActiveDownloads().getCount()==0);
-        menu.add(0, PAUSE_ID, 0, paoosay ? R.string.pause : R.string.resume).setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
-        menu.add(0, CLEAR_COMP_ID, 0, R.string.clear_completed).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getCompleteDownloads().getCount()>0);
-        menu.add(0, CLEAR_ACTIVE_ID, 0, R.string.cancel_active).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
+        pauseMI = menu.add(0, PAUSE_ID, 0, paoosay ? R.string.pause : R.string.resume).setIcon(paoosay ? R.drawable.ic_action_playback_pause : R.drawable.ic_action_playback_play).setEnabled(!(paoosay && !DownloadTask.running));
+        compMI = menu.add(0, CLEAR_COMP_ID, 0, R.string.clear_completed).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getCompleteDownloads().getCount()>0);
+        activeMI = menu.add(0, CLEAR_ACTIVE_ID, 0, R.string.cancel_active).setIcon(R.drawable.ic_action_trash).setEnabled(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0);
         return true;
     }
 

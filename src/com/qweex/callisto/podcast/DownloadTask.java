@@ -19,7 +19,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -371,6 +370,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
             }
         }
         Log.i(TAG, "Finished Downloading");
+        if(DownloadList.thisInstance!=null)
+            DownloadList.thisInstance.updateMenu();
 
         //Wifi lock
         if(DownloadList.Download_wifiLock!=null && DownloadList.Download_wifiLock.isHeld())
