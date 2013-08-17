@@ -42,7 +42,9 @@ public class DownloadList extends ListActivity
 	/** Menu items */
     private static final int CLEAR_COMP_ID =Menu.FIRST+1, CLEAR_ACTIVE_ID = CLEAR_COMP_ID +1, PAUSE_ID= CLEAR_ACTIVE_ID +1;
     /** The Progressbar view of the current download; used for updating as it is downloaded */
-	public static ProgressBar downloadProgress = null;
+	private ProgressBar downloadProgress = null;
+    /** Instance tracker to be used when updating the progress */
+    public static DownloadList thisInstance;
     /** The main listview */
 	private ListView mainListView;
     /** Adapter for listview; includes header for Active and Completed */
@@ -132,6 +134,43 @@ public class DownloadList extends ListActivity
 	    };
 	}
 
+    /** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
+    @Override
+    public void onResume()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onResume();
+        thisInstance = this;
+    }
+
+    /** Called when the activity is going to be destroyed. */
+    @Override
+    public void onDestroy()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onDestroy();
+        thisInstance = null;
+    }
+
+    public class DownloadProgressUpdater implements Runnable {
+
+        int total, curr;
+        DownloadProgressUpdater(int total, int curr)
+        {
+            this.total = total;
+            this.curr = curr;
+        }
+
+        @Override
+        public void run() {
+            String TAG = StaticBlob.TAG();
+            if(downloadProgress==null)
+                return;
+            downloadProgress.setMax(total);
+            downloadProgress.setProgress(curr);
+            Log.i(TAG,"downloadProgress: " + total + " " + curr + "    " + downloadProgress.getProgress());
+        }
+    }
 
     public class DownloadAdapter extends SimpleCursorAdapter
     {
@@ -139,7 +178,6 @@ public class DownloadList extends ListActivity
         private Cursor c;
         /** Context needed for a LayoutInflater */
         private Context context;
-
 
         public DownloadAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
             super(context, layout, c, from, to);
@@ -185,6 +223,7 @@ public class DownloadList extends ListActivity
 
         public View getViewRow(int position, View convertView, ViewGroup parent, long _id, long identity, boolean isVideo)
         {
+            String TAG = StaticBlob.TAG();
             View row = convertView;
 
             if(row==null || row.findViewById(R.id.hiddenId)==null)
@@ -256,12 +295,20 @@ public class DownloadList extends ListActivity
 
             //If it is the current download, set it
             //  NOTE: This only works if the current download is the top (i.e. position 0)
+            Log.i(TAG,"Updating downloadProgress0: " + downloadProgress);
             if(downloadProgress==null || downloadProgress == row.findViewById(R.id.progress))
             {
-                if(position==0)
+                Log.i(TAG,"Updating downloadProgress1: " + downloadProgress);
+                if(position==1)
+                {
                     downloadProgress = (ProgressBar) row.findViewById(R.id.progress);
+                    Log.i(TAG,"Updating downloadProgress2: " + downloadProgress);
+                }
                 else
+                {
                     downloadProgress = null;
+                    Log.i(TAG,"Updating downloadProgressE: " + downloadProgress);
+                }
             }
 
             return row;

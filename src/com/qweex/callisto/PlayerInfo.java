@@ -260,10 +260,11 @@ public class PlayerInfo
                     }
                 }
 
-                if(Queue.currentProgress!=null)
+                if(Queue.thisInstance!=null)
                 {
                     double xy = (current*100.0) / StaticBlob.playerInfo.length;
-                    Queue.currentProgress.setProgress((int)(Double.isNaN(xy) ? 0 : xy));
+                    int prog = (int)(Double.isNaN(xy) ? 0 : xy);
+                    Queue.thisInstance.runOnUiThread(Queue.thisInstance.new QueueProgressUpdater(prog));
                 }
 
 

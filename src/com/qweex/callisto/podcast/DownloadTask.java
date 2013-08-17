@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -277,10 +278,11 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         all_spds = 0;
                         currentDownloadLoopIndex = 0;
 
-                        if(DownloadList.downloadProgress!=null)
+                        if(DownloadList.thisInstance!=null)
                         {
-                            DownloadList.downloadProgress.setMax((int)(TotalSize/1000));
-                            DownloadList.downloadProgress.setProgress((int)(downloadedSize/1000));
+                            DownloadList.thisInstance.runOnUiThread(DownloadList.thisInstance.new DownloadProgressUpdater(
+                                    (int)(TotalSize/1000), (int)(downloadedSize/1000)
+                            ));
                         }
 
 

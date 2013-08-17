@@ -92,6 +92,8 @@ public class AllShows extends Activity {
         //headerThings is a dummy list used entirely just for numbers, like '1 header, 2 items, 1 header, 4 items'.
         // from there the adapter does the actual important stuff using other arrays
         List<HeaderAdapter.Item> headerThings = new ArrayList<HeaderAdapter.Item>();
+        if(StaticBlob.SHOW_LIST==null)
+            StaticBlob.init(this);
         for(int i=0; i< StaticBlob.SHOW_LIST.length; i++)
         {
             if(StaticBlob.SHOW_LIST[i].startsWith(" "))

@@ -321,16 +321,16 @@ public class StaticBlob
         Cursor q = StaticBlob.databaseConnector.findInQueue(id,video);
         if(q.getCount()>0)
         {
-            long idq;
+            long posq;
             q.moveToFirst();
             do {
-                idq = q.getLong(q.getColumnIndex("_id"));
+                posq = q.getLong(q.getColumnIndex("position"));
                 //4. If it was the current item in the queue AND player was playing, move to next
                 if(q.getInt(q.getColumnIndex("current"))>0)
                 {
                     PlayerControls.changeToTrack(con, 1, StaticBlob.mplayer!=null && !StaticBlob.playerInfo.isPaused);
                 }
-                StaticBlob.databaseConnector.deleteQueueItem(idq);
+                StaticBlob.databaseConnector.deleteQueueItem(posq);
             } while(q.moveToNext());
         }
 

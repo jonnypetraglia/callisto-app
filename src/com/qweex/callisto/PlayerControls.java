@@ -221,6 +221,7 @@ public class PlayerControls
         //The queue merely stores the identity (_id) of the entrie's position in the main SQL
         //After obtaining it, we can get all the information about it
         Long id = queue.getLong(queue.getColumnIndex("_id"));
+        Long pos = queue.getLong(queue.getColumnIndex("position"));
         Long identity = queue.getLong(queue.getColumnIndex("identity"));
         boolean isStreaming = queue.getInt(queue.getColumnIndex("streaming"))>0;
         boolean isVideo = queue.getInt(queue.getColumnIndex("video"))>0;
@@ -253,7 +254,7 @@ public class PlayerControls
                 Log.e(TAG+":ParseException", "(This should never happen).");
                 e.printStackTrace();
                 Toast.makeText(c, c.getResources().getString(R.string.queue_error), Toast.LENGTH_SHORT).show();
-                StaticBlob.databaseConnector.deleteQueueItem(id);
+                StaticBlob.databaseConnector.deleteQueueItem(pos);
                 return;
             }
 
@@ -281,7 +282,7 @@ public class PlayerControls
                 }
                 Log.e("*:changeToTrack", "File not found: " + target.getPath());
                 Toast.makeText(c, c.getResources().getString(R.string.queue_error), Toast.LENGTH_SHORT).show();;
-                StaticBlob.databaseConnector.deleteQueueItem(id);
+                StaticBlob.databaseConnector.deleteQueueItem(pos);
                 return;
             }
             //Here we FINALLY get the path.

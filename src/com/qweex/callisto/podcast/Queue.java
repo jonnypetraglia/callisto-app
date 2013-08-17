@@ -47,9 +47,12 @@ public class Queue extends ListActivity
     /** The cursor for containing the current queue items */
     private Cursor queue;
     /** The id for dragging and dropping, specifically the "From", i.e. the one that is being dragged */
-    private static int FromID = -1;
+    private static int FromNum = -1;
     /** The progress for the currently downloading file. Used to update. */
-    public static ProgressBar currentProgress;
+    private ProgressBar currentProgress;
+    /** Instance variable; used to update the current progress */
+    public static Queue thisInstance;
+
 
     /** Called when the activity is first created. Sets up the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
@@ -90,6 +93,24 @@ public class Queue extends ListActivity
         mainListView.setAdapter(listAdapter);
     }
 
+    /** Called when the activity is resumed, like when you return from another activity or also when it is first created. */
+    @Override
+    public void onResume()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onResume();
+        thisInstance = this;
+    }
+
+    /** Called when the activity is going to be destroyed. */
+    @Override
+    public void onDestroy()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onDestroy();
+        thisInstance = null;
+    }
+
     /** Called when it is time to create the menu. */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,6 +139,25 @@ public class Queue extends ListActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public class QueueProgressUpdater implements Runnable
+    {
+        int curr;
+        public QueueProgressUpdater(int curr)
+        {
+            this.curr = curr;
+        }
+
+        @Override
+        public void run() {
+            String TAG = StaticBlob.TAG();
+            if(currentProgress==null)
+                return;
+            //currentProgress.setMax(total);
+            currentProgress.setProgress(curr);
+            Log.i(TAG,"downloadProgress: " + curr + "    " + currentProgress.getProgress());
         }
     }
 
@@ -253,7 +293,8 @@ public class Queue extends ListActivity
             this.c.moveToPosition(pos);
 
             //Get info for the queue entry
-            Long _id = this.c.getLong(c.getColumnIndex("_id"));
+            //Long _id = this.c.getLong(c.getColumnIndex("_id"));
+            Long position = this.c.getLong(c.getColumnIndex("position"));
             boolean isCurrent = this.c.getLong(c.getColumnIndex("current"))>0;
             boolean isVideo = this.c.getLong(c.getColumnIndex("video"))>0;
             boolean isStreaming;
@@ -281,12 +322,11 @@ public class Queue extends ListActivity
             c_actualEpisode.moveToFirst();
             String title = c_actualEpisode.getString(c_actualEpisode.getColumnIndex("title"));
             String show = c_actualEpisode.getString(c_actualEpisode.getColumnIndex("show"));
-            long position = c_actualEpisode.getLong(c_actualEpisode.getColumnIndex("position"));
 
             //Update the views
             ((TextView)v.findViewById(R.id.rowTextView)).setText(title);
             ((TextView)v.findViewById(R.id.rowSubTextView)).setText(show);
-            ((TextView)v.findViewById(R.id.hiddenId)).setText(_id.toString());
+            ((TextView)v.findViewById(R.id.hiddenId)).setText(Long.toString(position));
 
             //Listeners
             ImageButton up = ((ImageButton)v.findViewById(R.id.moveUp));
@@ -344,17 +384,21 @@ public class Queue extends ListActivity
     {
         public void drop(int from, int to)
         {
+            String TAG = StaticBlob.TAG();
             //to-=(from<to?1:0);
             if(from==to)
                 return;
-            int toID   = Integer.parseInt(((TextView)mainListView.getChildAt(to - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
+            int toNum   = Integer.parseInt(
+                    ((TextView)mainListView.getChildAt(to - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString()
+            );
             //int fromID = from+1, toID = to+1;
 
-            StaticBlob.databaseConnector.moveQueue(Queue.FromID, toID+1);
-            Toast.makeText(Queue.this,R.string.folder_moved, Toast.LENGTH_SHORT);
+            Log.i(TAG, "From: " + FromNum + "   To: " + (toNum+1));
+            StaticBlob.databaseConnector.moveQueue(Queue.FromNum, toNum+1);
+            //listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
             listAdapter.getCursor().requery();
             listAdapter.notifyDataSetChanged();
-            Queue.FromID = -1;
+            Queue.FromNum = -1;
         }
     };
 
@@ -364,8 +408,8 @@ public class Queue extends ListActivity
         @Override
         public void drag(int from, int to)
         {
-            if(Queue.FromID==-1)
-                Queue.FromID = Integer.parseInt(((TextView)mainListView.getChildAt(from - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
+            if(Queue.FromNum ==-1)
+                Queue.FromNum = Integer.parseInt(((TextView)mainListView.getChildAt(from - mainListView.getFirstVisiblePosition()).findViewById(R.id.hiddenId)).getText().toString());
         }
     };
 }

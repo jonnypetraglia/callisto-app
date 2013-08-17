@@ -109,6 +109,8 @@ public class EpisodeDesc extends Activity
         }
         id = b.getLong("id", 0);
         //Get a cursor with the episode
+        if(StaticBlob.databaseConnector==null)
+            StaticBlob.init(this);
         Cursor c = StaticBlob.databaseConnector.getOneEpisode(id);
         if(id==0 || c.getCount()==0)
         {
@@ -444,6 +446,7 @@ public class EpisodeDesc extends Activity
             streamButton.setEnabled(false);
             downloadButton.setText(this.getResources().getString(R.string.cancel));
             downloadButton.setOnClickListener(launchCancel);
+            downloadButton.setEnabled(true);
         }
         else if(curr.exists())
         {
@@ -453,6 +456,7 @@ public class EpisodeDesc extends Activity
             {
                 streamButton.setText(this.getResources().getString(R.string.resume));
                 streamButton.setOnClickListener(launchDownload);
+                streamButton.setEnabled(true);
             // 3. It is not in the DL queue, it exists, it is the right size, BUT it is in the queue
             //      buttons:  *Enqueued*  Delete
             } else if(StaticBlob.databaseConnector.findInQueue(id, vidSelected).getCount()>0)
@@ -470,16 +474,18 @@ public class EpisodeDesc extends Activity
             }
             downloadButton.setText(this.getResources().getString(R.string.delete));
             downloadButton.setOnClickListener(launchDelete);
+            downloadButton.setEnabled(true);
         }
         // 5. It is not in the DL queue and it does not exist
         //      buttons:  Stream  Download
         else
         {
-            streamButton.setEnabled(true);
             streamButton.setText(this.getResources().getString(R.string.stream));
             streamButton.setOnClickListener(launchStream);
+            streamButton.setEnabled(true);
             downloadButton.setText(this.getResources().getString(R.string.download));
             downloadButton.setOnClickListener(launchDownload);
+            downloadButton.setEnabled(true);
         }
     }
 

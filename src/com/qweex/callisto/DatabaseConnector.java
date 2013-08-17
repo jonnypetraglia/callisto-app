@@ -234,15 +234,14 @@ public class DatabaseConnector
 	 */
 	public Cursor getQueue()
 	{
-           this.deleteQueueItem(-1);
 		   Cursor things = null;
 		   things = database.query(DATABASE_QUEUE,
-				    new String[] {"_id", "identity", "current", "video", "streaming"},
+				    new String[] {"_id", "position", "identity", "current", "video", "streaming"},
 				    null,
 		        	null,
 		        	null,
 		        	null,
-				   	"_id");
+				   	"position");
 		   return things;
 	}
 	
@@ -258,6 +257,7 @@ public class DatabaseConnector
                 null, null, null, null).getCount()==0)
         {
             ContentValues newEntry = new ContentValues();
+            newEntry.put("position", getQueue().getCount());
             newEntry.put("identity", identity);
             newEntry.put("current", 0);
             newEntry.put("streaming", isStreaming ? 1 : 0);
@@ -268,71 +268,73 @@ public class DatabaseConnector
 	}
 	
 	/** [DATABASE_QUEUE] Updates a queue item.
-	 * @param id The ID to update from the DATABASE_QUEUE table.
+	 * @param pos The position to update from the DATABASE_QUEUE table.
 	 * @param identity The identity (that is, the ID for DATABASE_EPISODES) for the updated item to now hold
 	 * @param isCurrent Greater than 0 if it is the current track, 0 otherwise.
 	 * @param streaming Greater than 0 if it is streaming, 0 otherwise.
 	 */
-	private void updateQueue(long id, long identity, int isCurrent, int streaming, int video)
+	private void updateQueue(long pos, long identity, int isCurrent, int streaming, int video)
 	{
 	   ContentValues editEpisode = new ContentValues();
 	   editEpisode.put("identity", identity);
 	   editEpisode.put("current", isCurrent);
 	   editEpisode.put("streaming", streaming);
-        editEpisode.put("video", video);
+       editEpisode.put("video", video);
 	
-	   database.update(DATABASE_QUEUE, editEpisode, "_id=" + id, null);
+	   database.update(DATABASE_QUEUE, editEpisode, "position=" + pos, null);
 	}
 	
 	/** @Deprecated
      * [DATABASE_QUEUE] Moves an item either forward or back in the queue
-	 * @param id1 The ID to move either forward or back from the DATABASE_QUEUE table.
+	 * @param pos1 The position to move either forward or back from the DATABASE_QUEUE table.
 	 * @param dir The direction to move; >0 is up one, <0 is down one, 0 is delete
 	 */
-	public void move(long id1, int dir)
+	public void move(long pos1, int dir)
 	{
-		   //Get the one that is selected
-	       Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id=" + id1, null, null, null, null);
-	       c1.moveToFirst();
-	       long identity1 = c1.getLong(c1.getColumnIndex("identity"));
-	       int current1 = c1.getInt(c1.getColumnIndex("current"));
-	       int streaming1 = c1.getInt(c1.getColumnIndex("streaming"));
-           int video1 = c1.getInt(c1.getColumnIndex("video"));
-		   
-	       //Get the one that it will move with
-	       Cursor c2;
-	       if(dir<0)
-	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id<" + id1, null, null, null, "_id DESC", "1");
-	       else
-	    	   c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},	"_id>" + id1, null, null, null, "_id ASC", "1");
-	       if(dir==0)
-	    	   deleteQueueItem(id1);
-	       if(c2.getCount()==0)
-	    	   return;
-	       c2.moveToFirst();
-	       long id2 = c2.getLong(c2.getColumnIndex("_id"));
-	       long identity2 = c2.getLong(c2.getColumnIndex("identity"));
-	       int current2 = c2.getInt(c2.getColumnIndex("current"));
-	       int streaming2 = c2.getInt(c2.getColumnIndex("streaming"));
-           int video2 = c2.getInt(c2.getColumnIndex("video"));
-	       
-	       if(dir!=0)
-	       {
-		       updateQueue(id1, identity2, current2, streaming2, video2);
-		       updateQueue(id2, identity1, current1, streaming1, video1);
-	       }
+        String TAG = StaticBlob.TAG();
+        //Get the one that is selected
+        Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position=" + pos1, null, null, null, null);
+        c1.moveToFirst();
+        long identity1 = c1.getLong(c1.getColumnIndex("identity"));
+        int current1 = c1.getInt(c1.getColumnIndex("current"));
+        int streaming1 = c1.getInt(c1.getColumnIndex("streaming"));
+        int video1 = c1.getInt(c1.getColumnIndex("video"));
 
+        //Get the one that it will move with
+        Cursor c2;
+        if(dir<0)
+           c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position<" + pos1, null, null, null, "position DESC", "1");
+        else
+           c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position>" + pos1, null, null, null, "position ASC", "1");
+        if(dir==0)
+           deleteQueueItem(pos1);
+        if(c2.getCount()==0)
+           return;
+        c2.moveToFirst();
+        long pos2 = c2.getLong(c2.getColumnIndex("position"));
+        long identity2 = c2.getLong(c2.getColumnIndex("identity"));
+        int current2 = c2.getInt(c2.getColumnIndex("current"));
+        int streaming2 = c2.getInt(c2.getColumnIndex("streaming"));
+        int video2 = c2.getInt(c2.getColumnIndex("video"));
+
+        if(dir!=0)
+        {
+           updateQueue(pos1, identity2, current2, streaming2, video2);
+           updateQueue(pos2, identity1, current1, streaming1, video1);
+        }
 	}
 
     /** [DATABASE_QUEUE] Moves an item in the queue
-     * @param fromID The ID that is the target of the moving.
-     * @param toID The ID that the item will be inserted before(?) from the DATABASE_QUEUE table.
+     * @param fromPos The position that is the target of the moving.
+     * @param toPos The position that the item will be inserted before(?) from the DATABASE_QUEUE table.
      */
-    public void moveQueue(int fromID, int toID)
+    public void moveQueue(int fromPos, int toPos)
     {
+        String TAG = StaticBlob.TAG();
         long special = -1;
         this.deleteQueueItem(special);
-        database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET _id=" + special + " WHERE _id=" + fromID);
+        Log.d(TAG, "UPDATE " + DATABASE_QUEUE  + " SET position=" + special + " WHERE position=" + fromPos);
+        database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET position=" + special + " WHERE position=" + fromPos);
         //Move up
             //This has to be more complicated because when it walks through linearly and tries to update, it runs into a uniqueness problem.
             // Example:
@@ -345,16 +347,19 @@ public class DatabaseConnector
             // 6. C
             // -1. D
             // ERROR
-        if(toID<fromID)
+        if(toPos<fromPos)
         {
-            Cursor c = database.query(DATABASE_CALENDAR, new String[] {"_id"},
-                    "_id>=" + toID + " AND _id<" + fromID, null, null, null, "_id");
+            Log.d(TAG, "position>=" + toPos + " AND position<" + fromPos);
+            Cursor c = database.query(DATABASE_QUEUE, new String[] {"position"},
+                    "position>=" + toPos + " AND position<" + fromPos, null, null, null, "position");
             if(c.getCount()>0)
             {
+                Log.d(TAG, "and. here. we. GO");
                 c.moveToLast();
                 while(!c.isBeforeFirst())
                 {
-                    database.execSQL("UPDATE " + DATABASE_QUEUE + " SET _id=_id+1 WHERE _id=" + c.getLong(c.getColumnIndex("_id")));
+                    Log.d(TAG, "UPDATE " + DATABASE_QUEUE + " SET position=position+1 WHERE position=" + c.getLong(c.getColumnIndex("position")));
+                    database.execSQL("UPDATE " + DATABASE_QUEUE + " SET position=position+1 WHERE position=" + c.getLong(c.getColumnIndex("position")));
                     c.moveToPrevious();
                 }
             }
@@ -365,12 +370,14 @@ public class DatabaseConnector
         //Move down
         else    //(to>from)
         {
-            database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET _id=_id-1 WHERE (_id>" + fromID + " AND _id<=" + toID + ")");
+            Log.d(TAG, "UPDATE " + DATABASE_QUEUE  + " SET position=position-1 WHERE (position>" + fromPos + " AND position<=" + toPos + ")");
+            database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET position=position-1 WHERE (position>" + fromPos + " AND position<=" + toPos + ")");
         }
         //Set the actual item that is being moved
-        database.execSQL("UPDATE " + DATABASE_QUEUE + " SET _id=" + toID + " WHERE _id=" + special);
+        Log.d(TAG, "UPDATE " + DATABASE_QUEUE + " SET position=" + toPos + " WHERE position=" + special);
+        database.execSQL("UPDATE " + DATABASE_QUEUE + " SET position=" + toPos + " WHERE position=" + special);
     }
-	
+
 	/** [DATABASE_QUEUE] Gets the number of items in the queue.
 	 * @return The number of items in the queue.
 	 */
@@ -392,17 +399,17 @@ public class DatabaseConnector
 	 */
 	public Cursor findInQueue(long identity, boolean video)
 	{
-	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "current", "video", "streaming"},
+	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},
 			   					"identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
 	   return c;
 	}
 	
 	/** [DATABASE_QUEUE] Removes one item from the queue
-	 * @param id The ID from the DATABASE_QUEUE table to remove.
+	 * @param pos The ID from the DATABASE_QUEUE table to remove.
 	 */
-	public void deleteQueueItem(long id)
+	public void deleteQueueItem(long pos)
 	{
-	   database.delete(DATABASE_QUEUE, "_id=" + id, null);
+	   database.delete(DATABASE_QUEUE, "position=" + pos, null);
 	}
 	
 	/** [DATABASE_QUEUE] Advances the marker for the current item of the queue and returns a cursor containing that item
@@ -412,7 +419,7 @@ public class DatabaseConnector
 	public Cursor advanceQueue(int forward)
 	{
         String TAG = StaticBlob.TAG();
-		long id;
+		long pos;
 		Cursor c = currentQueueItem();
 
         //No current item is found
@@ -423,8 +430,8 @@ public class DatabaseConnector
 			if(c.getCount()==0)
 				return null;
 			c.moveToFirst();
-			id = c.getLong(c.getColumnIndex("_id"));
-			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=1 WHERE _id=" + id); //CLEAN: make more efficient
+			pos = c.getLong(c.getColumnIndex("position"));
+			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=1 WHERE position=" + pos); //CLEAN: make more efficient
 			return getQueue();
 		}
         //Update the queue database
@@ -432,19 +439,19 @@ public class DatabaseConnector
 		{
 			Log.v(TAG, "An old current was found in the queue");
 			c.moveToFirst();
-			id = c.getLong(c.getColumnIndex("_id"));
+			pos = c.getLong(c.getColumnIndex("position"));
 			//Set the old one to be not current
-			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=0" + " WHERE _id=" + id + "");
+			database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current=0" + " WHERE position=" + pos + "");
 			//Get the new one and set it to be current
 			if(forward<0)
-				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "_id<" + id, null, null, null, "_id DESC", "1");
+				c = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "video", "streaming"}, "position<" + pos, null, null, null, "position DESC", "1");
 			else
-				c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "_id>" + id, null, null, null, null, "1");
+				c = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "video", "streaming"}, "position>" + pos, null, null, null, null, "1");
 			if(c.moveToFirst())
 			{
 				Log.v(TAG, "A new current was found in the queue");
-				id = c.getLong(c.getColumnIndex("_id"));
-				database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current='1'" + " WHERE _id='" + id + "'");
+				pos = c.getLong(c.getColumnIndex("position"));
+				database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET current='1'" + " WHERE position='" + pos + "'");
 			}
 		}
 		return currentQueueItem();
@@ -455,7 +462,7 @@ public class DatabaseConnector
 	 */
 	public Cursor currentQueueItem()
 	{
-	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "identity", "video", "streaming"}, "current>'0'", null, null, null, null, "1");
+	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "video", "streaming"}, "current>'0'", null, null, null, null, "1");
 	   return c;
 		
 	}
@@ -716,6 +723,7 @@ public class DatabaseConnector
 	      
 	      String createQuery2 = "CREATE TABLE " + DATABASE_QUEUE + " " + 
 	 	         "(_id integer primary key autoincrement, " +
+                    "position INTEGER, " +
 	 	         	"identity INTEGER, " +      //An ID that is in the DATABASE_EPISODES table. Essentially it should be a foreign key, but it's not because I am teh dumb with databases.
 	 	         	"current INTEGER, " +       //>0 if is the current queue item; ideally only one row in the table should have >0.
 	 	         	"video INTEGER, " +         //>0 if the queue item is a video file, otherwise it's assumed to be audio
@@ -783,6 +791,11 @@ public class DatabaseConnector
 
            try {
                String sql = "ALTER TABLE " + DATABASE_QUEUE + " DROP COLUMN streaming";
+               db.execSQL(sql);
+           } catch(SQLiteException e){}
+
+           try {
+               String sql = "ALTER TABLE " + DATABASE_QUEUE + " ADD COLUMN position INTEGER";
                db.execSQL(sql);
            } catch(SQLiteException e){}
 	   }
