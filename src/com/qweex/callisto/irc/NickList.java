@@ -45,6 +45,8 @@ public class NickList extends ListActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
         String TAG = StaticBlob.TAG();
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
 		super.onCreate(savedInstanceState);
 		setTitle(R.string.nicklist);
         Log.d(TAG, "begin");

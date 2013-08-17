@@ -59,6 +59,8 @@ public class jbtitle extends Activity
 
     public void onCreate(Bundle savedInstanceState)
     {
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         setProgressBarVisibility(true);

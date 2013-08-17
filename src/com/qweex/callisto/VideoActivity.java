@@ -41,6 +41,8 @@ public class VideoActivity extends IRCChat
     public void onCreate(Bundle savedInstanceState)
     {
         String TAG = StaticBlob.TAG();
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         //Do some create things
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);

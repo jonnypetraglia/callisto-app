@@ -61,6 +61,8 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
 	/** Called when the activity is created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstanceState);
         //Deprecated functions ftw!
         addPreferencesFromResource(R.xml.preferences);

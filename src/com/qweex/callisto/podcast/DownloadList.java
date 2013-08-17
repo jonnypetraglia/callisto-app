@@ -64,6 +64,8 @@ public class DownloadList extends ListActivity
     public void onCreate(Bundle savedInstanceState)
 	{
         String TAG = StaticBlob.TAG();
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         //Do some create things
 		super.onCreate(savedInstanceState);
 		mainListView = getListView();

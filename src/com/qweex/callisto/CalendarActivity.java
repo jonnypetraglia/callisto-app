@@ -125,6 +125,8 @@ public class CalendarActivity extends Activity {
     public void onCreate(Bundle savedInstanceState)
     {
         String TAG = StaticBlob.TAG();
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstanceState);
         this.setTitle(this.getResources().getString(R.string.upcoming_shows));
 

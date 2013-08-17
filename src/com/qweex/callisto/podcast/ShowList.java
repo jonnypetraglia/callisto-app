@@ -92,6 +92,8 @@ public class ShowList extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         String TAG = StaticBlob.TAG();
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         //General create stuff
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);

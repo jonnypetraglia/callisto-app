@@ -98,6 +98,8 @@ public class ContactForm extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstanceState);
 
         wv = new WebView(this);

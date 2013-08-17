@@ -39,6 +39,8 @@ public class SearchResultsActivity extends ListActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstanceState);
         handleIntent(getIntent());
         TextView empty = new TextView(this);

@@ -55,6 +55,8 @@ public class twit extends ListActivity
     @Override
     public void onCreate(Bundle savedInstances)
     {
+        if(android.os.Build.VERSION.SDK_INT >= 11)
+            setTheme(R.style.Default_New);
         super.onCreate(savedInstances);
         headerView = getLayoutInflater().inflate(R.layout.twit_hdr, null, false);
         getListView().setBackgroundColor(0xffffffff);
