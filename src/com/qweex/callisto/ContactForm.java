@@ -146,7 +146,9 @@ public class ContactForm extends Activity
     {
         @Override
         protected Void doInBackground(Void... params) {
+            String TAG = StaticBlob.TAG();
             // Read in the css
+            Log.i(TAG, "Starting to Async to read CSS");
             InputStream input;
             try {
                 input = getAssets().open("style.css");
@@ -166,10 +168,14 @@ public class ContactForm extends Activity
         @Override
         protected void onPostExecute(Void v)
         {
+            String TAG = StaticBlob.TAG();
             if(wv==null)
                 finish();
             else
+            {
+                Log.i(TAG, "done loading CSS, loading real page");
                 wv.loadUrl(formURL);
+            }
         }
     }
 
@@ -179,12 +185,16 @@ public class ContactForm extends Activity
         @Override
         public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon)
         {
+            String TAG = StaticBlob.TAG();
+            Log.i(TAG, "Loading: " + url);
             view.setVisibility(View.INVISIBLE);
             baconPDialog.show();
         }
         @Override
         public void onPageFinished(WebView view, String url)
         {
+            String TAG = StaticBlob.TAG();
+            Log.i(TAG, "Finished: " + url);
             if(!url.startsWith("http://wufoo.com/"))
                 view.loadUrl("javascript:window.HTMLOUT.CustomCSSApplier(document.getElementsByTagName('html')[0].innerHTML);");
             else
@@ -249,8 +259,10 @@ public class ContactForm extends Activity
         @SuppressWarnings("unused")
         public void CustomCSSApplier(String result)
         {
+            String TAG = StaticBlob.TAG();
             if(wv==null)
                 return;
+            Log.i(TAG, "Applying custom CSS");
             //Replace Wufoo's CSS with our own
             String str1 = "<!-- CSS -->";
             String str2 = "rel=\"stylesheet\">";
@@ -285,6 +297,7 @@ public class ContactForm extends Activity
                 result = result.replace(remove, customCSS);
             }
 
+            Log.i(TAG, "Loading custom css");
             //Load the data into the webview
             wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
         }
@@ -321,9 +334,11 @@ public class ContactForm extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        String TAG = StaticBlob.TAG();
         switch (item.getItemId())
         {
             case DRAFT_ID:
+                Log.i(TAG, "Menu: Loading draft");
                 wv.loadUrl("javascript:" + JAVASCRIPT_SAVE_DRAFT + ";window.HTMLOUT.saveDraft("+ "tehResult" + ");");
             default:
                 break;
@@ -334,8 +349,10 @@ public class ContactForm extends Activity
 
     @Override
     public boolean onKeyDown(int keyCode, android.view.KeyEvent event)  {
+        String TAG = StaticBlob.TAG();
         if(keyCode == android.view.KeyEvent.KEYCODE_BACK && PreferenceManager.getDefaultSharedPreferences(ContactForm.this).getBoolean("contact_draft", true))
         {
+            Log.i(TAG, "Loading ");
             wv.loadUrl("javascript:" + JAVASCRIPT_SAVE_DRAFT + ";window.HTMLOUT.saveDraftAndFinish("+ "tehResult" + ");");
         }
         return super.onKeyDown(keyCode, event);
