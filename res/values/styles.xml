@@ -100,5 +100,9 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="PreferencesTheme"  parent="android:style/Theme.Light">
+        <item name="android:windowBackground">@color/backClr</item>
+    </style>
+
 </resources>
 

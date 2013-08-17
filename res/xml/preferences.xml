@@ -84,8 +84,7 @@
             />
 
 	    
-	    <PreferenceScreen android:title="@string/irc_settings" android:key="irc_settings"
-                android:background="@color/white">
+	    <PreferenceScreen android:title="@string/irc_settings" android:key="irc_settings" >
             <ListPreference
                     android:title="@string/port"
                     android:summary="@string/port_default"
@@ -146,10 +145,7 @@
 	    </PreferenceScreen>
 
         <PreferenceScreen android:title="@string/custom_feeds" android:key="custom_feeds">
-            <Preference
-                    android:title="Port Forward Podcast"
-                    android:key="test"
-                    />
+            <Preference />
         </PreferenceScreen>
 
 </PreferenceScreen>

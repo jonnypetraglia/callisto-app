@@ -20,9 +20,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.preference.*;
 
 import android.os.Bundle;
@@ -58,21 +56,29 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
     private LinearLayout customFeedDialogView;
     private EditText newCustomFeed;
 
+    private Preference custom_feeds, irc_settings;
+
 	/** Called when the activity is created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {        
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Deprecated functions ftw!
         addPreferencesFromResource(R.xml.preferences);
         findPreference("irc_max_scrollback").setOnPreferenceChangeListener(numberCheckListener);    //Set listener for assuring that it is just a number
+        irc_settings = this.getPreferenceScreen().findPreference("irc_settings");
+        custom_feeds = this.getPreferenceScreen().findPreference("custom_feeds");
         //findPreference("secret").setEnabled(packageExists(DONATION_APP, this));                     //Enable secret features if donation app exists
-        
+
         oldRadioForLiveQuality = PreferenceManager.getDefaultSharedPreferences(this).getString("live_url", "callisto");
         MagicButtonThatDoesAbsolutelyNothing = new ImageButton(this);
         MagicButtonThatDoesAbsolutelyNothing.setOnClickListener(PlayerControls.playPauseListener);
 
-        this.getPreferenceScreen().findPreference("irc_settings").setOnPreferenceClickListener(setSubpreferenceBG);
-        this.getPreferenceScreen().findPreference("custom_feeds").setOnPreferenceClickListener(customFeedScreen);
+        irc_settings.setOnPreferenceClickListener(setSubpreferenceBG);
+        custom_feeds.setOnPreferenceClickListener(setSubpreferenceBG);
+
+        loadCustom();
+
+        Log.i("Derp", "In constructor after loadCustom");
 
         //Show a dialog when the user presses the reset IRC colors
         this.getPreferenceScreen().findPreference("reset_colors").setOnPreferenceClickListener(new OnPreferenceClickListener()
@@ -129,38 +135,29 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
                 .setTitle(R.string.new_)
                 .setPositiveButton(android.R.string.yes, addCustomFeed)
                 .setNegativeButton(android.R.string.no, null).create();
-
-
-
-        getListView().setBackgroundColor(Color.TRANSPARENT);
-
-        getListView().setCacheColorHint(Color.TRANSPARENT);
-
-        getListView().setBackgroundColor(Color.rgb(4, 26, 55));
     }
 
-    /** Stops the activity from being re-created from  */
     @Override
-    public void onContentChanged() {
-        String TAG = StaticBlob.TAG();
-        Log.i(TAG, "Rotating?");
+    public void onContentChanged()
+    {
         super.onContentChanged();
-        try {
-        setSubpreferenceBG.onPreferenceClick(getPreferenceScreen().findPreference("irc_settings"));
-        setSubpreferenceBG.onPreferenceClick(getPreferenceScreen().findPreference("custom_feeds"));
-        }catch(Exception e){}
+        setSubpreferenceBG.onPreferenceClick(custom_feeds);
     }
 
     /** Sets the preference background color for theming. http://stackoverflow.com/a/3223676/1526210 */
     OnPreferenceClickListener setSubpreferenceBG = new OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
+            try {
             PreferenceScreen a = (PreferenceScreen) preference;
             a.getDialog().getWindow().setBackgroundDrawableResource(R.color.backClr);
+            } catch(Exception e){
+                Log.i("Derp", "preference click ERROR " + e.getCause());
+            }
             return false;
         }
     };
-    
+
     /** Called when any of the preferences is changed. Used to perform actions on certain events. */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
@@ -247,44 +244,42 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
         }
     };
 
-    /** Builds the custom feeds when clicked */
-    Preference.OnPreferenceClickListener customFeedScreen = new OnPreferenceClickListener() {
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            String TAG = StaticBlob.TAG();
-            setSubpreferenceBG.onPreferenceClick(preference);
+    public void loadCustom() {
+        String TAG = StaticBlob.TAG();
+        setSubpreferenceBG.onPreferenceClick(custom_feeds);
 
-            PreferenceScreen ps = (PreferenceScreen) getPreferenceScreen().findPreference("custom_feeds");
-            ps.removeAll();
+        PreferenceScreen ps;
+        if(custom_feeds==null)
+            return;
+        ps = (PreferenceScreen) custom_feeds;
+        ps.removeAll();
 
-            //Add the custom feeds
-            Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
-            if(c.getCount()>0)
-            {
-                c.moveToFirst();
-                do {
-                    Preference newPref = new Preference(preference.getContext());
-                    newPref.setTitle(c.getString(c.getColumnIndex("title")));
-                    newPref.setKey(c.getString(c.getColumnIndex("_id")));      //TODO Is this creating junk keys???
-                    newPref.setOnPreferenceClickListener(customFeedListener);
-                    ps.addItemFromInflater(newPref);
-                } while(c.moveToNext());
-            }
-
-            Preference newPref = new Preference(preference.getContext());
-            newPref.setTitle(R.string.new_);
-            newPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    newCustomFeedDialog.show();
-                    return false;
-                }
-            });
-            ps.addItemFromInflater(newPref);
-
-            return true;
+        //Add the custom feeds
+        Cursor c = StaticBlob.databaseConnector.getCustomFeeds();
+        if(c.getCount()>0)
+        {
+            c.moveToFirst();
+            do {
+                Preference newPref = new Preference(custom_feeds.getContext());
+                newPref.setTitle(c.getString(c.getColumnIndex("title")));
+                newPref.setKey(c.getString(c.getColumnIndex("_id")));      //TODO Is this creating junk keys???
+                newPref.setOnPreferenceClickListener(customFeedListener);
+                ps.addItemFromInflater(newPref);
+            } while(c.moveToNext());
         }
-    };
+        PreferenceCategory cat = new PreferenceCategory(custom_feeds.getContext());
+        ps.addItemFromInflater(cat);
+        Preference newPref = new Preference(custom_feeds.getContext());
+        newPref.setTitle(R.string.new_);
+        newPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                newCustomFeedDialog.show();
+                return false;
+            }
+        });
+        cat.addItemFromInflater(newPref);
+    }
 
     /** Click custom feed */
     Preference.OnPreferenceClickListener customFeedListener = new OnPreferenceClickListener() {
@@ -321,7 +316,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
             if(title.trim().length()==0)
                 return;
             StaticBlob.databaseConnector.updateCustomFeed(id, title, url);
-            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+            loadCustom();
         }
     };
 
@@ -338,7 +333,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
                 title = "New Feed";
             }
             StaticBlob.databaseConnector.addCustomFeed(title, url);
-            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+            loadCustom();
         }
     };
 
@@ -360,7 +355,7 @@ public class QuickPrefsActivity extends PreferenceActivity implements SharedPref
                             long id = Long.parseLong((String) customFeedDialog.findViewById(R.id.title).getTag());
                             StaticBlob.databaseConnector.removeCustomFeed(id);
 
-                            customFeedScreen.onPreferenceClick(QuickPrefsActivity.this.findPreference("custom_feeds"));
+                            loadCustom();
                             customFeedDialog.dismiss();
                         }})
                     .setNegativeButton(android.R.string.no, null).show();

@@ -148,7 +148,7 @@ public class DatabaseConnector
 	/** [DATABASE_EPISODES] Clears all episodes out of a show.
 	 * @param show The show to clear from the DATABASE_EPISODES table.
 	 */
-	public void clearShow(String show)
+	public void clearShow(Context con, String show)
 	{
         //TODO: THIS IS HORRIBLY INEFFICIENT
         Cursor c = database.query(DATABASE_EPISODES,
@@ -166,6 +166,8 @@ public class DatabaseConnector
                 id = c.getLong(c.getColumnIndex("_id"));
                 Cursor q = database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + id,
                         null, null, null, null);
+                if(q.getInt(q.getColumnIndex("current"))>0)
+                    PlayerControls.stop(con);
                 if(q.getCount()>0)
                     move(q.getLong(q.getColumnIndex("_id")), 0);
             } while(c.moveToNext());
@@ -680,7 +682,7 @@ public class DatabaseConnector
         Cursor c = getCustomFeed(id);
         c.moveToFirst();
         String title = c.getString(c.getColumnIndex("title"));
-        clearShow(title);
+        clearShow(null, title);
         database.delete(DATABASE_CUSTOM_FEEDS, "_id='" + id + "'", null);
     }
 

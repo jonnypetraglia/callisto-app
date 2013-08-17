@@ -263,7 +263,7 @@ public class ShowList extends Activity
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 loading.setText(ShowList.this.getResources().getString(R.string.list_empty));
-                                StaticBlob.databaseConnector.clearShow(currentShow);
+                                StaticBlob.databaseConnector.clearShow(ShowList.this, currentShow);
                                 Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
                                 ShowList.this.showAdapter.changeCursor(r);
                                 ShowList.this.showAdapter.notifyDataSetChanged();

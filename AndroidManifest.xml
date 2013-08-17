@@ -52,20 +52,19 @@
             <meta-data android:name="android.app.searchable"
                        android:resource="@xml/searchable"/>
         </activity>
-        <activity android:name=".podcast.EpisodeDesc"></activity>
+        <activity android:name=".podcast.EpisodeDesc"/>
 
-        <activity android:name=".ContactForm" android:configChanges="keyboardHidden|orientation"
-                ></activity>
-        <activity android:name=".podcast.Queue" android:launchMode="singleTop"></activity>
-        <activity android:name="CalendarActivity"></activity>
+        <activity android:name=".ContactForm" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name=".podcast.Queue" android:launchMode="singleTop"/>
+        <activity android:name="CalendarActivity"/>
         <activity android:name=".irc.IRCChat"
                   android:configChanges="keyboardHidden|orientation"
                   android:launchMode="singleTop"
-                ></activity>
-        <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"></activity>
-        <activity android:name="QuickPrefsActivity" android:theme="@android:style/Theme.Light" android:windowBackground="@color/backClr"></activity>
+                />
+        <activity android:name=".podcast.DownloadList" android:launchMode="singleTop"/>
+        <activity android:name="QuickPrefsActivity" android:theme="@style/PreferencesTheme"/>
         <activity android:name=".donate.Donate"
-                  android:configChanges="keyboardHidden|orientation"></activity>
+                  android:configChanges="keyboardHidden|orientation"/>
         <activity android:name="com.paypal.android.MEP.PayPalActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation"/>
