@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.qweex.callisto.podcast.EpisodeDesc;
+import com.qweex.callisto.podcast.ShowList;
 import com.qweex.utils.ArrayListWithMaximum;
 import com.qweex.callisto.irc.IRCChat;
 import com.qweex.callisto.listeners.*;
@@ -242,7 +243,7 @@ public class StaticBlob
                 Log.i(TAG, "Prepared, seeking to " + StaticBlob.playerInfo.position);
                 StaticBlob.mplayer.seekTo(StaticBlob.playerInfo.position);
                 StaticBlob.playerInfo.length = StaticBlob.mplayer.getDuration()/1000;
-                StaticBlob.databaseConnector.putLength(StaticBlob.playerInfo.title, StaticBlob.mplayer.getDuration());
+                StaticBlob.databaseConnector.putLength(StaticBlob.playerInfo.title, StaticBlob.playerInfo.show, StaticBlob.mplayer.getDuration());
 
                 Log.i(TAG, "Prepared, length is " + StaticBlob.playerInfo.length);
                 try {
@@ -313,6 +314,8 @@ public class StaticBlob
 
         File target = new File(StaticBlob.storage_path + File.separator + show);
         target = new File(target, date + "__" + makeFileFriendly(title) + ext);
+        File music_file_location = new File(target, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex("mp3link"))));
+        File video_file_location = new File(target, date + "__" + makeFileFriendly(title) + EpisodeDesc.getExtension(c.getString(c.getColumnIndex("vidlink"))));
 
         //2. Delete file
         if(target.exists())
@@ -337,6 +340,11 @@ public class StaticBlob
         //5. Update EpisodeDesc buttons
         if(EpisodeDesc.currentInstance!=null)
             EpisodeDesc.currentInstance.determineButtons();
+
+        //6. Update ShowList
+        if(ShowList.thisInstance!=null && ShowList.thisInstance.currentQueueItem!=null)
+             ShowList.thisInstance.runOnUiThread(ShowList.thisInstance.new updateBoldOrItalic(id, ShowList.thisInstance.currentQueueItem,
+                     music_file_location, video_file_location, c.getLong(c.getColumnIndex("mp3size")), c.getLong(c.getColumnIndex("vidsize"))));
     }
 
 }

@@ -85,6 +85,9 @@ public class ShowList extends Activity
     /** Preferences for this show; contains things like last checked time */
     public SharedPreferences showSettings;
 
+    public View currentQueueItem, currentDownloadItem;
+    public static ShowList thisInstance;
+
     /** Called when the activity is first created. Sets up the view.
      * @param savedInstanceState Um I don't even know. Read the Android documentation.
      *  */
@@ -159,6 +162,7 @@ public class ShowList extends Activity
     {
         String TAG = StaticBlob.TAG();
         super.onResume();
+        thisInstance = this;
         setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(ShowList.this);      //Update player controls
 
@@ -185,28 +189,53 @@ public class ShowList extends Activity
             File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
             video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
 
-            boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
-            if(inDLQueue || music_file_location.exists() || video_file_location.exists())   //If it's in DL queue or either format exists
+            runOnUiThread(new updateBoldOrItalic(id, current_episode, music_file_location, video_file_location, c.getLong(c.getColumnIndex("mp3size")), c.getLong(c.getColumnIndex("vidsize"))));
+
+            c = StaticBlob.databaseConnector.currentQueueItem();
+            if(currentQueueItem==null || currentQueueItem == current_episode)
             {
-                //First check if it is fully downloaded, otherwise it must be partially downloaded or in the queue
-                if(!inDLQueue && (
-                        music_file_location.length()==c.getLong(c.getColumnIndex("mp3size")) ||
-                                video_file_location.length()==c.getLong(c.getColumnIndex("vidsize"))))
+                if(c.getCount()>0)
                 {
-                    ((TextView) current_episode.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
-                    ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
+                    c.moveToFirst();
+                    if(c.getLong(c.getColumnIndex("identity"))==id)
+                        currentQueueItem = current_episode;
+                    else
+                        currentQueueItem = null;
                 }
                 else
-                {
-                    ((TextView) current_episode.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.ITALIC);
-                    ((TextView) current_episode.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.ITALIC);
-                }
+                    currentQueueItem = null;
             }
+            // Mark current download item
+            c = StaticBlob.databaseConnector.getActiveDownloads();
+            if(currentDownloadItem==null || currentDownloadItem == current_episode)
+            {
+                if(c.getCount()>0)
+                {
+                    c.moveToFirst();
+                    Log.i(TAG, "  currentDownloadItem =? " + currentDownloadItem + "   " + c.getLong(c.getColumnIndex("identity")) + " == " + id);
+                    if(c.getLong(c.getColumnIndex("identity"))==id)
+                        currentDownloadItem = current_episode;
+                    else
+                        currentDownloadItem = null;
+                }
+                else
+                    currentDownloadItem = null;
+            }
+
         }catch(Exception e)
         {
             Log.e(TAG, "Error: " + e.getClass() + " - " + e.getMessage() + "(this should never happen...?)");
         }
         current_episode=null;
+    }
+
+    /** Called when the activity is going to be destroyed. */
+    @Override
+    public void onDestroy()
+    {
+        String TAG = StaticBlob.TAG();
+        super.onDestroy();
+        thisInstance = null;
     }
 
     /** Called when a search is requested.
@@ -481,6 +510,8 @@ public class ShowList extends Activity
             ((TextView) v.findViewById(R.id.hiddenId)).setText(Long.toString(id));
             //title
             ((TextView) v.findViewById(R.id.rowTextView)).setText(title);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)v.findViewById(R.id.rowTextView).getLayoutParams();
+            lp.setMargins((int)(10*StaticBlob.DP), lp.topMargin, lp.rightMargin, lp.bottomMargin);;
             //date
             String d = date;
             try {
@@ -498,35 +529,100 @@ public class ShowList extends Activity
             }
             ((TextView) v.findViewById(R.id.rowSubTextView)).setText(d);
 
-
-            //Set the effects for if the episode has been downloaded or is in queue, etc
-            boolean inDLQueue = StaticBlob.databaseConnector.isInDownloadQueue(id);
-            boolean exists = false,
-                    complete = false;
+            File music_file_location = null, video_file_location = null;
             try {
-                File music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
+                music_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
                 music_file_location = new File(music_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(mp3_link));
-                exists |= music_file_location.exists();
-                complete |= exists && music_file_location.length()==this.c.getLong(this.c.getColumnIndex("mp3size"));
-            }catch(NullPointerException npe)
-            {
+            }catch(NullPointerException npe) {
                 Log.e(TAG, "Null pointer when determining file status: Audio");
             }
-            if(!complete)
-            {
-                try {
-                    File video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
-                    video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
-                    exists |= video_file_location.exists();
-                    complete |= video_file_location.exists() && video_file_location.length()==this.c.getLong(this.c.getColumnIndex("vidsize"));
-                }catch(NullPointerException npe)
-                {
-                    Log.e(TAG, "Null pointer when determining file status: Video");
-                }
+            try {
+                video_file_location = new File(StaticBlob.storage_path + File.separator + currentShow);
+                video_file_location = new File(video_file_location, StaticBlob.sdfFile.format(tempDate) + "__" + StaticBlob.makeFileFriendly(title) + EpisodeDesc.getExtension(vid_link));
+            }catch(NullPointerException npe) {
+                Log.e(TAG, "Null pointer when determining file status: Video");
             }
-            if(inDLQueue || exists)
+
+            runOnUiThread(new updateBoldOrItalic(id, v, music_file_location, video_file_location, this.c.getLong(this.c.getColumnIndex("mp3size")), this.c.getLong(this.c.getColumnIndex("vidsize"))));
+
+
+            // Mark current queue item
+            Cursor c = StaticBlob.databaseConnector.currentQueueItem();
+            if(currentQueueItem==null || currentQueueItem == v)
             {
-                if(complete)
+                if(c.getCount()>0)
+                {
+                    c.moveToFirst();
+                    if(c.getLong(c.getColumnIndex("identity"))==id)
+                        currentQueueItem = v;
+                    else
+                        currentQueueItem = null;
+                }
+                else
+                    currentQueueItem = null;
+            }
+            // Mark current download item
+            c = StaticBlob.databaseConnector.getActiveDownloads();
+            if(currentDownloadItem==null || currentDownloadItem == v)
+            {
+                if(c.getCount()>0)
+                {
+                    c.moveToFirst();
+                    Log.i(TAG, "  currentDownloadItem =? " + currentDownloadItem + "   " + c.getLong(c.getColumnIndex("identity")) + " == " + id);
+                    if(c.getLong(c.getColumnIndex("identity"))==id)
+                        currentDownloadItem = v;
+                    else
+                        currentDownloadItem = null;
+                }
+                else
+                    currentDownloadItem = null;
+            }
+            Log.i(TAG, "currentDownloadItem == " + currentDownloadItem);
+
+            //Hide the specific views
+            int[] hide = new int[] { R.id.remove, R.id.progress, R.id.grabber, R.id.rightTextView};
+            for(int i=0; i<hide.length; i++)
+                v.findViewById(hide[i]).setVisibility(View.GONE);
+
+            //Check the Jupiter icon if it is new
+            boolean is_new = this.c.getInt(this.c.getColumnIndex("new"))>0;
+            CheckBox rb = ((CheckBox)v.findViewById(R.id.img));
+            rb.setChecked(is_new);
+            rb.setOnCheckedChangeListener(toggleNew);
+
+            return(v);
+        }
+    }
+
+    public class updateBoldOrItalic implements Runnable
+    {
+        long id, mp3size, vidsize;
+        View v;
+        File music_file_location, video_file_location;
+        public updateBoldOrItalic(long id, View v, File music_file_location, File video_file_location, long mp3size, long vidsize)
+        {
+            this.id = id;
+            this.v = v;
+            this.music_file_location = music_file_location;
+            this.video_file_location = video_file_location;
+            this.mp3size = mp3size;
+            this.vidsize = vidsize;
+        }
+
+        @Override
+        public void run() {
+            String TAG = StaticBlob.TAG();
+            //Set the effects for if the episode has been downloaded or is in queue, etc
+            boolean inDLQueue = StaticBlob.databaseConnector.isInActiveDownloadQueueAtAll(id);
+
+            boolean mp3exists   = (music_file_location!=null && music_file_location.exists());
+            boolean mp3complete = mp3exists && music_file_location.length()==mp3size;
+            boolean videxists   = (video_file_location!=null && video_file_location.exists());
+            boolean vidcomplete = videxists && video_file_location.length()==vidsize;
+
+            if(inDLQueue || mp3exists || videxists)
+            {
+                if(mp3complete || vidcomplete)
                 {
                     ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, Typeface.BOLD);
                     ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, Typeface.BOLD);
@@ -541,41 +637,6 @@ public class ShowList extends Activity
                 ((TextView) v.findViewById(R.id.rowTextView)).setTypeface(null, 0);
                 ((TextView) v.findViewById(R.id.rowSubTextView)).setTypeface(null, 0);
             }
-
-
-            //TODO: Show time remaining? Downside: can only get length of local episodes.
-            /*
-            try {
-                long position = this.c.getLong(this.c.getColumnIndex("position"));
-                long length = StaticBlob.databaseConnector.getLength(id);
-                Log.w("ShowList:ShowListCursorAdapter", "Length: " + length + " position: " + position);
-                long x = length - position;
-                if(x>0)
-                {
-                    ((TextView) v.findViewById(R.id.rightTextView)).setText(Callisto.formatTimeFromSeconds((int)(x/1000)));
-                    v.findViewById(R.id.rightTextView).setVisibility(View.VISIBLE);
-                }
-                else
-                    v.findViewById(R.id.rightTextView).setVisibility(View.GONE);
-            } catch(Exception e)
-            {
-                Log.w("ShowList:ShowListCursorAdapter", "No time to go off of.");
-                v.findViewById(R.id.rightTextView).setVisibility(View.GONE);
-            }
-            //*/
-
-            //Hide the specific views
-            int[] hide = new int[] { R.id.moveUp, R.id.moveDown, R.id.remove, R.id.progress, R.id.grabber, R.id.rightTextView};
-            for(int i=0; i<hide.length; i++)
-                v.findViewById(hide[i]).setVisibility(View.GONE);
-
-            //Check the Jupiter icon if it is new
-            boolean is_new = this.c.getInt(this.c.getColumnIndex("new"))>0;
-            CheckBox rb = ((CheckBox)v.findViewById(R.id.img));
-            rb.setChecked(is_new);
-            rb.setOnCheckedChangeListener(toggleNew);
-
-            return(v);
         }
     }
 }

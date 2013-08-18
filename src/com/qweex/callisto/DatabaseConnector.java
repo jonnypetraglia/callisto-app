@@ -117,7 +117,7 @@ public class DatabaseConnector
 	public void markAllNew(String show, boolean is_new)
 	{
 	   database.execSQL("UPDATE " + DATABASE_EPISODES + " SET new='" + (is_new?1:0) + "'" +
-			   " WHERE show='" + show + "'");
+			   " WHERE show='" + sanitize(show) + "'");
 	}
 	
 	/** [DATABASE_EPISODES] Updates the position of an episode entry.
@@ -138,7 +138,7 @@ public class DatabaseConnector
 	{
 		   return database.query(DATABASE_EPISODES /* table */,
 				    new String[] {"_id", "title", "date", "new", "mp3link"} /* columns */,
-				    "show = '" + show + "'" + (filter ? " and new='1'" : "") /* where or selection */,
+				    "show = '" + sanitize(show) + "'" + (filter ? " and new='1'" : "") /* where or selection */,
 		        	null /* selectionArgs i.e. value to replace ? */,
 		        	null /* groupBy */,
 		        	null /* having */,
@@ -152,8 +152,8 @@ public class DatabaseConnector
 	{
         //TODO: THIS IS HORRIBLY INEFFICIENT
         Cursor c = database.query(DATABASE_EPISODES,
-                new String[] {"_id", "show"},
-                "show='" + show + "'",
+                new String[]{"_id", "show"},
+                "show='" + sanitize(show) + "'",
                 null,
                 null,
                 null,
@@ -169,11 +169,11 @@ public class DatabaseConnector
                 if(q.getInt(q.getColumnIndex("current"))>0)
                     PlayerControls.stop(con);
                 if(q.getCount()>0)
-                    move(q.getLong(q.getColumnIndex("_id")), 0);
+                    removeQueueItem(q.getLong(q.getColumnIndex("_id")));
             } while(c.moveToNext());
         }
 
-		database.delete(DATABASE_EPISODES, "show = '" + show + "'", null);
+		database.delete(DATABASE_EPISODES, "show = '" + sanitize(show) + "'", null);
 	}
 	
 	/** [DATABASE_EPISODES] Gets one specific episode from the database.
@@ -203,9 +203,9 @@ public class DatabaseConnector
 	public Cursor searchEpisodes(String searchTerm, String searchShow)
 	{
 		Cursor c = database.query(DATABASE_EPISODES, new String[] {"_id", "title", "show", "date"}
-				, "(title like '%" + searchTerm + "%' or " +
-				  "description like '%" + searchTerm + "%')" + 
-				  (searchShow!="" ? (" and show='" + searchShow + "'") : "")
+				, "(title like '%" + sanitize(searchTerm) + "%' or " +
+				  "description like '%" + sanitize(searchTerm) + "%')" +
+				  (searchShow!="" ? (" and show='" + sanitize(searchShow) + "'") : "")
 				, null, null, null, null);
 		return c;
 	}
@@ -283,47 +283,21 @@ public class DatabaseConnector
 	
 	   database.update(DATABASE_QUEUE, editEpisode, "position=" + pos, null);
 	}
+
+    /** [DATABASE_QUEUE] removeQueueItem
+     */
+    public void removeQueueItem(long pos)
+    {
+        Cursor c = currentQueueItem();
+        if(c.getCount()==0)
+            return;
+        c.moveToFirst();
+        if(c.getLong(c.getColumnIndex("position"))==pos)
+            advanceQueue(1);
+        database.execSQL("DELETE FROM " + DATABASE_QUEUE + " WHERE position=" + pos + ";");
+        database.execSQL("UPDATE " + DATABASE_QUEUE  + " SET position=position-1 WHERE position>" + pos);
+    }
 	
-	/** @Deprecated
-     * [DATABASE_QUEUE] Moves an item either forward or back in the queue
-	 * @param pos1 The position to move either forward or back from the DATABASE_QUEUE table.
-	 * @param dir The direction to move; >0 is up one, <0 is down one, 0 is delete
-	 */
-	public void move(long pos1, int dir)
-	{
-        String TAG = StaticBlob.TAG();
-        //Get the one that is selected
-        Cursor c1 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position=" + pos1, null, null, null, null);
-        c1.moveToFirst();
-        long identity1 = c1.getLong(c1.getColumnIndex("identity"));
-        int current1 = c1.getInt(c1.getColumnIndex("current"));
-        int streaming1 = c1.getInt(c1.getColumnIndex("streaming"));
-        int video1 = c1.getInt(c1.getColumnIndex("video"));
-
-        //Get the one that it will move with
-        Cursor c2;
-        if(dir<0)
-           c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position<" + pos1, null, null, null, "position DESC", "1");
-        else
-           c2 = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "current", "video", "streaming"},	"position>" + pos1, null, null, null, "position ASC", "1");
-        if(dir==0)
-           deleteQueueItem(pos1);
-        if(c2.getCount()==0)
-           return;
-        c2.moveToFirst();
-        long pos2 = c2.getLong(c2.getColumnIndex("position"));
-        long identity2 = c2.getLong(c2.getColumnIndex("identity"));
-        int current2 = c2.getInt(c2.getColumnIndex("current"));
-        int streaming2 = c2.getInt(c2.getColumnIndex("streaming"));
-        int video2 = c2.getInt(c2.getColumnIndex("video"));
-
-        if(dir!=0)
-        {
-           updateQueue(pos1, identity2, current2, streaming2, video2);
-           updateQueue(pos2, identity1, current1, streaming1, video1);
-        }
-	}
-
     /** [DATABASE_QUEUE] Moves an item in the queue
      * @param fromPos The position that is the target of the moving.
      * @param toPos The position that the item will be inserted before(?) from the DATABASE_QUEUE table.
@@ -464,9 +438,9 @@ public class DatabaseConnector
 	{
 	   Cursor c = database.query(DATABASE_QUEUE, new String[] {"_id", "position", "identity", "video", "streaming"}, "current>'0'", null, null, null, null, "1");
 	   return c;
-		
 	}
-	
+
+
 	//------DATABASE_CALENDAR
 	/** [DATABASE_CALENDAR] Inserts a new event. Parameters should be (mostly) self explanatory
 	 * @param recurring 0 if the event is non-recurring, the day index otherwise (1-7 for Sun-Sat)
@@ -529,10 +503,10 @@ public class DatabaseConnector
 	}
 
     /** [DATABASE_EPISODES] Insert a length */
-    public void putLength(String title, long length)
+    public void putLength(String title, String show, long length)
     {
         database.execSQL("UPDATE " + DATABASE_EPISODES + " SET length='" + length + "'" +
-                " WHERE title='" + title + "'");
+                " WHERE (title='" + sanitize(title) + "' AND show='" + sanitize(show) + "')");
     }
 
     /** [DATABASE_DOWNLOADS] Retrieves all active downloads */
@@ -550,7 +524,7 @@ public class DatabaseConnector
     }
 
     /** [DATABASE_DOWNLOADS] Tests if an identity is in the download queue */
-    public boolean isInDownloadQueue(long identity, boolean video)
+    public boolean isInActiveDownloadQueue(long identity, boolean video)
     {
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
                 "active>0 AND identity=" + identity + " AND video=" + (video?1:0), null, null, null, null);
@@ -559,7 +533,7 @@ public class DatabaseConnector
 
     /** [DATABASE_DOWNLOADS] Tests if an identity is in the download queue
      *  NOTE: ONLY use this if you want to know if an episode is in the queue IN ANY FORM */
-    public boolean isInDownloadQueue(long identity)
+    public boolean isInActiveDownloadQueueAtAll(long identity)
     {
         Cursor c = database.query(DATABASE_DOWNLOADS, new String[] {"_id", "identity", "video", "active"},
                 "active>0 AND identity=" + identity, null, null, null, null);
@@ -655,8 +629,8 @@ public class DatabaseConnector
     /** [DATABASE_CUSTOM_FEEDS] Gets 1 feed by the title*/
     public Cursor getCustomFeedByTitle(String title)
     {
-        return database.query(DATABASE_CUSTOM_FEEDS, new String[] {"_id", "title", "url"},
-                "title" + title, null, null, null, null);
+        return database.query(DATABASE_CUSTOM_FEEDS, new String[]{"_id", "title", "url"},
+                "title='" + sanitize(title) + "'", null, null, null, null);
     }
 
     /** [DATABASE_CUSTOM_FEEDS] Updates a custom feed title & url */
@@ -678,9 +652,9 @@ public class DatabaseConnector
         Cursor c = getCustomFeed(id);
         c.moveToFirst();
         String oldTitle = c.getString(c.getColumnIndex("title"));
-        database.execSQL("UPDATE " + DATABASE_EPISODES + " SET show='" + title + "'" +
-                " WHERE show='" + oldTitle + "'");
-        database.execSQL("UPDATE " + DATABASE_CUSTOM_FEEDS + " SET title='" + title + "', url='" + url + "'" +
+        database.execSQL("UPDATE " + DATABASE_EPISODES + " SET show='" + sanitize(title) + "'" +
+                " WHERE show='" + sanitize(oldTitle) + "'");
+        database.execSQL("UPDATE " + DATABASE_CUSTOM_FEEDS + " SET title='" + sanitize(title) + "', url='" + sanitize(url) + "'" +
                 " WHERE _id='" + id + "'");
     }
 
@@ -800,4 +774,9 @@ public class DatabaseConnector
            } catch(SQLiteException e){}
 	   }
 	}
+
+    private String sanitize(String in)
+    {
+        return in.replaceAll("'", "\\'");
+    }
 }

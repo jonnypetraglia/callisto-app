@@ -236,7 +236,7 @@ public class DownloadList extends ListActivity
                 LayoutInflater inflater=getLayoutInflater();
                 row=inflater.inflate(R.layout.row, parent, false);
 
-                int[] hide = new int[] {R.id.grabber, R.id.moveUp, R.id.moveDown, R.id.img};
+                int[] hide = new int[] {R.id.grabber, R.id.img};
                 for(int i=0; i<hide.length; i++)
                     (row.findViewById(hide[i])).setVisibility(View.GONE);
             }
@@ -257,24 +257,6 @@ public class DownloadList extends ListActivity
             ((TextView)row.findViewById(R.id.rowSubTextView)).setText(show);
             ((TextView)row.findViewById(R.id.rightTextView)).setText(media_size);
             ((ImageButton)row.findViewById(R.id.remove)).setOnClickListener(removeItem);
-
-            /*ImageButton up = ((ImageButton)row.findViewById(R.id.moveUp));
-            ImageButton down = ((ImageButton)row.findViewById(R.id.moveDown));
-            up.setOnClickListener(moveUp);
-            down.setOnClickListener(moveDown);
-            if(completed)
-            {
-                up.setVisibility(View.GONE);
-                down.setVisibility(View.GONE);
-            }
-            else
-            {
-                up.setVisibility(View.VISIBLE);
-                down.setVisibility(View.VISIBLE);
-                up.setEnabled(position>0);
-                down.setEnabled(position>0);
-            }
-            */
 
             //Progress
             try {

@@ -36,11 +36,11 @@ import java.text.ParseException;
 public class DownloadTask extends AsyncTask<String, Object, Boolean>
 {
     /** Info about episode */
-    private String Title, Date, Link, Show;
+    private String Title, Date, AudLink, VidLink, Show;
     /** Total size of the file to be downloaded */
-    private long TotalSize;
+    private long TotalSize, AudSize, VidSize;
     /** Target file to download to */
-    private File Target;
+    private File Target, AudFile, VidFile;
     /** ID for download notification */
     private final int NOTIFICATION_ID = 3696;
     /** Timeout Parameters */
@@ -123,11 +123,13 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 current.moveToFirst();
 
                 //Get info
-                Link = current.getString(current.getColumnIndex(isVideo ? "vidlink" : "mp3link"));
+                AudLink = current.getString(current.getColumnIndex("mp3link"));
+                VidLink = current.getString(current.getColumnIndex("vidlink"));
+                AudSize = current.getLong(current.getColumnIndex("mp3size"));
+                VidSize = current.getLong(current.getColumnIndex("vidsize"));
                 Title = current.getString(current.getColumnIndex("title"));
                 Date = current.getString(current.getColumnIndex("date"));
                 Show = current.getString(current.getColumnIndex("show"));
-                Log.i(TAG, "Starting download: " + Link);
                 Date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(Date));
 
                 //Getting target
@@ -136,12 +138,15 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 if(Title.indexOf("|")>0)
                     Title = Title.substring(0, Title.indexOf("|"));
                 Title=Title.trim();
-                Target = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(Link));
+                AudFile = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(AudLink));
+                VidFile = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(VidLink));
+                Target = isVideo ? VidFile : AudFile;
 
 
                 //Prepare the HTTP
                 Log.i(TAG, "Path: " + Target.getPath());
-                URL url = new URL(Link);
+                URL url = new URL(isVideo ? VidLink : AudLink);
+                Log.i(TAG, "Starting download: " + url.getPath());
 
                 Log.i(TAG, "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -335,8 +340,12 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                             StaticBlob.databaseConnector.appendToQueue(identity, false, isVideo);
                             StaticBlob.playerInfo.update(context);
                         }
+                        //Episode Desc
                         if(EpisodeDesc.currentInstance!=null)
                             EpisodeDesc.currentInstance.determineButtons();
+                        //ShowList
+                        if(ShowList.thisInstance!=null && ShowList.thisInstance.currentDownloadItem!=null)
+                            ShowList.thisInstance.runOnUiThread(ShowList.thisInstance.new updateBoldOrItalic(id, ShowList.thisInstance.currentDownloadItem, AudFile, VidFile, AudSize, VidSize));
                     }
                 } else
                     Target.delete();

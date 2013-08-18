@@ -442,7 +442,7 @@ public class EpisodeDesc extends Activity
 
         // 1. It is in the download queue
         //      buttons:  *Downloading*  Cancel
-        if(StaticBlob.databaseConnector.isInDownloadQueue(id, vidSelected))
+        if(StaticBlob.databaseConnector.isInActiveDownloadQueue(id, vidSelected))
         {
             streamButton.setText(this.getResources().getString(R.string.downloading));
             streamButton.setEnabled(false);

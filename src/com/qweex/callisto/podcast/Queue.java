@@ -163,39 +163,6 @@ public class Queue extends ListActivity
         }
     }
 
-    /** @deprecated
-     *  Listener for the up button ("^"). Moves an entry up in the queue. */
-    OnClickListener moveUp = new OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-            long id = Long.parseLong((String) tv.getText());
-            StaticBlob.databaseConnector.move(id, 1);
-            updateNowPlaying(id);
-
-            listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
-            //NowPlaying.this.listAdapter.notifyDataSetChanged();
-        }
-    };
-
-    /** @deprecated
-     *  Listener for the down button ("v"). Moves an entry down in the queue. */
-    OnClickListener moveDown = new OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-            long id = Long.parseLong((String) tv.getText());
-            StaticBlob.databaseConnector.move(id, -1);
-            updateNowPlaying(id);
-
-            listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
-        }
-    };
-
     /** Updates the now playing information when messing with the queue (like removing the currently playing item maybe?
      * @param id The ID of the new item */
     void updateNowPlaying(long id)
@@ -226,8 +193,8 @@ public class Queue extends ListActivity
             String TAG = StaticBlob.TAG();
             Log.d(TAG, "Clicked to remove an item in the queue");
             TextView tv = (TextView)((View)(v.getParent())).findViewById(R.id.hiddenId);
-            long id = Long.parseLong((String) tv.getText());
-            long current_id = id;
+            long pos = Long.parseLong((String) tv.getText());
+            long current_pos = pos;
 
             Cursor c = StaticBlob.databaseConnector.currentQueueItem();
 
@@ -236,15 +203,15 @@ public class Queue extends ListActivity
             else
             {
                 c.moveToFirst();
-                current_id = c.getLong(c.getColumnIndex("_id"));
+                current_pos = c.getLong(c.getColumnIndex("position"));
                 updateNowPlaying(c.getLong(c.getColumnIndex("identity")));
-                if(id==current_id)
+                if(pos==current_pos)
                 {
                     Log.d(TAG, "Removing the current item; advancing to next; should start playing? " + !StaticBlob.playerInfo.isPaused);
                     PlayerControls.changeToTrack(v.getContext(), 1, !StaticBlob.playerInfo.isPaused);
                 }
             }
-            StaticBlob.databaseConnector.move(id, 0);
+            StaticBlob.databaseConnector.removeQueueItem(pos);
             listAdapter.changeCursor(StaticBlob.databaseConnector.getQueue());
             Log.d(TAG, "Done");
         }
@@ -331,10 +298,6 @@ public class Queue extends ListActivity
             ((TextView)v.findViewById(R.id.hiddenId)).setText(Long.toString(position));
 
             //Listeners
-            ImageButton up = ((ImageButton)v.findViewById(R.id.moveUp));
-            up.setOnClickListener(moveUp);
-            ImageButton down = ((ImageButton)v.findViewById(R.id.moveDown));
-            down.setOnClickListener(moveDown);
             ImageButton remove = ((ImageButton)v.findViewById(R.id.remove));
             remove.setOnClickListener(removeItem);
 
@@ -371,10 +334,9 @@ public class Queue extends ListActivity
                 currentProgress = ((ProgressBar)v.findViewById(R.id.progress));
             else if(((ProgressBar)v.findViewById(R.id.progress))==currentProgress)
                 currentProgress=null;
-            Log.i(TAG, "isCurrent: " + isCurrent + " / " + currentProgress);
 
-            up.setVisibility(View.GONE);
-            down.setVisibility(View.GONE);
+            ((ImageView)v.findViewById(R.id.marker)).setVisibility(isCurrent ? View.VISIBLE : View.INVISIBLE);
+
             for(int i=0; i<Hide.length; i++)
                 v.findViewById(Hide[i]).setVisibility(View.GONE);
             return(v);
