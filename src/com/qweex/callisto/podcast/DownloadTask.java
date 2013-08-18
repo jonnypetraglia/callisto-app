@@ -345,7 +345,10 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                             EpisodeDesc.currentInstance.determineButtons();
                         //ShowList
                         if(ShowList.thisInstance!=null && ShowList.thisInstance.currentDownloadItem!=null)
+                        {
                             ShowList.thisInstance.runOnUiThread(ShowList.thisInstance.new updateBoldOrItalic(id, ShowList.thisInstance.currentDownloadItem, AudFile, VidFile, AudSize, VidSize));
+                            ShowList.thisInstance.currentDownloadItem = null;
+                        }
                     }
                 } else
                     Target.delete();

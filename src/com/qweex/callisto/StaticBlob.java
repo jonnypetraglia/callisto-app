@@ -331,20 +331,24 @@ public class StaticBlob
                 //4. If it was the current item in the queue AND player was playing, move to next
                 if(q.getInt(q.getColumnIndex("current"))>0)
                 {
+                    //5. Update ShowList
+                    if(ShowList.thisInstance!=null && ShowList.thisInstance.currentQueueItem!=null &&
+                            c.getLong(c.getColumnIndex("_id"))==q.getLong(q.getColumnIndex("identity")))
+                    {
+                        ShowList.thisInstance.runOnUiThread(ShowList.thisInstance.new updateBoldOrItalic(id, ShowList.thisInstance.currentQueueItem,
+                                music_file_location, video_file_location, c.getLong(c.getColumnIndex("mp3size")), c.getLong(c.getColumnIndex("vidsize"))));
+                        ShowList.thisInstance.currentQueueItem = null;
+                    }
                     PlayerControls.changeToTrack(con, 1, StaticBlob.mplayer!=null && !StaticBlob.playerInfo.isPaused);
                 }
                 StaticBlob.databaseConnector.deleteQueueItem(posq);
             } while(q.moveToNext());
         }
 
-        //5. Update EpisodeDesc buttons
+        //6. Update EpisodeDesc buttons
         if(EpisodeDesc.currentInstance!=null)
             EpisodeDesc.currentInstance.determineButtons();
 
-        //6. Update ShowList
-        if(ShowList.thisInstance!=null && ShowList.thisInstance.currentQueueItem!=null)
-             ShowList.thisInstance.runOnUiThread(ShowList.thisInstance.new updateBoldOrItalic(id, ShowList.thisInstance.currentQueueItem,
-                     music_file_location, video_file_location, c.getLong(c.getColumnIndex("mp3size")), c.getLong(c.getColumnIndex("vidsize"))));
     }
 
 }
