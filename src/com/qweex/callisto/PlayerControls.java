@@ -216,10 +216,10 @@ public class PlayerControls
             return;
         }
 
-        Log.v(TAG, "Queue Size: " + queue.getCount());
-        queue.moveToFirst();
         //The queue merely stores the identity (_id) of the entrie's position in the main SQL
         //After obtaining it, we can get all the information about it
+        Log.v(TAG, "Queue Size: " + queue.getCount());
+        queue.moveToFirst();
         Long id = queue.getLong(queue.getColumnIndex("_id"));
         Long pos = queue.getLong(queue.getColumnIndex("position"));
         Long identity = queue.getLong(queue.getColumnIndex("identity"));
@@ -320,17 +320,17 @@ public class PlayerControls
             StaticBlob.mplayer.setOnCompletionListener(StaticBlob.trackCompleted);
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
             StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
-            Log.i(TAG, "Preparing...? " + sp);
+            StaticBlob.mplayerPrepared.startPlaying = sp;
             //Streaming requires a dialog
             if(isStreaming)
             {
                 if(!sp)
                 {
                     StaticBlob.mplayer = null;
+                    StaticBlob.playerInfo.update(c);
                     return;
                 }
                 try {
-                StaticBlob.mplayerPrepared.startPlaying = sp;
                 StaticBlob.mplayerPrepared.pd = ProgressDialog.show(c, c.getResources().getString(R.string.loading), c.getResources().getString(R.string.loading_msg), true, false);
                 StaticBlob.mplayerPrepared.pd.setCancelable(true);
                 StaticBlob.mplayerPrepared.pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -342,8 +342,12 @@ public class PlayerControls
                     }
                 });
                 } catch(Exception e) {}
+                Log.i(TAG, "Preparing...? " + sp);
+                StaticBlob.mplayer.prepareAsync();
+            } else {
+                Log.i(TAG, "Starting...? " + sp);
+                StaticBlob.mplayer.prepare();       //Will start playing by the onPreparedListener if sp is set
             }
-            StaticBlob.mplayer.prepareAsync();
             //Picks up at the mplayerPrepared listener
         } catch (IllegalArgumentException e) {
             Log.e(TAG+":IllegalArgumentException", "Error attempting to set the data path for MediaPlayer:");
@@ -400,7 +404,7 @@ public class PlayerControls
             return;
         }
 
-        //-----Local-----
+        //Create DB connector if it doesn't exist
         if(StaticBlob.databaseConnector==null || StaticBlob.databaseConnector.queueCount()==0)
         {
             StaticBlob.databaseConnector = new DatabaseConnector(c);
@@ -410,6 +414,8 @@ public class PlayerControls
             if(StaticBlob.databaseConnector.queueCount()==0)
                 return;
         }
+
+        //If it does not exist, create the MediaPlayer
         if(StaticBlob.mplayer==null)
         {
             Log.d(TAG,"PlayPause initiated");
@@ -418,47 +424,50 @@ public class PlayerControls
             StaticBlob.mplayer.setOnErrorListener(StaticBlob.trackCompletedBug);
             StaticBlob.mplayer.setOnPreparedListener(StaticBlob.mplayerPrepared);
             changeToTrack(c, 0, true);
+            CallistoWidget.updateAllWidgets(c);
+            return;
         }
-        else
-        {
-            Log.d(TAG,"PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
-            if(StaticBlob.playerInfo.isPaused)
-            {
-                Cursor isvid = StaticBlob.databaseConnector.currentQueueItem();
-                isvid.moveToFirst();
-                if(isvid.getInt(isvid.getColumnIndex("video"))>0)
-                    changeToTrack(c, 0, true);
-                else
-                {
-                    if(StaticBlob.audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
-                        StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
-                    if(StaticBlob.playerInfo.isPaused)
-                        StaticBlob.mplayer.start();
-                    else
-                        StaticBlob.mplayer.prepareAsync();
-                }
-                Log.d(TAG,"Playing!!!!!");
-                if(v!=null)
-                    ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
 
-                long id = -1;
-                try {
-                    Cursor cu = StaticBlob.databaseConnector.currentQueueItem();
-                    cu.moveToFirst();
-                    id = cu.getLong(cu.getColumnIndex("identity"));
-                }catch(Exception e){}
-                createNotification(c, id);
-            }
+
+        Log.d(TAG,"PlayPause is " + (StaticBlob.playerInfo.isPaused ? "" : "NOT") + "paused");
+        if(StaticBlob.playerInfo.isPaused)
+        {
+            Cursor isvid = StaticBlob.databaseConnector.currentQueueItem();
+            isvid.moveToFirst();
+            if(isvid.getInt(isvid.getColumnIndex("video"))>0)
+                changeToTrack(c, 0, true);
             else
             {
-                StaticBlob.mplayer.pause();
-                if(v!=null)
-                    ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
-                if(PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false))
-                    StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
+                if(StaticBlob.audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
+                    StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
+                //if(StaticBlob.playerInfo.isPaused)
+                //    StaticBlob.mplayer.start();
+                //else
+                //    StaticBlob.mplayer.prepareAsync();
+                //changeToTrack(c,0,true);
+                StaticBlob.mplayer.start();
             }
-            StaticBlob.playerInfo.isPaused = !StaticBlob.playerInfo.isPaused;
+            Log.d(TAG,"Playing!!!!!");
+            if(v!=null)
+                ((ImageButton)v).setImageDrawable(StaticBlob.pauseDrawable);
+
+            long id = -1;
+            try {
+                Cursor cu = StaticBlob.databaseConnector.currentQueueItem();
+                cu.moveToFirst();
+                id = cu.getLong(cu.getColumnIndex("identity"));
+            }catch(Exception e){}
+            createNotification(c, id);
         }
+        else    //is NOT paused (i.e. playing)
+        {
+            StaticBlob.mplayer.pause();
+            if(v!=null)
+                ((ImageButton)v).setImageDrawable(StaticBlob.playDrawable);
+            if(PreferenceManager.getDefaultSharedPreferences(c).getBoolean("hide_notification_when_paused", false))
+                StaticBlob.mNotificationManager.cancel(StaticBlob.NOTIFICATION_ID);
+        }
+        StaticBlob.playerInfo.isPaused = !StaticBlob.playerInfo.isPaused;
         CallistoWidget.updateAllWidgets(c);
     }
 

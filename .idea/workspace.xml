@@ -61,17 +61,19 @@
     </option>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Error All" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="Length" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Callisto" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" name="Default" comment="Switched to the Open Software License v3.0&#10;&#10;Also added LICENSE_ICONS.txt for the license for the new icons.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" afterPath="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Callisto.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376715931379" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1377019094872" ignored="false" />
     <file path="/fragment.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376691533899" ignored="false" />
     <file path="/Callisto.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376614825861" ignored="false" />
     <file path="/live_select.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376610707496" ignored="false" />
@@ -119,10 +121,10 @@
     <file path="/QweexUtils.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366066288257" ignored="false" />
     <file path="/XBMCStyleListViewMenu.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1371886204650" ignored="false" />
     <file path="/main.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366084350601" ignored="false" />
-    <file path="/PlayerInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376718008530" ignored="false" />
+    <file path="/PlayerInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1377022852845" ignored="false" />
     <file path="/Live_FetchInfo.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366080604519" ignored="false" />
     <file path="/UpdateShow.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376650228851" ignored="false" />
-    <file path="/PlayerControls.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376720248034" ignored="false" />
+    <file path="/PlayerControls.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1377022740275" ignored="false" />
     <file path="/StaticBlobOfUsefulness.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366083087647" ignored="false" />
     <file path="/Live.java" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1376616340511" ignored="false" />
     <file path="/seekbar_dialog.xml" changelist="dc2dfe26-5884-41c5-b7d3-d2e91c45e7ec" time="1366099497011" ignored="false" />
@@ -186,7 +188,6 @@
     <sortChildren value="true" />
   </component>
   <component name="DebuggerManager">
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -223,6 +224,7 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -232,11 +234,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DownloadTask.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
+      <file leaf-file-name="PlayerControls.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="345" column="34" selection-start="16083" selection-end="16083" vertical-scroll-proportion="0.30994153">
-              <folding />
+            <state line="201" column="36" selection-start="8690" selection-end="8703" vertical-scroll-proportion="-0.2835498">
+              <folding>
+                <element signature="e#0#22863#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#2679#3678#0" expanded="true" />
+                <element signature="e#3663#3664#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -244,16 +251,18 @@
       <file leaf-file-name="StaticBlob.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="339" column="70" selection-start="17175" selection-end="17175" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="239" column="34" selection-start="12200" selection-end="12210" vertical-scroll-proportion="-0.76">
+              <folding>
+                <element signature="e#14022#14023#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ShowList.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java">
+      <file leaf-file-name="PlayerInfo.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="601" column="129" selection-start="27825" selection-end="27825" vertical-scroll-proportion="0.0">
+            <state line="100" column="0" selection-start="3770" selection-end="3770" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -294,8 +303,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/EpisodeDesc.java" />
-        <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/SearchResultsActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/UpdateShow.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/CalendarActivity.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/ContactForm.java" />
@@ -310,6 +317,8 @@
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java" />
         <option value="$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java" />
+        <option value="$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java" />
       </list>
     </option>
   </component>
@@ -317,10 +326,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1869" />
-    <option name="height" value="1096" />
+    <option name="x" value="4" />
+    <option name="y" value="22" />
+    <option name="width" value="1276" />
+    <option name="height" value="778" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -371,12 +380,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files" />
-      </pane>
-      <pane id="PackagesPane">
-        <subPane />
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -391,7 +394,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -401,7 +404,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -415,29 +418,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="qweex" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -452,10 +433,6 @@
               <option name="myItemId" value="qweex" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -463,7 +440,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -482,10 +459,6 @@
               <option name="myItemId" value="callisto" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="podcast" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -493,7 +466,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -523,7 +496,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
+              <option name="myItemId" value="callisto-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -535,37 +508,29 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="callisto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane />
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files" />
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="GenerateAntBuildDialog.generateIdeaHomeProperty" value="false" />
-    <property name="project.structure.last.edited" value="SDKs" />
-    <property name="OverrideImplement.combined" value="false" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="OverrideImplement.combined" value="false" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="ExportedApkPath" value="$PROJECT_DIR$/Callisto.apk" />
-    <property name="MemberChooser.sorted" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="GenerateAntBuildDialog.generateSingleFile" value="false" />
+    <property name="recentsLimit" value="5" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="ExportedApkPath" value="$PROJECT_DIR$/Callisto.apk" />
     <property name="ExportedModule" value="Callisto" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Callisto.iml" />
     <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Callisto.iml" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="callisto" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
@@ -582,8 +547,8 @@
     <property name="AndroidProguardConfigPath" value="$PROJECT_DIR$/proguard-project.txt" />
     <property name="options.lastSelected" value="editor.preferences.appearance" />
     <property name="AndroidLayoutSelectedEditor" value="text-editor" />
-    <property name="project.structure.side.proportion" value="0.2" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="emulator-5554" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="AndroidRunProguardForReleaseBuild" value="true" />
@@ -808,37 +773,37 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1869" height="1096" extended-state="6" />
+    <frame x="4" y="22" width="1276" height="778" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32927504" sideWeight="0.6538871" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2562258" sideWeight="0.6538871" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32800853" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44621938" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.399361" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26730564" sideWeight="0.50470394" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32800853" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32694355" sideWeight="0.49786553" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26730564" sideWeight="0.49529606" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32621083" sideWeight="0.49786553" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24786325" sideWeight="0.49529606" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32800853" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21306032" sideWeight="0.47177848" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1770891" sideWeight="0.7827476" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2172524" sideWeight="0.49529606" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32901135" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23252033" sideWeight="0.75213677" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21509972" sideWeight="0.49529606" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32927504" sideWeight="0.6538871" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="9" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2562258" sideWeight="0.6538871" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.67096776" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44621938" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.40021345" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -923,34 +888,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/PathPreference.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="13" selection-start="363" selection-end="363" vertical-scroll-proportion="0.14026402">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/QweexUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="1" selection-start="840" selection-end="840" vertical-scroll-proportion="0.3630363">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/UnfinishedParseException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="13" selection-start="669" selection-end="669" vertical-scroll-proportion="0.11221122">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/utils/XBMCStyleListViewMenu.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="13" selection-start="1172" selection-end="1172" vertical-scroll-proportion="0.39273927">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/QuickPrefsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="64" column="42" selection-start="2421" selection-end="2421" vertical-scroll-proportion="0.5049505">
@@ -962,11 +899,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/donate/Donate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="136" column="0" selection-start="5738" selection-end="5831" vertical-scroll-proportion="0.56462586">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
+        <state line="136" column="0" selection-start="5738" selection-end="5831" vertical-scroll-proportion="0.56462586" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/values/styles.xml">
@@ -977,13 +910,11 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/row.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="150" column="0" selection-start="6245" selection-end="6245" vertical-scroll-proportion="0.5168739" />
+      </provider>
       <provider editor-type-id="android-designer">
         <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="150" column="0" selection-start="6245" selection-end="6245" vertical-scroll-proportion="0.5168739">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadList.java">
@@ -1031,24 +962,59 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="50" selection-start="1383" selection-end="1383" vertical-scroll-proportion="0.22692889">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/ShowList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="601" column="129" selection-start="27825" selection-end="27825" vertical-scroll-proportion="0.0">
+        <state line="642" column="0" selection-start="29592" selection-end="29592" vertical-scroll-proportion="0.86384267">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/listeners/OnErrorListenerWithContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="13" selection-start="770" selection-end="770" vertical-scroll-proportion="0.18">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/listeners/OnPreparedListenerWithContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="1" selection-start="992" selection-end="992" vertical-scroll-proportion="0.48">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/StaticBlob.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="339" column="70" selection-start="17175" selection-end="17175" vertical-scroll-proportion="0.0">
+        <state line="239" column="34" selection-start="12200" selection-end="12210" vertical-scroll-proportion="-0.76">
+          <folding>
+            <element signature="e#14022#14023#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="100" column="0" selection-start="3770" selection-end="3770" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/podcast/DownloadTask.java">
+    <entry file="file://$PROJECT_DIR$/src/com/qweex/callisto/PlayerControls.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="345" column="34" selection-start="16083" selection-end="16083" vertical-scroll-proportion="0.30994153">
-          <folding />
+        <state line="201" column="36" selection-start="8690" selection-end="8703" vertical-scroll-proportion="-0.2835498">
+          <folding>
+            <element signature="e#0#22863#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2679#3678#0" expanded="true" />
+            <element signature="e#3663#3664#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1104,7 +1070,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>Android 4.2 Platform</last-edited>
+          <last-edited>Android 4.2.2 Platform</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -1121,7 +1087,6 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>
