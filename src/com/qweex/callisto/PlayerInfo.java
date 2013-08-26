@@ -94,6 +94,9 @@ public class PlayerInfo
         {
             length = StaticBlob.mplayer.getDuration()/1000;
             position = StaticBlob.mplayer.getCurrentPosition()/1000;
+        } else {
+            length = 0;
+            position = 0;
         }
 
         Log.v(TAG, "Update - Title: " + title);
