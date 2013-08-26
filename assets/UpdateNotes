@@ -2,10 +2,30 @@ This semi-minor version update is one step closer to a stable 1.0 release.
 It includes several fixes to issues submitted to Github page, but please remember that the 'Protostar' means 'Beta'.
 
     NEW SHOW: Linux Unplugged! -- Jupiter Broadcasting's new show about Linux and the community.
+    Feature: Custom feeds! -- You can now add Custom Feeds in the Preferences menu. Be gentle, it's new.
     Fix: Error updating feeds -- Fixed an unfortunately common error about becoming a monk.
     Fix: Widget -- The widget should now be themed to match the app, and hopefully work more reliably.
     Fix: IRC commands -- Some commands (e.g. /NAMES) would crash the app, and have hopefully been fixed. Thanks, nogal!
+    Fix: Pause on Event -- Playback should now pause on events like unplugging the audio jack, an incoming phone call, or another app gaining audio focus.
+    Fix: IRC performance -- The IRC should hopefully solve some issues with performance since switching over to ListView.
+    Feature: Instant IRC color change -- Changing a color option for IRC should now change it in the app without restarting.
+    Feature: Hide notification -- Added option to hide notification when paused.
     Feature: JBTitle -- Preliminary support for the JBTitles voting system.
+    Feature: Storage path pref -- Better storage path preference
+    Fix: Crash on Rotate -- Hopefully fixed a crash when rotating and a progress dialog is shown.
+    Fix: Reliable Downloads -- Downloads should hopefully be more reliable now.
+    Feature: Notification progress -- Added progress to download notification (on supported devices)
+    Feature: Smarter Queue -- Items in the queue should now automatically detect if they are streaming or local.
+    Fix: Verizon IRC -- Added message to Verizon users.
+    Fix: Moving between tracks -- Before, moving between live and local tracks was kinda wonky. Hopefully that's fixed?
+    Fix: Download icon -- Changed icon for Drawable notification.
+    Fix: Contact crash -- Fixed the contact form crashing the app if it failed to pull the information, or if the user backed out.
+    Fix: Instant updates -- Items in lists should now MOSTLY update upon events like a download completing or a track being deleted when it finishes.
+    Fix: Download irregularities -- A lot of them. Like being only able to download one type at a time of an episode.
+    Fix: Better track deletion -- I don't even know what to say. How did I eff this up in the first time.
+    Fix: Deleteing streaming -- Fixed an issue with trying to delete a streaming episode when it finishes playback.
+    Fix: Queue ghosts -- Clearing a show should remove all episodes of it from the queue.
+    Fix: Instant updates -- Things like the Download List and Queue should now update live.
     Note: Localization -- WAY better support for localization! If you're interested in helping translate, e-mail me at MrQweex@qweex.com
     Note: Cleaner logcat -- Messages in the log should now show the class, method, and line number in the tag, AND "Callisto".
     Note: New Github -- The project (or rather my profile) has moved to https://github.com/notbryant/callisto-app. Old links should hopefully redirect.
@@ -13,6 +33,7 @@ It includes several fixes to issues submitted to Github page, but please remembe
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Github or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.
 
-This release is dedicated to ????
+This release is dedicated to Brian Gorman. Because I do try to the best of my ability, despite the fact that I am a full time student, I make absolutely no profit, and I have my own personal problems and demons.
+And the project is an open-source beta ("beta" meaning "not finished"), so you can either commit code, file an issue, or take your negative review and stick it where the sun don't shine.
 
 	-MrQweex

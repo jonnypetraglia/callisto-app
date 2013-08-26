@@ -329,14 +329,15 @@ public class IRCChat extends Activity implements IRCEventListener
         String[] naughtyCarriers = new String[] {"verizon"};
 
         int i = Arrays.asList(naughtyCarriers).indexOf(StaticBlob.teleMgr.getNetworkOperatorName());
-        System.out.println("i=" + i + " " + StaticBlob.teleMgr.getNetworkOperatorName());
-        if(i>=0)
+        if(i>=0 && !PreferenceManager.getDefaultSharedPreferences(this).getBoolean("showed_irc_warning", false))
+        {
             new AlertDialog.Builder(this).setTitle(R.string.carrier_warning)
                     .setMessage(R.string.verizon_warning)
                     .setNegativeButton(android.R.string.ok, null)
                     .setIcon(R.drawable.ic_action_cancel)
                     .show();
-
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("showed_irc_warning", true).commit();
+        }
     }
 
     /** Called when the user exits the activity; saves the scroll state */
