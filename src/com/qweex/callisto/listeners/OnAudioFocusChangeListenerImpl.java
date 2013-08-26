@@ -45,6 +45,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
     public void onAudioFocusChange(int i)
     {
         String TAG = StaticBlob.TAG();
+        Log.d(TAG, "onFocusChange");
         switch(i)
         {
             case AudioManager.AUDIOFOCUS_GAIN:
@@ -53,6 +54,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
                 if(StaticBlob.playerInfo.isPaused && StaticBlob.pauseCause == StaticBlob.PauseCause.FocusChange)
                 {
                     PlayerControls.playPause(c, null);
+                    StaticBlob.playerInfo.update(c);
                     Log.d(TAG, "GAIN");
                 }
                 break;
@@ -60,6 +62,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
             case AudioManager.AUDIOFOCUS_LOSS:                  //STOP
                 Log.d(TAG, "LOSS");
                 PlayerControls.stop(c);
+                StaticBlob.playerInfo.update(c);
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:        //PAUSE
@@ -67,6 +70,7 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
                 {
                     Log.d(TAG, "LOSS_TRANSIENT");
                     PlayerControls.playPause(c, null);
+                    StaticBlob.playerInfo.update(c);
                     StaticBlob.pauseCause = StaticBlob.PauseCause.FocusChange;
                 }
                 break;
@@ -80,6 +84,8 @@ public class OnAudioFocusChangeListenerImpl implements AudioManager.OnAudioFocus
     /** Set the internal context */
     public void setContext(Context c)
     {
+        String TAG = StaticBlob.TAG();
+        Log.d(TAG, "setContext");
         this.c = c;
     }
 

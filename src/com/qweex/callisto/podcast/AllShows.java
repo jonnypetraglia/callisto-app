@@ -19,9 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.database.Cursor;
-import com.qweex.callisto.Callisto;
-import com.qweex.callisto.PlayerControls;
-import com.qweex.callisto.R;
+import com.qweex.callisto.*;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -47,7 +45,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.qweex.callisto.StaticBlob;
 
 //IDEA: Change method of having a header in the listview; Using separate layout files for the heading causes it to have to inflate the view every time rather than just update it
 //FIXME: Scrolling in the AllShows view while something is playing is jerky
@@ -130,6 +127,10 @@ public class AllShows extends Activity {
         Log.v(TAG, "Resuming AllShows");
         setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(AllShows.this);      //Update the player controls
+        if(StaticBlob.audioFocus!=null)
+            StaticBlob.audioFocus.setContext(this);
+        if(CallistoService.audioJackReceiver!=null)
+            CallistoService.audioJackReceiver.setContext(this);
 
         //If there is no current_view (i.e. if it's not returning from a ShowList activity) we're done.
         if(current_view==null)

@@ -21,9 +21,7 @@ import java.text.SimpleDateFormat;
 import android.app.AlertDialog;
 import android.view.*;
 import android.widget.*;
-import com.qweex.callisto.Callisto;
-import com.qweex.callisto.PlayerControls;
-import com.qweex.callisto.R;
+import com.qweex.callisto.*;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,7 +32,6 @@ import android.util.Log;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import com.qweex.callisto.StaticBlob;
 
 //This activity is for displaying specific information about an episode
 
@@ -280,6 +277,10 @@ public class EpisodeDesc extends Activity
         determineButtons();
         if(dltask!=null)
             dltask.context = this;
+        if(StaticBlob.audioFocus!=null)
+            StaticBlob.audioFocus.setContext(this);
+        if(CallistoService.audioJackReceiver!=null)
+            CallistoService.audioJackReceiver.setContext(this);
 
         currentInstance = this;
     }

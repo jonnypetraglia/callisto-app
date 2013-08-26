@@ -36,9 +36,14 @@ public class AudioJackReceiver extends BroadcastReceiver
     /** Not only for receiving the shared preferences, but also for finding the button for updating the drawable.
      * (If there is one). Kept updated by playerInfo.update().
      */
-    public Context contextForPreferences;
+    private Context contextForPreferences;
     /** It is its name. If it is paused was it paused by the receiver or by the user? */
     private boolean pastInitialCreate = false;
+
+    public void setContext(Context c)
+    {
+        this.contextForPreferences = c;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent)
@@ -58,6 +63,9 @@ public class AudioJackReceiver extends BroadcastReceiver
                     && !StaticBlob.playerInfo.isPaused && StaticBlob.mplayer!=null)
             {
                 PlayerControls.playPause(contextForPreferences, v);
+
+                StaticBlob.playerInfo.update(contextForPreferences);
+
                 StaticBlob.pauseCause = StaticBlob.PauseCause.AudioJack;
             }
             Log.i(TAG, "HEADSET IS OR HAS BEEN DISCONNECTED");
@@ -68,6 +76,7 @@ public class AudioJackReceiver extends BroadcastReceiver
                 && StaticBlob.pauseCause == StaticBlob.PauseCause.AudioJack)
             {
                 PlayerControls.playPause(contextForPreferences, v);
+                StaticBlob.playerInfo.update(contextForPreferences);
             }
             Log.i(TAG, "HEADSET IS OR HAS BEEN RECONNECTED");
         }

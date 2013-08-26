@@ -227,7 +227,7 @@ public class StaticBlob
 
         //Create the audiojack receiver
         CallistoService.audioJackReceiver = new AudioJackReceiver();
-        CallistoService.audioJackReceiver.contextForPreferences = c;
+        CallistoService.audioJackReceiver.setContext(c);
         c.startService(new Intent(c, CallistoService.class));
 
 
@@ -260,7 +260,7 @@ public class StaticBlob
                     return;
                 }
 
-                if(audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
+                if(audioFocus==null )//&& android.os.Build.VERSION.SDK_INT >= 11)
                     audioFocus = new OnAudioFocusChangeListenerImpl(c);
 
                 StaticBlob.mplayer.start();

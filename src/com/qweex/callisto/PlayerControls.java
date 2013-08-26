@@ -430,7 +430,7 @@ public class PlayerControls
                     changeToTrack(c, 0, true);
                 else
                 {
-                    if(StaticBlob.audioFocus==null && android.os.Build.VERSION.SDK_INT >= 11)
+                    if(StaticBlob.audioFocus==null )//&& android.os.Build.VERSION.SDK_INT >= 11)
                         StaticBlob.audioFocus = new OnAudioFocusChangeListenerImpl(c);
                     if(StaticBlob.playerInfo.isPaused)
                         StaticBlob.mplayer.start();

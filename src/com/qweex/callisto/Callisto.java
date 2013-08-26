@@ -216,9 +216,11 @@ public class Callisto extends Activity
             Live.LIVE_PreparedListener.pd.show();
         Log.v(TAG, "Resuming main activity");
         if(CallistoService.audioJackReceiver!=null)
-            CallistoService.audioJackReceiver.contextForPreferences = Callisto.this;
+            CallistoService.audioJackReceiver.setContext(Callisto.this);
         if(StaticBlob.playerInfo!=null)
             StaticBlob.playerInfo.update(Callisto.this);
+        if(StaticBlob.audioFocus!=null)
+            StaticBlob.audioFocus.setContext(this);
     }
 
     @Override

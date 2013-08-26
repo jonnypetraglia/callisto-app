@@ -18,9 +18,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import android.app.Dialog;
-import com.qweex.callisto.Callisto;
-import com.qweex.callisto.PlayerControls;
-import com.qweex.callisto.R;
+import com.qweex.callisto.*;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -56,7 +54,6 @@ import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import com.qweex.callisto.StaticBlob;
 
 /** An activity for displaying the episodes of a show.
  * @author MrQweex */
@@ -165,6 +162,10 @@ public class ShowList extends Activity
         thisInstance = this;
         setProgressBarIndeterminateVisibility(false);
         StaticBlob.playerInfo.update(ShowList.this);      //Update player controls
+        if(StaticBlob.audioFocus!=null)
+            StaticBlob.audioFocus.setContext(this);
+        if(CallistoService.audioJackReceiver!=null)
+            CallistoService.audioJackReceiver.setContext(this);
 
         if(current_episode==null)       //If we aren't returning from an EpisodeDesc, we're done.
             return;
