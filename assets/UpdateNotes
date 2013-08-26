@@ -8,6 +8,7 @@ It includes several fixes to issues submitted to Github page, but please remembe
     Feature: JBTitle -- Preliminary support for the JBTitles voting system.
     Note: Localization -- WAY better support for localization! If you're interested in helping translate, e-mail me at MrQweex@qweex.com
     Note: Cleaner logcat -- Messages in the log should now show the class, method, and line number in the tag, AND "Callisto".
+    Note: New Github -- The project (or rather my profile) has moved to https://github.com/notbryant/callisto-app. Old links should hopefully redirect.
 	Special Thanks -- rikai & wd-40 & nekinie, for filing isssuuuuueeees -- JupiterBroadcasting, for being awesome, as always.
 
 If you have a problem or question, please don't 1-star the app without at least filing an issue on Github or sending me an e-mail. Neither of them cost you anything, barely take you any time, and helps me tremendously to make Callisto better for you.

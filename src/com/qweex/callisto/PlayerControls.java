@@ -444,6 +444,8 @@ public class PlayerControls
                         StaticBlob.mplayer.start();
                     else
                         StaticBlob.mplayer.prepareAsync();
+
+                    StaticBlob.audioFocus.grab();
                 }
                 Log.d(TAG,"Playing!!!!!");
                 if(v!=null)
