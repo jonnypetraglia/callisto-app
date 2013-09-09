@@ -164,12 +164,17 @@ public class DatabaseConnector
             long id;
             do {
                 id = c.getLong(c.getColumnIndex("_id"));
-                Cursor q = database.query(DATABASE_QUEUE, new String[] {"_id"}, "identity=" + id,
+                Cursor q = database.query(DATABASE_QUEUE, new String[] {"_id", "current"}, "identity=" + id,
                         null, null, null, null);
-                if(q.getInt(q.getColumnIndex("current"))>0)
-                    PlayerControls.stop(con);
+                for(String s : q.getColumnNames())
+                    System.out.println("DERP: " + s);
                 if(q.getCount()>0)
+                {
+                    q.moveToFirst();
+                    if(q.getInt(q.getColumnIndex("current"))>0)
+                        PlayerControls.stop(con);
                     removeQueueItem(q.getLong(q.getColumnIndex("_id")));
+                }
             } while(c.moveToNext());
         }
 

@@ -125,7 +125,7 @@ public class StaticBlob
      * */
     public static String makeFileFriendly(String input)
     {
-        return input.replaceAll("[\\?]", "_"); //[\\?:;\*"<>\|]
+        return input.replaceAll("[\\?:;\\*\"<>\\\\|]", "_"); //[\\?:;\*"<>\|]
     }
 
     public enum PauseCause { PhoneCall, FocusChange, AudioJack, User};

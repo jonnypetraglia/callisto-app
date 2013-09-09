@@ -103,7 +103,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
         Cursor current;
 
         long id = 0, identity = 0;
-        Log.e(TAG, "Preparing to start");
+        Log.e(TAG, "Preparing to start: " + StaticBlob.databaseConnector.getActiveDownloads().getCount() + " downloads");
         boolean canceled = false;
         while(StaticBlob.databaseConnector.getActiveDownloads().getCount()>0)
         {
@@ -139,14 +139,15 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                     Title = Title.substring(0, Title.indexOf("|"));
                 Title=Title.trim();
                 AudFile = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(AudLink));
-                VidFile = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(VidLink));
+                if(VidLink!=null)
+                    VidFile = new File(Target, Date + "__" + StaticBlob.makeFileFriendly(Title) + EpisodeDesc.getExtension(VidLink));
                 Target = isVideo ? VidFile : AudFile;
 
 
                 //Prepare the HTTP
                 Log.i(TAG, "Path: " + Target.getPath());
                 URL url = new URL(isVideo ? VidLink : AudLink);
-                Log.i(TAG, "Starting download: " + url.getPath());
+                Log.i(TAG, "Starting download: " + url.toString());
 
                 Log.i(TAG, "Opening the connection...");
                 HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -176,7 +177,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
                 FileOutputStream outStream;
                 byte buff[];
-                Log.i(TAG, "mmk skipping the downloaded..." + Target.length() + " of " + TotalSize);
+                Log.i(TAG, "mmk skipping the downloaded portion..." + Target.length() + " of " + TotalSize);
                 if(Target.exists()) //Append if it exists
                     outStream = new FileOutputStream(Target, true);
                 else

@@ -31,7 +31,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.TimeZone;
 
 /** Tools to update a show. */
 public class UpdateShow
@@ -381,17 +385,31 @@ public class UpdateShow
             else if("pubDate".equals(xpp.getName()) && eventType == XmlPullParser.START_TAG)
             {
                 eventType = xpp.next();
-                ep.Date = xpp.getText();
-                Log.d(TAG, "Date: " + ep.Date);
-                if(ep.Date==null)
+                String tempDate = xpp.getText();
+                Log.d(TAG, "Date: " + tempDate);
+                if(tempDate==null)
                     throw(new UnfinishedParseException("Date"));
-                if(lastChecked!=null && !StaticBlob.sdfSource.parse(ep.Date).after(StaticBlob.sdfSource.parse(lastChecked)))
+
+                try {
+                    ep.Date = StaticBlob.sdfSource.parse(tempDate);
+                } catch(ParseException pe)
+                {
+                    Log.d(TAG, "Date parse failed. Trying backup.");
+                    try {
+                        ep.Date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(tempDate);
+                    } catch(ParseException pe2) {
+                        Log.d(TAG, "Date parse failed AGAIN. Trying backup #2. Stupid PDT.");
+                        ep.Date = StaticBlob.sdfSource.parse(tempDate.replace(" PDT", " PST8PDT"));
+                        //If this fails to parse THEN it will throw an exception
+                    }
+                }
+                if(lastChecked!=null && !ep.Date.after(StaticBlob.sdfSource.parse(lastChecked)))
                 {
                     eventType=XmlPullParser.END_DOCUMENT;
                     return;
                 }
                 if(newLastChecked==null)
-                    newLastChecked = ep.Date;
+                    newLastChecked = StaticBlob.sdfSource.format(ep.Date);
                 if((numOfDone & 0x8)==0x8)
                     throw(new UnfinishedParseException("Date 2times"));
                 numOfDone |= 0x8;
@@ -425,13 +443,12 @@ public class UpdateShow
                 {
                     Log.d(TAG, "CONFIRMING(1a) " + ep.Title);
                     Log.d(TAG, "CONFIRMING(1a) " + titleConfirm);
-                    Log.d(TAG, "CONFIRMING(2a) " + ep.Date.substring(0,16));
-                    Log.d(TAG, "CONFIRMING(2b) " + dateConfirm);
+                    //Log.d(TAG, "CONFIRMING(2a) " + ep.Date.substring(0,16));
+                    //Log.d(TAG, "CONFIRMING(2b) " + dateConfirm);
                     //if(!epTitle.equals(titleConfirm))
                     //    throw(new UnfinishedParseException("Video does not match audio: " + epTitle + "==" +titleConfirm));
                     //if(!epDate.substring(0,16).equals(dateConfirm.substring(0,16)))
                     //    throw(new UnfinishedParseException("Video does not match audio: " + epDate.substring(0,16) + "==" + dateConfirm.substring(0,16)));
-                    ep.Date = StaticBlob.sdfRaw.format(StaticBlob.sdfSource.parse(ep.Date));
                     //if(!Callisto.databaseConnector.updateMedia(AllShows.SHOW_LIST[currentShow], epTitle,
                     //isVideo, epMediaLink, epMediaSize))
                     Log.v(TAG, "Inserting episode: " + ep.Title);
@@ -450,12 +467,13 @@ public class UpdateShow
 
     private class EpisodeFromRSS
     {
-        public String Date = null, Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
+        public String Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
         public long AudioSize, VideoSize;
+        public Date Date;
 
         public void insert()
         {
-            StaticBlob.databaseConnector.insertEpisode(currentShow, Title, Date, Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
+            StaticBlob.databaseConnector.insertEpisode(currentShow, Title, StaticBlob.sdfRaw.format(Date), Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
         }
     }
 
