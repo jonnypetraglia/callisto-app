@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Qweex
+ * Copyright (C) 2012-2014 Qweex
  * This file is a part of Callisto.
  *
  * Callisto is free software; it is released under the
