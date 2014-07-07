@@ -4,3 +4,6 @@ out/
 .idea/workspace.xml
 .directory
 .DS_STORE
+*.min.js
+*.min.css
+*.min.json

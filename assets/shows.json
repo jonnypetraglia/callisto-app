@@ -1,134 +1,134 @@
 [
     {
-        id: "bsdnow",
-        title: "BSD Now",
-        audio: "http://feeds.feedburner.com/BsdNowMp3",
-        video: "http://feeds.feedburner.com/BsdNowMobile",
-        active: true
+        "id": "bsdnow",
+        "title": "BSD Now",
+        "audio": "http://feeds.feedburner.com/BsdNowMp3",
+        "video": "http://feeds.feedburner.com/BsdNowMobile",
+        "active": true
     },
     {
-        id: "h2l",
-        title: "Howto Linux",
-        audio: "http://feeds.feedburner.com/HowToLinuxMp3",
-        active: true
+        "id": "h2l",
+        "title": "Howto Linux",
+        "audio": "http://feeds.feedburner.com/HowToLinuxMp3",
+        "active": true
     },
     {
-        id: "today",
-        title: "Tech Talk Today",
-        audio: "http://feedpress.me/t3mp3",
-        video: "http://feedpress.me/t3mob",
-        active: true
+        "id": "today",
+        "title": "Tech Talk Today",
+        "audio": "http://feedpress.me/t3mp3",
+        "video": "http://feedpress.me/t3mob",
+        "active": true
     },
     {
-        id: "coderradio",
-        title: "Coder Radio",
-        audio: "http://feeds.feedburner.com/coderradiomp3",
-        video: "http://feeds.feedburner.com/coderradiovideo",
-        active: true
+        "id": "coderradio",
+        "title": "Coder Radio",
+        "audio": "http://feeds.feedburner.com/coderradiomp3",
+        "video": "http://feeds.feedburner.com/coderradiovideo",
+        "active": true
     },
     {
-        id: "fauxshow",
-        title: "FauxShow",
-        audio: "http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml",
-        video: "http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml",
-        active: true
+        "id": "fauxshow",
+        "title": "FauxShow",
+        "audio": "http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml",
+        "video": "http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml",
+        "active": true
     },
     {
-        id: "linuxactionshow",
-        title: "Linux Action Show",
-        audio: "http://feeds2.feedburner.com/TheLinuxActionShow",
-        video: "http://feeds.feedburner.com/linuxactionshowipodvid",
-        active: true
+        "id": "linuxactionshow",
+        "title": "Linux Action Show",
+        "audio": "http://feeds2.feedburner.com/TheLinuxActionShow",
+        "video": "http://feeds.feedburner.com/linuxactionshowipodvid",
+        "active": true
     },
     {
-        id: "linuxun",
-        title: "LINUX Unplugged",
-        audio: "http://feeds.feedburner.com/linuxunplugged",
-        video: "http://feeds.feedburner.com/linuxunvid",
-        active: true
+        "id": "linuxun",
+        "title": "LINUX Unplugged",
+        "audio": "http://feeds.feedburner.com/linuxunplugged",
+        "video": "http://feeds.feedburner.com/linuxunvid",
+        "active": true
     },
     {
-        id: "planb",
-        title: "Plan B",
-        audio: "http://feeds.feedburner.com/planbmp3",
-        video: "http://feeds.feedburner.com/PlanBVideo",
-        active: true
+        "id": "planb",
+        "title": "Plan B",
+        "audio": "http://feeds.feedburner.com/planbmp3",
+        "video": "http://feeds.feedburner.com/PlanBVideo",
+        "active": true
     },
     {
-        id: "scibyte",
-        title: "SciByte",
-        audio: "http://feeds.feedburner.com/scibyteaudio",
-        video: "http://feeds.feedburner.com/scibytemobile",
-        active: true
+        "id": "scibyte",
+        "title": "SciByte",
+        "audio": "http://feeds.feedburner.com/scibyteaudio",
+        "video": "http://feeds.feedburner.com/scibytemobile",
+        "active": true
     },
     {
-        id: "techsnap",
-        title: "TechSnap",
-        audio: "http://feeds.feedburner.com/techsnapmp3",
-        video: "http://feeds.feedburner.com/techsnapmobile",
-        active: true
+        "id": "techsnap",
+        "title": "TechSnap",
+        "audio": "http://feeds.feedburner.com/techsnapmp3",
+        "video": "http://feeds.feedburner.com/techsnapmobile",
+        "active": true
     },
     {
-        id: "unfilter",
-        title: "Unfilter",
-        audio: "http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml",
-        video: "http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml",
-        active: true
+        "id": "unfilter",
+        "title": "Unfilter",
+        "audio": "http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml",
+        "video": "http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml",
+        "active": true
     },
     {
-        id: "beeristasty",
-        title: "Beer is Tasty",
-        audio: "http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml",
-        video: "http://feeds2.feedburner.com/BeerIsTasty",
-        active: false
+        "id": "beeristasty",
+        "title": "Beer is Tasty",
+        "audio": "http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml",
+        "video": "http://feeds2.feedburner.com/BeerIsTasty",
+        "active": false
     },
     {
-        id: "indepthlook",
-        title: "In Depth Look",
-        audio: "http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml",
-        video: "http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml",
-        active: false
+        "id": "indepthlook",
+        "title": "In Depth Look",
+        "audio": "http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml",
+        "video": "http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml",
+        "active": false
     },
     {
-        id: "nite",
-        title: "Jupiter@Nite",
-        audio: "http://feeds.feedburner.com/jupiternitemp3",
-        video: "http://feeds.feedburner.com/jupiterniteivid",
-        active: false
+        "id": "nite",
+        "title": "Jupiter@Nite",
+        "audio": "http://feeds.feedburner.com/jupiternitemp3",
+        "video": "http://feeds.feedburner.com/jupiterniteivid",
+        "active": false
     },
     {
-        id: "ldf",
-        title: "Jupiter Files",
-        audio: "http://feeds.feedburner.com/ldf-mp3",
-        video: "http://feeds.feedburner.com/ldf-video",
-        active: false
+        "id": "ldf",
+        "title": "Jupiter Files",
+        "audio": "http://feeds.feedburner.com/ldf-mp3",
+        "video": "http://feeds.feedburner.com/ldf-video",
+        "active": false
     },
     {
-        id: "legend-of-the-stoned-owl",
-        title: "Legend of the Stoned Owl",
-        audio: "http://feeds.feedburner.com/lotsomp3",
-        video: "http://feeds.feedburner.com/lotsovideo",
-        active: false
+        "id": "legend-of-the-stoned-owl",
+        "title": "Legend of the Stoned Owl",
+        "audio": "http://feeds.feedburner.com/lotsomp3",
+        "video": "http://feeds.feedburner.com/lotsovideo",
+        "active": false
     },
     {
-        id: "mmorgue",
-        title: "MMOrgue",
-        audio: "http://feeds.feedburner.com/MMOrgueMP3",
-        video: "http://feeds.feedburner.com/MMOrgueMobile",
-        active: false
+        "id": "mmorgue",
+        "title": "MMOrgue",
+        "audio": "http://feeds.feedburner.com/MMOrgueMP3",
+        "video": "http://feeds.feedburner.com/MMOrgueMobile",
+        "active": false
     },
     {
-        id: "stoked",
-        title: "STOked",
-        audio: "http://feeds.feedburner.com/stoked",
-        video: "http://feeds.feedburner.com/stokedipod",
-        active: false
+        "id": "stoked",
+        "title": "STOked",
+        "audio": "http://feeds.feedburner.com/stoked",
+        "video": "http://feeds.feedburner.com/stokedipod",
+        "active": false
     },
     {
-        id: "torked",
-        title: "TORKed",
-        audio: "http://feeds.feedburner.com/TorkedMp3",
-        video: "http://feeds.feedburner.com/TorkedMobile",
-        active: false
+        "id": "torked",
+        "title": "TORKed",
+        "audio": "http://feeds.feedburner.com/TorkedMp3",
+        "video": "http://feeds.feedburner.com/TorkedMobile",
+        "active": false
     }
 ]
