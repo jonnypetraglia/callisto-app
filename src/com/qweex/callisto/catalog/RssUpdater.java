@@ -14,14 +14,14 @@ import java.util.LinkedList;
 /** Tools to update a show. */
 public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
 {
-    DatabaseHelper db;
+    DatabaseMate db;
 
-    public RssUpdater(DatabaseHelper db) {
+    public RssUpdater(DatabaseMate db) {
         this.db = db;
     }
 
     public static class ShowInfo {
-        public int db_id;
+        public String show_id;
         public String audioFeed, videoFeed;
         public SharedPreferences settings;
         String lastChecked, newLastChecked;
@@ -44,7 +44,7 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
 
         for(int i=0; i<shows.length; i++) {
             ShowInfo current = shows[i];
-            Log.i(TAG, "Beginning update: " + current.db_id + " " + current.audioFeed + " " + current.videoFeed);
+            Log.i(TAG, "Beginning update: " + current.show_id + " " + current.audioFeed + " " + current.videoFeed);
 
             doVideo = current.videoFeed!=null;
 
@@ -121,7 +121,7 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
                     }
 
                     // At this point, we should have a full Episode object
-                    episode.insert(current.db_id, db);
+                    episode.insert(current.show_id, db);
                 }
 
 

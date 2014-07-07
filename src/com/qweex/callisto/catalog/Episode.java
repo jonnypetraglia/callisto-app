@@ -5,10 +5,10 @@ class Episode
     public String Date = null, Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
     public long AudioSize = -1, VideoSize = -1;
 
-    public void insert(int db_id, DatabaseHelper db) throws UnfinishedParseException
+    public void insert(String show_id, DatabaseMate db) throws UnfinishedParseException
     {
         assertComplete();
-        db.insertEpisode(currentShow, Title, Date, Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
+        db.insertEpisode(show_id, Title, Date, Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
     }
 
     public void assertComplete() throws UnfinishedParseException {
