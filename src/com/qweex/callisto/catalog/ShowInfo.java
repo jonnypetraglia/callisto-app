@@ -1,4 +1,4 @@
-package com.qweex.callisto;
+package com.qweex.callisto.catalog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

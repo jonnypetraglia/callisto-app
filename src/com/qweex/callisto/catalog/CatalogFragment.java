@@ -1,4 +1,4 @@
-package com.qweex.callisto;
+package com.qweex.callisto.catalog;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.qweex.callisto.CallistoFragment;
+import com.qweex.callisto.R;
 
 import java.io.IOException;
 import java.io.InputStream;
