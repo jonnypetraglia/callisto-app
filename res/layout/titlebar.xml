@@ -11,7 +11,7 @@
             android:layout_width="wrap_content"
             android:id="@+id/nav_button"
             android:background="@drawable/nav"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content">
 
         <ImageView
                 android:layout_width="wrap_content"
@@ -38,7 +38,20 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="@string/app_name"
-                android:gravity="left" android:padding="10dp"/>
+                android:gravity="left"
+                android:paddingBottom="15dp" android:padding="10dp"/>
     </LinearLayout>
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:layout_weight="1" android:visibility="visible"
+            android:textIsSelectable="false"/>
+
+    <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nav_spinner" android:layout_gravity="center" android:visibility="gone"/>
 
 </LinearLayout>
