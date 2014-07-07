@@ -1,6 +1,6 @@
 bin/
 gen/
 out/
+.idea/workspace.xml
 .directory
 .DS_STORE
-workspace.xml
