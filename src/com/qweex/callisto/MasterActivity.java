@@ -8,6 +8,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
+import com.qweex.callisto.contact.ContactFragment;
+import com.qweex.callisto.settings.SettingsFragment;
 
 public class MasterActivity extends FragmentActivity {
 
@@ -23,7 +25,7 @@ public class MasterActivity extends FragmentActivity {
     //private LiveFragment liveFragment;
     //private ChatFragment chatFragment;
     //private ScheduleFragment scheduleFragment;
-    //private ContactFragment contactFragment;
+    private ContactFragment contactFragment;
     //private DonateFragment donateFragment;
     private SettingsFragment settingsFragment;
 
@@ -60,7 +62,7 @@ public class MasterActivity extends FragmentActivity {
         //liveFragment = new LiveFragment();
         //chatFragment = new ChatFragment();
         //scheduleFragment = new ScheduleFragment();
-        //contactFragment = new ContactFragment();
+        contactFragment = new ContactFragment();
         //donateFragment = new DonateFragment();
         settingsFragment = new SettingsFragment();
 
@@ -85,7 +87,7 @@ public class MasterActivity extends FragmentActivity {
                     //frag = scheduleFragment;
                     break;
                 case 5: //Contact
-                    //frag = contactFragment;
+                    frag = contactFragment;
                     break;
                 case 6: //Donate
                     //frag = donateFragment;
@@ -99,7 +101,7 @@ public class MasterActivity extends FragmentActivity {
                     //TODO: WTF
                     return;
             }
-            if(frag==null)      //Unnecessary safety
+            if(frag==null) //Unnecessary safety
                 return;
 
             if(navSelected!=null)
