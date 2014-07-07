@@ -1,3 +1,6 @@
 bin/
 gen/
+out/
 .directory
+.DS_STORE
+workspace.xml

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="javadoc">
-    <target name="javadoc">
-        <javadoc access="public" author="true" classpath="../../../../../android-sdk-linux/tools/support/annotations.jar:libs/jerklib.jar" destdir="doc" doctitle="Callisto Documentation" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.qweex.utils,net.margaritov.preference.colorpicker,com.qweex.callisto.podcast,com.qweex.callisto.irc" source="1.6" sourcefiles="src/com/qweex/callisto/DatabaseConnector.java,src/com/qweex/callisto/LiveStream.java,src/com/qweex/callisto/AlarmNotificationReceiver.java,src/com/qweex/callisto/AlarmActivity.java,src/com/qweex/callisto/CallistoWidget.java,src/com/qweex/callisto/WidgetHandler.java,src/com/qweex/callisto/Callisto.java,src/com/qweex/callisto/SplashScreen.java,src/com/qweex/callisto/CalendarActivity.java,src/com/qweex/callisto/Donate.java,src/com/qweex/callisto/ContactForm.java,src/com/qweex/callisto/BootNotificationReceiver.java,src/com/qweex/callisto/QuickPrefsActivity.java" sourcepath="gen:src" splitindex="true" use="true" version="true"/>
-    </target>
-</project>

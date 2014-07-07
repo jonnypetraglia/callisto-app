@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Callisto.iml" filepath="$PROJECT_DIR$/Callisto.iml" />
+      <module fileurl="file://$PROJECT_DIR$/callisto-app.iml" filepath="$PROJECT_DIR$/callisto-app.iml" />
     </modules>
   </component>
 </project>

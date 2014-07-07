@@ -1,55 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2012-2014 Qweex
-  ~ This file is a part of Callisto.
-  ~
-  ~ Callisto is free software; it is released under the
-  ~ Open Software License v3.0 without warranty. The OSL is an OSI approved,
-  ~ copyleft license, meaning you are free to redistribute
-  ~ the source code under the terms of the OSL.
-  ~
-  ~ You should have received a copy of the Open Software License
-  ~ along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
-  ~ or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
-  -->
-
-<!-- This file contains resource definitions for solid colors.  In
-     addition to plain color resources (retrieved via Resources.getColor()
-     and friends), we are also using it to define drawables that are
-     a solid color. -->
-
 <resources>
-    <!-- Retrieved via Resources.getColor() and friends. -->
-    <color name="red">#f00</color>
-    <color name="dkgray">#ff444444</color>
     <color name="ltgray">#ffcccccc</color>
-    <color name="white">#ffffffff</color>
-    <color name="black">#ff000000</color>
-    <color name="yellow">#ffffff00</color>
-    <color name="green">#ff00ff00</color>
-    <color name="gray">#ff888888</color>
-    <color name="qweex">#9c0</color>
-    
-    <color name="splashBg">#ff343434</color>
-    <color name="calHdrClr">@color/white</color>
-    <color name="calWeekClr">@color/black</color>
-    <color name="calDayClr">@color/kuler_2</color> <!-- @color/white -->
-    <color name="calTodayClr">@color/red</color>
-    <color name="backClr">@color/white</color>
-    <color name="txtClr">@color/black</color>
-    <color name="ctrlClr">@color/kuler_4</color>
-    <color name="liveClr">@color/kuler_3</color> <!-- #ee63DA89 -->
-    <color name="releaseClr">@color/kuler_4</color> <!-- #ee5B9FF4 -->
+    <color name="nav_top">#703070</color>
+    <color name="nav_bottom">#703070</color>
 
-    <color name="icons_color">#0099CC</color>
-    <color name="jb_blue">#68A5C1</color>
+    <color name="logo_color1">#194c76</color>
+    <color name="logo_color2">#706f6f</color>
+    <color name="logo_color1_dark">#0F2E47</color>
 
-    <color name="kuler_1">#ABC1CB</color>
-    <color name="kuler_2">#233841</color>
-    <color name="kuler_3">@color/jb_blue</color>
-    <color name="kuler_4">#373E41</color>
-    <color name="kuler_5">#4C798D</color>
-    <!-- Powder Blue = B0E0E6 -->
-
-    <color name="main_txt">@color/black</color>
+    <color name="qweex">#6cb700</color>
+    <color name="qweex_grey">#333333</color>
 </resources>

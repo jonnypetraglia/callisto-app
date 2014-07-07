@@ -1,120 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2012-2014 Qweex
-  ~ This file is a part of Callisto.
-  ~
-  ~ Callisto is free software; it is released under the
-  ~ Open Software License v3.0 without warranty. The OSL is an OSI approved,
-  ~ copyleft license, meaning you are free to redistribute
-  ~ the source code under the terms of the OSL.
-  ~
-  ~ You should have received a copy of the Open Software License
-  ~ along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
-  ~ or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
-  -->
-<!-- This is the layout for the main Callisto activity-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/naub"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:background="@color/backClr"
               android:orientation="vertical"
-              > <!-- android:background="@drawable/tabback" -->
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
 
-    <TableLayout android:id="@+id/mainMenu" android:layout_width="fill_parent" android:layout_height="0dip" android:padding="5dp" android:layout_weight="1.0">
+    <include android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             layout="@layout/titlebar"
+             android:id="@+id/titlebar"/>
 
-        <TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:padding="0dp">
 
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/listen"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_playback_play_lg"
-                android:paddingTop="10dp"
-                android:text="@string/play"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp" />
+    <android.support.v4.widget.DrawerLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/live"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_signal"
-                android:paddingTop="10dp"
-                android:text="@string/live"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp"/>
+        <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
 
-        </TableRow>
 
-        <TableRow android:id="@+id/tableRow2"
-            android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
+            <fragment android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:name="com.qweex.callisto.SplashFragment"
+                      android:id="@+id/main_fragment"
+                      android:layout_gravity="center"/>
 
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/plan"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_calendar_day"
-                android:paddingTop="10dp"
-                android:text="@string/plan"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp"
-                android:visibility="visible"/>
+        </FrameLayout>
 
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/chat"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_dialog"
-                android:paddingTop="10dp"
-                android:text="@string/chat"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp"
-                android:visibility="visible"/>
+        <ListView
+                android:id="@+id/left_drawer"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="#111"
+                android:choiceMode="singleChoice"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp" />
 
-        </TableRow>
-
-        <TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:visibility="visible">
-
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/contact"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_mail"
-                android:paddingTop="10dp"
-                android:text="@string/contact"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
-            <com.qweex.utils.ImgTxtButton
-                android:id="@+id/donate"
-                style="@style/btnStyleBreakerBay"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:drawable="@drawable/ic_action_heart"
-                android:paddingTop="10dp"
-                android:text="@string/donate"
-                android:textColor="@color/main_txt"
-                android:textSize="20sp"
-                android:visibility="visible" />
-
-        </TableRow>
-        <!--  -->
-        <!--  -->
-    </TableLayout>
-
-    <include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/controls" android:stretchColumns="*"/>
+    </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>

@@ -1,0 +1,98 @@
+[
+    {
+        title: "Coder Radio",
+        audio: "http://feeds.feedburner.com/coderradiomp3",
+        video: "http://feeds.feedburner.com/coderradiovideo",
+        active: true
+    },
+    {
+        title: "FauxShow",
+        audio: "http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml",
+        video: "http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml",
+        active: true
+    },
+    {
+        title: "Linux Action Show",
+        audio: "http://feeds2.feedburner.com/TheLinuxActionShow",
+        video: "http://feeds.feedburner.com/linuxactionshowipodvid",
+        active: true
+    },
+    {
+        title: "Linux Unplugged",
+        audio: "http://feeds.feedburner.com/linuxunplugged",
+        video: "http://feeds.feedburner.com/linuxunvid",
+        active: true
+    },
+    {
+        title: "Plan B",
+        audio: "http://feeds.feedburner.com/planbmp3",
+        video: "http://feeds.feedburner.com/PlanBVideo",
+        active: true
+    },
+    {
+        title: "SciByte",
+        audio: "http://feeds.feedburner.com/scibyteaudio",
+        video: "http://feeds.feedburner.com/scibytemobile",
+        active: true
+    },
+    {
+        title: "TechSnap",
+        audio: "http://feeds.feedburner.com/techsnapmp3",
+        video: "http://feeds.feedburner.com/techsnapmobile",
+        active: true
+    },
+    {
+        title: "Unfilter",
+        audio: "http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml",
+        video: "http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml",
+        active: true
+    },
+    {
+        title: "Beer is Tasty",
+        audio: "http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml",
+        video: "http://feeds2.feedburner.com/BeerIsTasty",
+        active: true
+    },
+    {
+        title: "In Depth Look",
+        audio: "http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml",
+        video: "http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml",
+        active: true
+    },
+    {
+        title: "Jupiter@Nite",
+        audio: "http://feeds.feedburner.com/jupiternitemp3",
+        video: "http://feeds.feedburner.com/jupiterniteivid",
+        active: true
+    },
+    {
+        title: "Jupiter Files",
+        audio: "http://feeds.feedburner.com/ldf-mp3",
+        video: "http://feeds.feedburner.com/ldf-video",
+        active: true
+    },
+    {
+        title: "Legend of the Stoned Owl",
+        audio: "http://feeds.feedburner.com/lotsomp3",
+        video: "http://feeds.feedburner.com/lotsovideo",
+        active: true
+    },
+    {
+        title: "MMOrgue",
+        audio: "http://feeds.feedburner.com/MMOrgueMP3",
+        video: "http://feeds.feedburner.com/MMOrgueMobile",
+        active: true
+    },
+    {
+        title: "STOked",
+        audio: "http://feeds.feedburner.com/stoked",
+        video: "http://feeds.feedburner.com/stokedipod",
+        active: true
+    },
+    {
+        title: "TORKed",
+        audio: "http://feeds.feedburner.com/TorkedMp3",
+        video: "http://feeds.feedburner.com/TorkedMobile",
+        active: true
+    }
+]
