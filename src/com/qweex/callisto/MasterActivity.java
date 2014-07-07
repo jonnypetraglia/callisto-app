@@ -11,6 +11,9 @@ import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.contact.ContactFragment;
 import com.qweex.callisto.settings.SettingsFragment;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 public class MasterActivity extends FragmentActivity {
 
     private DrawerLayout drawerLayout;
@@ -66,6 +69,16 @@ public class MasterActivity extends FragmentActivity {
         //donateFragment = new DonateFragment();
         settingsFragment = new SettingsFragment();
 
+        checkForUpdates();
+    }
+
+    private void checkForCrashes() {
+        CrashManager.register(this, PRIVATE.HOCKEY_APP_ID);
+    }
+
+    private void checkForUpdates() {
+        // Remove this for store builds!
+        UpdateManager.register(this, PRIVATE.HOCKEY_APP_ID);
     }
 
     AdapterView.OnItemClickListener navClickListener = new AdapterView.OnItemClickListener() {
@@ -113,7 +126,7 @@ public class MasterActivity extends FragmentActivity {
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment, frag);
-            transaction.addToBackStack(null);
+            //transaction.addToBackStack(null);
             transaction.commit();
 
             if(activeFragment!=null)

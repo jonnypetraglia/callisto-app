@@ -7,3 +7,4 @@ out/
 *.min.js
 *.min.css
 *.min.json
+PRIVATE.java
