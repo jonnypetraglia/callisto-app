@@ -1,5 +1,6 @@
 package com.qweex.callisto.catalog;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,24 +16,28 @@ import java.util.*;
 
 public class CatalogFragment extends CallistoFragment {
 
-    View contentView;
     Spinner catalogSpinner;
     ArrayList<ShowInfo> showList;
     int selectedShow;
+
+    ListView listview;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        contentView = super.onCreateView(inflater, container, savedInstanceState);
+        listview = new ListView(getActivity());
+
+        //Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
+        listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, null));
 
         catalogSpinner = (Spinner) getActivity().findViewById(R.id.nav_spinner);
 
         InputStream is = null;
         try {
-            is = getActivity().getAssets().open("shows.json");
+            is = getActivity().getAssets().open("shows.min.json");
             showList = ShowInfo.readJSON(is);
-            catalogSpinner.setAdapter(new ShowAdapter(showList));
+            catalogSpinner.setAdapter(new ShowListAdapter(this, showList));
             catalogSpinner.setOnItemSelectedListener(changeShow);
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,47 +48,6 @@ public class CatalogFragment extends CallistoFragment {
         show();
         return t;
         //return contentView;
-    }
-
-    class ShowAdapter extends BaseAdapter {
-        ArrayList<ShowInfo> array;
-
-        public ShowAdapter(ArrayList<ShowInfo> a) {
-            array = a;
-        }
-
-        @Override
-        public int getCount() {
-            return array.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return array.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        private View _getView(int resid, int position, View convertView, ViewGroup parent) {
-            if(convertView==null)
-                convertView = getActivity().getLayoutInflater().inflate(resid, null);
-
-            ((TextView)convertView).setText( array.get(position).title );
-            return convertView;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            return _getView(R.layout.nav_entry, position, convertView, parent);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return _getView(android.R.layout.simple_spinner_item, position, convertView, parent);
-        }
     }
 
 

@@ -10,4 +10,7 @@
 
     <color name="qweex">#6cb700</color>
     <color name="qweex_grey">#333333</color>
+
+    <color name="catalog_row_pb">#333333</color>
+    <color name="catalog_row_pb_bg">#aaaaaa</color>
 </resources>
