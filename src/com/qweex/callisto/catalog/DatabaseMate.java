@@ -111,9 +111,9 @@ public class DatabaseMate
 
     public Cursor getShow(String show, boolean filter)
     {
-        return dbc.database.query(TABLE_EPISODES ,                                          /* table */
+        return dbc.database.query(TABLE_EPISODES ,                                      /* table */
                 new String[] {"_id", "title", "date", "new", "mp3link"},                /* columns */
-                "show = '?'" + (filter ? " and new='1'" : "") ,                         /* where */
+                "show_id=? " + (filter ? "and new='1'" : "") ,                          /* where */
                 new String[] {show},                                                    /* where args */
                 null,                                                                   /* groupBy */
                 null,                                                                   /* having */

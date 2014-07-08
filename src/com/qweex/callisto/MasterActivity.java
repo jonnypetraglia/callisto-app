@@ -137,7 +137,6 @@ public class MasterActivity extends ActionBarActivity {
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment, frag);
-            //transaction.addToBackStack(null);
             transaction.commit();
 
             if(activeFragment!=null)

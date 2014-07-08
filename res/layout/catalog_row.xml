@@ -9,15 +9,16 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@drawable/progress_bg"
             android:layout_width="fill_parent"
-            android:progress="50"
-            android:background="#ff000000"
+            android:progress="0"
             android:layout_height="1dp"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
             android:layout_alignTop="@+id/row"
             android:layout_alignBottom="@+id/row"
             android:layout_alignLeft="@+id/row"
-            android:layout_alignRight="@+id/row"/>
+            android:layout_alignRight="@+id/row"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/progress_bg"/>
 
     <LinearLayout
             android:id="@+id/row"
@@ -39,15 +40,19 @@
                 android:orientation="vertical" >
 
             <TextView
+                    style="@style/catalog_row_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
+                    android:padding="5dp"
                     android:id="@+id/title" />
 
             <TextView
+                    style="@style/catalog_row_sub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
+                    android:padding="5dp"
                     android:id="@+id/date" />
 
         </LinearLayout>

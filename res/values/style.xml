@@ -20,4 +20,12 @@
         <item name="@android:textSize">20sp</item>
         <item name="@android:textAllCaps">false</item>
     </style>
+
+    <style name="catalog_row_main">
+        <item name="@android:textColor">#333333</item>
+    </style>
+
+    <style name="catalog_row_sub">
+        <item name="@android:textColor">#666666</item>
+    </style>
 </resources>

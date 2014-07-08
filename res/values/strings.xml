@@ -18,6 +18,11 @@
     <string name="contact_form_error">Error Loading Form</string>
     <string name="contact_form_message">The page fetched does not seem to be the valid contact form. It might be your connection, or the end of the world</string>
 
+    <string name="no_episodes">No episodes to display</string>
+
     <string name="update">Update</string>
     <string name="update_all">Update All</string>
+    <string name="hide_watched">Hide Watched</string>
+    <string name="show_watched">Show Watched</string>
+    <string name="mark_all">Mark All</string>
 </resources>

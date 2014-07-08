@@ -2,4 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/update" android:title="@string/update"/>
     <item android:id="@+id/update_all" android:title="@string/update_all"/>
+    <item android:id="@+id/filter" android:title="@string/hide_watched"/>
+    <item android:id="@+id/mark" android:title="@string/mark_all"/>
 </menu>

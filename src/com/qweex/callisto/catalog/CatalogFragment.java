@@ -1,10 +1,13 @@
 package com.qweex.callisto.catalog;
 
 import android.app.ActionBar;
+import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
@@ -22,9 +25,11 @@ public class CatalogFragment extends CallistoFragment {
 
     ShowListAdapter showListAdapter;
     ArrayList<ShowInfo> showList;
+    LinearLayout layout;
     ListView listview;
     DatabaseMate dbMate;
     RssUpdater rssUpdater;
+    boolean filter = false;
 
     public CatalogFragment(DatabaseConnector db) {
         super(db);
@@ -35,13 +40,12 @@ public class CatalogFragment extends CallistoFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        if(listview==null) {
-            listview = new ListView(getActivity());
-
-            //Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
-            listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, null));
-
-            //catalogSpinner = (Spinner) getActivity().findViewById(R.id.nav_spinner);
+        if(layout==null) {
+            layout = (LinearLayout) inflater.inflate(R.layout.catalog, null);
+            listview = (ListView) layout.findViewById(android.R.id.list);
+            listview.setEmptyView(layout.findViewById(android.R.id.empty));
+            listview.setDivider(new ColorDrawable(0xff999999));
+            listview.setDividerHeight(1);
 
             InputStream is = null;
             try {
@@ -49,14 +53,18 @@ public class CatalogFragment extends CallistoFragment {
                 showList = ShowInfo.readJSON(is);
                 showListAdapter = new ShowListAdapter(this, showList);
                 getActivity().getActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
+
+                reloadList();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             show();
             setHasOptionsMenu(true);
+        } else {
+            ((ViewGroup)layout.getParent()).removeView(layout);
         }
-        return listview;
+        return layout;
     }
 
     @Override
@@ -83,6 +91,18 @@ public class CatalogFragment extends CallistoFragment {
                     rssUpdater = new RssUpdater(dbMate, processRssResults);
                     rssUpdater.execute(showList.toArray(new ShowInfo[showList.size()]));
                 }
+                return true;
+            case R.id.filter :
+                filter = !filter;
+                if(filter)
+                    item.setTitle(R.string.show_watched);
+                else
+                    item.setTitle(R.string.hide_watched);
+                reloadList();
+                return true;
+            case R.id.mark:
+                //TODO
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -98,6 +118,7 @@ public class CatalogFragment extends CallistoFragment {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
             Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
+            reloadList();
             return true;
         }
     };
@@ -119,6 +140,12 @@ public class CatalogFragment extends CallistoFragment {
             Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG);
         }
     };
+
+    void reloadList() {
+        ShowInfo selectedShow = showList.get(Math.max(getActivity().getActionBar().getSelectedNavigationIndex(), 0));
+        Cursor r = dbMate.getShow(selectedShow.id, filter);
+        listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, r));
+    }
 
     public void show() {
         try {
