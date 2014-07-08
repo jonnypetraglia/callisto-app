@@ -3,4 +3,4 @@ PATH=/usr/local/bin:$PATH
 
 minify assets/contact.css
 minify assets/contact_draft.js
-json-minify assets/shows.json
+json-minify assets/shows.json > assets/shows.min.json

@@ -14,10 +14,10 @@
             android:layout_height="1dp"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
-            android:layout_alignTop="@id/row"
-            android:layout_alignBottom="@id/row"
-            android:layout_alignLeft="@id/row"
-            android:layout_alignRight="@id/row"/>
+            android:layout_alignTop="@+id/row"
+            android:layout_alignBottom="@+id/row"
+            android:layout_alignLeft="@+id/row"
+            android:layout_alignRight="@+id/row"/>
 
     <LinearLayout
             android:id="@+id/row"
