@@ -4,16 +4,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
 import java.util.ArrayList;
 
 class ShowListAdapter extends BaseAdapter {
     ArrayList<ShowInfo> array;
-    private CatalogFragment catalogFragment;
+    private MasterActivity activity;
 
-    public ShowListAdapter(CatalogFragment catalogFragment, ArrayList<ShowInfo> a) {
-        this.catalogFragment = catalogFragment;
+    public ShowListAdapter(MasterActivity master, ArrayList<ShowInfo> a) {
+        activity = master;
         array = a;
     }
 
@@ -34,7 +35,7 @@ class ShowListAdapter extends BaseAdapter {
 
     private View _getView(int resid, int position, View convertView, ViewGroup parent) {
         if(convertView==null)
-            convertView = catalogFragment.getActivity().getLayoutInflater().inflate(resid, null);
+            convertView = activity.getLayoutInflater().inflate(resid, null);
 
         ((TextView)convertView).setText( array.get(position).title );
         return convertView;

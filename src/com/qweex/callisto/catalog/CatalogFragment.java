@@ -51,7 +51,7 @@ public class CatalogFragment extends CallistoFragment {
             try {
                 is = getActivity().getAssets().open("shows.min.json");
                 showList = ShowInfo.readJSON(is);
-                showListAdapter = new ShowListAdapter(this, showList);
+                showListAdapter = new ShowListAdapter(master, showList);
                 master.getSupportActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
 
                 reloadList();
