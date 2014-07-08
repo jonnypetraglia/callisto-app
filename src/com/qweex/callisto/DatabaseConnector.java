@@ -35,13 +35,13 @@ public class DatabaseConnector
     public DatabaseConnector(Context context)
     {
         databaseOpenHelper = new DatabaseOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
+        open();
     }
 
     /** Opens the database so that it can be read or written. */
     public void open() throws SQLException
     {
         database = databaseOpenHelper.getWritableDatabase();
-        databaseOpenHelper.onUpgrade(database, 0, 1);
     }
 
     /** Closes the database when you are done with it. */

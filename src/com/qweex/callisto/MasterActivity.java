@@ -36,6 +36,8 @@ public class MasterActivity extends ActionBarActivity {
     //private DonateFragment donateFragment;
     private SettingsFragment settingsFragment;
 
+    public DatabaseConnector databaseConnector;
+
     ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -44,7 +46,6 @@ public class MasterActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-
         String[] navbarEntries = getResources().getStringArray(R.array.navigation_drawer_items_array);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -52,28 +53,20 @@ public class MasterActivity extends ActionBarActivity {
         drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_entry, navbarEntries));
         drawerList.setOnItemClickListener(navClickListener);
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name,R.string.update){
-            /** Called when drawer is closed */
-            public void onDrawerClosed(View view) {
-                supportInvalidateOptionsMenu();
-            }
-
-            /** Called when a drawer is opened */
-            public void onDrawerOpened(View drawerView) {
-                supportInvalidateOptionsMenu();
-            }
-        };
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name,R.string.update);
         drawerLayout.setDrawerListener(drawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
-        catalogFragment = new CatalogFragment();
-        //liveFragment = new LiveFragment();
-        //chatFragment = new ChatFragment();
-        //scheduleFragment = new ScheduleFragment();
-        contactFragment = new ContactFragment();
-        //donateFragment = new DonateFragment();
-        settingsFragment = new SettingsFragment();
+        databaseConnector = new DatabaseConnector(this);
+
+        catalogFragment = new CatalogFragment(databaseConnector);
+        //liveFragment = new LiveFragment(databaseConnector);
+        //chatFragment = new ChatFragment(databaseConnector);
+        //scheduleFragment = new ScheduleFragment(databaseConnector);
+        contactFragment = new ContactFragment(databaseConnector);
+        //donateFragment = new DonateFragment(databaseConnector);
+        settingsFragment = new SettingsFragment(databaseConnector);
 
         checkForUpdates();
     }

@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
+import com.qweex.callisto.DatabaseConnector;
 import com.qweex.callisto.R;
 
 import java.io.IOException;
@@ -21,7 +21,13 @@ public class CatalogFragment extends CallistoFragment {
     ShowListAdapter showListAdapter;
     ArrayList<ShowInfo> showList;
     ListView listview;
+    DatabaseMate dbMate;
     RssUpdater rssUpdater;
+
+    public CatalogFragment(DatabaseConnector db) {
+        super(db);
+        dbMate = new DatabaseMate(db);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,6 +46,7 @@ public class CatalogFragment extends CallistoFragment {
                 is = getActivity().getAssets().open("shows.min.json");
                 showList = ShowInfo.readJSON(is);
                 showListAdapter = new ShowListAdapter(this, showList);
+                getActivity().getActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +70,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItem(getSelectedShow());
                 else {
-                    rssUpdater = new RssUpdater(null);
+                    rssUpdater = new RssUpdater(dbMate);
                     rssUpdater.execute(getSelectedShow());
                 }
                 return true;
@@ -71,7 +78,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItems(showList);
                 else {
-                    rssUpdater = new RssUpdater(null);
+                    rssUpdater = new RssUpdater(dbMate);
                     rssUpdater.execute((ShowInfo[]) showList.toArray());
                 }
         }
@@ -80,6 +87,7 @@ public class CatalogFragment extends CallistoFragment {
 
     ShowInfo getSelectedShow() {
         int i = getActivity().getActionBar().getSelectedNavigationIndex();
+        Log.i("Callisto", "Updating show " + i);
         return showList.get(i);
     }
 
@@ -93,8 +101,12 @@ public class CatalogFragment extends CallistoFragment {
     };
 
     public void show() {
-        if(showListAdapter!=null)
-            getActivity().getActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
+        try {
+            getActivity().getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            getActivity().getActionBar().setTitle(null);
+        } catch(NullPointerException npe) {
+            Log.w("Callisto", "Encountered null while trying to perform show()");
+        }
     }
 
     public void hide() {

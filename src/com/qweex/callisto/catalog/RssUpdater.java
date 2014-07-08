@@ -1,6 +1,5 @@
 package com.qweex.callisto.catalog;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
@@ -9,7 +8,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,6 +51,8 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
         for(int i=0; i<items.size(); i++) {
             ShowInfo current = items.get(i);
             Log.i(TAG, "Beginning update: " + current.id + " " + current.audioFeed + " " + current.videoFeed);
+
+            db.clearShow(current.id);
 
             doVideo = current.videoFeed!=null;
 

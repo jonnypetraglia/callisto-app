@@ -22,12 +22,11 @@ class Episode
         int marker = title.lastIndexOf('|');
         if(marker>-1)
             title = title.substring(0, marker);
-        /*
+
         db.insertEpisode(show_id, title,
                                   CatalogFragment.sdfRaw.format(Date.getTime()),
                                   Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
-        //*/
-        Log.i("Callisto", "Title: " + title);
+        Log.i("Callisto", "Inserting episode: " + title + " (" + show_id + ")");
     }
 
     public void assertComplete() throws UnfinishedParseException {

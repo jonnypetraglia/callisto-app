@@ -20,6 +20,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import com.qweex.callisto.DatabaseConnector;
 
 public class DatabaseMate
@@ -108,7 +109,7 @@ public class DatabaseMate
 
     public void clearShow(String show_id)
     {
-        dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show_id});
+        dbc.database.delete(TABLE_EPISODES, "show_id=?", new String[] {show_id});
     }
 
     public Cursor getOneEpisode(long id)
@@ -125,8 +126,8 @@ public class DatabaseMate
     public Cursor searchEpisodes(String searchTerm, String searchShow)
     {
         return dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "title", "show", "date"},
-                (searchShow!="" ? ("show=? and ") : "") + "(title like '%?%' or description like '%?%')", //where
+                new String[] {"_id", "title", "show_id", "date"},
+                (searchShow!="" ? ("show_id=? and ") : "") + "(title like '%?%' or description like '%?%')", //where
                 new String[] {searchShow, searchTerm, searchTerm},
                 null, null, null);
     }

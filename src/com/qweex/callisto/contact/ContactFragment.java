@@ -7,6 +7,7 @@ import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import com.qweex.callisto.CallistoFragment;
+import com.qweex.callisto.DatabaseConnector;
 import com.qweex.callisto.R;
 
 public class ContactFragment extends CallistoFragment {
@@ -18,6 +19,10 @@ public class ContactFragment extends CallistoFragment {
     private ProgressBar pb;
     private AssetReader cssReader, jsReader;
     LinearLayout layout;
+
+    public ContactFragment(DatabaseConnector db) {
+        super(db);
+    }
 
 
     @Override
