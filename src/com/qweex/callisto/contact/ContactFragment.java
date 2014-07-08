@@ -7,7 +7,7 @@ import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import com.qweex.callisto.CallistoFragment;
-import com.qweex.callisto.DatabaseConnector;
+import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
 public class ContactFragment extends CallistoFragment {
@@ -19,8 +19,8 @@ public class ContactFragment extends CallistoFragment {
     private AssetReader cssReader, jsReader;
     LinearLayout layout;
 
-    public ContactFragment(DatabaseConnector db) {
-        super(db);
+    public ContactFragment(MasterActivity m) {
+        super(m);
     }
 
 
@@ -47,7 +47,7 @@ public class ContactFragment extends CallistoFragment {
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
-
+        show();
         return layout;
     }
 
@@ -77,7 +77,9 @@ public class ContactFragment extends CallistoFragment {
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        master.getSupportActionBar().setTitle(R.string.contact);
+    }
 
     @Override
     public void hide() {

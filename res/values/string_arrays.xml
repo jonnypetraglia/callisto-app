@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="navigation_drawer_items_array">
+        <item>@string/catalog</item>
+        <item>@string/live</item>
+        <item>@string/chat</item>
+        <item>@string/schedule</item>
+        <item>@string/contact</item>
+        <item>@string/donate</item>
+        <item>@string/settings</item>
+        <item>@string/about</item>
+    </string-array>
+</resources>

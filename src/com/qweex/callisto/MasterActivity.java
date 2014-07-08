@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -60,13 +61,13 @@ public class MasterActivity extends ActionBarActivity {
 
         databaseConnector = new DatabaseConnector(this);
 
-        catalogFragment = new CatalogFragment(databaseConnector);
+        catalogFragment = new CatalogFragment(this);
         //liveFragment = new LiveFragment(databaseConnector);
         //chatFragment = new ChatFragment(databaseConnector);
         //scheduleFragment = new ScheduleFragment(databaseConnector);
-        contactFragment = new ContactFragment(databaseConnector);
+        contactFragment = new ContactFragment(this);
         //donateFragment = new DonateFragment(databaseConnector);
-        settingsFragment = new SettingsFragment(databaseConnector);
+        settingsFragment = new SettingsFragment(this);
 
         checkForUpdates();
     }
@@ -132,7 +133,6 @@ public class MasterActivity extends ActionBarActivity {
                 navSelected.setSelected(false);
             navSelected = (TextView) view;
             navSelected.setSelected(true);
-            getActionBar().setTitle(navSelected.getText());
 
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -142,7 +142,11 @@ public class MasterActivity extends ActionBarActivity {
             if(activeFragment!=null)
                 activeFragment.hide();
             activeFragment = frag;
-            activeFragment.show();
+            try {
+                activeFragment.show();
+            } catch(NullPointerException npe) {
+                Log.w("Callisto", "Encountered null while trying to perform show()");
+            }
 
             drawerLayout.closeDrawer(GravityCompat.START);
         }

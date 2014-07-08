@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
-import com.qweex.callisto.DatabaseConnector;
+import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
 import java.io.IOException;
@@ -31,9 +31,9 @@ public class CatalogFragment extends CallistoFragment {
     RssUpdater rssUpdater;
     boolean filter = false;
 
-    public CatalogFragment(DatabaseConnector db) {
-        super(db);
-        dbMate = new DatabaseMate(db);
+    public CatalogFragment(MasterActivity m) {
+        super(m);
+        dbMate = new DatabaseMate(m.databaseConnector);
     }
 
     @Override
@@ -52,18 +52,18 @@ public class CatalogFragment extends CallistoFragment {
                 is = getActivity().getAssets().open("shows.min.json");
                 showList = ShowInfo.readJSON(is);
                 showListAdapter = new ShowListAdapter(this, showList);
-                getActivity().getActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
+                master.getSupportActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
 
                 reloadList();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            show();
             setHasOptionsMenu(true);
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
+        show();
         return layout;
     }
 
@@ -108,13 +108,13 @@ public class CatalogFragment extends CallistoFragment {
     }
 
     ShowInfo getSelectedShow() {
-        int i = getActivity().getActionBar().getSelectedNavigationIndex();
+        int i = master.getSupportActionBar().getSelectedNavigationIndex();
         Log.i("Callisto", "Updating show " + i);
         return showList.get(i);
     }
 
 
-    private ActionBar.OnNavigationListener changeShow = new ActionBar.OnNavigationListener() {
+    private android.support.v7.app.ActionBar.OnNavigationListener changeShow = new android.support.v7.app.ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
             Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
@@ -142,21 +142,17 @@ public class CatalogFragment extends CallistoFragment {
     };
 
     void reloadList() {
-        ShowInfo selectedShow = showList.get(Math.max(getActivity().getActionBar().getSelectedNavigationIndex(), 0));
+        ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
         Cursor r = dbMate.getShow(selectedShow.id, filter);
         listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, r));
     }
 
     public void show() {
-        try {
-            getActivity().getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-            getActivity().getActionBar().setTitle(null);
-        } catch(NullPointerException npe) {
-            Log.w("Callisto", "Encountered null while trying to perform show()");
-        }
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        master.getSupportActionBar().setTitle(null);
     }
 
     public void hide() {
-        getActivity().getActionBar().setListNavigationCallbacks(null, null);
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 }
