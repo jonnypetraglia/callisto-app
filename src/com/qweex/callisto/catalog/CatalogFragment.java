@@ -1,12 +1,11 @@
 package com.qweex.callisto.catalog;
 
-import android.database.Cursor;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.*;
+import android.view.*;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.R;
 
@@ -19,64 +18,86 @@ public class CatalogFragment extends CallistoFragment {
 
     public static SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
 
-    Spinner catalogSpinner;
+    ShowListAdapter showListAdapter;
     ArrayList<ShowInfo> showList;
-    int selectedShow;
-
     ListView listview;
+    RssUpdater rssUpdater;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        listview = new ListView(getActivity());
+        if(listview==null) {
+            listview = new ListView(getActivity());
 
-        //Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
-        listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, null));
+            //Cursor r = StaticBlob.databaseConnector.getShow(currentShow, filter);
+            listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, null));
 
-        catalogSpinner = (Spinner) getActivity().findViewById(R.id.nav_spinner);
+            //catalogSpinner = (Spinner) getActivity().findViewById(R.id.nav_spinner);
 
-        InputStream is = null;
-        try {
-            is = getActivity().getAssets().open("shows.min.json");
-            showList = ShowInfo.readJSON(is);
-            catalogSpinner.setAdapter(new ShowListAdapter(this, showList));
-            catalogSpinner.setOnItemSelectedListener(changeShow);
-        } catch (IOException e) {
-            e.printStackTrace();
+            InputStream is = null;
+            try {
+                is = getActivity().getAssets().open("shows.min.json");
+                showList = ShowInfo.readJSON(is);
+                showListAdapter = new ShowListAdapter(this, showList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            show();
+            setHasOptionsMenu(true);
         }
+        return listview;
+    }
 
-        TextView t = new TextView(getActivity());
-        t.setText("HEY");
-        show();
-        return t;
-        //return contentView;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.catalog_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.update:   //Refresh the SQL database from the RSS feed
+                if(rssUpdater!=null && rssUpdater.isRunning())
+                    rssUpdater.addItem(getSelectedShow());
+                else {
+                    rssUpdater = new RssUpdater(null);
+                    rssUpdater.execute(getSelectedShow());
+                }
+                return true;
+            case R.id.update_all:
+                if(rssUpdater!=null && rssUpdater.isRunning())
+                    rssUpdater.addItems(showList);
+                else {
+                    rssUpdater = new RssUpdater(null);
+                    rssUpdater.execute((ShowInfo[]) showList.toArray());
+                }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    ShowInfo getSelectedShow() {
+        int i = getActivity().getActionBar().getSelectedNavigationIndex();
+        return showList.get(i);
     }
 
 
-    private AdapterView.OnItemSelectedListener changeShow = new AdapterView.OnItemSelectedListener() {
+    private ActionBar.OnNavigationListener changeShow = new ActionBar.OnNavigationListener() {
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            Log.d("Callisto", "Selected Show: " + showList.get(position).title);
-            new RssUpdater(null).execute(showList.get(position));
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-            Log.d("Callisto", "Nothing Selected");
+        public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+            Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
+            return true;
         }
     };
 
     public void show() {
-        if(catalogSpinner==null)
-            return;
-        catalogSpinner.setSelection(selectedShow);
-        catalogSpinner.setVisibility(View.VISIBLE);
+        if(showListAdapter!=null)
+            getActivity().getActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
     }
 
     public void hide() {
-        if(catalogSpinner==null)
-            return;
-        catalogSpinner.setVisibility(View.GONE);
+        getActivity().getActionBar().setListNavigationCallbacks(null, null);
     }
 }

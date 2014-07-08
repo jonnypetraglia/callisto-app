@@ -42,6 +42,9 @@ public class CatalogAdapter extends SimpleCursorAdapter
         TextView title = (TextView) v.findViewById(R.id.title),
                  date  = (TextView) v.findViewById(R.id.date);
 
+        title.setText(cursor.getString(cursor.getColumnIndex("title")));
+        date.setText(cursor.getString(cursor.getColumnIndex("date")));
+
         /*
         Date tempDate = new Date(); //We use this variable to get thisYear as well as parsing the actual date later
         int thisYear = tempDate.getYear();      //If the date for the show is this year, no need to show the year

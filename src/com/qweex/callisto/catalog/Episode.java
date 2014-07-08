@@ -27,7 +27,7 @@ class Episode
                                   CatalogFragment.sdfRaw.format(Date.getTime()),
                                   Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
         //*/
-        Log.i("Callisto", "Title: " + Title);
+        Log.i("Callisto", "Title: " + title);
     }
 
     public void assertComplete() throws UnfinishedParseException {

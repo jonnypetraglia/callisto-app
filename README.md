@@ -23,6 +23,16 @@ I use [Intellij](http://www.jetbrains.com/idea/). It is free and somewhat open s
 If you use IntelliJ, getting set up is incredibly simple: open the project.
 
 
+### Support Library v7 ###
+
+This is the first time I've used v7 of the support library. Here are the steps I had to do to get it to work with the project:
+
+1. Import appcompat as a module (File > Import Module)
+
+2. Add module as lib for Callisto (in Project Structure > Modules, click the little '+' and choose "Module Dependency")
+
+3. Edit the iml file for appcompat to https://gist.github.com/hgoebl/8261396
+
 #### Minifying ####
 
 The only other thing I would recommend doing is setting up whatever dev environment you use to auto-minify the JS, CSS, and JSON assets before building.

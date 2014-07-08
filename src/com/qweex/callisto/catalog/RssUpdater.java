@@ -11,9 +11,7 @@ import java.io.*;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.*;
 
 public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 {
@@ -21,27 +19,39 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
     DatabaseMate db;
 
+    LinkedList<Episode> EpisodesRetrieved = new LinkedList<Episode>();
+    XmlPullParser audioParser, videoParser = null;
+    ArrayList<ShowInfo> items;
+
     public RssUpdater(DatabaseMate db) {
         this.db = db;
     }
 
-    LinkedList<Episode> EpisodesRetrieved = new LinkedList<Episode>();
+    public boolean isRunning() { return items!=null; }
 
     @Override
-    protected void onPreExecute() {
-
+    protected void onPostExecute(Void v) {
+        items = null;
     }
 
-    XmlPullParser audioParser, videoParser = null;
+    public void addItem(ShowInfo show) {
+        items.add(show);
+    }
+    public void addItems(ArrayList<ShowInfo> shows) {
+        for(ShowInfo s : shows)
+            items.add(s);
+    }
 
     @Override
     protected Void doInBackground(ShowInfo... shows) {
         String TAG = "Callisto:RssUpdater";
 
+        items = new ArrayList<ShowInfo>(Arrays.asList(shows));
+
         boolean doVideo = false;
 
-        for(int i=0; i<shows.length; i++) {
-            ShowInfo current = shows[i];
+        for(int i=0; i<items.size(); i++) {
+            ShowInfo current = items.get(i);
             Log.i(TAG, "Beginning update: " + current.id + " " + current.audioFeed + " " + current.videoFeed);
 
             doVideo = current.videoFeed!=null;

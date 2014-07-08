@@ -1,11 +1,17 @@
 package com.qweex.callisto;
 
+import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.contact.ContactFragment;
@@ -14,12 +20,11 @@ import com.qweex.callisto.settings.SettingsFragment;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
-public class MasterActivity extends FragmentActivity {
+public class MasterActivity extends ActionBarActivity {
 
     private DrawerLayout drawerLayout;
     private ListView drawerList;
-    private LinearLayout navButton;
-    private TextView navSelected, titlebarText;
+    private TextView navSelected;
 
     private CallistoFragment activeFragment;
 
@@ -32,25 +37,13 @@ public class MasterActivity extends FragmentActivity {
     //private DonateFragment donateFragment;
     private SettingsFragment settingsFragment;
 
+    ActionBarDrawerToggle drawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        titlebarText = (TextView) findViewById(R.id.titlebar_title);
-
-
-        navButton = (LinearLayout) findViewById(R.id.nav_button);
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(drawerLayout.isDrawerOpen(GravityCompat.START))
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                else
-                    drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
 
 
         String[] navbarEntries = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -60,6 +53,20 @@ public class MasterActivity extends FragmentActivity {
         drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_entry, navbarEntries));
         drawerList.setOnItemClickListener(navClickListener);
 
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name,R.string.update){
+            /** Called when drawer is closed */
+            public void onDrawerClosed(View view) {
+                supportInvalidateOptionsMenu();
+            }
+
+            /** Called when a drawer is opened */
+            public void onDrawerOpened(View drawerView) {
+                supportInvalidateOptionsMenu();
+            }
+        };
+        drawerLayout.setDrawerListener(drawerToggle);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         catalogFragment = new CatalogFragment();
         //liveFragment = new LiveFragment();
@@ -70,6 +77,18 @@ public class MasterActivity extends FragmentActivity {
         settingsFragment = new SettingsFragment();
 
         checkForUpdates();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkForCrashes() {
@@ -120,8 +139,8 @@ public class MasterActivity extends FragmentActivity {
             if(navSelected!=null)
                 navSelected.setSelected(false);
             navSelected = (TextView) view;
-            titlebarText.setText(navSelected.getText());
             navSelected.setSelected(true);
+            getActionBar().setTitle(navSelected.getText());
 
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -137,4 +156,10 @@ public class MasterActivity extends FragmentActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
     };
+
+
+    public static boolean hasMenuKey(Activity a) {
+        return Build.VERSION.SDK_INT <= 10 || (Build.VERSION.SDK_INT >= 14 &&
+                ViewConfiguration.get(a).hasPermanentMenuKey());
+    }
 }

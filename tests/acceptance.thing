@@ -1,0 +1,6 @@
+
+it: can fetch RSS succesfully & insert it into the DB
+  Supply RssUpdater with simple RSS (two items) & and assert their values are correct
+  Check DB that it was inserted correctly
+
+it:
