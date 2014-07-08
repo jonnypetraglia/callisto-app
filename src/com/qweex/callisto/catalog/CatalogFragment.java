@@ -2,9 +2,11 @@ package com.qweex.callisto.catalog;
 
 import android.app.ActionBar;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.DatabaseConnector;
 import com.qweex.callisto.R;
@@ -79,7 +81,7 @@ public class CatalogFragment extends CallistoFragment {
                     rssUpdater.addItems(showList);
                 else {
                     rssUpdater = new RssUpdater(dbMate, processRssResults);
-                    rssUpdater.execute((ShowInfo[]) showList.toArray());
+                    rssUpdater.execute(showList.toArray(new ShowInfo[showList.size()]));
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -103,9 +105,18 @@ public class CatalogFragment extends CallistoFragment {
 
     RssUpdater.Callback processRssResults = new RssUpdater.Callback() {
         @Override
-        void call(LinkedList<Episode> results) {
+        void call(LinkedList<Episode> results, LinkedList<ShowInfo> failures) {
             while(!results.isEmpty())
                 dbMate.insertEpisode(results.pop());
+            if(failures.size()==0)
+                return;
+            String[] errorStrings = new String[failures.size()];
+            for(int i=0; i<failures.size(); ++i) {
+                errorStrings[i] = failures.get(i).title;
+            }
+            String msg = "Errors Occured with:" + TextUtils.join("\n", errorStrings);
+            Log.d("Callisto", msg);
+            Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG);
         }
     };
 

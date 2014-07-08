@@ -1,7 +1,5 @@
 package com.qweex.callisto.catalog;
 
-import android.util.Log;
-
 import java.util.Calendar;
 
 class Episode
@@ -18,10 +16,10 @@ class Episode
     public void assertComplete() throws UnfinishedParseException {
         if(Title==null)
             throw new UnfinishedParseException("Title");
-        if(Link==null)
-            throw new UnfinishedParseException("Link");
-        if(Desc==null)
-            throw new UnfinishedParseException("Desc");
+        //if(Link==null)                                        //Link is optional because an episode of CR doesn't have one...
+        //    throw new UnfinishedParseException("Link");
+        //if(Desc==null)                                        //Desc is optional because an episode of Unfilter doesn't have one.
+        //    throw new UnfinishedParseException("Desc");
         if(Date==null)
             throw new UnfinishedParseException("Date");
         if(AudioLink==null)
