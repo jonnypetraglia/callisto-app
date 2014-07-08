@@ -13,7 +13,6 @@ import com.qweex.callisto.R;
 public class ContactFragment extends CallistoFragment {
 
     private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
-    final int DRAFT_ID = Menu.FIRST;
     private String customCSS = null, customJS = null;
     private WebView wv;
     private ProgressBar pb;

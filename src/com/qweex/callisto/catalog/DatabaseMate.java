@@ -47,6 +47,19 @@ public class DatabaseMate
         this.dbc = dbc;
     }
 
+    public void insertEpisode(Episode ep)
+    {
+        String title = ep.Title;
+        int marker = title.lastIndexOf('|');
+        if(marker>-1)
+            title = title.substring(0, marker);
+
+        insertEpisode(ep.show_id, title,
+                CatalogFragment.sdfRaw.format(ep.Date.getTime()),
+                ep.Desc, ep.Link, ep.AudioLink, ep.AudioSize, ep.VideoLink, ep.VideoSize);
+        Log.i("Callisto", "Inserting episode: " + title + " (" + ep.show_id + ")");
+    }
+
     public void insertEpisode(String show_id,
                               String title,
                               String date,

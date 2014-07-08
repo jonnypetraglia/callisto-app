@@ -2,6 +2,7 @@ package com.qweex.callisto.catalog;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import com.qweex.callisto.PRIVATE;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -20,9 +21,11 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     LinkedList<Episode> EpisodesRetrieved = new LinkedList<Episode>();
     XmlPullParser audioParser, videoParser = null;
     ArrayList<ShowInfo> items;
+    Callback callback;
 
-    public RssUpdater(DatabaseMate db) {
+    public RssUpdater(DatabaseMate db, Callback c) {
         this.db = db;
+        this.callback = c;
     }
 
     public boolean isRunning() { return items!=null; }
@@ -30,6 +33,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     @Override
     protected void onPostExecute(Void v) {
         items = null;
+        callback.call(EpisodesRetrieved);
     }
 
     public void addItem(ShowInfo show) {
@@ -52,7 +56,8 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
             ShowInfo current = items.get(i);
             Log.i(TAG, "Beginning update: " + current.id + " " + current.audioFeed + " " + current.videoFeed);
 
-            db.clearShow(current.id);
+            if(PRIVATE.DEBUG)
+                db.clearShow(current.id);
 
             doVideo = current.videoFeed!=null;
 
@@ -165,8 +170,6 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                 e.printStackTrace();
             }
         }
-        while(!EpisodesRetrieved.isEmpty())
-            EpisodesRetrieved.pop().insert(db);
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -199,6 +202,10 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
         // Video
         while(! (tagName.equals(videoParser.getName()) && videoParser.getEventType()==XmlPullParser.START_TAG) )
             advanceOne(videoParser);
+    }
+
+    public static abstract class Callback {
+        abstract void call(LinkedList<Episode> x);
     }
 }
 

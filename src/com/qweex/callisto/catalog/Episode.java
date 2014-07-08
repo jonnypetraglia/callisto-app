@@ -15,20 +15,6 @@ class Episode
         this.show_id = show_id;
     }
 
-    public void insert(DatabaseMate db)
-    {
-
-        String title = Title;
-        int marker = title.lastIndexOf('|');
-        if(marker>-1)
-            title = title.substring(0, marker);
-
-        db.insertEpisode(show_id, title,
-                                  CatalogFragment.sdfRaw.format(Date.getTime()),
-                                  Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
-        Log.i("Callisto", "Inserting episode: " + title + " (" + show_id + ")");
-    }
-
     public void assertComplete() throws UnfinishedParseException {
         if(Title==null)
             throw new UnfinishedParseException("Title");

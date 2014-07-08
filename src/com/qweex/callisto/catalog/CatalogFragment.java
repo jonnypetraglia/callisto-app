@@ -70,7 +70,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItem(getSelectedShow());
                 else {
-                    rssUpdater = new RssUpdater(dbMate);
+                    rssUpdater = new RssUpdater(dbMate, processRssResults);
                     rssUpdater.execute(getSelectedShow());
                 }
                 return true;
@@ -78,7 +78,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItems(showList);
                 else {
-                    rssUpdater = new RssUpdater(dbMate);
+                    rssUpdater = new RssUpdater(dbMate, processRssResults);
                     rssUpdater.execute((ShowInfo[]) showList.toArray());
                 }
         }
@@ -97,6 +97,15 @@ public class CatalogFragment extends CallistoFragment {
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
             Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
             return true;
+        }
+    };
+
+
+    RssUpdater.Callback processRssResults = new RssUpdater.Callback() {
+        @Override
+        void call(LinkedList<Episode> results) {
+            while(!results.isEmpty())
+                dbMate.insertEpisode(results.pop());
         }
     };
 
