@@ -9,22 +9,20 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.*;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
-/** Tools to update a show. */
-public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
+public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 {
+    static SimpleDateFormat sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+
     DatabaseMate db;
 
     public RssUpdater(DatabaseMate db) {
         this.db = db;
-    }
-
-    public static class ShowInfo {
-        public String show_id;
-        public String audioFeed, videoFeed;
-        public SharedPreferences settings;
-        String lastChecked, newLastChecked;
     }
 
     LinkedList<Episode> EpisodesRetrieved = new LinkedList<Episode>();
@@ -44,15 +42,15 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
 
         for(int i=0; i<shows.length; i++) {
             ShowInfo current = shows[i];
-            Log.i(TAG, "Beginning update: " + current.show_id + " " + current.audioFeed + " " + current.videoFeed);
+            Log.i(TAG, "Beginning update: " + current.id + " " + current.audioFeed + " " + current.videoFeed);
 
             doVideo = current.videoFeed!=null;
 
-            current.lastChecked = current.settings.getString("last_checked", null);
+            //current.lastChecked = current.settings.getString("last_checked", null);
             String showErrorToast = null;
 
             try {
-                // Create the XPP's
+                // Create the XPPs
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(true);
                 audioParser = factory.newPullParser();
@@ -73,25 +71,35 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
                 while(audioParser.getEventType() != XmlPullParser.END_DOCUMENT) {
 
                     // Seek to first <item>
-                    spinUntil("item", doVideo);
+                    try {
+                        spinUntil("item");
+                    } catch(UnfinishedParseException upe) { //It's cool, we weren't in the middle of an item. This SHOULD be thrown.
+                        break;
+                    }
 
-                    Episode episode = new Episode();
+                    Episode episode = new Episode(current.id);
 
                     // Extract the data for 1 episode (for audio)
                     while(! ("item".equals(audioParser.getName()) && audioParser.getEventType()==XmlPullParser.END_TAG) ) {
 
+                        advanceOne(audioParser);
                         if(audioParser.getEventType() != XmlPullParser.START_TAG)
                             continue;
 
                         // title
                         if(audioParser.getName().equals("title"))
-                            episode.Title = audioParser.getText(); else
+                            episode.Title = textOfNext(audioParser);
+                        else
                         if(audioParser.getName().equals("link"))
-                            episode.Link = audioParser.getText(); else
+                            episode.Link = textOfNext(audioParser);
+                        else
                         if(audioParser.getName().equals("description"))
-                            episode.Desc = audioParser.getText(); else
-                        if(audioParser.getName().equals("pubDate"))
-                            episode.Date = audioParser.getText(); else
+                            episode.Desc = textOfNext(audioParser);
+                        else
+                        if(audioParser.getName().equals("pubDate")) {
+                            episode.Date = Calendar.getInstance();
+                            episode.Date.setTime(sdfSource.parse(textOfNext(audioParser)));
+                        } else
                         if(audioParser.getName().equals("enclosure")) {
                             episode.AudioLink = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
                             String length = audioParser.getAttributeValue(audioParser.getNamespace(),"length");
@@ -101,34 +109,61 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
 
                     // Extract the data for the same episode (for video) & confirm it matches audio
                     while(doVideo && ! ("item".equals(videoParser.getName()) && videoParser.getEventType()==XmlPullParser.END_TAG) ) {
+                        advanceOne(videoParser);
 
-                        if(audioParser.getEventType() != XmlPullParser.START_TAG)
+                        if(videoParser.getEventType() != XmlPullParser.START_TAG)
                             continue;
 
-                        if(audioParser.getName().equals("title"))
-                            assertSame(episode.Title, videoParser.getText()); else
-                        if(audioParser.getName().equals("link"))
-                            assertSame(episode.Link, videoParser.getText()); else
-                        if(audioParser.getName().equals("description"))
-                            assertSame(episode.Desc, videoParser.getText()); else
-                        if(audioParser.getName().equals("pubDate"))
-                            assertSame(episode.Date, videoParser.getText()); else
-                        if(audioParser.getName().equals("enclosure")) {
-                            episode.VideoLink = audioParser.getAttributeValue(audioParser.getNamespace(),"url");
-                            String length = audioParser.getAttributeValue(audioParser.getNamespace(),"length");
+                        if(videoParser.getName().equals("title"))
+                            assertSame(episode.Title, textOfNext(videoParser));
+                        else
+                        if(videoParser.getName().equals("link"))
+                            assertSame(episode.Link, textOfNext(videoParser));
+                        else
+                        if(videoParser.getName().equals("description"))
+                            assertSame(episode.Desc, textOfNext(videoParser));
+                        else
+                        if(videoParser.getName().equals("pubDate")) {
+                            String testDate = textOfNext(videoParser);
+                            Calendar c1 = Calendar.getInstance(), c2 = Calendar.getInstance();
+                            c1.setTime(sdfSource.parse(testDate));
+                            c2.setTime(sdfSource.parse(testDate));
+                            c1.add(Calendar.DATE, -1);
+                            c2.add(Calendar.DATE, 1);
+                            if(!(episode.Date.after(c1) && episode.Date.before(c2))) {
+                                Log.w(TAG, sdfSource.format(c1.getTime()));
+                                Log.w(TAG, "VS");
+                                Log.w(TAG, sdfSource.format(c2.getTime()));
+                                throw new UnfinishedParseException(sdfSource.format(episode.Date.getTime()) + "!=" + testDate);
+                            }
+                        } else
+                        if(videoParser.getName().equals("enclosure")) {
+                            episode.VideoLink = videoParser.getAttributeValue(videoParser.getNamespace(),"url");
+                            String length = videoParser.getAttributeValue(videoParser.getNamespace(),"length");
                             episode.VideoSize = Long.parseLong(length);
                         }
                     }
 
                     // At this point, we should have a full Episode object
-                    episode.insert(current.show_id, db);
+                    episode.assertComplete();
+                    EpisodesRetrieved.add(episode);
                 }
 
 
-            }catch(Exception e) {} //!!!!! CHANGE THIS YOU TWAT
+            } catch(Exception e) { //!!!!! CHANGE THIS YOU TWAT
+                Log.e(TAG, e.getMessage() + "!!!");
+                e.printStackTrace();
+            }
         }
+        while(!EpisodesRetrieved.isEmpty())
+            EpisodesRetrieved.pop().insert(db);
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String textOfNext(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.next();
+        return parser.getText();
     }
 
     void assertSame(String s1, String s2) throws UnfinishedParseException {
@@ -143,7 +178,7 @@ public class RssUpdater extends AsyncTask<RssUpdater.ShowInfo, Void, Void>
     }
 
     // "Spins" by tossing through XML elements until the specified tag is encountered
-    void spinUntil(String tagName, boolean vid) throws XmlPullParserException, IOException, UnfinishedParseException {
+    void spinUntil(String tagName) throws XmlPullParserException, IOException, UnfinishedParseException {
         //Audio
         while(! (tagName.equals(audioParser.getName()) && audioParser.getEventType()==XmlPullParser.START_TAG) )
             advanceOne(audioParser);

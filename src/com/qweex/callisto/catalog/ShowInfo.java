@@ -1,5 +1,6 @@
 package com.qweex.callisto.catalog;
 
+import android.content.SharedPreferences;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,9 @@ import java.util.Comparator;
 public class ShowInfo {
 
     public String id, title, audioFeed, videoFeed;
+    public String lastChecked;
     boolean active;
+    SharedPreferences settings;
 
     public ShowInfo(JSONObject j) throws JSONException {
         id = j.getString("id");

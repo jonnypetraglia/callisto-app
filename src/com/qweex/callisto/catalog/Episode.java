@@ -1,14 +1,33 @@
 package com.qweex.callisto.catalog;
 
+import android.util.Log;
+
+import java.util.Calendar;
+
 class Episode
 {
-    public String Date = null, Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
+    public String Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
     public long AudioSize = -1, VideoSize = -1;
+    public Calendar Date;
+    String show_id;
 
-    public void insert(String show_id, DatabaseMate db) throws UnfinishedParseException
+    public Episode(String show_id) {
+        this.show_id = show_id;
+    }
+
+    public void insert(DatabaseMate db)
     {
-        assertComplete();
-        db.insertEpisode(show_id, Title, Date, Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
+
+        String title = Title;
+        int marker = title.lastIndexOf('|');
+        if(marker>-1)
+            title = title.substring(0, marker);
+        /*
+        db.insertEpisode(show_id, title,
+                                  CatalogFragment.sdfRaw.format(Date.getTime()),
+                                  Desc, Link, AudioLink, AudioSize, VideoLink, VideoSize);
+        //*/
+        Log.i("Callisto", "Title: " + Title);
     }
 
     public void assertComplete() throws UnfinishedParseException {
@@ -24,5 +43,10 @@ class Episode
             throw new UnfinishedParseException("AudioLink");
         if(AudioSize<0)
             throw new UnfinishedParseException("AudioSize");
+    }
+
+    @Override
+    public String toString() {
+        return Title + "|" + Desc + "|" + Date + "|" + Link + "|" + AudioLink + "|" + VideoLink + "|" + AudioSize + "|" + VideoSize;
     }
 }

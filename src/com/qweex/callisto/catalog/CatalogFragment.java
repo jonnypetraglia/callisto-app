@@ -12,9 +12,12 @@ import com.qweex.callisto.R;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CatalogFragment extends CallistoFragment {
+
+    public static SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
 
     Spinner catalogSpinner;
     ArrayList<ShowInfo> showList;
@@ -55,6 +58,7 @@ public class CatalogFragment extends CallistoFragment {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Log.d("Callisto", "Selected Show: " + showList.get(position).title);
+            new RssUpdater(null).execute(showList.get(position));
         }
 
         @Override
