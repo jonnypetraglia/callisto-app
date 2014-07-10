@@ -33,13 +33,14 @@ public class DatabaseMate
                     "title TEXT, " +            //The title for a specific episode
                     "date TEXT, " +             //The date of the episode, stored in the form of (yyyyMMddHHmmss)
                     "description TEXT, " +      //The description for a specific episode
-                    "length INTEGER, " +        //The length of the episode
+                    "imglink TEXT, " +          //The link to the image
                     "link TEXT, " +             //The link to the page for a specific episode
                     "mp3link TEXT, " +          //The link to the audio file for an episode
                     "mp3size INTEGER, " +       //The size of the audio file for an episode, in bytes
                     "vidlink TEXT, " +          //The link to the video file for an episode
                     "vidsize INTEGER, " +       //The size of the video file for an episode, in bytes
                     "new INTEGER, " +           //Whether or not the episode is new
+                    "length INTEGER, " +        //The length of the episode
                     "position INTEGER);";       //The last position, in seconds
 
     public DatabaseMate(DatabaseConnector dbc)
@@ -125,11 +126,12 @@ public class DatabaseMate
         dbc.database.delete(TABLE_EPISODES, "show_id=?", new String[] {show_id});
     }
 
-    public Cursor getOneEpisode(long id)
+    public Episode getOneEpisode(long id)
     {
-        return dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "show_id", "title", "new", "date", "description", "length", "link", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+        Cursor e = dbc.database.query(TABLE_EPISODES,
+                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
                 "_id=?", new String[] {id + ""}, null, null, null);
+        return new Episode(e);
     }
 
     public void deleteEpisode(long id)

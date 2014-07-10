@@ -126,7 +126,15 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                                 episode.AudioLink = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
                                 String length = audioParser.getAttributeValue(audioParser.getNamespace(),"length");
                                 episode.AudioSize = Long.parseLong(length);
-                            }
+                            } else
+                            if(audioParser.getName().equals("media:thumbnail") && episode.Image ==null)
+                                episode.Image = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
+                            else
+                            if(audioParser.equals("media:content") && episode.Image ==null)
+                                episode.Image = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
+                            //else
+                            //if(audioParser.equals("image"))
+                            //    episode.Image = textOfNext(audioParser);
                         }
 
                         // Extract the data for the same episode (for video) & confirm it matches audio

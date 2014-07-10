@@ -146,7 +146,11 @@ public class CatalogFragment extends CallistoFragment {
     AdapterView.OnItemClickListener selectEpisode = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.d("Callisto", "CLICKED " + view.getTag() + "!");
+            Long _id = Long.parseLong((String) view.getTag());
+            Log.d("Callisto", "CLICKED " + _id + "!");
+
+            Episode episode = dbMate.getOneEpisode(_id);
+
         }
     };
 
