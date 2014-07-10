@@ -5,28 +5,28 @@
                 android:layout_height="fill_parent">
 
     <ProgressBar
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@drawable/progress_bg"
-            android:layout_width="fill_parent"
             android:progress="0"
-            android:layout_height="1dp"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
             android:layout_alignTop="@+id/row"
             android:layout_alignBottom="@+id/row"
             android:layout_alignLeft="@+id/row"
             android:layout_alignRight="@+id/row"
-            android:focusableInTouchMode="true"
-            android:background="@drawable/progress_bg"/>
+            android:background="@drawable/progress_bg"
+            />
+
 
     <LinearLayout
             android:id="@+id/row"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:cacheColorHint="@android:color/transparent"
             android:background="@drawable/catalog_row"
-            android:clickable="true"
+            android:cacheColorHint="@android:color/transparent"
             android:orientation="horizontal" >
 
 

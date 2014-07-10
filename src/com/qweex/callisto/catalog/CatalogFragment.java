@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class CatalogFragment extends CallistoFragment {
             listview.setEmptyView(layout.findViewById(android.R.id.empty));
             listview.setDivider(new ColorDrawable(0xff999999));
             listview.setDividerHeight(1);
+            listview.setOnItemClickListener(selectEpisode);
 
             InputStream is = null;
             try {
@@ -138,6 +140,13 @@ public class CatalogFragment extends CallistoFragment {
             String msg = "Errors Occured with:" + TextUtils.join("\n", errorStrings);
             Log.d("Callisto", msg);
             Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG);
+        }
+    };
+
+    AdapterView.OnItemClickListener selectEpisode = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Log.d("Callisto", "CLICKED " + view.getTag() + "!");
         }
     };
 

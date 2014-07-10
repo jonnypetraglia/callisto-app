@@ -39,6 +39,8 @@ public class CatalogAdapter extends SimpleCursorAdapter
         cursor = getCursor();
         cursor.moveToPosition(pos);
 
+        v.setTag(cursor.getLong(cursor.getColumnIndex("_id")));
+
         TextView title = (TextView) v.findViewById(R.id.title),
                  date  = (TextView) v.findViewById(R.id.date);
 
