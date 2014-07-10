@@ -24,8 +24,9 @@
             android:id="@+id/row"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@android:color/transparent"
             android:cacheColorHint="@android:color/transparent"
+            android:background="@drawable/catalog_row"
+            android:clickable="true"
             android:orientation="horizontal" >
 
 
@@ -40,15 +41,14 @@
                 android:orientation="vertical" >
 
             <TextView
-                    style="@style/catalog_row_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
                     android:padding="5dp"
+                    android:textColor="@color/catalog_row_text"
                     android:id="@+id/title" />
 
             <TextView
-                    style="@style/catalog_row_sub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
