@@ -15,7 +15,6 @@ import android.view.ViewConfiguration;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.contact.ContactFragment;
-import com.qweex.callisto.settings.SettingsFragment;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
@@ -35,7 +34,7 @@ public class MasterActivity extends ActionBarActivity {
     //private ScheduleFragment scheduleFragment;
     private ContactFragment contactFragment;
     //private DonateFragment donateFragment;
-    private SettingsFragment settingsFragment;
+    //private SettingsFragment settingsFragment;
 
     public DatabaseConnector databaseConnector;
 
@@ -67,7 +66,7 @@ public class MasterActivity extends ActionBarActivity {
         //scheduleFragment = new ScheduleFragment(databaseConnector);
         contactFragment = new ContactFragment(this);
         //donateFragment = new DonateFragment(databaseConnector);
-        settingsFragment = new SettingsFragment(this);
+        //settingsFragment = new SettingsFragment(this);
 
         checkForUpdates();
     }
@@ -118,7 +117,7 @@ public class MasterActivity extends ActionBarActivity {
                     //frag = donateFragment;
                     break;
                 case 7: //Settings
-                    frag = settingsFragment;
+                    //frag = settingsFragment;
                     break;
                 case 8: //About
                     break;
