@@ -10,20 +10,35 @@ import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
+
+/** This fragment displays a customized Wufoo contact form.
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class ContactFragment extends CallistoFragment {
 
+    /** URL for Wufoo form. */
     private final String formURL = "https://jblive.wufoo.com/embed/w7x2r7/";
+    /** Variables to hold the contents of the files in /assets. */
     private String customCSS = null, customJS = null;
+    /** Webview that will contain the form. */
     private WebView wv;
+    /** ProgressBar to display while page is loading. */
     private ProgressBar pb;
-    private AssetReader cssReader, jsReader;
     LinearLayout layout;
 
-    public ContactFragment(MasterActivity m) {
-        super(m);
+    /** Inherited constructor
+     * @param master Reference to MasterActivity
+     */
+    public ContactFragment(MasterActivity master) {
+        super(master);
     }
 
-
+    /** Inherited method; called each time the fragment is attached to a FragmentActivity.
+     * @param inflater Used for instantiating the fragment's view.
+     * @param container [ASK_SOMEONE_SMARTER]
+     * @param savedInstanceState [ASK_SOMEONE_SMARTER]
+     * @return The new / recycled View to be attached.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -37,11 +52,11 @@ public class ContactFragment extends CallistoFragment {
             wv.getSettings().setJavaScriptEnabled(true);
 
             if(customCSS==null) {
-                cssReader = new AssetReader(getActivity(), "contact.min.css", cssApplier);
+                AssetReader cssReader = new AssetReader(getActivity(), "contact.min.css", cssApplier);
                 cssReader.execute((Void[]) null);
             }
             if(customJS==null) {
-                jsReader = new AssetReader(getActivity(), "contact_draft.min.js", jsApplier);
+                AssetReader jsReader = new AssetReader(getActivity(), "contact_draft.min.js", jsApplier);
                 jsReader.execute((Void[]) null);
             }
         } else {
@@ -51,6 +66,7 @@ public class ContactFragment extends CallistoFragment {
         return layout;
     }
 
+    /** Callback for AssetReader when the css file has been read. */
     AssetReader.Callback cssApplier = new AssetReader.Callback() {
         @Override
         public void call(String css) {
@@ -59,6 +75,7 @@ public class ContactFragment extends CallistoFragment {
         }
     };
 
+    /** Callback for AssetReader when the javascript file has been read. */
     AssetReader.Callback jsApplier = new AssetReader.Callback() {
         @Override
         public void call(String js) {
@@ -68,6 +85,7 @@ public class ContactFragment extends CallistoFragment {
         }
     };
 
+    /** Attempt to load the page after the assets have been read. */
     void loadPage() {
         if(customCSS==null || customJS==null || wv==null)
             return;
@@ -76,11 +94,13 @@ public class ContactFragment extends CallistoFragment {
         wv.loadUrl(formURL);
     }
 
+    /** Inherited method; things to do when the fragment is shown initially. */
     @Override
     public void show() {
         master.getSupportActionBar().setTitle(R.string.contact);
     }
 
+    /** Inherited method; things to do when the fragment is hidden/dismissed. */
     @Override
     public void hide() {
         wv.loadUrl("javascript:" + customJS + ";window.HTMLOUT.saveDraft("+ "tehResult" + ");");
