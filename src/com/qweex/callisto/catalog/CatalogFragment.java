@@ -21,9 +21,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * This fragment displays past episodes for a show in the catalog.
- *
+/** This fragment displays past episodes for a show in the catalog.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
 public class CatalogFragment extends CallistoFragment {
@@ -48,9 +46,7 @@ public class CatalogFragment extends CallistoFragment {
     /** Whether or showing only new episodes is enabled. */
     boolean filter = false;
 
-    /**
-     * Inherited constructor.
-     *
+    /** Inherited constructor.
      * @param master Reference to MasterActivity.
      */
     public CatalogFragment(MasterActivity master) {
@@ -58,9 +54,7 @@ public class CatalogFragment extends CallistoFragment {
         dbMate = new DatabaseMate(master.databaseConnector);
     }
 
-    /**
-     * Inherited method; called each time the fragment is attached to a FragmentActivity.
-     *
+    /** Inherited method; called each time the fragment is attached to a FragmentActivity.
      * @param inflater Used for instantiating the fragment's view.
      * @param container [ASK_SOMEONE_SMARTER]
      * @param savedInstanceState [ASK_SOMEONE_SMARTER]
@@ -98,9 +92,7 @@ public class CatalogFragment extends CallistoFragment {
         return layout;
     }
 
-    /**
-     * Inherited method; called automatically when the options menu is created.
-     *
+    /** Inherited method; called automatically when the options menu is created.
      * @param menu The menu object you can add items to.
      * @param inflater The inflater that can be used for XML menus.
      */
@@ -110,9 +102,7 @@ public class CatalogFragment extends CallistoFragment {
         inflater.inflate(R.menu.catalog_menu, menu);
     }
 
-    /**
-     * Inherited method; called when the user selects an item from the options menu.
-     *
+    /** Inherited method; called when the user selects an item from the options menu.
      * @param item The menu item selected.
      * @return Whether or not the event should be passed on to the next handler.
      */
@@ -123,7 +113,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItem(getSelectedShow());
                 else {
-                    rssUpdater = new RssUpdater(dbMate, processRssResults);
+                    rssUpdater = new RssUpdater(processRssResults);
                     rssUpdater.execute(getSelectedShow());
                 }
                 return true;
@@ -131,7 +121,7 @@ public class CatalogFragment extends CallistoFragment {
                 if(rssUpdater!=null && rssUpdater.isRunning())
                     rssUpdater.addItems(showList);
                 else {
-                    rssUpdater = new RssUpdater(dbMate, processRssResults);
+                    rssUpdater = new RssUpdater(processRssResults);
                     rssUpdater.execute(showList.toArray(new ShowInfo[showList.size()]));
                 }
                 return true;
@@ -150,9 +140,7 @@ public class CatalogFragment extends CallistoFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Gets the selected show from the Nav in the ActionBar.
-     *
+    /** Gets the selected show from the Nav in the ActionBar.
      * @return The selected show.
      */
     ShowInfo getSelectedShow() {
@@ -160,9 +148,7 @@ public class CatalogFragment extends CallistoFragment {
         return showList.get(i);
     }
 
-    /**
-     * Called when the user changes the show in the ActionBar nav spinner.
-     */
+    /** Called when the user changes the show in the ActionBar nav spinner. */
     private android.support.v7.app.ActionBar.OnNavigationListener changeShow = new android.support.v7.app.ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -172,9 +158,7 @@ public class CatalogFragment extends CallistoFragment {
         }
     };
 
-    /**
-     * The callback method for when the RssUpdater has finished.
-     */
+    /** The callback method for when the RssUpdater has finished. */
     RssUpdater.Callback processRssResults = new RssUpdater.Callback() {
         @Override
         void call(LinkedList<Episode> results, LinkedList<ShowInfo> failures) {
@@ -192,9 +176,7 @@ public class CatalogFragment extends CallistoFragment {
         }
     };
 
-    /**
-     * Called when the user selects an episode.
-     */
+    /** Called when the user selects an episode. */
     AdapterView.OnItemClickListener selectEpisode = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -209,18 +191,14 @@ public class CatalogFragment extends CallistoFragment {
         }
     };
 
-    /**
-     * Reloads the list of episodes for the currently selected show.
-     */
+    /** Reloads the list of episodes for the currently selected show. */
     void reloadList() {
         ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
         Cursor r = dbMate.getShow(selectedShow.title, filter);
         listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, r));
     }
 
-    /**
-     * Inherited method; things to do when the fragment is shown initially.
-     */
+    /** Inherited method; things to do when the fragment is shown initially. */
     @Override
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -228,9 +206,7 @@ public class CatalogFragment extends CallistoFragment {
         master.getSupportActionBar().setSubtitle(null);
     }
 
-    /**
-     * Inherited method; things to do when the fragment is hidden/dismissed.
-     */
+    /** Inherited method; things to do when the fragment is hidden/dismissed. */
     @Override
     public void hide() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

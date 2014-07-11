@@ -12,8 +12,7 @@ import com.qweex.callisto.DatabaseConnector;
 
 import java.text.SimpleDateFormat;
 
-/**
- * A specialized class to help with the database.
+/** A specialized class to help with the database.
  *
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
@@ -42,9 +41,7 @@ public class DatabaseMate
                     "length INTEGER, " +        //The length of the episode
                     "position INTEGER);";       //The last position, in seconds
 
-    /**
-     * Constructor; sets teh DatabaseConnector reference.
-     *
+    /** Constructor; sets teh DatabaseConnector reference.
      * @param dbc DatabaseConnector reference.
      */
     public DatabaseMate(DatabaseConnector dbc)
@@ -52,9 +49,7 @@ public class DatabaseMate
         this.dbc = dbc;
     }
 
-    /**
-     * Inserts an episode into the database
-     *
+    /** Inserts an episode into the database
      * @param ep The episode to insert.
      */
     public void insertEpisode(Episode ep)
@@ -85,9 +80,7 @@ public class DatabaseMate
         dbc.database.insertOrThrow(TABLE_EPISODES, null, newEpisode);
     }
 
-    /**
-     * Marks an episode as new or not new.
-     *
+    /** Marks an episode as new or not new.
      * @param id The id of the episode.
      * @param is_new Whether or not the episode is new.
      */
@@ -98,9 +91,7 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "_id=?", new String[] { id + ""});
     }
 
-    /**
-     * Marks all episodes of a show as new.
-     *
+    /** Marks all episodes of a show as new.
      * @param show The show.
      * @param is_new Whether or not the episodes are new.
      */
@@ -111,9 +102,7 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "show=?", new String[]{show});
     }
 
-    /**
-     * Updates the position of an episode.
-     *
+    /** Updates the position of an episode.
      * @param id The id of the episode.
      * @param position The position. DUH.
      */
@@ -124,9 +113,7 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "_id=?", new String[] { id + ""});
     }
 
-    /**
-     * Gets all episodes of a show
-     *
+    /** Gets all episodes of a show.
      * @param show The show to get. As stored in the JSON file.
      * @param filter Whether or not to only get new episodes
      * @return A cursor containing the episodes.
@@ -142,9 +129,7 @@ public class DatabaseMate
                 "date DESC");                                                           /* orderBy */
     }
 
-    /**
-     * Removes all episodes from a show. For debugging purposes, really.
-     *
+    /** Removes all episodes from a show. For debugging purposes, really.
      * @param show The show to clear.
      */
     public void clearShow(String show)
@@ -152,9 +137,7 @@ public class DatabaseMate
         dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show});
     }
 
-    /**
-     * Retrieve one episode from the database
-     *
+    /** Retrieve one episode from the database.
      * @param id The id of the episode.
      * @throws RuntimeException If the episode doesn't exist or the Episode object otherwise cannot be created.
      * @return
@@ -167,9 +150,7 @@ public class DatabaseMate
         return new Episode(e);
     }
 
-    /**
-     * Retrieve the last (chronological) episode before the one supplied
-     *
+    /** Retrieve the last (chronological) episode before the one supplied.
      * @param ep The episode of which to get the previous.
      * @return The Episode object or null, if there are none.
      */
@@ -192,9 +173,7 @@ public class DatabaseMate
         }
     }
 
-    /**
-     * Retrieve the next (chronological) episode after the one supplied
-     *
+    /** Retrieve the next (chronological) episode after the one supplied.
      * @param ep The episode of which to get the next.
      * @return The Episode object or null, if there are none.
      */
@@ -218,9 +197,7 @@ public class DatabaseMate
     }
 
 
-    /**
-     * Search Episodes for a term, in Title and Description.
-     *
+    /** Search Episodes for a term, in Title and Description.
      * @param searchTerm The term to search for
      * @param searchShow The show to search; supply `null` to search all.
      * @return A cursor containing the episodes that matched the search term.

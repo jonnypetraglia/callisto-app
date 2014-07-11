@@ -9,9 +9,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import com.qweex.callisto.R;
 
-/**
- * This is an adapter for CatalogFragment. It manages moving data from Sqlite to the views in the ListView.
- *
+/** This is an adapter for CatalogFragment. It manages moving data from Sqlite to the views in the ListView.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
 public class CatalogAdapter extends SimpleCursorAdapter
@@ -23,9 +21,7 @@ public class CatalogAdapter extends SimpleCursorAdapter
     /** The R.layout id to inflate for each item. */
     private int layout_id;
 
-    /**
-     * Inherited constructor.
-     *
+    /** Inherited constructor.
      * @param context The context to use for the LayoutInfater.
      * @param layout The R.layout id to inflate for each item.
      * @param cursor The cursor pointing at the data in the database.
@@ -37,9 +33,7 @@ public class CatalogAdapter extends SimpleCursorAdapter
         this.context = context;
     }
 
-    /**
-     * Inherited method to generate / recycle the view & inject data from relevant data row.
-     *
+    /** Inherited method to generate / recycle the view & inject data from relevant data row.
      * @param pos Position of the item in question of the collection.
      * @param inView View passed in that might be recycled.
      * @param parent ViewGroup that should be used as parent for inView.

@@ -1,15 +1,14 @@
 package com.qweex.callisto.catalog;
 
-// Taken from http://stackoverflow.com/a/19506010
-
 import android.content.Context;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * Detects left and right swipes across a view.
+/** Detects left and right swipes across a view.
+ *
+ * (I stole this from http://stackoverflow.com/a/19506010 so I ain't commenting this shit)
  */
 public class OnSwipeTouchListener implements View.OnTouchListener {
 

@@ -10,8 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * This is a specialized LinearLayout that is designed to hold buttons.
+/** This is a specialized LinearLayout that is designed to hold buttons.
  *
  * When horizontal (collapsed), the buttons will contain images.
  * You can then call the expand() function to flip to vertical.
@@ -33,18 +32,14 @@ public class AbbrevLinearLayout extends LinearLayout {
     LayoutParams lp_expand, lp_collapse;
 
 
-    /**
-     * Default constructor needed by XML
-     *
+    /** Default constructor needed by XML
      * @param context The Context
      */
     public AbbrevLinearLayout(Context context) {
         super(context);
     }
 
-    /**
-     * Default constructor needed by XML
-     *
+    /** Default constructor needed by XML
      * @param context The Context
      * @param attrs The Attributes specified in XML
      */
@@ -52,9 +47,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         super(context, attrs);
     }
 
-    /**
-     * Default constructor needed by XML
-     *
+    /** Default constructor needed by XML
      * @param context The Context
      * @param attrs The Attributes specified in XML
      * @param defStyle The style specified in the XML
@@ -63,9 +56,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         super(context, attrs, defStyle);
     }
 
-    /**
-     * Sets data for the AbbrevLinearLayout. This MUST be called before adding any items.
-     *
+    /** Sets data for the AbbrevLinearLayout. This MUST be called before adding any items.
      * @param textResource Text R.layout id that will be inflated for each button.
      * @param itemBgResource The R.drawable id that will
      * @param startingState The starting state. CANNOT be 'BOTH'.
@@ -88,9 +79,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         return this;
     }
 
-    /**
-     * Adds an item (i.e. a button) to the layout.
-     *
+    /** Adds an item (i.e. a button) to the layout.
      * @param text The R.string id to be displayed on the new item when it is expanded.
      * @param drawable The R.drawable id that will
      * @return 'this'. Useful for chaining together with other functions
@@ -99,9 +88,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         return addItem(text, drawable, null, STATE.BOTH);
     }
 
-    /**
-     * Adds an item (i.e. a button) to the layout.
-     *
+    /** Adds an item (i.e. a button) to the layout.
      * @param text The R.string id to be displayed on the new item when it is expanded.
      * @param drawable The R.drawable id that will be on the item.
      * @param click The OnClickListener for the item.
@@ -111,9 +98,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         return addItem(text, drawable, click, STATE.BOTH);
     }
 
-    /**
-     * Adds an item (i.e. a button) to the layout.
-     *
+    /** Adds an item (i.e. a button) to the layout.
      * @param text The R.string id to be displayed on the new item when it is expanded.
      * @param drawable The R.drawable id that will be on the item.
      * @param showState The STATE to be show this item. It will be hidden otherwise.
@@ -123,9 +108,7 @@ public class AbbrevLinearLayout extends LinearLayout {
         return addItem(text, drawable, null, showState);
     }
 
-    /**
-     * Adds an item (i.e. a button) to the layout.
-     *
+    /** Adds an item (i.e. a button) to the layout.
      * @param text The R.string id to be displayed on the new item when it is expanded.
      * @param drawable The R.drawable id that will be on the item.
      * @param click The OnClickListener for the item.
@@ -148,18 +131,14 @@ public class AbbrevLinearLayout extends LinearLayout {
 
     /////////////// Toggle State ///////////////
 
-    /**
-     * Expands the Layout to be vertical and all of its children to show their text
-     */
+    /** Expands the Layout to be vertical and all of its children to show their text */
     public void expand() {
         currentState = STATE.EXPANDED;
         setOrientation(LinearLayout.VERTICAL);
         refreshChildren();
     }
 
-    /**
-     * Collapsed the Layout to be horizontal and all of its children to hide their text
-     */
+    /** Collapsed the Layout to be horizontal and all of its children to hide their text */
     public void collapse() {
         currentState = STATE.COLLAPSED;
         setOrientation(LinearLayout.HORIZONTAL);
@@ -168,9 +147,7 @@ public class AbbrevLinearLayout extends LinearLayout {
 
     /////////////// Internal Functions ///////////////
 
-    /**
-     * Refresh ALL the children!
-     */
+    /** Refresh ALL the children! */
     private void refreshChildren() {
         for(int i=0; i<getChildCount(); ++i)
             if(currentState==STATE.EXPANDED)
@@ -180,21 +157,13 @@ public class AbbrevLinearLayout extends LinearLayout {
     }
 
 
-
-    /**
-     * This is an internal class. It's essentially a button with an icon and text.
-     *
-     * @author      Jon Petraglia <notbryant@gmail.com>
-     */
+    /**  This is an internal class. It's essentially a button with an icon and text. */
     class Item extends LinearLayout {
         STATE showInState;
         TextView text;
         ImageView image;
 
-        /**
-         * Default constructor needed by Android
-         * (I include all 3 just for safety's sake.)
-         *
+        /** Default constructor needed by Android
          * @param context The Context
          */
         public Item(Context context) {
@@ -202,10 +171,7 @@ public class AbbrevLinearLayout extends LinearLayout {
             init();
         }
 
-        /**
-         * Default constructor needed by Android
-         * (I include all 3 just for safety's sake.)
-         *
+        /** Default constructor needed by Android
          * @param context The Context
          * @param attrs The Attributes
          */
@@ -214,10 +180,7 @@ public class AbbrevLinearLayout extends LinearLayout {
             init();
         }
 
-        /**
-         * Default constructor needed by Android
-         * (I include all 3 just for safety's sake.)
-         *
+        /** Default constructor needed by Android
          * @param context The Context
          * @param attrs The Attributes specified in XML
          * @param defStyle The style specified in the XML
@@ -227,9 +190,7 @@ public class AbbrevLinearLayout extends LinearLayout {
             init();
         }
 
-        /**
-         * Internal function to instantiate class.
-         */
+        /**  Internal function to instantiate class. */
         void init() {
             setOrientation(LinearLayout.HORIZONTAL);
             setClickable(true);
@@ -240,9 +201,7 @@ public class AbbrevLinearLayout extends LinearLayout {
             invalidate();
         }
 
-        /**
-         * Sets the data for this, that is, actually adds the text & image & sets the state in which show the widget.
-         *
+        /** Sets the data for this, that is, actually adds the text & image & sets the state in which show the widget.
          * @param textResId The R.layout id for the text portion. MUST contain only a TextView.
          * @param drawableResId The R.drawable id for the image.
          * @param stateShown The STATE to show this widget for.
@@ -272,9 +231,7 @@ public class AbbrevLinearLayout extends LinearLayout {
                 throw new RuntimeException("Invalid current state for Item");
         }
 
-        /**
-         * Shows the text or possibly hides the widget depending on Item settings.
-         */
+        /** Shows the text or possibly hides the widget depending on Item settings.*/
         public void expand() {
             Log.d("Callisto", "Expand");
             if(showInState==STATE.EXPANDED || showInState==STATE.BOTH) {
@@ -286,9 +243,7 @@ public class AbbrevLinearLayout extends LinearLayout {
                 setVisibility(GONE);
         }
 
-        /**
-         * Hides the text or possibly hides the widget depending on Item settings.
-         */
+        /** Hides the text or possibly hides the widget depending on Item settings. */
         public void collapse() {
             if(showInState==STATE.COLLAPSED || showInState==STATE.BOTH) {
                 setVisibility(VISIBLE);

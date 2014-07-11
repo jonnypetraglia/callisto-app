@@ -13,8 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * A class to fetch and parse RSS feeds SPECIFICALLY for Callisto.
+/** A class to fetch and parse RSS feeds SPECIFICALLY for Callisto.
  *
  * It will actually work in general, but specifically, it can parse two nearly-identical feeds simultaneously.
  * For Callisto, this is for parsing audio and video.

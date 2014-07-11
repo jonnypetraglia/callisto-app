@@ -4,9 +4,7 @@ import android.database.Cursor;
 import java.text.ParseException;
 import java.util.Calendar;
 
-/**
- * A data structure to hold all info for an episode.
- *
+/** A data structure to hold all info for an episode.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
 class Episode
@@ -22,18 +20,14 @@ class Episode
     /** Metadata **/
     public long episode_id;
 
-    /**
-     * Constructor for when you are constructing an episode.
-     *
+    /** Constructor for when you are constructing an episode.
      * @param show The show that the episode will belong to.
      */
     public Episode(String show) {
         this.show = show;
     }
 
-    /**
-     * Creates an Episode object from a cursor from the database.
-     *
+    /** Creates an Episode object from a cursor from the database.
      * @param c Cursor from the database that contains the episode to create.
      * @throws RuntimeException If the cursor is empty or the Date fails to parse.
      */
@@ -67,8 +61,7 @@ class Episode
         New = c.getInt(c.getColumnIndex("new"))>1;
     }
 
-    /**
-     * Asserts that the episode is "complete", i.e. that it contains the minimal amount of info.
+    /** Asserts that the episode is "complete", i.e. that it contains the minimal amount of info.
      * @throws UnfinishedParseException
      */
     public void assertComplete() throws UnfinishedParseException {
