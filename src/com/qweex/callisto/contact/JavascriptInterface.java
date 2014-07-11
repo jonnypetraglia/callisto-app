@@ -9,10 +9,18 @@ import android.util.Log;
 import android.webkit.WebView;
 import com.qweex.callisto.R;
 
+/** Runs Java code when a WebView makes a Javascript function call.
+ * Applies some custom CSS to a page after it is loaded & saves a draft.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class JavascriptInterface
 {
+    /** Reference to an activity for displaying alerts & saving drafts? */
     Activity activity;
+    /** Webview that the interface is attached to. */
     WebView wv;
+    /** CSS to apply to the page after it has loaded. */
     String customCSS;
 
     public JavascriptInterface(Activity act, WebView w, String c) {
@@ -70,6 +78,7 @@ public class JavascriptInterface
         editor.commit();
     }
 
+    // I don't think this is still used but it's hard to tell -_-
     @SuppressWarnings("unused")
     public void saveDraftAndFinish(String result)
     {
