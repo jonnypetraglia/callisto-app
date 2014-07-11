@@ -1,16 +1,3 @@
-/*
- * Copyright (C) 2012-2013 Qweex
- * This file is a part of Callisto.
- *
- * Callisto is free software; it is released under the
- * Open Software License v3.0 without warranty. The OSL is an OSI approved,
- * copyleft license, meaning you are free to redistribute
- * the source code under the terms of the OSL.
- *
- * You should have received a copy of the Open Software License
- * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
- * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
- */
 package com.qweex.callisto;
 
 import android.content.Context;
@@ -19,13 +6,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
-
+/** Class to assist in contacting the Sqlite database.
+ *
+ * Also uses several "DatabaseMate" classes that have methods divided by specific use case.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class DatabaseConnector
 {
+    /** The Database Version; for use with updating new versions. */
     private final int DATABASE_VERSION = 2;
+    /** The database file name. */
     private static final String DATABASE_NAME = "Callisto.db";
 
+    /** The raw Database object. */
     public SQLiteDatabase database;
+    /** An opener to help with opening and upgrading the database. */
     private DatabaseOpenHelper databaseOpenHelper;
 
 
@@ -54,17 +50,26 @@ public class DatabaseConnector
     /** Helper open class for DatabaseConnector */
     private class DatabaseOpenHelper extends SQLiteOpenHelper
     {
+        /** Inherited constructor. */
         public DatabaseOpenHelper(Context context, String name, CursorFactory factory, int version)
         {
             super(context, name, factory, version);
         }
 
+        /** Inherited method; called on database creation, i.e. when the app is freshly installed.
+         * @param db The raw database object to execute queries on.
+         */
         @Override
         public void onCreate(SQLiteDatabase db)
         {
             db.execSQL(com.qweex.callisto.catalog.DatabaseMate.SCHEMA_EPISODES);
         }
 
+        /** Inherited method; called when the app is upgraded.
+         * @param db The raw database object to execute queries on.
+         * @param oldVersion The old version of the app.
+         * @param newVersion The new version of the app.
+         */
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {

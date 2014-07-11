@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/** This fragment is a splash fragment. It exists because I don't know what to show when the app starts up.
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class SplashFragment extends Fragment
 {
     @Override
