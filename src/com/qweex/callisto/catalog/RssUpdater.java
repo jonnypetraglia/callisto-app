@@ -2,7 +2,6 @@ package com.qweex.callisto.catalog;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import com.qweex.callisto.PRIVATE;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -14,40 +13,64 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * A class to fetch and parse RSS feeds SPECIFICALLY for Callisto.
+ *
+ * It will actually work in general, but specifically, it can parse two nearly-identical feeds simultaneously.
+ * For Callisto, this is for parsing audio and video.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
+
 public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 {
+    /** Date format used by RSS standard. */
     static SimpleDateFormat sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
 
-    DatabaseMate db;
-
+    /** A list of episodes received which will be returned upon completion. */
     LinkedList<Episode> EpisodesRetrieved = new LinkedList<Episode>();
+    /** A list of feeds that failed. */
     LinkedList<ShowInfo> FailedFeeds = new LinkedList<ShowInfo>();
+    /** The parsers that do the actual work. */
     XmlPullParser audioParser, videoParser = null;
+    /** A list of shows (containing feeds) to check. */
     ArrayList<ShowInfo> items;
+    /** The callback to call after finishing with the data. */
     Callback callback;
+    /** Wehther or not to check the video feeds. Also set automatically for each feed if no feed exists. */
     boolean doVideo = false;    //This means that it will not do video, no matter what.
 
-    public RssUpdater(DatabaseMate db, Callback c) {
-        this.db = db;
+    /** Constructor.
+     * @param c The callback.
+     */
+    public RssUpdater(Callback c) {
         this.callback = c;
     }
 
+    /** Checks if task is running.
+     * @return If task is running.
+     */
     public boolean isRunning() { return items!=null; }
 
-    @Override
-    protected void onPostExecute(Void v) {
-        items = null;
-        callback.call(EpisodesRetrieved, FailedFeeds);
-    }
-
+    /** Adds a show to be checked.
+     * @param show The show. To be checked.
+     */
     public void addItem(ShowInfo show) {
         items.add(show);
     }
+
+    /** Adds shows to be checked.
+     * @param shows The shows. To be checked.
+     */
     public void addItems(ArrayList<ShowInfo> shows) {
         for(ShowInfo s : shows)
             items.add(s);
     }
 
+    /** Inherited method; the task actually run asyncronously.
+     *
+     * @param shows The initial list of shows to download; can be appended to later via addItem(s).
+     */
     @Override
     protected Void doInBackground(ShowInfo... shows) {
         String TAG = "Callisto:RssUpdater";
@@ -62,9 +85,6 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
 
             LinkedList<Episode> tempEpisodesRetrieved = new LinkedList<Episode>();
-
-            if(PRIVATE.DEBUG)
-                db.clearShow(current.title);
 
             doVideo = doVideo && current.videoFeed!=null;
 
@@ -213,23 +233,55 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public String textOfNext(XmlPullParser parser) throws IOException, XmlPullParserException {
+    /** Inherited method; called after async part is finished.
+     */
+    @Override
+    protected void onPostExecute(Void v) {
+        items = null;
+        callback.call(EpisodesRetrieved, FailedFeeds);
+    }
+
+
+    ///////////////////// Private methods /////////////////////
+
+    /** Shortcut function for readability; advanced parser one step + returns text
+     */
+    String textOfNext(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.next();
         return parser.getText();
     }
 
+    /** Assert that two strings are the same
+     *
+     * @param s1 String A.
+     * @param s2 String B
+     * @throws UnfinishedParseException If the strings are not equal.
+     */
     void assertSame(String s1, String s2) throws UnfinishedParseException {
         if(!s1.equals(s2))
             throw new UnfinishedParseException(s1 + "!=" + s2);
     }
 
+    /** Advances a parser one step & checks to make sure it's not the end of the document.
+     *
+     * @param parser The parser to advance.
+     * @throws UnfinishedParseException
+     * @throws IOException
+     * @throws XmlPullParserException
+     */
     // Advances 1 .... uh, whatever XmlPullParser's unit of analysis is
     void advanceOne(XmlPullParser parser) throws UnfinishedParseException, IOException, XmlPullParserException {
         if(parser.next()==XmlPullParser.END_DOCUMENT)
             throw new UnfinishedParseException("???");
     }
 
-    // "Spins" by tossing through XML elements until the specified tag is encountered
+    /** "Spins" by tossing through XML elements until the specified tag is encountered or the document ends.
+     *
+     * @param tagName The tagname to stop at.
+     * @throws XmlPullParserException
+     * @throws IOException
+     * @throws UnfinishedParseException
+     */
     void spinUntil(String tagName) throws XmlPullParserException, IOException, UnfinishedParseException {
         //Audio
         while(! (tagName.equals(audioParser.getName()) && audioParser.getEventType()==XmlPullParser.START_TAG) )
@@ -241,7 +293,16 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                 advanceOne(videoParser);
     }
 
+    ///////////////////// Classes /////////////////////
+
+    /** Simple interface for callback.
+     */
     public static abstract class Callback {
+        /**
+         * Called when all the feeds are finished updating.
+         * @param episodes The episodes that were successfully fetched.
+         * @param failedFeeds A list of feeds that failed; no episodes of such feeds will be returned.
+         */
         abstract void call(LinkedList<Episode> episodes, LinkedList<ShowInfo> failedFeeds);
     }
 }
