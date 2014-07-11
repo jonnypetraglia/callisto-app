@@ -67,7 +67,8 @@ public class EpisodeFragment extends CallistoFragment {
             layout = (RelativeLayout) inflater.inflate(R.layout.episode, null);
 
             SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
-            if(episode.Image!=null) {
+            if(episode.Image!=null && !"".equals(episode.Image)) {
+                Log.i(TAG, "Image is " + episode.Image);
                 WebImage wm = new WebImage(episode.Image);
                 imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
             } else {

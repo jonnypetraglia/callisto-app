@@ -146,7 +146,8 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                                 String length = audioParser.getAttributeValue(audioParser.getNamespace(),"length");
                                 episode.AudioSize = Long.parseLong(length);
                             } else
-                            if(episode.Image ==null && (audioParser.getName().equals("thumbnail") || audioParser.getName().equals("content")))
+                            if(episode.Image ==null && (audioParser.getName().equals("thumbnail")
+                                )) //|| audioParser.getName().equals("content")))
                                 episode.Image = audioParser.getAttributeValue(null, "url");
                             //else
                             //if(audioParser.equals("image"))
