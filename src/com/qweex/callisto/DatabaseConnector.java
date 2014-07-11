@@ -76,7 +76,8 @@ public class DatabaseConnector
                     db.execSQL("DROP TABLE IF EXISTS downloads");
                     db.execSQL("DROP TABLE IF EXISTS stats");
                     db.execSQL("DROP TABLE IF EXISTS custom_feeds");
-                case 3:
+                    onCreate(db);
+                case 3:             // Add the imglink column
                     db.execSQL("ALTER TABLE episodes ADD COLUMN imglink TEXT");
             }
         }

@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
@@ -146,11 +147,15 @@ public class CatalogFragment extends CallistoFragment {
     AdapterView.OnItemClickListener selectEpisode = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Long _id = Long.parseLong((String) view.getTag());
+            Long _id = (Long) view.getTag();
             Log.d("Callisto", "CLICKED " + _id + "!");
 
-            Episode episode = dbMate.getOneEpisode(_id);
+            EpisodeFragment frag = new EpisodeFragment(master, dbMate.getOneEpisode(_id));
 
+            FragmentTransaction transaction = master.getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_fragment, frag);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
     };
 

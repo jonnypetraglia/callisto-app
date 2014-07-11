@@ -1,16 +1,41 @@
 package com.qweex.callisto.catalog;
 
+import android.database.Cursor;
+
 import java.util.Calendar;
 
 class Episode
 {
-    public String Title = null, Desc = null, Link = null, AudioLink = null, VideoLink = null;
+    public String Title = null, Desc = null, Link = null, Image = null, AudioLink = null, VideoLink = null;
     public long AudioSize = -1, VideoSize = -1;
     public Calendar Date;
     String show_id;
 
+    public long Position, Length;
+    public boolean New;
+
     public Episode(String show_id) {
         this.show_id = show_id;
+    }
+
+    public Episode(Cursor c) {
+        c.moveToFirst();
+        show_id = c.getString(c.getColumnIndex("show_id"));
+
+        Date = Calendar.getInstance();
+        Date.setTime(new java.util.Date(Long.parseLong(c.getString(c.getColumnIndex("date")))));
+
+        Title = c.getString(c.getColumnIndex("title"));
+        Desc = c.getString(c.getColumnIndex("description"));
+        Link = c.getString(c.getColumnIndex("link"));
+        AudioLink = c.getString(c.getColumnIndex("mp3link"));
+        VideoLink = c.getString(c.getColumnIndex("vidlink"));
+        AudioSize = c.getLong(c.getColumnIndex("mp3size"));
+        VideoSize = c.getLong(c.getColumnIndex("vidsize"));
+
+        Position = c.getLong(c.getColumnIndex("position"));
+        Length = c.getLong(c.getColumnIndex("length"));
+        New = c.getInt(c.getColumnIndex("new"))>1;
     }
 
     public void assertComplete() throws UnfinishedParseException {

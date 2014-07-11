@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/episodeLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/white" >
+
+    <com.loopj.android.image.SmartImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/image"
+            android:src="@drawable/callisto"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="true"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:id="@+id/date"
+            android:textSize="24sp"
+            android:layout_below="@+id/imageView"
+            android:textColor="@color/text_muted"/>
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView"
+            android:clickable="true"
+            android:layout_below="@+id/date">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="18sp"
+                android:id="@+id/desc"
+                android:textColor="@color/text_main"
+                android:textIsSelectable="true"/>
+    </ScrollView>
+
+    <com.qweex.callisto.catalog.AbbrevLinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/logo_color1"
+            android:id="@+id/buttons_local">
+    </com.qweex.callisto.catalog.AbbrevLinearLayout>
+</RelativeLayout>
