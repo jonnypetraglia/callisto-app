@@ -1,16 +1,3 @@
-/*
- * Copyright (C) 2012-2013 Qweex
- * This file is a part of Callisto.
- *
- * Callisto is free software; it is released under the
- * Open Software License v3.0 without warranty. The OSL is an OSI approved,
- * copyleft license, meaning you are free to redistribute
- * the source code under the terms of the OSL.
- *
- * You should have received a copy of the Open Software License
- * along with Callisto; If not, see <http://rosenlaw.com/OSL3.0-explained.htm>
- * or check OSI's website at <http://opensource.org/licenses/OSL-3.0>.
- */
 package com.qweex.callisto.catalog;
 
 import android.content.ContentValues;
@@ -25,11 +12,19 @@ import com.qweex.callisto.DatabaseConnector;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * A specialized class to help with the database.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class DatabaseMate
 {
+    /** Reference to the DatabaseConnector class to actually do all the database actions. */
     DatabaseConnector dbc;
+    /** The format that dates are stored in the database. */
     public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
 
+    /** Info about the DB. */
     private static final String TABLE_EPISODES = "episodes";
     public static final String SCHEMA_EPISODES = "CREATE TABLE " + TABLE_EPISODES + " " +
                     "(_id integer primary key autoincrement, " +
@@ -47,11 +42,21 @@ public class DatabaseMate
                     "length INTEGER, " +        //The length of the episode
                     "position INTEGER);";       //The last position, in seconds
 
+    /**
+     * Constructor; sets teh DatabaseConnector reference.
+     *
+     * @param dbc DatabaseConnector reference.
+     */
     public DatabaseMate(DatabaseConnector dbc)
     {
         this.dbc = dbc;
     }
 
+    /**
+     * Inserts an episode into the database
+     *
+     * @param ep The episode to insert.
+     */
     public void insertEpisode(Episode ep)
     {
         String title = ep.Title;
@@ -80,6 +85,12 @@ public class DatabaseMate
         dbc.database.insertOrThrow(TABLE_EPISODES, null, newEpisode);
     }
 
+    /**
+     * Marks an episode as new or not new.
+     *
+     * @param id The id of the episode.
+     * @param is_new Whether or not the episode is new.
+     */
     public void markNew(long id, boolean is_new)
     {
         ContentValues values = new ContentValues();
@@ -87,6 +98,12 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "_id=?", new String[] { id + ""});
     }
 
+    /**
+     * Marks all episodes of a show as new.
+     *
+     * @param show The show.
+     * @param is_new Whether or not the episodes are new.
+     */
     public void markAllNew(String show, boolean is_new)
     {
         ContentValues values = new ContentValues();
@@ -94,6 +111,12 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "show=?", new String[]{show});
     }
 
+    /**
+     * Updates the position of an episode.
+     *
+     * @param id The id of the episode.
+     * @param position The position. DUH.
+     */
     public void updatePosition(long id, long position)
     {
         ContentValues values = new ContentValues();
@@ -101,6 +124,13 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "_id=?", new String[] { id + ""});
     }
 
+    /**
+     * Gets all episodes of a show
+     *
+     * @param show The show to get. As stored in the JSON file.
+     * @param filter Whether or not to only get new episodes
+     * @return A cursor containing the episodes.
+     */
     public Cursor getShow(String show, boolean filter)
     {
         return dbc.database.query(TABLE_EPISODES ,                                      /* table */
@@ -112,11 +142,23 @@ public class DatabaseMate
                 "date DESC");                                                           /* orderBy */
     }
 
+    /**
+     * Removes all episodes from a show. For debugging purposes, really.
+     *
+     * @param show The show to clear.
+     */
     public void clearShow(String show)
     {
         dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show});
     }
 
+    /**
+     * Retrieve one episode from the database
+     *
+     * @param id The id of the episode.
+     * @throws RuntimeException If the episode doesn't exist or the Episode object otherwise cannot be created.
+     * @return
+     */
     public Episode getOneEpisode(long id)
     {
         Cursor e = dbc.database.query(TABLE_EPISODES,
@@ -125,6 +167,12 @@ public class DatabaseMate
         return new Episode(e);
     }
 
+    /**
+     * Retrieve the last (chronological) episode before the one supplied
+     *
+     * @param ep The episode of which to get the previous.
+     * @return The Episode object or null, if there are none.
+     */
     public Episode getPreviousEpisode(Episode ep)
     {
         String date = sdfRaw.format(ep.Date.getTime());
@@ -144,6 +192,12 @@ public class DatabaseMate
         }
     }
 
+    /**
+     * Retrieve the next (chronological) episode after the one supplied
+     *
+     * @param ep The episode of which to get the next.
+     * @return The Episode object or null, if there are none.
+     */
     public Episode getNextEpisode(Episode ep)
     {
         String date = sdfRaw.format(ep.Date.getTime());
@@ -163,10 +217,14 @@ public class DatabaseMate
         }
     }
 
-    public void deleteEpisode(long id)
-    {
-        dbc.database.delete(TABLE_EPISODES, "_id=?", new String[] {id + ""});
-    }
+
+    /**
+     * Search Episodes for a term, in Title and Description.
+     *
+     * @param searchTerm The term to search for
+     * @param searchShow The show to search; supply `null` to search all.
+     * @return A cursor containing the episodes that matched the search term.
+     */
     public Cursor searchEpisodes(String searchTerm, String searchShow)
     {
         return dbc.database.query(TABLE_EPISODES,
