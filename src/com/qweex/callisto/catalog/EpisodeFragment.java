@@ -33,6 +33,7 @@ public class EpisodeFragment extends CallistoFragment {
 
     public EpisodeFragment(MasterActivity master, CatalogFragment catalogFragment, Long _id) {
         super(master);
+        master.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.catalogFragment = catalogFragment;
         setEpisodes(_id);
     }
@@ -99,7 +100,8 @@ public class EpisodeFragment extends CallistoFragment {
     @Override
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        master.getSupportActionBar().setHomeButtonEnabled(true);
+
+        master.drawerToggle.setDrawerIndicatorEnabled(false);
     }
 
     @Override
@@ -107,6 +109,7 @@ public class EpisodeFragment extends CallistoFragment {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         master.getSupportActionBar().setTitle(null);
         master.getSupportActionBar().setSubtitle(null);
+        master.drawerToggle.setDrawerIndicatorEnabled(true);
     }
 
     View.OnClickListener more = new View.OnClickListener() {

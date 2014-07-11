@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,10 +20,13 @@ import com.qweex.callisto.contact.ContactFragment;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
+import java.util.List;
+
 public class MasterActivity extends ActionBarActivity {
 
-    private DrawerLayout drawerLayout;
+    public DrawerLayout drawerLayout;
     private ListView drawerList;
+    public ActionBarDrawerToggle drawerToggle;
     private TextView navSelected;
 
     private CallistoFragment activeFragment;
@@ -38,7 +42,6 @@ public class MasterActivity extends ActionBarActivity {
 
     public DatabaseConnector databaseConnector;
 
-    ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,10 +56,15 @@ public class MasterActivity extends ActionBarActivity {
         drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_entry, navbarEntries));
         drawerList.setOnItemClickListener(navClickListener);
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name,R.string.update);
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name, R.string.update);
         drawerLayout.setDrawerListener(drawerToggle);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         databaseConnector = new DatabaseConnector(this);
 
@@ -72,17 +80,34 @@ public class MasterActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+
+    //http://stackoverflow.com/questions/17258020/switching-between-android-navigation-drawer-image-and-up-caret-when-using-fragme
+    // ^ helped me so much
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (drawerToggle.onOptionsItemSelected(item)) {
+        if (drawerToggle.isDrawerIndicatorEnabled() && drawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            getCurrentFragment().hide();
+            return getSupportFragmentManager().popBackStackImmediate();
         }
-        // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
     }
 
+    public CallistoFragment getCurrentFragment(){
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        return (CallistoFragment) fragments.get(fragments.size()-1);
+    }
+
+
+    // HockeyApp
     private void checkForCrashes() {
         CrashManager.register(this, PRIVATE.HOCKEY_APP_ID);
     }
