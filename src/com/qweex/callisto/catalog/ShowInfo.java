@@ -27,13 +27,6 @@ public class ShowInfo {
         active = j.getBoolean("active");
     }
 
-    public ShowInfo(String i, String t, String a, String v, boolean ac) {
-        title = t;
-        audioFeed = a;
-        videoFeed = v;
-        active = ac;
-    }
-
     //Sorter for the show list
     static class ShowComparator implements Comparator<ShowInfo> {
         @Override

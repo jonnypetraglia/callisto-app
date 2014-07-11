@@ -3,7 +3,6 @@ package com.qweex.callisto.catalog;
 
 import android.app.ActionBar;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,9 +43,6 @@ public class EpisodeFragment extends CallistoFragment {
     {
         if(layout==null) {
             layout = (RelativeLayout) inflater.inflate(R.layout.episode, null);
-
-            ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
-            ((TextView)layout.findViewById(R.id.desc)).setText(Html.fromHtml(episode.Desc));
 
             SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
             if(episode.Image!=null) {
@@ -91,6 +87,7 @@ public class EpisodeFragment extends CallistoFragment {
                     .addItem(null, R.drawable.ic_action_more, more,
                             AbbrevLinearLayout.STATE.COLLAPSED);
 
+            // Have to call it here AGAIN to actually set the views that were just created.
             setEpisodes(episode.episode_id);
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
@@ -162,9 +159,8 @@ public class EpisodeFragment extends CallistoFragment {
             layout.findViewById(R.id.previous).setVisibility(previousEpisode==null ? View.GONE : View.VISIBLE);
             layout.findViewById(R.id.next).setVisibility(nextEpisode==null ? View.GONE : View.VISIBLE);
 
-
             ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
-            ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
+            ((TextView)layout.findViewById(R.id.desc)).setText(android.text.Html.fromHtml(episode.Desc).toString());
 
             SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
             if(episode.Image!=null) {

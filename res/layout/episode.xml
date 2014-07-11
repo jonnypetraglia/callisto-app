@@ -43,7 +43,7 @@
                     android:focusable="false"
                     android:clickable="false"
                     android:textColor="@color/text_main"
-                    android:paddingBottom="10dp"
+                    android:paddingBottom="5dp"
                     android:textIsSelectable="true"/>
         </LinearLayout>
     </ScrollView>
