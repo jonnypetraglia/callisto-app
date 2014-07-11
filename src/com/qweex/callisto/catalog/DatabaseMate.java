@@ -23,9 +23,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.qweex.callisto.DatabaseConnector;
 
+import java.text.SimpleDateFormat;
+
 public class DatabaseMate
 {
     DatabaseConnector dbc;
+    public static final SimpleDateFormat sdfRaw = new SimpleDateFormat("yyyyMMddHHmmss");
+
     private static final String TABLE_EPISODES = "episodes";
     public static final String SCHEMA_EPISODES = "CREATE TABLE " + TABLE_EPISODES + " " +
                     "(_id integer primary key autoincrement, " +
@@ -33,8 +37,8 @@ public class DatabaseMate
                     "title TEXT, " +            //The title for a specific episode
                     "date TEXT, " +             //The date of the episode, stored in the form of (yyyyMMddHHmmss)
                     "description TEXT, " +      //The description for a specific episode
-                    "imglink TEXT, " +          //The link to the image
                     "link TEXT, " +             //The link to the page for a specific episode
+                    "imglink TEXT, " +          //The link to the image
                     "mp3link TEXT, " +          //The link to the audio file for an episode
                     "mp3size INTEGER, " +       //The size of the audio file for an episode, in bytes
                     "vidlink TEXT, " +          //The link to the video file for an episode
@@ -55,38 +59,25 @@ public class DatabaseMate
         if(marker>-1)
             title = title.substring(0, marker);
 
-        insertEpisode(ep.show_id, title,
-                CatalogFragment.sdfRaw.format(ep.Date.getTime()),
-                ep.Desc, ep.Link, ep.AudioLink, ep.AudioSize, ep.VideoLink, ep.VideoSize);
         Log.i("Callisto", "Inserting episode: " + title + " (" + ep.show_id + ")");
-    }
 
-    public void insertEpisode(String show_id,
-                              String title,
-                              String date,
-                              String description,
-                              String link,
-                              String audioLink,
-                              long audioSize,
-                              String videoLink,
-                              long videoSize)
-    {
         ContentValues newEpisode = new ContentValues();
-        newEpisode.put("show_id", show_id);
+        newEpisode.put("show_id", ep.show_id);
         newEpisode.put("new", 1);
         newEpisode.put("title", title);
-        newEpisode.put("date", date);
-        newEpisode.put("description", description);
-        newEpisode.put("link", link);
-        newEpisode.put("mp3link", audioLink);
-        newEpisode.put("mp3size", audioSize);
-        if(videoLink!=null)
+        newEpisode.put("date", sdfRaw.format(ep.Date.getTime()));
+        newEpisode.put("description", ep.Desc);
+        newEpisode.put("link", ep.Link);
+        newEpisode.put("imglink", ep.Image);
+        newEpisode.put("mp3link", ep.AudioLink);
+        newEpisode.put("mp3size", ep.AudioSize);
+        if(ep.VideoLink!=null)
         {
-            newEpisode.put("vidlink", videoLink);
-            newEpisode.put("vidsize", videoSize);
+            newEpisode.put("vidlink", ep.VideoLink);
+            newEpisode.put("vidsize", ep.VideoSize);
         }
 
-        dbc.database.insert(TABLE_EPISODES, null, newEpisode);
+        dbc.database.insertOrThrow(TABLE_EPISODES, null, newEpisode);
     }
 
     public void markNew(long id, boolean is_new)
@@ -129,7 +120,7 @@ public class DatabaseMate
     public Episode getOneEpisode(long id)
     {
         Cursor e = dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
                 "_id=?", new String[] {id + ""}, null, null, null);
         return new Episode(e);
     }

@@ -108,6 +108,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                             if(audioParser.getEventType() != XmlPullParser.START_TAG)
                                 continue;
 
+
                             // title
                             if(audioParser.getName().equals("title"))
                                 episode.Title = textOfNext(audioParser);
@@ -127,11 +128,8 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                                 String length = audioParser.getAttributeValue(audioParser.getNamespace(),"length");
                                 episode.AudioSize = Long.parseLong(length);
                             } else
-                            if(audioParser.getName().equals("media:thumbnail") && episode.Image ==null)
-                                episode.Image = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
-                            else
-                            if(audioParser.equals("media:content") && episode.Image ==null)
-                                episode.Image = audioParser.getAttributeValue(audioParser.getNamespace(), "url");
+                            if(episode.Image ==null && (audioParser.getName().equals("thumbnail") || audioParser.getName().equals("content")))
+                                episode.Image = audioParser.getAttributeValue(null, "url");
                             //else
                             //if(audioParser.equals("image"))
                             //    episode.Image = textOfNext(audioParser);

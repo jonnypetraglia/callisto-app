@@ -9,6 +9,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/image"
             android:src="@drawable/callisto"
+            android:background="#333333"
             android:layout_alignParentStart="false"
             android:layout_alignParentTop="true"/>
 
@@ -18,8 +19,9 @@
             android:text="Date"
             android:id="@+id/date"
             android:textSize="24sp"
-            android:layout_below="@+id/imageView"
+            android:layout_below="@+id/image"
             android:textColor="@color/text_muted"/>
+
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

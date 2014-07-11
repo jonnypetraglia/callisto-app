@@ -28,6 +28,7 @@ class Episode
         Title = c.getString(c.getColumnIndex("title"));
         Desc = c.getString(c.getColumnIndex("description"));
         Link = c.getString(c.getColumnIndex("link"));
+        Image = c.getString(c.getColumnIndex("imglink"));
         AudioLink = c.getString(c.getColumnIndex("mp3link"));
         VideoLink = c.getString(c.getColumnIndex("vidlink"));
         AudioSize = c.getLong(c.getColumnIndex("mp3size"));

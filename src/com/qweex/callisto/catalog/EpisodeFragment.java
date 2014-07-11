@@ -1,15 +1,14 @@
 package com.qweex.callisto.catalog;
 
 
-import android.content.Context;
-import android.graphics.Bitmap;
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.loopj.android.image.SmartImage;
 import com.loopj.android.image.SmartImageView;
 import com.loopj.android.image.WebImage;
 import com.qweex.callisto.CallistoFragment;
@@ -36,9 +35,13 @@ public class EpisodeFragment extends CallistoFragment {
             ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
             ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
 
+            SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
             if(episode.Image!=null) {
+                Log.d("Callisto", episode.Image + "!");
                 WebImage wm = new WebImage(episode.Image);
-                ((SmartImageView)layout.findViewById(R.id.image)).setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
+                imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
+            } else {
+                imageView.setVisibility(View.GONE);
             }
 
 
@@ -70,10 +73,16 @@ public class EpisodeFragment extends CallistoFragment {
 
     @Override
     public void show() {
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        master.getSupportActionBar().setTitle(episode.Title);
+        master.getSupportActionBar().setSubtitle(episode.show_id);
     }
 
     @Override
     public void hide() {
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        master.getSupportActionBar().setTitle(null);
+        master.getSupportActionBar().setSubtitle(null);
     }
 
     View.OnClickListener more = new View.OnClickListener() {

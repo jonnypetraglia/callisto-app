@@ -120,7 +120,7 @@ public class CatalogFragment extends CallistoFragment {
     private android.support.v7.app.ActionBar.OnNavigationListener changeShow = new android.support.v7.app.ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-            Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
+            Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).id);
             reloadList();
             return true;
         }
@@ -139,7 +139,7 @@ public class CatalogFragment extends CallistoFragment {
                 errorStrings[i] = failures.get(i).title;
             }
             String msg = "Errors Occured with:" + TextUtils.join("\n", errorStrings);
-            Log.d("Callisto", msg);
+            Log.e("Callisto", msg);
             Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG);
         }
     };
@@ -148,7 +148,6 @@ public class CatalogFragment extends CallistoFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Long _id = (Long) view.getTag();
-            Log.d("Callisto", "CLICKED " + _id + "!");
 
             EpisodeFragment frag = new EpisodeFragment(master, dbMate.getOneEpisode(_id));
 
@@ -168,6 +167,7 @@ public class CatalogFragment extends CallistoFragment {
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         master.getSupportActionBar().setTitle(null);
+        master.getSupportActionBar().setSubtitle(null);
     }
 
     public void hide() {
