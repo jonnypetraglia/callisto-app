@@ -26,6 +26,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="android-support-v7-appcompat" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/android-smart-image-view-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
