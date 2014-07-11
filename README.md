@@ -12,6 +12,7 @@ Here are the main differences planned for v2:
  * _More modern_. v1 was aimed at all versions of Android and was thus limited in many ways. v2 is (currently) aimed at running on 2.3+, which still covers the majority of the market but will allow much easier and cleaner implementations of many features.
  * _More organized_. Since v1 was kind of put together as I went, the code was rather muddled. It lacked organization and clarity and I myself frequently got lost trying to remember what did what.
  * _Cleaner UI_. In addition to adhering to the modern Android UX practices, v2 will remove a lot of buggy interfaces that simply did not work in v1.
+ * _Less deprecated_. My goal this time is to have _zero_ warnings when compiling the project.
  * _Less centralized_. I'm planning on introducing features in v2 to keep me from being a choking point for events such as JB releasing a new show.
  * _Less buggy_. I'm hoping that -as a result of everything above- the code will be much more pure and have far fewer bugs.
 
@@ -50,6 +51,8 @@ From there it's as simple as telling your IDE to run it on JS, CSS, and JSON fil
 
 This list of technologies is where the project stands _currently_ in v2; because it is rapidly re-constructing, the list is very likely to change.
 
+ * [android-smart-image-view](https://github.com/loopj/android-smart-image-view) is a small little tool to easily set ImageViews to internet resources asyncronously.
+ * [HockeyApp](http://hockeyapp.net/features/) is a beta distribution & testing service. I'm still trying it out.
 
 
 ## General Architecture ##
