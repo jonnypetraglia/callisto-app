@@ -1,7 +1,6 @@
 package com.qweex.callisto.catalog;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.view.View;
  * (I stole this from http://stackoverflow.com/a/19506010 so I ain't commenting this shit)
  */
 public class OnSwipeTouchListener implements View.OnTouchListener {
-
     private final GestureDetector gestureDetector;
 
     public OnSwipeTouchListener(Context context) {
@@ -42,7 +40,6 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();
-            Log.d("Callisto", "ASTROPHYSICS BLACK GUY");
             if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                 if (distanceX > 0)
                     onLeftToRightSwipe();

@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat;
  */
 public class DatabaseMate
 {
+    String TAG = "Callisto:catalog:DatabaseMate";
+
     /** Reference to the DatabaseConnector class to actually do all the database actions. */
     DatabaseConnector dbc;
     /** The format that dates are stored in the database. */
@@ -59,7 +61,7 @@ public class DatabaseMate
         if(marker>-1)
             title = title.substring(0, marker);
 
-        Log.i("Callisto", "Inserting episode: " + title + " (" + ep.show + ")");
+        Log.i(TAG, "Inserting episode: " + title + " (" + ep.show + ")");
 
         ContentValues newEpisode = new ContentValues();
         newEpisode.put("show", ep.show);

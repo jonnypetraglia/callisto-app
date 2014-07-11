@@ -23,6 +23,8 @@ import android.widget.TextView;
  */
 public class AbbrevLinearLayout extends LinearLayout {
 
+    String TAG = "Callisto:catalog:AbbrevLinearLayout";
+
     public enum STATE {EXPANDED, COLLAPSED, BOTH}
     STATE currentState;
     // Resources to be used for each item
@@ -233,7 +235,7 @@ public class AbbrevLinearLayout extends LinearLayout {
 
         /** Shows the text or possibly hides the widget depending on Item settings.*/
         public void expand() {
-            Log.d("Callisto", "Expand");
+            Log.d(TAG, "Expand");
             if(showInState==STATE.EXPANDED || showInState==STATE.BOTH) {
                 setVisibility(VISIBLE);
                 setLayoutParams(lp_expand);

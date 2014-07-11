@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
  */
 public class EpisodeFragment extends CallistoFragment {
 
+    String TAG = "Callisto:catalog:EpisodeFragment";
+
     /** Formats the date to a human readable format. */
     SimpleDateFormat sdf = new SimpleDateFormat("cccc MMM d, yyyy");
 
@@ -82,13 +84,11 @@ public class EpisodeFragment extends CallistoFragment {
             layout.findViewById(R.id.scrollView).setOnTouchListener(new OnSwipeTouchListener(master) {
                 @Override
                 public void onRightToLeftSwipe() {
-                    Log.d("Callisto", "Right->Left");
                     previous.onClick(previousBtn);
                 }
 
                 @Override
                 public void onLeftToRightSwipe() {
-                    Log.d("Callisto", "Left->Right");
                     next.onClick(nextBtn);
                 }
             });
@@ -155,7 +155,7 @@ public class EpisodeFragment extends CallistoFragment {
         @Override
         public void onClick(View v) {
             if(previousEpisode==null) {
-                Log.w("Callisto", "Attempting to get next episode when there is none. WTF?!");
+                Log.w(TAG, "Attempting to get next episode when there is none. WTF?!");
                 return;
             }
             setEpisodes(previousEpisode.episode_id);
@@ -167,7 +167,7 @@ public class EpisodeFragment extends CallistoFragment {
         @Override
         public void onClick(View v) {
             if(nextEpisode==null) {
-                Log.w("Callisto", "Attempting to get next episode when there is none. WTF?!");
+                Log.w(TAG, "Attempting to get next episode when there is none. WTF?!");
                 return;
             }
             setEpisodes(nextEpisode.episode_id);
