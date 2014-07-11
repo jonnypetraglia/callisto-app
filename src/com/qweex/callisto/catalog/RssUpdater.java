@@ -67,7 +67,6 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     }
 
     /** Inherited method; the task actually run asyncronously.
-     *
      * @param shows The initial list of shows to download; can be appended to later via addItem(s).
      */
     @Override
@@ -232,8 +231,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    /** Inherited method; called after async part is finished.
-     */
+    /** Inherited method; called after async part is finished. */
     @Override
     protected void onPostExecute(Void v) {
         items = null;
@@ -243,15 +241,13 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
     ///////////////////// Private methods /////////////////////
 
-    /** Shortcut function for readability; advanced parser one step + returns text
-     */
+    /** Shortcut function for readability; advanced parser one step + returns text */
     String textOfNext(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.next();
         return parser.getText();
     }
 
     /** Assert that two strings are the same
-     *
      * @param s1 String A.
      * @param s2 String B
      * @throws UnfinishedParseException If the strings are not equal.
@@ -262,7 +258,6 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     }
 
     /** Advances a parser one step & checks to make sure it's not the end of the document.
-     *
      * @param parser The parser to advance.
      * @throws UnfinishedParseException
      * @throws IOException
@@ -275,7 +270,6 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     }
 
     /** "Spins" by tossing through XML elements until the specified tag is encountered or the document ends.
-     *
      * @param tagName The tagname to stop at.
      * @throws XmlPullParserException
      * @throws IOException
@@ -294,8 +288,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
     ///////////////////// Classes /////////////////////
 
-    /** Simple interface for callback.
-     */
+    /** Simple interface for callback. */
     public static abstract class Callback {
         /**
          * Called when all the feeds are finished updating.
