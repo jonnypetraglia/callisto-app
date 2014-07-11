@@ -26,13 +26,21 @@ If you use IntelliJ, getting set up is incredibly simple: open the project.
 
 ### Support Library v7 ###
 
-This is the first time I've used v7 of the support library. Here are the steps I had to do to get it to work with the project:
+This is the first time I've used v7 of the support library. I've _tried_ to set it up where it would automatically import the required module,
+but IntelliJ seems to forget every time I close the project.
 
-1. Import appcompat as a module (File > Import Module)
+_Ideally_, all you should need to do is set the ANDROID_HOME Path Variable (Preferences > Path Variables).
+
+
+However, if Intellij is being stupid and not finding it, here are the steps I have to do every time I open the project.
+
+
+1. Import appcompat as a module (File > Import Module). Path is $ANDROID_HOMEZ$/extras/android/support/v7/appcompat. (Hit "Yes" if it says anything about "reusing".)
 
 2. Add module as lib for Callisto (in Project Structure > Modules, click the little '+' and choose "Module Dependency")
 
-3. Edit the iml file for appcompat to https://gist.github.com/hgoebl/8261396
+3. Edit the iml file for appcompat to be [https://gist.github.com/hgoebl/8261396]
+
 
 #### Minifying ####
 
@@ -57,6 +65,33 @@ This list of technologies is where the project stands _currently_ in v2; because
 
 ## General Architecture ##
 
+The nice thing about v2 of Callisto is that it is very compartmentalized. Ideally, each fragment should function more or less completely independent of each other.
+
+- **catalog**: Used for fetching the back catalog, i.e. the podcatcher portion of the app.
+  - **playback/queue**: TBA
+- **live**: Used for the live streaming.
+- **chat**: Used for the IRC portion of the app.
+- **schedule**: Used to pull in the calendar feed & set alarms for upcoming shows.
+- **contact**: Used for the JB Wufoo contact form.
+- **donate**: Used for donations for JB (Currently Paypal, eventually Patreon.)
+- **settings**: Settings for the app.
+- **about**: An about page for the app, listing version# for the app & release changelog and whatnot.
+
+
+Each package will have it's own fragment that is inherited from **CallistoFragment**, which is just an abstract class with some niceties like a reference back to the Master Activity.
+They will also have, obviously, other classes and possibly subpackages.
+
+**MasterActivitity** is the...well, the master activity. It is the through which all fragments are served. It is essentially just a shell to facilitate moving between fragments.
+
+**DatabaseConnector** is the class used, internally, to access the database (i.e. it handles it being created, upgraded, and contains the SqliteDatabase variable).
+To actually do anything with the database, files called **DatabaseMates** are available per package. (DatabaseMates interally call the DatabaseConnector.)
+This keeps DatabaseConnector from growing unseemingly large and keeps with the idea of separation of features by package.
+
+**SplashFragment** is a fragment to show upon opening the app for the first time. Because the new JB logo is sexy.
+
+
+There is a class called **PRIVATE** filled with things that I don't want to check into the repo, things like API keys and whatnot.
+There should be no logic in there, and if there ever is, I will try to comment on why I put it in PRIVATE on a case-by-case basis.
 
 ### Database schema ###
 

@@ -25,7 +25,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="android-support-v7-appcompat" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -35,6 +34,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="android-support-v7-appcompat" />
   </component>
 </module>
 
