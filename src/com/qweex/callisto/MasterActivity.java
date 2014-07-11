@@ -22,16 +22,18 @@ import net.hockeyapp.android.UpdateManager;
 
 import java.util.List;
 
+/** Main activity for the application.
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class MasterActivity extends ActionBarActivity {
 
+    /** ActionBar/Drawer variables. */
     public DrawerLayout drawerLayout;
     private ListView drawerList;
     public ActionBarDrawerToggle drawerToggle;
     private TextView navSelected;
 
-    private CallistoFragment activeFragment;
-
-
+    /** Fragments of the various types. Only 1 exists at a time. */
     private CatalogFragment catalogFragment;
     //private LiveFragment liveFragment;
     //private ChatFragment chatFragment;
@@ -40,9 +42,16 @@ public class MasterActivity extends ActionBarActivity {
     //private DonateFragment donateFragment;
     //private SettingsFragment settingsFragment;
 
+    /** Reference to the Active fragment. */
+    private CallistoFragment activeFragment;
+
+    /** Database class. */
     public DatabaseConnector databaseConnector;
 
 
+    /** Inherited; called when the activity is created.
+     * @param savedInstanceState [ASK_SOMEONE_SMARTER]
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -79,6 +88,10 @@ public class MasterActivity extends ActionBarActivity {
         checkForUpdates();
     }
 
+    /** Inherited. [ASK_SOMEONE_SMARTER]
+     * Used to ensure the drawer/up icon is correct in the ActionBar.
+     * @param savedInstanceState [ASK_SOMEONE_SMARTER]
+     */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -86,8 +99,12 @@ public class MasterActivity extends ActionBarActivity {
     }
 
 
-    //http://stackoverflow.com/questions/17258020/switching-between-android-navigation-drawer-image-and-up-caret-when-using-fragme
-    // ^ helped me so much
+    /** Inherited; called when a menu item is selected (Including the ActionBar home button.)
+     * See: http://stackoverflow.com/questions/17258020/switching-between-android-navigation-drawer-image-and-up-caret-when-using-fragme
+     *
+     * @param item The item that was selected
+     * @return If the event was handled.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle.isDrawerIndicatorEnabled() && drawerToggle.onOptionsItemSelected(item)) {
@@ -100,6 +117,9 @@ public class MasterActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /** Get the current fragment that is in use.
+     * @return The current fragment that is in use.
+     */
     public CallistoFragment getCurrentFragment(){
 
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
@@ -107,16 +127,18 @@ public class MasterActivity extends ActionBarActivity {
     }
 
 
-    // HockeyApp
+    /** Used by HockeyApp */
     private void checkForCrashes() {
         CrashManager.register(this, PRIVATE.HOCKEY_APP_ID);
     }
 
+    /** Used by HockeyApp */
     private void checkForUpdates() {
         // Remove this for store builds!
         UpdateManager.register(this, PRIVATE.HOCKEY_APP_ID);
     }
 
+    /** Called when an item is selected from the Nav spinner in the ActionBar. */
     AdapterView.OnItemClickListener navClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
@@ -175,10 +197,4 @@ public class MasterActivity extends ActionBarActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
     };
-
-
-    public static boolean hasMenuKey(Activity a) {
-        return Build.VERSION.SDK_INT <= 10 || (Build.VERSION.SDK_INT >= 14 &&
-                ViewConfiguration.get(a).hasPermanentMenuKey());
-    }
 }
