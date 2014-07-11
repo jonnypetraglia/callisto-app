@@ -221,6 +221,7 @@ public class CatalogFragment extends CallistoFragment {
     /**
      * Inherited method; things to do when the fragment is shown initially.
      */
+    @Override
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         master.getSupportActionBar().setTitle(null);
@@ -230,6 +231,7 @@ public class CatalogFragment extends CallistoFragment {
     /**
      * Inherited method; things to do when the fragment is hidden/dismissed.
      */
+    @Override
     public void hide() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }

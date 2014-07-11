@@ -15,22 +15,39 @@ import com.loopj.android.image.WebImage;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-
 import java.text.SimpleDateFormat;
 
+/**
+ * A fragment to display information about a specific show episode.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class EpisodeFragment extends CallistoFragment {
 
+    /** Formats the date to a human readable format. */
     SimpleDateFormat sdf = new SimpleDateFormat("cccc MMM d, yyyy");
 
+    /** Layout for this fragment. */
     RelativeLayout layout;
+    /** Contains the buttons for when the episode is local, i.e. has been downloaded. */
     AbbrevLinearLayout buttonsLocal;
+    /** Episode object for left/right swiping and whatnot, and the current one. */
     Episode episode, previousEpisode, nextEpisode;
+    /** Reference to the parent catalogFragment. */
     CatalogFragment catalogFragment;
 
+    /** ScrollView Content used to append buttonsLocal & buttonsNoLocal when they are expanded. */
     LinearLayout scroll;
-
+    /** Buttons for showing next and previous episodes in the same show. */
     View previousBtn, nextBtn;
 
+    /**
+     * Constructor.
+     *
+     * @param master Reference to the MasterActivity.
+     * @param catalogFragment Reference to the CatalogFragment.
+     * @param _id The database ID for the current episode.
+     */
     public EpisodeFragment(MasterActivity master, CatalogFragment catalogFragment, Long _id) {
         super(master);
         master.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -38,6 +55,14 @@ public class EpisodeFragment extends CallistoFragment {
         setEpisodes(_id);
     }
 
+    /**
+     * Inherited method; called each time the fragment is attached to a FragmentActivity.
+     *
+     * @param inflater Used for instantiating the fragment's view.
+     * @param container [ASK_SOMEONE_SMARTER]
+     * @param savedInstanceState [ASK_SOMEONE_SMARTER]
+     * @return The new / recycled View to be attached.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -97,6 +122,9 @@ public class EpisodeFragment extends CallistoFragment {
         return layout;
     }
 
+    /**
+     * Inherited method; things to do when the fragment is shown initially.
+     */
     @Override
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -104,6 +132,9 @@ public class EpisodeFragment extends CallistoFragment {
         master.drawerToggle.setDrawerIndicatorEnabled(false);
     }
 
+    /**
+     * Inherited method; things to do when the fragment is hidden/dismissed.
+     */
     @Override
     public void hide() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -112,6 +143,9 @@ public class EpisodeFragment extends CallistoFragment {
         master.drawerToggle.setDrawerIndicatorEnabled(true);
     }
 
+    /**
+     * Called when the user wants to expand the buttons.
+     */
     View.OnClickListener more = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -121,15 +155,16 @@ public class EpisodeFragment extends CallistoFragment {
         }
     };
 
+    /** TODO */
     View.OnClickListener    clickDownload = null,
                             clickStream = null,
                             clickEnqueueStream = null,
                             clickShare = null,
                             clickLink = null;
 
-
-    ;
-
+    /**
+     * Show the previous episode in the show, if there is one;
+     */
     View.OnClickListener previous = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -141,6 +176,9 @@ public class EpisodeFragment extends CallistoFragment {
         }
     };
 
+    /**
+     * Show the next episode in the show, if there is one;
+     */
     View.OnClickListener next = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -152,6 +190,11 @@ public class EpisodeFragment extends CallistoFragment {
         }
     };
 
+    /**
+     * Set the episode objects from the database & set the next/previous buttons visibility if applicable.
+     *
+     * @param _id The database id of the current episode.
+     */
     void setEpisodes(Long _id) {
         episode = catalogFragment.dbMate.getOneEpisode(_id);
         previousEpisode = catalogFragment.dbMate.getPreviousEpisode(episode);
