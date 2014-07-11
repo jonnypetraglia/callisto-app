@@ -11,13 +11,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+/** A Data structure to contain info about a show
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class ShowInfo {
 
+    /** Show info */
     public String title, audioFeed, videoFeed;
     public String lastChecked;
     boolean active;
+
+    /** Metadata */
     SharedPreferences settings;
 
+    /** Constructor; creates object from JSON
+     * @param j JSON Object containing data.
+     */
     public ShowInfo(JSONObject j) throws JSONException {
         title = j.getString("title");
         audioFeed = j.getString("audio");
@@ -27,7 +36,7 @@ public class ShowInfo {
         active = j.getBoolean("active");
     }
 
-    //Sorter for the show list
+    /** Sorter for the show list */
     static class ShowComparator implements Comparator<ShowInfo> {
         @Override
         public int compare(ShowInfo s1, ShowInfo s2) {
@@ -35,6 +44,13 @@ public class ShowInfo {
         }
     }
 
+    ////////////////// Static methods //////////////////
+
+    /** Reads JSON from a stream.
+     *
+     * @param is Input Stream to read from
+     * @return ArrayList of ShowInfo objects.
+     */
     static public ArrayList<ShowInfo> readJSON(InputStream is) {
         JSONArray json = null;
         ArrayList<ShowInfo> json_parsed = new ArrayList<ShowInfo>();
