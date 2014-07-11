@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,10 +34,11 @@ public class AbbrevLinearLayout extends LinearLayout{
 
     public enum STATE {EXPANDED, COLLAPSED, BOTH}
     STATE currentState;
+    // Resources to be used for each item
     int textResource, itemBgResource;
 
-    LayoutParams lp_expand;
-    LayoutParams lp_collapse;
+    // Layout Params for each of the states;
+    LayoutParams lp_expand, lp_collapse;
 
     public AbbrevLinearLayout setData(int textResource, int itemBgResource, STATE s) {
         this.textResource = textResource;
@@ -46,7 +46,6 @@ public class AbbrevLinearLayout extends LinearLayout{
         this.currentState = s;
 
         lp_expand = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
-
         lp_collapse = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1);
         lp_collapse.setMargins(20, 0, 20, 0);
 
@@ -56,6 +55,7 @@ public class AbbrevLinearLayout extends LinearLayout{
         return this;
     }
 
+    /////////////// addItem ///////////////
     public AbbrevLinearLayout addItem(int text, int drawable) {
         return addItem(text, drawable, null, STATE.BOTH);
     }
@@ -82,6 +82,8 @@ public class AbbrevLinearLayout extends LinearLayout{
         return this;
     }
 
+    /////////////// Toggle State ///////////////
+
     public void expand() {
         currentState = STATE.EXPANDED;
         setOrientation(LinearLayout.VERTICAL);
@@ -93,6 +95,8 @@ public class AbbrevLinearLayout extends LinearLayout{
         setOrientation(LinearLayout.HORIZONTAL);
         refresh();
     }
+
+    /////////////// Internal Functions ///////////////
 
     private void refresh() {
         for(int i=0; i<getChildCount(); ++i)
