@@ -149,7 +149,7 @@ public class CatalogFragment extends CallistoFragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Long _id = (Long) view.getTag();
 
-            EpisodeFragment frag = new EpisodeFragment(master, dbMate.getOneEpisode(_id));
+            EpisodeFragment frag = new EpisodeFragment(master, CatalogFragment.this, _id);
 
             FragmentTransaction transaction = master.getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment, frag);

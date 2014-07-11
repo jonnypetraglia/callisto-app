@@ -125,6 +125,31 @@ public class DatabaseMate
         return new Episode(e);
     }
 
+    public Episode getPreviousEpisode(Episode ep)
+    {
+        Cursor e = dbc.database.query(TABLE_EPISODES,
+                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                "show_id=? and date<?", new String[] {ep.show_id, ep.Date.getTime().getTime() + ""}, null, null, "1");
+        try {
+            return new Episode(e);
+        }catch(RuntimeException re) {
+            return null;
+        }
+    }
+
+    public Episode getNextEpisode(Episode ep)
+    {
+        Cursor e = dbc.database.query(TABLE_EPISODES,
+                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                "show_id=? and date>?",
+                new String[] {ep.show_id, ep.Date.getTime().getTime() + ""}, null, null, "1");
+        try {
+            return new Episode(e);
+        }catch(RuntimeException re) {
+            return null;
+        }
+    }
+
     public void deleteEpisode(long id)
     {
         dbc.database.delete(TABLE_EPISODES, "_id=?", new String[] {id + ""});

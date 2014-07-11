@@ -10,6 +10,7 @@ class Episode
     public long AudioSize = -1, VideoSize = -1;
     public Calendar Date;
     String show_id;
+    public long episode_id;
 
     public long Position, Length;
     public boolean New;
@@ -19,7 +20,11 @@ class Episode
     }
 
     public Episode(Cursor c) {
+        if(c.getCount()==0)
+            throw new RuntimeException();
         c.moveToFirst();
+        episode_id = c.getLong(c.getColumnIndex("_id"));
+
         show_id = c.getString(c.getColumnIndex("show_id"));
 
         Date = Calendar.getInstance();
