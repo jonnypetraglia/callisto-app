@@ -3,6 +3,7 @@ package com.qweex.callisto.catalog;
 // Taken from http://stackoverflow.com/a/19506010
 
 import android.content.Context;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,10 +19,10 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
-    public void onSwipeLeft() {
+    public void onRightToLeftSwipe() {
     }
 
-    public void onSwipeRight() {
+    public void onLeftToRightSwipe() {
     }
 
     public boolean onTouch(View v, MotionEvent event) {
@@ -42,11 +43,12 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();
+            Log.d("Callisto", "ASTROPHYSICS BLACK GUY");
             if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                 if (distanceX > 0)
-                    onSwipeRight();
+                    onLeftToRightSwipe();
                 else
-                    onSwipeLeft();
+                    onRightToLeftSwipe();
                 return true;
             }
             return false;

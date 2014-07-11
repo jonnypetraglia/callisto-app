@@ -5,6 +5,7 @@
     android:background="@android:color/white" >
 
     <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -21,7 +22,6 @@
                     android:layout_width="fill_parent"
                     android:layout_height="200dp"
                     android:id="@+id/image"
-                    android:src="@drawable/callisto"
                     android:background="#333333"
                     android:layout_alignParentStart="false"
                     android:layout_alignParentTop="true"/>
@@ -29,18 +29,19 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Date"
                     android:id="@+id/date"
                     android:textSize="24sp"
-                    android:layout_below="@+id/image"
+                    android:focusable="false"
+                    android:clickable="false"
                     android:textColor="@color/text_muted"/>
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Description"
                     android:textSize="18sp"
                     android:id="@+id/desc"
+                    android:focusable="false"
+                    android:clickable="false"
                     android:textColor="@color/text_main"
                     android:paddingBottom="10dp"
                     android:textIsSelectable="true"/>

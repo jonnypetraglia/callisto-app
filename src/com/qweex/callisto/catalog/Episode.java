@@ -30,7 +30,6 @@ class Episode
         show = c.getString(c.getColumnIndex("show"));
 
         Date = Calendar.getInstance();
-        Log.d("Callisto!", c.getString(c.getColumnIndex("date")) + "!");
         try {
             Date.setTime(DatabaseMate.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
         } catch(ParseException e) {

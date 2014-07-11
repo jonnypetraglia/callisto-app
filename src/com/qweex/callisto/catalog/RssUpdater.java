@@ -58,13 +58,13 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
         ShowInfo current;
         for(int i=0; i<items.size(); i++) {
             current = items.get(i);
-            Log.i(TAG, "Beginning update: " + current.id + " " + current.audioFeed + " " + current.videoFeed);
+            Log.i(TAG, "Beginning update: " + current.title + " " + current.audioFeed + " " + current.videoFeed);
 
 
             LinkedList<Episode> tempEpisodesRetrieved = new LinkedList<Episode>();
 
             if(PRIVATE.DEBUG)
-                db.clearShow(current.id);
+                db.clearShow(current.title);
 
             doVideo = doVideo && current.videoFeed!=null;
 
@@ -99,7 +99,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
                             break;
                         }
 
-                        episode = new Episode(current.id);
+                        episode = new Episode(current.title);
 
                         // Extract the data for 1 episode (for audio)
                         while(! ("item".equals(audioParser.getName()) && audioParser.getEventType()==XmlPullParser.END_TAG) ) {

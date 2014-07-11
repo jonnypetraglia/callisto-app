@@ -13,13 +13,12 @@ import java.util.Comparator;
 
 public class ShowInfo {
 
-    public String id, title, audioFeed, videoFeed;
+    public String title, audioFeed, videoFeed;
     public String lastChecked;
     boolean active;
     SharedPreferences settings;
 
     public ShowInfo(JSONObject j) throws JSONException {
-        id = j.getString("id");
         title = j.getString("title");
         audioFeed = j.getString("audio");
         try {
@@ -29,7 +28,6 @@ public class ShowInfo {
     }
 
     public ShowInfo(String i, String t, String a, String v, boolean ac) {
-        id = i;
         title = t;
         audioFeed = a;
         videoFeed = v;

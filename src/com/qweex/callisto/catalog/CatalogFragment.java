@@ -120,7 +120,7 @@ public class CatalogFragment extends CallistoFragment {
     private android.support.v7.app.ActionBar.OnNavigationListener changeShow = new android.support.v7.app.ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-            Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).id);
+            Log.d("Callisto", "Selected Show: " + showList.get(itemPosition).title);
             reloadList();
             return true;
         }
@@ -160,7 +160,7 @@ public class CatalogFragment extends CallistoFragment {
 
     void reloadList() {
         ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
-        Cursor r = dbMate.getShow(selectedShow.id, filter);
+        Cursor r = dbMate.getShow(selectedShow.title, filter);
         listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, r));
     }
 

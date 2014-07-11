@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 
 public class EpisodeFragment extends CallistoFragment {
 
-    SimpleDateFormat sdf = new SimpleDateFormat("cccc, MMM d, yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("cccc MMM d, yyyy");
 
     RelativeLayout layout;
     AbbrevLinearLayout buttonsLocal;
@@ -45,13 +45,11 @@ public class EpisodeFragment extends CallistoFragment {
         if(layout==null) {
             layout = (RelativeLayout) inflater.inflate(R.layout.episode, null);
 
-            Log.d("Callisto", episode.Date.getTime() + "!");
             ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
             ((TextView)layout.findViewById(R.id.desc)).setText(Html.fromHtml(episode.Desc));
 
             SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
             if(episode.Image!=null) {
-                Log.d("Callisto", episode.Image + "!");
                 WebImage wm = new WebImage(episode.Image);
                 imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
             } else {
@@ -65,15 +63,17 @@ public class EpisodeFragment extends CallistoFragment {
 
             scroll = (LinearLayout) layout.findViewById(R.id.scrollContent);
 
-            layout.setOnTouchListener(new OnSwipeTouchListener(master) {
+            layout.findViewById(R.id.scrollView).setOnTouchListener(new OnSwipeTouchListener(master) {
                 @Override
-                public void onSwipeLeft() {
-                    next.onClick(nextBtn);
+                public void onRightToLeftSwipe() {
+                    Log.d("Callisto", "Right->Left");
+                    previous.onClick(previousBtn);
                 }
 
                 @Override
-                public void onSwipeRight() {
-                    previous.onClick(previousBtn);
+                public void onLeftToRightSwipe() {
+                    Log.d("Callisto", "Left->Right");
+                    next.onClick(nextBtn);
                 }
             });
 
@@ -91,6 +91,7 @@ public class EpisodeFragment extends CallistoFragment {
                     .addItem(null, R.drawable.ic_action_more, more,
                             AbbrevLinearLayout.STATE.COLLAPSED);
 
+            setEpisodes(episode.episode_id);
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
@@ -137,7 +138,6 @@ public class EpisodeFragment extends CallistoFragment {
                 return;
             }
             setEpisodes(previousEpisode.episode_id);
-            setEpisodeViewData();
         }
     };
 
@@ -149,7 +149,6 @@ public class EpisodeFragment extends CallistoFragment {
                 return;
             }
             setEpisodes(nextEpisode.episode_id);
-            setEpisodeViewData();
         }
     };
 
@@ -159,22 +158,21 @@ public class EpisodeFragment extends CallistoFragment {
         nextEpisode = catalogFragment.dbMate.getNextEpisode(episode);
 
 
-        try {
+        if(layout!=null) {
             layout.findViewById(R.id.previous).setVisibility(previousEpisode==null ? View.GONE : View.VISIBLE);
             layout.findViewById(R.id.next).setVisibility(nextEpisode==null ? View.GONE : View.VISIBLE);
-        }catch(NullPointerException npe) {}
-    }
 
-    void setEpisodeViewData() {
-        ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
-        ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
 
-        SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
-        if(episode.Image!=null) {
-            WebImage wm = new WebImage(episode.Image);
-            imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
-        } else {
-            imageView.setVisibility(View.GONE);
+            ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
+            ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
+
+            SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
+            if(episode.Image!=null) {
+                WebImage wm = new WebImage(episode.Image);
+                imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
+            } else {
+                imageView.setVisibility(View.GONE);
+            }
         }
 
         master.getSupportActionBar().setTitle(episode.Title);
