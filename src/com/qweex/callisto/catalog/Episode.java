@@ -1,26 +1,42 @@
 package com.qweex.callisto.catalog;
 
 import android.database.Cursor;
-import android.util.Log;
-
 import java.text.ParseException;
 import java.util.Calendar;
 
+/**
+ * A data structure to hold all info for an episode.
+ *
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 class Episode
 {
+    /** Episode info **/
     public String Title = null, Desc = null, Link = null, Image = null, AudioLink = null, VideoLink = null;
     public long AudioSize = -1, VideoSize = -1;
     public Calendar Date;
     String show;
-    public long episode_id;
-
     public long Position, Length;
     public boolean New;
 
+    /** Metadata **/
+    public long episode_id;
+
+    /**
+     * Constructor for when you are constructing an episode.
+     *
+     * @param show The show that the episode will belong to.
+     */
     public Episode(String show) {
         this.show = show;
     }
 
+    /**
+     * Creates an Episode object from a cursor from the database.
+     *
+     * @param c Cursor from the database that contains the episode to create.
+     * @throws RuntimeException If the cursor is empty or the Date fails to parse.
+     */
     public Episode(Cursor c) {
         if(c.getCount()==0)
             throw new RuntimeException();
@@ -51,6 +67,10 @@ class Episode
         New = c.getInt(c.getColumnIndex("new"))>1;
     }
 
+    /**
+     * Asserts that the episode is "complete", i.e. that it contains the minimal amount of info.
+     * @throws UnfinishedParseException
+     */
     public void assertComplete() throws UnfinishedParseException {
         if(Title==null)
             throw new UnfinishedParseException("Title");
@@ -64,10 +84,5 @@ class Episode
             throw new UnfinishedParseException("AudioLink");
         if(AudioSize<0)
             throw new UnfinishedParseException("AudioSize");
-    }
-
-    @Override
-    public String toString() {
-        return Title + "|" + Desc + "|" + Date + "|" + Link + "|" + AudioLink + "|" + VideoLink + "|" + AudioSize + "|" + VideoSize;
     }
 }
