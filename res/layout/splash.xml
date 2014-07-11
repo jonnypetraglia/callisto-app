@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:background="@color/qweex_grey"
+              android:background="@color/logo_color2"
               android:orientation="vertical" >
 
     <FrameLayout
@@ -23,17 +23,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="10dp" android:paddingTop="10dp">
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
         <TextView
-                android:id="@+id/TextView01"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-5dp"
                 android:gravity="center"
                 android:paddingTop="5dp"
                 android:text="@string/powered_by"
-                android:textColor="@color/ltgray"
+                android:textColor="@color/text_pressed"
                 android:textSize="10sp" />
 
         <LinearLayout

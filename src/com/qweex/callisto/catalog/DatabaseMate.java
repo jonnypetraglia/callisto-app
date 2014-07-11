@@ -33,7 +33,7 @@ public class DatabaseMate
     private static final String TABLE_EPISODES = "episodes";
     public static final String SCHEMA_EPISODES = "CREATE TABLE " + TABLE_EPISODES + " " +
                     "(_id integer primary key autoincrement, " +
-                    "show_id TEXT, " +          //The show id for the episode
+                    "show TEXT, " +             //The show for the episode
                     "title TEXT, " +            //The title for a specific episode
                     "date TEXT, " +             //The date of the episode, stored in the form of (yyyyMMddHHmmss)
                     "description TEXT, " +      //The description for a specific episode
@@ -59,10 +59,10 @@ public class DatabaseMate
         if(marker>-1)
             title = title.substring(0, marker);
 
-        Log.i("Callisto", "Inserting episode: " + title + " (" + ep.show_id + ")");
+        Log.i("Callisto", "Inserting episode: " + title + " (" + ep.show + ")");
 
         ContentValues newEpisode = new ContentValues();
-        newEpisode.put("show_id", ep.show_id);
+        newEpisode.put("show", ep.show);
         newEpisode.put("new", 1);
         newEpisode.put("title", title);
         newEpisode.put("date", sdfRaw.format(ep.Date.getTime()));
@@ -87,11 +87,11 @@ public class DatabaseMate
         dbc.database.update(TABLE_EPISODES, values, "_id=?", new String[] { id + ""});
     }
 
-    public void markAllNew(String show_id, boolean is_new)
+    public void markAllNew(String show, boolean is_new)
     {
         ContentValues values = new ContentValues();
         values.put("new", (is_new?1:0));
-        dbc.database.update(TABLE_EPISODES, values, "show_id=?", new String[]{show_id});
+        dbc.database.update(TABLE_EPISODES, values, "show=?", new String[]{show});
     }
 
     public void updatePosition(long id, long position)
@@ -105,31 +105,38 @@ public class DatabaseMate
     {
         return dbc.database.query(TABLE_EPISODES ,                                      /* table */
                 new String[] {"_id", "title", "date", "new", "mp3link"},                /* columns */
-                "show_id=? " + (filter ? "and new='1'" : "") ,                          /* where */
+                "show=? " + (filter ? "and new='1'" : "") ,                             /* where */
                 new String[] {show},                                                    /* where args */
                 null,                                                                   /* groupBy */
                 null,                                                                   /* having */
                 "date DESC");                                                           /* orderBy */
     }
 
-    public void clearShow(String show_id)
+    public void clearShow(String show)
     {
-        dbc.database.delete(TABLE_EPISODES, "show_id=?", new String[] {show_id});
+        dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show});
     }
 
     public Episode getOneEpisode(long id)
     {
         Cursor e = dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                new String[] {"_id", "show", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
                 "_id=?", new String[] {id + ""}, null, null, null);
         return new Episode(e);
     }
 
     public Episode getPreviousEpisode(Episode ep)
     {
+        String date = sdfRaw.format(ep.Date.getTime());
+
         Cursor e = dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
-                "show_id=? and date<?", new String[] {ep.show_id, ep.Date.getTime().getTime() + ""}, null, null, "1");
+                new String[] {"_id", "show", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                "show=? and date<?",
+                new String[] {ep.show, date},
+                null,
+                null,
+                "date DESC",
+                "1");
         try {
             return new Episode(e);
         }catch(RuntimeException re) {
@@ -139,10 +146,16 @@ public class DatabaseMate
 
     public Episode getNextEpisode(Episode ep)
     {
+        String date = sdfRaw.format(ep.Date.getTime());
+
         Cursor e = dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "show_id", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
-                "show_id=? and date>?",
-                new String[] {ep.show_id, ep.Date.getTime().getTime() + ""}, null, null, "1");
+                new String[] {"_id", "show", "title", "date", "description", "length", "link", "imglink", "mp3link", "mp3size", "vidlink", "vidsize", "new", "position"},
+                "show=? and date>?",
+                new String[] {ep.show, date},
+                null,
+                null,
+                "date ASC",
+                "1");
         try {
             return new Episode(e);
         }catch(RuntimeException re) {
@@ -157,8 +170,8 @@ public class DatabaseMate
     public Cursor searchEpisodes(String searchTerm, String searchShow)
     {
         return dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "title", "show_id", "date"},
-                (searchShow!="" ? ("show_id=? and ") : "") + "(title like '%?%' or description like '%?%')", //where
+                new String[] {"_id", "title", "show", "date"},
+                (searchShow!="" ? ("show=? and ") : "") + "(title like '%?%' or description like '%?%')", //where
                 new String[] {searchShow, searchTerm, searchTerm},
                 null, null, null);
     }

@@ -22,7 +22,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public class DatabaseConnector
 {
-    private final int DATABASE_VERSION = 3;
+    private final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "Callisto.db";
 
     public SQLiteDatabase database;
@@ -77,8 +77,6 @@ public class DatabaseConnector
                     db.execSQL("DROP TABLE IF EXISTS stats");
                     db.execSQL("DROP TABLE IF EXISTS custom_feeds");
                     onCreate(db);
-                case 3:             // Add the imglink column
-                    db.execSQL("ALTER TABLE episodes ADD COLUMN imglink TEXT");
             }
         }
     }

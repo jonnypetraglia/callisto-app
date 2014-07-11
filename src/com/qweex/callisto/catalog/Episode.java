@@ -1,7 +1,9 @@
 package com.qweex.callisto.catalog;
 
 import android.database.Cursor;
+import android.util.Log;
 
+import java.text.ParseException;
 import java.util.Calendar;
 
 class Episode
@@ -9,14 +11,14 @@ class Episode
     public String Title = null, Desc = null, Link = null, Image = null, AudioLink = null, VideoLink = null;
     public long AudioSize = -1, VideoSize = -1;
     public Calendar Date;
-    String show_id;
+    String show;
     public long episode_id;
 
     public long Position, Length;
     public boolean New;
 
-    public Episode(String show_id) {
-        this.show_id = show_id;
+    public Episode(String show) {
+        this.show = show;
     }
 
     public Episode(Cursor c) {
@@ -25,10 +27,16 @@ class Episode
         c.moveToFirst();
         episode_id = c.getLong(c.getColumnIndex("_id"));
 
-        show_id = c.getString(c.getColumnIndex("show_id"));
+        show = c.getString(c.getColumnIndex("show"));
 
         Date = Calendar.getInstance();
-        Date.setTime(new java.util.Date(Long.parseLong(c.getString(c.getColumnIndex("date")))));
+        Log.d("Callisto!", c.getString(c.getColumnIndex("date")) + "!");
+        try {
+            Date.setTime(DatabaseMate.sdfRaw.parse(c.getString(c.getColumnIndex("date"))));
+        } catch(ParseException e) {
+            //Aw yiss bad practices
+            throw new RuntimeException();
+        }
 
         Title = c.getString(c.getColumnIndex("title"));
         Desc = c.getString(c.getColumnIndex("description"));

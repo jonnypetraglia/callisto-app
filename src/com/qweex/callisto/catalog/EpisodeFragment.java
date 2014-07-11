@@ -3,10 +3,12 @@ package com.qweex.callisto.catalog;
 
 import android.app.ActionBar;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.loopj.android.image.SmartImageView;
@@ -23,7 +25,18 @@ public class EpisodeFragment extends CallistoFragment {
 
     RelativeLayout layout;
     AbbrevLinearLayout buttonsLocal;
-    Episode episode;
+    Episode episode, previousEpisode, nextEpisode;
+    CatalogFragment catalogFragment;
+
+    LinearLayout scroll;
+
+    View previousBtn, nextBtn;
+
+    public EpisodeFragment(MasterActivity master, CatalogFragment catalogFragment, Long _id) {
+        super(master);
+        this.catalogFragment = catalogFragment;
+        setEpisodes(_id);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,8 +45,9 @@ public class EpisodeFragment extends CallistoFragment {
         if(layout==null) {
             layout = (RelativeLayout) inflater.inflate(R.layout.episode, null);
 
+            Log.d("Callisto", episode.Date.getTime() + "!");
             ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
-            ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
+            ((TextView)layout.findViewById(R.id.desc)).setText(Html.fromHtml(episode.Desc));
 
             SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
             if(episode.Image!=null) {
@@ -44,6 +58,24 @@ public class EpisodeFragment extends CallistoFragment {
                 imageView.setVisibility(View.GONE);
             }
 
+            previousBtn = layout.findViewById(R.id.previous);
+            nextBtn = layout.findViewById(R.id.next);
+            previousBtn.setOnClickListener(previous);
+            nextBtn.setOnClickListener(next);
+
+            scroll = (LinearLayout) layout.findViewById(R.id.scrollContent);
+
+            layout.setOnTouchListener(new OnSwipeTouchListener(master) {
+                @Override
+                public void onSwipeLeft() {
+                    next.onClick(nextBtn);
+                }
+
+                @Override
+                public void onSwipeRight() {
+                    previous.onClick(previousBtn);
+                }
+            });
 
             buttonsLocal = ((AbbrevLinearLayout) layout.findViewById(R.id.buttons_local))
                     .setData(R.layout.episode_button,
@@ -66,16 +98,10 @@ public class EpisodeFragment extends CallistoFragment {
         return layout;
     }
 
-    public EpisodeFragment(MasterActivity master, Episode episode) {
-        super(master);
-        this.episode = episode;
-    }
-
     @Override
     public void show() {
         master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        master.getSupportActionBar().setTitle(episode.Title);
-        master.getSupportActionBar().setSubtitle(episode.show_id);
+        master.getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
@@ -88,6 +114,8 @@ public class EpisodeFragment extends CallistoFragment {
     View.OnClickListener more = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            ((ViewGroup)buttonsLocal.getParent()).removeView(buttonsLocal);
+            scroll.addView(buttonsLocal);
             buttonsLocal.expand();
         }
     };
@@ -100,4 +128,56 @@ public class EpisodeFragment extends CallistoFragment {
 
 
     ;
+
+    View.OnClickListener previous = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(previousEpisode==null) {
+                Log.w("Callisto", "Attempting to get next episode when there is none. WTF?!");
+                return;
+            }
+            setEpisodes(previousEpisode.episode_id);
+            setEpisodeViewData();
+        }
+    };
+
+    View.OnClickListener next = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(nextEpisode==null) {
+                Log.w("Callisto", "Attempting to get next episode when there is none. WTF?!");
+                return;
+            }
+            setEpisodes(nextEpisode.episode_id);
+            setEpisodeViewData();
+        }
+    };
+
+    void setEpisodes(Long _id) {
+        episode = catalogFragment.dbMate.getOneEpisode(_id);
+        previousEpisode = catalogFragment.dbMate.getPreviousEpisode(episode);
+        nextEpisode = catalogFragment.dbMate.getNextEpisode(episode);
+
+
+        try {
+            layout.findViewById(R.id.previous).setVisibility(previousEpisode==null ? View.GONE : View.VISIBLE);
+            layout.findViewById(R.id.next).setVisibility(nextEpisode==null ? View.GONE : View.VISIBLE);
+        }catch(NullPointerException npe) {}
+    }
+
+    void setEpisodeViewData() {
+        ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
+        ((TextView)layout.findViewById(R.id.desc)).setText(episode.Desc);
+
+        SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
+        if(episode.Image!=null) {
+            WebImage wm = new WebImage(episode.Image);
+            imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
+        } else {
+            imageView.setVisibility(View.GONE);
+        }
+
+        master.getSupportActionBar().setTitle(episode.Title);
+        master.getSupportActionBar().setSubtitle(episode.show);
+    }
 }

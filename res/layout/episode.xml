@@ -4,38 +4,47 @@
     android:layout_height="fill_parent"
     android:background="@android:color/white" >
 
-    <com.loopj.android.image.SmartImageView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/image"
-            android:src="@drawable/callisto"
-            android:background="#333333"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="true"/>
-
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date"
-            android:id="@+id/date"
-            android:textSize="24sp"
-            android:layout_below="@+id/image"
-            android:textColor="@color/text_muted"/>
-
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
             android:clickable="true"
-            android:layout_below="@+id/date">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Description"
-                android:textSize="18sp"
-                android:id="@+id/desc"
-                android:textColor="@color/text_main"
-                android:textIsSelectable="true"/>
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/buttons_local">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/scrollContent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <com.loopj.android.image.SmartImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="200dp"
+                    android:id="@+id/image"
+                    android:src="@drawable/callisto"
+                    android:background="#333333"
+                    android:layout_alignParentStart="false"
+                    android:layout_alignParentTop="true"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date"
+                    android:id="@+id/date"
+                    android:textSize="24sp"
+                    android:layout_below="@+id/image"
+                    android:textColor="@color/text_muted"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    android:textSize="18sp"
+                    android:id="@+id/desc"
+                    android:textColor="@color/text_main"
+                    android:paddingBottom="10dp"
+                    android:textIsSelectable="true"/>
+        </LinearLayout>
     </ScrollView>
 
     <com.qweex.callisto.catalog.AbbrevLinearLayout
@@ -46,4 +55,23 @@
             android:background="@color/logo_color1"
             android:id="@+id/buttons_local">
     </com.qweex.callisto.catalog.AbbrevLinearLayout>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_goleft"
+            android:id="@+id/next"
+            android:background="#88333333"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_goright"
+            android:id="@+id/previous"
+            android:background="#88333333"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+
 </RelativeLayout>
