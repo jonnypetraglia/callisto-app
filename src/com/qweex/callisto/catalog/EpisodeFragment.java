@@ -91,7 +91,7 @@ public class EpisodeFragment extends CallistoFragment {
 
             buttonsLocal = ((AbbrevLinearLayout) layout.findViewById(R.id.buttons_local))
                     .setData(R.layout.episode_button,
-                             R.drawable.nav,
+                             R.drawable.sel_text,
                              AbbrevLinearLayout.STATE.COLLAPSED)
                     .addItem(R.string.download,         R.drawable.ic_action_download,          clickDownload)
                     .addItem(R.string.stream, R.drawable.ic_action_signal, clickStream)

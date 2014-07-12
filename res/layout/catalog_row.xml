@@ -9,7 +9,7 @@
             android:layout_height="1dp"
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progressDrawable="@drawable/progress_bg"
+            android:progressDrawable="@drawable/progress_catalog_bg"
             android:progress="0"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
@@ -17,7 +17,7 @@
             android:layout_alignBottom="@+id/row"
             android:layout_alignLeft="@+id/row"
             android:layout_alignRight="@+id/row"
-            android:background="@drawable/progress_bg"
+            android:background="@drawable/progress_catalog_bg"
             />
 
 
@@ -25,7 +25,7 @@
             android:id="@+id/row"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@drawable/catalog_row"
+            android:background="@drawable/sel_logo1"
             android:cacheColorHint="@android:color/transparent"
             android:orientation="horizontal" >
 

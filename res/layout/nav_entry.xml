@@ -4,6 +4,6 @@
           style="@style/nav_entry"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:background="@drawable/nav"
+          android:background="@drawable/sel_text"
           android:padding="10dp"
           android:id="@android:id/text1"/>

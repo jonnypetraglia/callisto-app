@@ -172,7 +172,7 @@ public class MasterActivity extends ActionBarActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             CallistoFragment frag = null;
-            switch (position+1) {
+            switch (position) {
                 case 1: //Catalog
                     frag = catalogFragment;
                     break;

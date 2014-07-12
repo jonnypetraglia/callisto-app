@@ -2,7 +2,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent" android:background="@color/logo_color1">
+              android:layout_height="match_parent"
+              android:background="@color/logo_color1" >
 
     <ImageView
             android:layout_width="fill_parent"
@@ -29,7 +30,7 @@
             android:id="@+id/show"
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/seek"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,63 +49,94 @@
             android:layout_margin="5dp"/>
     <ProgressBar
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="5dp"
             android:id="@+id/seek"
             android:indeterminate="false"
             style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/playback_progress"
             android:layout_toRightOf="@+id/position"
-            android:layout_above="@+id/playPause"
             android:layout_toLeftOf="@+id/length"
-            android:layout_margin="5dp"/>
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/back"
-            android:contentDescription="@string/back"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_action_playback_rew"
-            android:layout_alignParentLeft="false"
-            android:padding="10dp"
-            android:layout_toLeftOf="@+id/playPause"/>
+            android:progress="50"
+            android:layout_alignTop="@+id/position"
+            android:layout_marginTop="5dp"/>
+
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/playPause"
-            android:contentDescription="@string/play_pause"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_action_playback_play"
-            android:padding="10dp"
-            android:layout_toLeftOf="@+id/forward"/>
-
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/forward"
-            android:contentDescription="@string/forward"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_action_playback_forw"
-            android:padding="10dp"
-            android:layout_centerHorizontal="true"/>
-
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/next"
-            android:contentDescription="@string/next"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_action_playback_next"
-            android:layout_toRightOf="@+id/forward"
-            android:padding="10dp"/>
-
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="64dp"
             android:id="@+id/queue"
             android:contentDescription="@string/queue"
             android:layout_alignParentBottom="true"
             android:src="@drawable/ic_action_list"
-            android:layout_toRightOf="@+id/next"
-            android:padding="10dp"/>
+            android:background="@drawable/sel_logo1_dark"
+            android:clickable="true"
+            android:layout_margin="5dp"
+            android:layout_alignParentLeft="true" />
+
+    <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/playPause"
+            android:layout_toRightOf="@+id/queue">
+
+        <ImageView
+                android:layout_width="48dp"
+                android:layout_height="64dp"
+                android:id="@+id/back"
+                android:contentDescription="@string/back"
+                android:src="@drawable/ic_action_playback_rew"
+                android:background="@drawable/sel_logo1_dark"
+                android:clickable="true"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal" />
+
+    </FrameLayout>
+
+    <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:id="@+id/playPause"
+            android:contentDescription="@string/play_pause"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_action_playback_play"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/sel_logo1_dark"
+            android:clickable="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp" />
+
+    <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/playPause"
+            android:layout_toLeftOf="@+id/next">
+
+        <ImageView
+                android:layout_width="48dp"
+                android:layout_height="64dp"
+                android:id="@+id/forward"
+                android:contentDescription="@string/forward"
+                android:src="@drawable/ic_action_playback_forw"
+                android:background="@drawable/sel_logo1_dark"
+                android:clickable="true"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal" />
+
+    </FrameLayout>
+
+    <ImageView
+            android:layout_width="48dp"
+            android:layout_height="64dp"
+            android:id="@+id/next"
+            android:contentDescription="@string/next"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_action_playback_next"
+            android:background="@drawable/sel_logo1_dark"
+            android:clickable="true"
+            android:layout_margin="5dp"
+            android:layout_alignParentRight="true" />
 
 </RelativeLayout>

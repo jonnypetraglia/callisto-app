@@ -46,6 +46,8 @@ public class PlaybackFragment extends CallistoFragment {
     {
         if(layout==null) {
             layout = (RelativeLayout) inflater.inflate(R.layout.playback, null);
+        } else {
+            ((ViewGroup)layout.getParent()).removeView(layout);
         }
         return layout;
     }

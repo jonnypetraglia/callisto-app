@@ -254,10 +254,15 @@ public class RssUpdater extends AsyncTask<Void, Object, Void>
         items = null;
     }
 
+
     @Override
     protected void onProgressUpdate(Object... data) {
-        items.remove(data[0]);
-        callback.call((ShowInfo)data[0], (LinkedList<Episode>) data[1], (String)data[2]);
+        ShowInfo showInfo = (ShowInfo) data[0];
+        LinkedList<Episode> episodes = (LinkedList<Episode>) data[1];
+        String error = (String) data[2];
+
+        items.remove(showInfo);
+        callback.call(showInfo, episodes, error);
     }
 
     public void executePlz(ShowInfo... params) throws ExecutionException, InterruptedException {
