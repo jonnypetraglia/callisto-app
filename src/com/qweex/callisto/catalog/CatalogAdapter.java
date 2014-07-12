@@ -48,7 +48,7 @@ public class CatalogAdapter extends SimpleCursorAdapter
      * @param pos Position of the item in question of the collection.
      * @param inView View passed in that might be recycled.
      * @param parent ViewGroup that should be used as parent for inView.
-     * @return
+     * @return The View with all data in it.
      */
     public View getView(int pos, View inView, ViewGroup parent)
     {
