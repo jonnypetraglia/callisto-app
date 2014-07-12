@@ -1,6 +1,9 @@
 package com.qweex.callisto;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -12,7 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.contact.ContactFragment;
@@ -26,6 +28,8 @@ import java.util.List;
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
 public class MasterActivity extends ActionBarActivity {
+
+    String TAG = "Callisto:MainActivity";
 
     /** ActionBar/Drawer variables. */
     public DrawerLayout drawerLayout;
@@ -58,11 +62,18 @@ public class MasterActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        String[] navbarEntries = getResources().getStringArray(R.array.navigation_drawer_items_array);
+        String[] navbarTexts = getResources().getStringArray(R.array.navigation_drawer_items_array);
+        TypedArray iconStrings = getResources().obtainTypedArray(R.array.navigation_drawer_icons_array);
+        Drawable[] navbarIcons = new Drawable[iconStrings.length()];
+        Resources resources = getResources();
+        for(int i=0; i<iconStrings.length(); ++i)
+            navbarIcons[i] = resources.getDrawable(iconStrings.getResourceId(i, -1));
+
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
 
-        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_entry, navbarEntries));
+        drawerList.setAdapter(new NavigationAdapter(this, R.layout.nav_entry, navbarTexts, navbarIcons));
         drawerList.setOnItemClickListener(navClickListener);
 
 
@@ -86,6 +97,7 @@ public class MasterActivity extends ActionBarActivity {
         //settingsFragment = new SettingsFragment(this);
 
         checkForUpdates();
+        checkForCrashes();
     }
 
     /** Inherited. [ASK_SOMEONE_SMARTER]
