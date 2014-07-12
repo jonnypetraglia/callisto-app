@@ -35,6 +35,8 @@ public class EpisodeFragment extends CallistoFragment {
     Episode episode, previousEpisode, nextEpisode;
     /** Reference to the parent catalogFragment. */
     CatalogFragment catalogFragment;
+    /** Smart imageview that caches and whatnot. */
+    SmartImageView imageView;
 
     /** ScrollView Content used to append buttonsLocal & buttonsNoLocal when they are expanded. */
     LinearLayout scroll;
@@ -66,14 +68,7 @@ public class EpisodeFragment extends CallistoFragment {
         if(layout==null) {
             layout = (RelativeLayout) inflater.inflate(R.layout.episode, null);
 
-            SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
-            if(episode.Image!=null && !"".equals(episode.Image)) {
-                Log.i(TAG, "Image is " + episode.Image);
-                WebImage wm = new WebImage(episode.Image);
-                imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
-            } else {
-                imageView.setVisibility(View.GONE);
-            }
+            imageView = ((SmartImageView)layout.findViewById(R.id.image));
 
             previousBtn = layout.findViewById(R.id.previous);
             nextBtn = layout.findViewById(R.id.next);
@@ -191,8 +186,8 @@ public class EpisodeFragment extends CallistoFragment {
             ((TextView)layout.findViewById(R.id.date)).setText(sdf.format(episode.Date.getTime()));
             ((TextView)layout.findViewById(R.id.desc)).setText(android.text.Html.fromHtml(episode.Desc).toString());
 
-            SmartImageView imageView = ((SmartImageView)layout.findViewById(R.id.image));
-            if(episode.Image!=null) {
+            if(episode.Image!=null && !"".equals(episode.Image)) {
+                imageView.setVisibility(View.VISIBLE);
                 WebImage wm = new WebImage(episode.Image);
                 imageView.setImage(wm, android.R.drawable.ic_menu_close_clear_cancel);
             } else {
