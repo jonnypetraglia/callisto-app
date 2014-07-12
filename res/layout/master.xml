@@ -20,14 +20,29 @@
 
     </FrameLayout>
 
-    <ListView
-            android:id="@+id/left_drawer"
-            android:layout_width="160dp"
+    <RelativeLayout
+            android:id="@+id/relative_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="#111"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp" />
+            android:layout_gravity="start" >
+
+        <ListView
+                android:id="@+id/left_drawer"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="@color/drawer_bg"
+                android:choiceMode="singleChoice"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp" />
+
+        <LinearLayout
+                android:id="@+id/drawer_footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true" >
+        </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

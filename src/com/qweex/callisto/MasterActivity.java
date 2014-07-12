@@ -36,7 +36,7 @@ public class MasterActivity extends ActionBarActivity {
     public ActionBarDrawerToggle drawerToggle;
     private TextView navSelected;
 
-    private TextView playbackDrawerItem;
+    private TextView toggleControlsDrawerItem, playbackDrawerItem, settingsDrawerItem;
 
     /** Fragments of the various types. Only 1 exists at a time. */
     private PlaybackFragment playbackFragment;
@@ -63,39 +63,40 @@ public class MasterActivity extends ActionBarActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.master);
-
-        String[] navbarTexts = getResources().getStringArray(R.array.navigation_drawer_items_array);
-        TypedArray iconStrings = getResources().obtainTypedArray(R.array.navigation_drawer_icons_array);
-        Drawable[] navbarIcons = new Drawable[iconStrings.length()];
         Resources resources = getResources();
-        for(int i=0; i<iconStrings.length(); ++i)
-            navbarIcons[i] = resources.getDrawable(iconStrings.getResourceId(i, -1));
+        SplashFragment splashFragment = (SplashFragment) getCurrentFragment();
 
+        // Load the Navigation Drawer
+        String[] navbarTexts = getResources().getStringArray(R.array.navigation_drawer_items);
+        TypedArray navbariconStrings = getResources().obtainTypedArray(R.array.navigation_drawer_icons);
+        Drawable[] navbarIcons = new Drawable[navbariconStrings.length()];
+        for(int i=0; i<navbariconStrings.length(); ++i)
+            navbarIcons[i] = resources.getDrawable(navbariconStrings.getResourceId(i, -1));
 
+        // Create the drawer stuffs
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
         drawerList.setAdapter(new NavigationAdapter(this, R.layout.nav_entry, navbarTexts, navbarIcons));
         drawerList.setOnItemClickListener(navClickListener);
-
-        playbackDrawerItem = (TextView) getLayoutInflater().inflate(R.layout.nav_entry, null);
-        playbackDrawerItem.setText(R.string.playback);
-        playbackDrawerItem.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_action_headphones), null, null, null);
-        playbackDrawerItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pushFragment(playbackFragment, false);
-            }
-        });
-
-        FrameLayout playbackDrawerItemContainer = new FrameLayout(this);
-        playbackDrawerItemContainer.addView(playbackDrawerItem);
-        drawerList.addHeaderView(playbackDrawerItemContainer);
-
-
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name, R.string.update);
         drawerLayout.setDrawerListener(drawerToggle);
 
+        // Create the footer stuff...manually
+        toggleControlsDrawerItem = createExtraDrawerItem(R.string.app_name, R.drawable.ic_action_halt);
+        settingsDrawerItem = createExtraDrawerItem(R.string.settings, R.drawable.ic_action_gear);
+        toggleControlsDrawerItem.setVisibility(View.GONE);
+        LinearLayout drawerListCont = (LinearLayout) findViewById(R.id.drawer_footer);
+        drawerListCont.addView(toggleControlsDrawerItem);
+        drawerListCont.addView(settingsDrawerItem);
 
+
+        // Create the Playback header
+        playbackDrawerItem = createExtraDrawerItem(R.string.playback, R.drawable.ic_action_headphones);
+        drawerList.addHeaderView(wrapViewInFrame(playbackDrawerItem));
+
+
+
+        // Action bar stuffs
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -103,6 +104,7 @@ public class MasterActivity extends ActionBarActivity {
 
         databaseConnector = new DatabaseConnector(this);
 
+        // Create each of the fragments
         playbackFragment = new PlaybackFragment(this);
         catalogFragment = new CatalogFragment(this);
         //liveFragment = new LiveFragment(databaseConnector);
@@ -112,6 +114,7 @@ public class MasterActivity extends ActionBarActivity {
         //donateFragment = new DonateFragment(databaseConnector);
         //settingsFragment = new SettingsFragment(this);
 
+        // HockeyApp
         checkForUpdates();
         checkForCrashes();
     }
@@ -229,5 +232,28 @@ public class MasterActivity extends ActionBarActivity {
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /** Inflates a drawer item manually for things like header & footer items.
+     * @param text String resource to display for the text.
+     * @param drawable Drawable resource to display for the icon.
+     * @return The TextView.
+     */
+    TextView createExtraDrawerItem(int text, int drawable) {
+        TextView tv = (TextView) getLayoutInflater().inflate(R.layout.nav_entry, null);
+        tv.setText(text);
+        tv.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(drawable), null, null, null);
+        tv.setClickable(true);
+        return tv;
+    }
+
+    /** Utility function to wrap a view in a FrameLayout. Cause I'm a lazy bastard.
+     * @param view The view to wrap.
+     * @return The Frame Layout.
+     */
+    FrameLayout wrapViewInFrame(View view) {
+        FrameLayout frame = new FrameLayout(this);
+        frame.addView(view);
+        return frame;
     }
 }

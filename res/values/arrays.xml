@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="navigation_drawer_items_array">
+    <string-array name="navigation_drawer_items">
         <item>@string/catalog</item>
         <item>@string/live</item>
         <item>@string/chat</item>
         <item>@string/schedule</item>
         <item>@string/contact</item>
         <item>@string/donate</item>
-        <item>@string/settings</item>
-        <item>@string/about</item>
     </string-array>
-    <string-array name="navigation_drawer_icons_array">
+    <string-array name="navigation_drawer_icons">
         <item>@drawable/ic_action_list_2</item>
         <item>@drawable/ic_action_signal</item>
         <item>@drawable/ic_action_dialog</item>
         <item>@drawable/ic_action_calendar_month</item>
         <item>@drawable/ic_action_mail</item>
         <item>@drawable/ic_action_heart</item>
-        <item>@drawable/ic_action_gear</item>
-        <item>@drawable/ic_action_info</item>
     </string-array>
 </resources>

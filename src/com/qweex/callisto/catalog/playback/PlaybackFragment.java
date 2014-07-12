@@ -54,6 +54,7 @@ public class PlaybackFragment extends CallistoFragment {
 
     @Override
     public void show() {
+        master.getSupportActionBar().setTitle(R.string.playback);
     }
 
     @Override

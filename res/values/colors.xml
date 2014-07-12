@@ -3,6 +3,7 @@
     <color name="ltgray">#ffcccccc</color>
     <color name="nav_top">#703070</color>
     <color name="nav_bottom">#703070</color>
+    <color name="drawer_bg">#111111</color>
 
     <color name="logo_color1">#194c76</color>
     <color name="logo_color2">#706f6f</color>

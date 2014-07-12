@@ -10,12 +10,22 @@ import android.view.ViewGroup;
 /** This fragment is a splash fragment. It exists because I don't know what to show when the app starts up.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
-public class SplashFragment extends Fragment
+public class SplashFragment extends CallistoFragment
 {
+    public SplashFragment() {
+        super(null);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.splash, container, false);
     }
+
+    @Override
+    public void show() {}
+
+    @Override
+    public void hide() {}
 }
