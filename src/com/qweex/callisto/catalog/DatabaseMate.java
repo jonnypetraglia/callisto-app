@@ -7,6 +7,8 @@ import com.qweex.callisto.DatabaseConnector;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** A specialized class to help with the database.
  *
@@ -52,10 +54,19 @@ public class DatabaseMate
      */
     public void insertEpisode(Episode ep)
     {
+        // Tweak the title
         String title = ep.Title;
         int marker = title.lastIndexOf('|');
-        if(marker>-1)
+        while(marker>-1) {
             title = title.substring(0, marker);
+            marker = title.lastIndexOf('|');
+        }
+        Pattern p = Pattern.compile("^" + ep.show + " .+[-:] (.*)");
+        Matcher m = p.matcher(title);
+        if(m.matches())
+            title = m.group(1);
+
+        Log.d(TAG, "After: '" + title + "'");
 
         Log.i(TAG, "Inserting episode: " + title + " (" + ep.show + ")");
 
