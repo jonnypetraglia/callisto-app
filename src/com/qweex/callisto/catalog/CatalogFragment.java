@@ -254,10 +254,7 @@ public class CatalogFragment extends CallistoFragment {
 
             EpisodeFragment frag = new EpisodeFragment(master, CatalogFragment.this, _id);
 
-            FragmentTransaction transaction = master.getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment, frag);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            master.pushFragment(frag, true);
         }
     };
 

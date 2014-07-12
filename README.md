@@ -9,7 +9,7 @@ Version 1 of Callisto was my very first Android app. As a result, much of it was
 
 Here are the main differences planned for v2:
 
- * _More modern_. v1 was aimed at all versions of Android and was thus limited in many ways. v2 is (currently) aimed at running on 2.3+, which still covers the majority of the market but will allow much easier and cleaner implementations of many features.
+ * _More modern_. v1 was aimed at all versions of Android and was thus limited in many ways. v2 is (currently) aimed at running on 2.3+, which still covers the majority of the market but will allow much easier and cleaner implementations of many features. It also means aiming for a better featureset over a smaller disk footprint.
  * _More organized_. Since v1 was kind of put together as I went, the code was rather muddled. It lacked organization and clarity and I myself frequently got lost trying to remember what did what.
  * _Cleaner UI_. In addition to adhering to the modern Android UX practices, v2 will remove a lot of buggy interfaces that simply did not work in v1.
  * _Less deprecated_. My goal this time is to have _zero_ warnings when compiling the project.

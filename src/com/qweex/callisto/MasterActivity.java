@@ -1,10 +1,8 @@
 package com.qweex.callisto;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -17,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
+import com.qweex.callisto.catalog.playback.PlaybackFragment;
 import com.qweex.callisto.contact.ContactFragment;
 
 import net.hockeyapp.android.CrashManager;
@@ -37,7 +36,10 @@ public class MasterActivity extends ActionBarActivity {
     public ActionBarDrawerToggle drawerToggle;
     private TextView navSelected;
 
+    private TextView playbackDrawerItem;
+
     /** Fragments of the various types. Only 1 exists at a time. */
+    private PlaybackFragment playbackFragment;
     private CatalogFragment catalogFragment;
     //private LiveFragment liveFragment;
     //private ChatFragment chatFragment;
@@ -60,7 +62,7 @@ public class MasterActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.master);
 
         String[] navbarTexts = getResources().getStringArray(R.array.navigation_drawer_items_array);
         TypedArray iconStrings = getResources().obtainTypedArray(R.array.navigation_drawer_icons_array);
@@ -72,9 +74,22 @@ public class MasterActivity extends ActionBarActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
-
         drawerList.setAdapter(new NavigationAdapter(this, R.layout.nav_entry, navbarTexts, navbarIcons));
         drawerList.setOnItemClickListener(navClickListener);
+
+        playbackDrawerItem = (TextView) getLayoutInflater().inflate(R.layout.nav_entry, null);
+        playbackDrawerItem.setText(R.string.playback);
+        playbackDrawerItem.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_action_headphones), null, null, null);
+        playbackDrawerItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pushFragment(playbackFragment, false);
+            }
+        });
+
+        FrameLayout playbackDrawerItemContainer = new FrameLayout(this);
+        playbackDrawerItemContainer.addView(playbackDrawerItem);
+        drawerList.addHeaderView(playbackDrawerItemContainer);
 
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name, R.string.update);
@@ -88,6 +103,7 @@ public class MasterActivity extends ActionBarActivity {
 
         databaseConnector = new DatabaseConnector(this);
 
+        playbackFragment = new PlaybackFragment(this);
         catalogFragment = new CatalogFragment(this);
         //liveFragment = new LiveFragment(databaseConnector);
         //chatFragment = new ChatFragment(databaseConnector);
@@ -192,21 +208,26 @@ public class MasterActivity extends ActionBarActivity {
             navSelected = (TextView) view;
             navSelected.setSelected(true);
 
-
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment, frag);
-            transaction.commit();
-
-            if(activeFragment!=null)
-                activeFragment.hide();
-            activeFragment = frag;
-            try {
-                activeFragment.show();
-            } catch(NullPointerException npe) {
-                Log.w("Callisto", "Encountered null while trying to perform show()");
-            }
-
-            drawerLayout.closeDrawer(GravityCompat.START);
+            pushFragment(frag, false);
         }
     };
+
+    public void pushFragment(CallistoFragment fragment, boolean addToBackstack) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment, fragment);
+        if(addToBackstack)
+            transaction.addToBackStack(null);
+        transaction.commit();
+
+        if(activeFragment!=null)
+            activeFragment.hide();
+        activeFragment = fragment;
+        try {
+            activeFragment.show();
+        } catch(NullPointerException npe) {
+            Log.w("Callisto", "Encountered null while trying to perform show()");
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+    }
 }

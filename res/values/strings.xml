@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Callisto</string>
 
+    <string name="playback">Playback</string>
     <string name="catalog">Catalog</string>
     <string name="live">Live</string>
     <string name="chat">Chat</string>
@@ -33,4 +34,10 @@
     <string name="unmark">Unmark</string>
 
     <string name="reloading">Reloading</string>
+
+    <string name="back">Back</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="forward">Forward</string>
+    <string name="next">Next</string>
+    <string name="queue">Queue</string>
 </resources>
