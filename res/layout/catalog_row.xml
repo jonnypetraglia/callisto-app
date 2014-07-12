@@ -35,9 +35,9 @@
                 android:layout_height="fill_parent"
                 android:background="@color/qweex"/>
 
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical" >
 
             <TextView
@@ -45,17 +45,19 @@
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
                     android:padding="5dp"
-                    android:textColor="@color/catalog_row_text"
-                    android:id="@+id/title" />
+                    android:textColor="@color/text_main"
+                    android:id="@+id/title" android:layout_alignParentLeft="true" android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/date" android:minLines="2" android:maxLines="2"/>
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:padding="5dp"
-                    android:id="@+id/date" />
+                    android:id="@+id/date" android:layout_alignParentRight="true"
+                    android:textColor="@color/text_muted"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
