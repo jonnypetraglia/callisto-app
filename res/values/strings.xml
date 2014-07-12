@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Callisto</string>
 
+    <!-- Navigation -->
     <string name="playback">Playback</string>
     <string name="catalog">Catalog</string>
     <string name="live">Live</string>
@@ -12,13 +13,18 @@
     <string name="settings">Settings</string>
     <string name="about">About</string>
 
+
+    <!-- Splash -->
     <string name="powered_by">Powered by</string>
 
+
+    <!-- Contact -->
     <string name="contact_form_error">Error Loading Form</string>
     <string name="contact_form_message">The page fetched does not seem to be the valid contact form. It might be your connection, or the end of the world</string>
 
-    <string name="no_episodes">No episodes to display</string>
 
+    <!-- Catalog -->
+    <string name="no_episodes">No episodes to display</string>
     <string name="update">Update</string>
     <string name="update_all">Update All</string>
     <string name="hide_watched">Hide Watched</string>
@@ -35,9 +41,30 @@
 
     <string name="reloading">Reloading</string>
 
+
+    <!-- Playback -->
     <string name="back">Back</string>
     <string name="play_pause">Play/Pause</string>
     <string name="forward">Forward</string>
     <string name="next">Next</string>
     <string name="queue">Queue</string>
+
+
+    <!-- Settings -->
+    <string name="qweex_donation">com.qweex.donation</string>
+    <string name="reset_colors_title">Confirm</string>
+    <string name="reset_colors_message">Are you sure you want to reset the IRC colors to their default values?</string>
+
+
+    <!-- Chat -->
+    <string name="nickname">Nickname</string>
+    <string name="username">Username</string>
+    <string name="real_name">Real Name</string>
+    <string name="connect">Connect</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="a_nickname_is_required">A nickname is required.</string>
+    <string name="remember_names">Remember Names</string>
+    <string name="remember_password">Remember Password</string>
+    <string name="nickserv_password">Nickserv Password</string>
 </resources>

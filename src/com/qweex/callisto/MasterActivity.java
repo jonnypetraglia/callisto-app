@@ -16,6 +16,9 @@ import android.view.View;
 import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.catalog.playback.PlaybackFragment;
+import com.qweex.callisto.chat.ChatFragment;
+import com.qweex.callisto.chat.IrcService;
+import com.qweex.callisto.chat.LoginFragment;
 import com.qweex.callisto.contact.ContactFragment;
 
 import net.hockeyapp.android.CrashManager;
@@ -42,14 +45,15 @@ public class MasterActivity extends ActionBarActivity {
     private PlaybackFragment playbackFragment;
     private CatalogFragment catalogFragment;
     //private LiveFragment liveFragment;
-    //private ChatFragment chatFragment;
+    public ChatFragment chatFragment;
+    private LoginFragment loginFragment;
     //private ScheduleFragment scheduleFragment;
     private ContactFragment contactFragment;
     //private DonateFragment donateFragment;
     //private SettingsFragment settingsFragment;
 
     /** Reference to the Active fragment. */
-    private CallistoFragment activeFragment;
+    private Fragment activeFragment;
 
     /** Database class. */
     public DatabaseConnector databaseConnector;
@@ -81,13 +85,24 @@ public class MasterActivity extends ActionBarActivity {
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.actionbar_drawer, R.string.app_name, R.string.update);
         drawerLayout.setDrawerListener(drawerToggle);
 
-        // Create the footer stuff...manually
-        toggleControlsDrawerItem = createExtraDrawerItem(R.string.app_name, R.drawable.ic_action_halt);
-        settingsDrawerItem = createExtraDrawerItem(R.string.settings, R.drawable.ic_action_gear);
-        toggleControlsDrawerItem.setVisibility(View.GONE);
         LinearLayout drawerListCont = (LinearLayout) findViewById(R.id.drawer_footer);
+
+
+        // Create the "Toggle Controls" footer view
+        toggleControlsDrawerItem = createExtraDrawerItem(R.string.app_name, R.drawable.ic_action_halt);
+        toggleControlsDrawerItem.setVisibility(View.GONE);
         drawerListCont.addView(toggleControlsDrawerItem);
+
+
+        // Create the settings footer view
+        settingsDrawerItem = createExtraDrawerItem(R.string.settings, R.drawable.ic_action_gear);
         drawerListCont.addView(settingsDrawerItem);
+        settingsDrawerItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navClickListener.onItemClick(null, settingsDrawerItem, 7, 0);
+            }
+        });
 
 
         // Create the Playback header
@@ -104,15 +119,17 @@ public class MasterActivity extends ActionBarActivity {
 
         databaseConnector = new DatabaseConnector(this);
 
+
         // Create each of the fragments
         playbackFragment = new PlaybackFragment(this);
         catalogFragment = new CatalogFragment(this);
         //liveFragment = new LiveFragment(databaseConnector);
-        //chatFragment = new ChatFragment(databaseConnector);
+        chatFragment = new ChatFragment(this);
+        loginFragment = new LoginFragment(this);
         //scheduleFragment = new ScheduleFragment(databaseConnector);
         contactFragment = new ContactFragment(this);
         //donateFragment = new DonateFragment(databaseConnector);
-        //settingsFragment = new SettingsFragment(this);
+        //settingsFragment = new SettingsFragment();
 
         // HockeyApp
         checkForUpdates();
@@ -174,7 +191,8 @@ public class MasterActivity extends ActionBarActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            CallistoFragment frag = null;
+            Fragment frag = null;
+            Log.d(TAG, "Position: " + position);
             switch (position) {
                 case 1: //Catalog
                     frag = catalogFragment;
@@ -183,7 +201,10 @@ public class MasterActivity extends ActionBarActivity {
                     //frag = liveFragment
                     break;
                 case 3: //Chat
-                    //frag = chatFragment;
+                    //if(loggedIn)
+                        frag = chatFragment;
+                    //else
+                        frag = loginFragment;
                     break;
                 case 4: //Schedule
                     //frag = scheduleFragment;
@@ -196,8 +217,6 @@ public class MasterActivity extends ActionBarActivity {
                     break;
                 case 7: //Settings
                     //frag = settingsFragment;
-                    break;
-                case 8: //About
                     break;
                 default:
                     //TODO: WTF
@@ -215,18 +234,21 @@ public class MasterActivity extends ActionBarActivity {
         }
     };
 
-    public void pushFragment(CallistoFragment fragment, boolean addToBackstack) {
+    public void pushFragment(Fragment fragment, boolean addToBackstack) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_fragment, fragment);
         if(addToBackstack)
             transaction.addToBackStack(null);
         transaction.commit();
 
-        if(activeFragment!=null)
-            activeFragment.hide();
-        activeFragment = fragment;
+
+        if(activeFragment!=null && activeFragment instanceof CallistoFragment)
+            ((CallistoFragment)activeFragment).hide();
+
         try {
-            activeFragment.show();
+            activeFragment = fragment;
+            if(activeFragment instanceof CallistoFragment)
+                ((CallistoFragment)activeFragment).show();
         } catch(NullPointerException npe) {
             Log.w("Callisto", "Encountered null while trying to perform show()");
         }

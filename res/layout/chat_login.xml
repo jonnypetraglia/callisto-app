@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:background="@android:color/white">
+
+    <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/nickname"
+            android:id="@+id/nick"
+            android:textColor="@color/text_main"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="100dp"/>
+
+    <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/username"
+            android:id="@+id/username"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/nick"
+            android:textColor="@color/text_muted"
+            android:visibility="gone"/>
+
+    <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/real_name"
+            android:id="@+id/real_name"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/username"
+            android:textColor="@color/text_muted"
+            android:visibility="gone"/>
+
+    <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/nickserv_password"
+            android:inputType="textPassword"
+            android:id="@+id/nickserv_password"
+            android:textColor="@color/text_muted"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/real_name"
+            android:visibility="gone"/>
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remember_names"
+            android:id="@+id/remember_names"
+            android:layout_below="@+id/nickserv_password"
+            android:textColor="@color/text_muted"
+            android:visibility="gone"
+            android:layout_alignLeft="@+id/nickserv_password"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remember_password"
+            android:id="@+id/remember_password"
+            android:layout_below="@+id/remember_names"
+            android:textColor="@color/text_muted"
+            android:visibility="gone"
+            android:layout_alignLeft="@+id/nickserv_password"/>
+
+    <View
+            android:id="@+id/line"
+            android:layout_width="250dp"
+            android:layout_height="2dp"
+            android:layout_below="@+id/remember_password"
+            android:background="#c0c0c0" android:layout_centerHorizontal="true" android:layout_margin="5dp"/>
+
+    <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced"
+            android:id="@+id/advanced"
+            android:layout_alignParentTop="false"
+            android:layout_marginBottom="60dp"
+            android:layout_alignParentBottom="false"
+            android:layout_alignLeft="@+id/nick"
+            android:layout_below="@+id/line"
+            />
+
+    <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/connect"
+            android:id="@+id/connect"
+            android:layout_below="@+id/line"
+            android:layout_alignRight="@+id/nick"
+            />
+
+</RelativeLayout>

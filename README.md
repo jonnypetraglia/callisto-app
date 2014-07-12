@@ -15,6 +15,8 @@ Here are the main differences planned for v2:
  * _Less deprecated_. My goal this time is to have _zero_ warnings when compiling the project.
  * _Less centralized_. I'm planning on introducing features in v2 to keep me from being a choking point for events such as JB releasing a new show.
  * _Less buggy_. I'm hoping that -as a result of everything above- the code will be much more pure and have far fewer bugs.
+ * _RFC'ed IRC_. My plan is to _eventually_ bring v2 to a fully spec'd IRC client rather than plugging in parts that I myself find useful. Mind you, this is a long term goal.
+ * _Cleaner, proper IRC_. Time for IRC to be a legit Android service. Time to clean it up so it's not a 2,000 line file. Time to possibly change IRC libraries, or fork one.
 
 
 ## Getting going ##
