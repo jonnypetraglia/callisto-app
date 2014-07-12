@@ -98,11 +98,11 @@ public class DatabaseMate
      * @param show The show.
      * @param is_new Whether or not the episodes are new.
      */
-    public void markAllNew(String show, boolean is_new)
+    public void markAllNew(ShowInfo show, boolean is_new)
     {
         ContentValues values = new ContentValues();
         values.put("new", (is_new?1:0));
-        dbc.database.update(TABLE_EPISODES, values, "show=?", new String[]{show});
+        dbc.database.update(TABLE_EPISODES, values, "show=?", new String[]{show.title});
     }
 
     /** Updates the position of an episode.
@@ -121,12 +121,12 @@ public class DatabaseMate
      * @param filter Whether or not to only get new episodes
      * @return A cursor containing the episodes.
      */
-    public Cursor getShow(String show, boolean filter)
+    public Cursor getShow(ShowInfo show, boolean filter)
     {
         return dbc.database.query(TABLE_EPISODES ,                                      /* table */
                 new String[] {"_id", "title", "date", "new", "mp3link"},                /* columns */
                 "show=? " + (filter ? "and new='1'" : "") ,                             /* where */
-                new String[] {show},                                                    /* where args */
+                new String[] {show.title},                                              /* where args */
                 null,                                                                   /* groupBy */
                 null,                                                                   /* having */
                 "date DESC");                                                           /* orderBy */
@@ -135,9 +135,14 @@ public class DatabaseMate
     /** Removes all episodes from a show. For debugging purposes, really.
      * @param show The show to clear.
      */
-    public void clearShow(String show)
+    public void clearShow(ShowInfo show)
     {
-        dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show});
+        dbc.database.delete(TABLE_EPISODES, "show=?", new String[] {show.title});
+    }
+
+    /** Removes all episodes from all shows. For debugging purposes, really. */
+    public void clearAllShows() {
+        dbc.database.delete(TABLE_EPISODES, null, null);
     }
 
     /** Retrieve one episode from the database.
@@ -205,12 +210,19 @@ public class DatabaseMate
      * @param searchShow The show to search; supply `null` to search all.
      * @return A cursor containing the episodes that matched the search term.
      */
-    public Cursor searchEpisodes(String searchTerm, String searchShow)
+    public Cursor searchEpisodes(String searchTerm, ShowInfo searchShow)
     {
-        return dbc.database.query(TABLE_EPISODES,
-                new String[] {"_id", "title", "show", "date"},
-                (searchShow!="" ? ("show=? and ") : "") + "(title like '%?%' or description like '%?%')", //where
-                new String[] {searchShow, searchTerm, searchTerm},
-                null, null, null);
+        if(searchShow==null)
+            return dbc.database.query(TABLE_EPISODES,
+                    new String[] {"_id", "title", "show", "date"},
+                    "(title like %?% or description like %?%)",
+                    new String[] {searchTerm, searchTerm},
+                    null, null, null);
+        else
+            return dbc.database.query(TABLE_EPISODES,
+                    new String[] {"_id", "title", "show", "date"},
+                    "show=? and (title like '%?%' or description like '%?%')",
+                    new String[] {searchShow.title, searchTerm, searchTerm},
+                    null, null, null);
     }
 }

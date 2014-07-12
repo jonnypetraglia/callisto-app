@@ -262,9 +262,9 @@ public class RssUpdater extends AsyncTask<Void, Object, Void>
 
     public void executePlz(ShowInfo... params) throws ExecutionException, InterruptedException {
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
-            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         else
-            execute(params);
+            execute();
     }
 
 

@@ -113,7 +113,7 @@ public class CatalogFragment extends CallistoFragment {
         try {
             switch (item.getItemId()) {
                 case R.id.update:   //Refresh the SQL database from the RSS feed
-                    dbMate.clearShow(getSelectedShow().title);
+                    dbMate.clearShow(getSelectedShow());
                     if(rssUpdater!=null && rssUpdater.isRunning())
                         rssUpdater.addItem(getSelectedShow());
                     else {
@@ -123,11 +123,11 @@ public class CatalogFragment extends CallistoFragment {
                     updateHeader();
                     return true;
                 case R.id.update_all:
+                    dbMate.clearAllShows();
                     if(rssUpdater!=null && rssUpdater.isRunning())
                         rssUpdater.addItems(showList);
                     else {
-                        ShowInfo[] showsToUpdate = showList.toArray(new ShowInfo[showList.size()]);
-                        rssUpdater = new RssUpdater(showsToUpdate, processRssResults);
+                        rssUpdater = new RssUpdater(showList, processRssResults);
                         rssUpdater.executePlz();
                     }
                     updateHeader();
@@ -205,7 +205,7 @@ public class CatalogFragment extends CallistoFragment {
     /** Reloads the list of episodes for the currently selected show. */
     void reloadList() {
         ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
-        Cursor r = dbMate.getShow(selectedShow.title, filter);
+        Cursor r = dbMate.getShow(selectedShow, filter);
         CatalogAdapter catalogAdapter = new CatalogAdapter(getActivity(), R.layout.catalog_row, r);
         listview.setAdapter(catalogAdapter);
     }
@@ -225,6 +225,7 @@ public class CatalogFragment extends CallistoFragment {
 
         if(forceUpdating || (rssUpdater!=null && rssUpdater.isUpdating(selectedShow))) {
             Log.d(TAG, "Updating the header: Showing");
+            headerView.setVisibility(View.VISIBLE);
             headerView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
             headerView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
             headerView.findViewById(R.id.error).setVisibility(View.GONE);
@@ -232,6 +233,7 @@ public class CatalogFragment extends CallistoFragment {
             ((TextView)headerView.findViewById(R.id.textView)).setText(R.string.reloading);
         } else if(updateErrors.containsKey(selectedShow)) {
             Log.d(TAG, "Updating the header: Error");
+            headerView.setVisibility(View.VISIBLE);
             headerView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
             headerView.findViewById(R.id.progressBar).setVisibility(View.GONE);
             headerView.findViewById(R.id.error).setVisibility(View.VISIBLE);
@@ -239,9 +241,7 @@ public class CatalogFragment extends CallistoFragment {
             ((TextView)headerView.findViewById(R.id.textView)).setText(updateErrors.get(selectedShow));
         } else {
             Log.d(TAG, "Updating the header: Hiding");
-            headerView.findViewById(R.id.textView).setVisibility(View.GONE);
-            headerView.findViewById(R.id.progressBar).setVisibility(View.GONE);
-            headerView.findViewById(R.id.error).setVisibility(View.GONE);
+            headerView.setVisibility(View.GONE);
         }
     }
 
