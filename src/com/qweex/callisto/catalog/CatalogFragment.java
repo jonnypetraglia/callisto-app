@@ -5,21 +5,17 @@ import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /** This fragment displays past episodes for a show in the catalog.
  * @author      Jon Petraglia <notbryant@gmail.com>
@@ -37,6 +33,8 @@ public class CatalogFragment extends CallistoFragment {
     LinearLayout layout;
     /** The ListView for this fragment */
     ListView listview;
+    /** The view to show when the feed is reloading */
+    LinearLayout headerView;
 
     /** The class to make database connections easier concerning episodes. */
     DatabaseMate dbMate;
@@ -45,6 +43,9 @@ public class CatalogFragment extends CallistoFragment {
 
     /** Whether or showing only new episodes is enabled. */
     boolean filter = false;
+
+    /** Holds a list of error causes per feed to be displayed in the header. */
+    HashMap<ShowInfo, String> updateErrors = new HashMap<ShowInfo, String>();
 
     /** Inherited constructor.
      * @param master Reference to MasterActivity.
@@ -72,6 +73,8 @@ public class CatalogFragment extends CallistoFragment {
             listview.setDividerHeight(1);
             listview.setOnItemClickListener(selectEpisode);
 
+            headerView = (LinearLayout) layout.findViewById(R.id.header);
+
             InputStream is = null;
             try {
                 is = getActivity().getAssets().open("shows.min.json");
@@ -79,11 +82,10 @@ public class CatalogFragment extends CallistoFragment {
                 showListAdapter = new ShowListAdapter(master, showList);
                 master.getSupportActionBar().setListNavigationCallbacks(showListAdapter, changeShow);
 
-                reloadList();
+                updateListAndHeader.run();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             setHasOptionsMenu(true);
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
@@ -108,34 +110,46 @@ public class CatalogFragment extends CallistoFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.update:   //Refresh the SQL database from the RSS feed
-                if(rssUpdater!=null && rssUpdater.isRunning())
-                    rssUpdater.addItem(getSelectedShow());
-                else {
-                    rssUpdater = new RssUpdater(processRssResults);
-                    rssUpdater.execute(getSelectedShow());
-                }
-                return true;
-            case R.id.update_all:
-                if(rssUpdater!=null && rssUpdater.isRunning())
-                    rssUpdater.addItems(showList);
-                else {
-                    rssUpdater = new RssUpdater(processRssResults);
-                    rssUpdater.execute(showList.toArray(new ShowInfo[showList.size()]));
-                }
-                return true;
-            case R.id.filter :
-                filter = !filter;
-                if(filter)
-                    item.setTitle(R.string.show_watched);
-                else
-                    item.setTitle(R.string.hide_watched);
-                reloadList();
-                return true;
-            case R.id.mark:
-                //TODO
-                return true;
+        try {
+            switch (item.getItemId()) {
+                case R.id.update:   //Refresh the SQL database from the RSS feed
+                    dbMate.clearShow(getSelectedShow().title);
+                    if(rssUpdater!=null && rssUpdater.isRunning())
+                        rssUpdater.addItem(getSelectedShow());
+                    else {
+                        rssUpdater = new RssUpdater(getSelectedShow(), processRssResults);
+                        rssUpdater.executePlz();
+                    }
+                    updateHeader();
+                    return true;
+                case R.id.update_all:
+                    if(rssUpdater!=null && rssUpdater.isRunning())
+                        rssUpdater.addItems(showList);
+                    else {
+                        ShowInfo[] showsToUpdate = showList.toArray(new ShowInfo[showList.size()]);
+                        rssUpdater = new RssUpdater(showsToUpdate, processRssResults);
+                        rssUpdater.executePlz();
+                    }
+                    updateHeader();
+                    return true;
+                case R.id.filter :
+                    filter = !filter;
+                    if(filter)
+                        item.setTitle(R.string.show_watched);
+                    else
+                        item.setTitle(R.string.hide_watched);
+                    reloadList();
+                    return true;
+                case R.id.mark:
+                    //TODO
+                    return true;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -152,8 +166,9 @@ public class CatalogFragment extends CallistoFragment {
     private android.support.v7.app.ActionBar.OnNavigationListener changeShow = new android.support.v7.app.ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-            Log.d(TAG, "Selected Show: " + showList.get(itemPosition).title);
-            reloadList();
+            ShowInfo selectedShow = showList.get(itemPosition);
+            Log.d(TAG, "Selected Show: " + selectedShow.title);
+            updateListAndHeader.run();
             return true;
         }
     };
@@ -161,22 +176,77 @@ public class CatalogFragment extends CallistoFragment {
     /** The callback method for when the RssUpdater has finished. */
     RssUpdater.Callback processRssResults = new RssUpdater.Callback() {
         @Override
-        void call(LinkedList<Episode> results, LinkedList<ShowInfo> failures) {
-            while(!results.isEmpty())
-                dbMate.insertEpisode(results.pop());
-            if(failures.size()==0)
-                return;
-            String[] errorStrings = new String[failures.size()];
-            for(int i=0; i<failures.size(); ++i) {
-                errorStrings[i] = failures.get(i).title;
+        void call(ShowInfo show, final LinkedList<Episode> results, String error) {
+            if(results==null || error!=null) {
+            // Errors occurred
+                updateErrors.put(show, error);
+                updateHeader();
+            } else {
+            // No errors
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dbMate.insertEpisodes(results);
+                        CatalogFragment.this.master.runOnUiThread(updateListAndHeader);
+                    }
+                }).start();
             }
-            String msg = "Errors Occured with:" + TextUtils.join("\n", errorStrings);
-            Log.e(TAG, msg);
-            Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG);
         }
     };
 
-    /** Called when the user selects an episode. */
+    Runnable updateListAndHeader = new Runnable() {
+        @Override
+        public void run() {
+            reloadList();
+            updateHeader();
+        }
+    };
+
+    /** Reloads the list of episodes for the currently selected show. */
+    void reloadList() {
+        ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
+        Cursor r = dbMate.getShow(selectedShow.title, filter);
+        CatalogAdapter catalogAdapter = new CatalogAdapter(getActivity(), R.layout.catalog_row, r);
+        listview.setAdapter(catalogAdapter);
+    }
+
+    /** Updates the header without force showing it. */
+    void updateHeader() {
+        updateHeader(false);
+    }
+
+    /** Updates the header based on if the current show is running or has an error.
+     * @param forceUpdating Force "Updating" to be shown.
+     */
+    void updateHeader(boolean forceUpdating) {
+        ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
+
+        Log.d(TAG, "Updating the header");
+
+        if(forceUpdating || (rssUpdater!=null && rssUpdater.isUpdating(selectedShow))) {
+            Log.d(TAG, "Updating the header: Showing");
+            headerView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+            headerView.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+            headerView.findViewById(R.id.error).setVisibility(View.GONE);
+
+            ((TextView)headerView.findViewById(R.id.textView)).setText(R.string.reloading);
+        } else if(updateErrors.containsKey(selectedShow)) {
+            Log.d(TAG, "Updating the header: Error");
+            headerView.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+            headerView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+            headerView.findViewById(R.id.error).setVisibility(View.VISIBLE);
+
+            ((TextView)headerView.findViewById(R.id.textView)).setText(updateErrors.get(selectedShow));
+        } else {
+            Log.d(TAG, "Updating the header: Hiding");
+            headerView.findViewById(R.id.textView).setVisibility(View.GONE);
+            headerView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+            headerView.findViewById(R.id.error).setVisibility(View.GONE);
+        }
+    }
+
+
+    /** Called when the user selects an episode. Create an EpisodeFragment. */
     AdapterView.OnItemClickListener selectEpisode = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -190,13 +260,6 @@ public class CatalogFragment extends CallistoFragment {
             transaction.commit();
         }
     };
-
-    /** Reloads the list of episodes for the currently selected show. */
-    void reloadList() {
-        ShowInfo selectedShow = showList.get(Math.max(master.getSupportActionBar().getSelectedNavigationIndex(), 0));
-        Cursor r = dbMate.getShow(selectedShow.title, filter);
-        listview.setAdapter(new CatalogAdapter(getActivity(), R.layout.catalog_row, r));
-    }
 
     /** Inherited method; things to do when the fragment is shown initially. */
     @Override

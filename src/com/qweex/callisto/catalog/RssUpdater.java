@@ -1,6 +1,7 @@
 package com.qweex.callisto.catalog;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -12,6 +13,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /** A class to fetch and parse RSS feeds SPECIFICALLY for Callisto.
  *
@@ -21,7 +23,7 @@ import java.util.*;
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
 
-public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
+public class RssUpdater extends AsyncTask<Void, Object, Void>
 {
     /** Date format used by RSS standard. */
     static SimpleDateFormat sdfSource = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
@@ -33,17 +35,28 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     /** The parsers that do the actual work. */
     XmlPullParser audioParser, videoParser = null;
     /** A list of shows (containing feeds) to check. */
-    ArrayList<ShowInfo> items;
+    ArrayList<ShowInfo> items = new ArrayList<ShowInfo>();
     /** The callback to call after finishing with the data. */
     Callback callback;
     /** Wehther or not to check the video feeds. Also set automatically for each feed if no feed exists. */
     boolean doVideo = false;    //This means that it will not do video, no matter what.
 
     /** Constructor.
+     * @param show A single show to update.
      * @param c The callback.
      */
-    public RssUpdater(Callback c) {
+    public RssUpdater(ShowInfo show, Callback c) {
         this.callback = c;
+        addItem(show);
+    }
+
+    /** Constructor.
+     * @param shows A single show to update.
+     * @param c The callback.
+     */
+    public RssUpdater(ArrayList<ShowInfo> shows, Callback c) {
+        this.callback = c;
+        addItems(shows);
     }
 
     /** Checks if task is running.
@@ -66,15 +79,21 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
             items.add(s);
     }
 
+    /** Checks if the task is updating a certain show
+     * @param show The show to check for
+     * @return True if the show is in the list to be updated, false otherwise.
+     */
+    public boolean isUpdating(ShowInfo show) {
+        return items!=null && items.indexOf(show)>-1;
+    }
+
     /** Inherited method; the task actually run asyncronously.
-     * @param shows The initial list of shows to download; can be appended to later via addItem(s).
      */
     @Override
-    protected Void doInBackground(ShowInfo... shows) {
+    protected Void doInBackground(Void... notused) {
         String TAG = "Callisto:RssUpdater";
 
         Episode episode = null;
-        items = new ArrayList<ShowInfo>(Arrays.asList(shows));
 
         ShowInfo current;
         for(int i=0; i<items.size(); i++) {
@@ -83,6 +102,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
 
             LinkedList<Episode> tempEpisodesRetrieved = new LinkedList<Episode>();
+            String errorReason = null;
 
             doVideo = doVideo && current.videoFeed!=null;
 
@@ -193,7 +213,7 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
                         // At this point, we should have a full Episode object
                         episode.assertComplete();
-                        tempEpisodesRetrieved .add(episode);
+                        tempEpisodesRetrieved.add(episode);
 
                         // Catch the episode INSIDE the update for its show.
                     } catch(UnfinishedParseException e) {
@@ -203,30 +223,26 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
 
                 }
 
-                while(!tempEpisodesRetrieved.isEmpty())
-                    EpisodesRetrieved.add(tempEpisodesRetrieved.pop());
-
             // Catch OUTSIDE the loop for the show; anything that lands here means that the episodes retrieved thus far are discarded
             } catch(UnfinishedParseException e) {
-                e.printStackTrace();
-                Log.d("Callisto", "!" + episode.toString());
-                FailedFeeds.add(current);
+                errorReason = e.getMessage();
             } catch (ParseException e) {
-                e.printStackTrace();
-                FailedFeeds.add(current);
-                Log.d("Callisto", "!" + episode.toString());
+                errorReason = e.getMessage();
             } catch (XmlPullParserException e) {
-                e.printStackTrace();
-                FailedFeeds.add(current);
-                Log.d("Callisto", "!" + episode.toString());
+                errorReason = e.getMessage();
             } catch (MalformedURLException e) {
-                e.printStackTrace();
-                FailedFeeds.add(current);
+                errorReason = e.getMessage();
             } catch (IOException e) {
-                e.printStackTrace();
-                FailedFeeds.add(current);
-                Log.d("Callisto", "!" + episode.toString());
+                errorReason = e.getMessage();
             }
+
+            // Call the callback for this show (on the main thread)
+            if(errorReason!=null) {
+                tempEpisodesRetrieved = null;
+                FailedFeeds.add(current);
+            }
+            publishProgress(current, tempEpisodesRetrieved, errorReason);
+
         }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -236,7 +252,19 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     @Override
     protected void onPostExecute(Void v) {
         items = null;
-        callback.call(EpisodesRetrieved, FailedFeeds);
+    }
+
+    @Override
+    protected void onProgressUpdate(Object... data) {
+        items.remove(data[0]);
+        callback.call((ShowInfo)data[0], (LinkedList<Episode>) data[1], (String)data[2]);
+    }
+
+    public void executePlz(ShowInfo... params) throws ExecutionException, InterruptedException {
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+        else
+            execute(params);
     }
 
 
@@ -293,10 +321,11 @@ public class RssUpdater extends AsyncTask<ShowInfo, Void, Void>
     public static abstract class Callback {
         /**
          * Called when all the feeds are finished updating.
-         * @param episodes The episodes that were successfully fetched.
-         * @param failedFeeds A list of feeds that failed; no episodes of such feeds will be returned.
+         * @param show The show that the episodes belong to.
+         * @param episodes The episodes that were successfully fetched. null if there was an error
+         * @param error The cause of the error, if there is one. Otherwise, is null.
          */
-        abstract void call(LinkedList<Episode> episodes, LinkedList<ShowInfo> failedFeeds);
+        abstract void call(ShowInfo show, LinkedList<Episode> episodes, String error);
     }
 }
 

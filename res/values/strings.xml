@@ -31,4 +31,6 @@
     <string name="web_link">Web link</string>
     <string name="mark">Mark</string>
     <string name="unmark">Unmark</string>
+
+    <string name="reloading">Reloading</string>
 </resources>
