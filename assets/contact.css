@@ -1,3 +1,7 @@
+.embed {
+  overflow: scroll;
+}
+
 .embed .wufoo .info, p, h1, .hide, header {
   display:none;
 }
@@ -26,18 +30,21 @@ body {
 }
 
 span {
-	width:;
 	font-style:italic;
 	text-align:right;
 }
 
-.field, .submit {
-	width:;
+textarea {
+	height:80%;
+	line-height: 100%;
 }
 
-textarea {
-	height:;
-	line-height: 150%;
+span,
+.wufoo li,
+input.medium, select.medium,
+.field, .submit
+{
+    width: 100%;
 }
 
 li {
@@ -98,6 +105,8 @@ background-image: url(file:///android_asset/arrow.png), -webkit-gradient(linear,
 	background-repeat: no-repeat;
 	overflow: hidden;
 	font-size: 1em;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 
