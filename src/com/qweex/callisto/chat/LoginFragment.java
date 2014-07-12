@@ -1,9 +1,6 @@
 package com.qweex.callisto.chat;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,15 +89,7 @@ public class LoginFragment extends CallistoFragment {
             String real_name = ((TextView)layout.findViewById(R.id.real_name)).getText().toString();
             String password = ((TextView)layout.findViewById(R.id.nickserv_password)).getText().toString();
 
-            Log.v(TAG, "starting service");
-            Intent i = new Intent(master, IrcService.class);
-            i.putExtra("nickname", nickname);
-            i.putExtra("username", username);
-            i.putExtra("real_name", real_name);
-            i.putExtra("password", password);
-            //i.setData(Uri.parse("Http://butts.org"));
-            master.startService(i);
-            Log.v(TAG, "started service");
+            master.chatFragment.connect(nickname, username, real_name, password);
             master.pushFragment(master.chatFragment, false);
         }
     };

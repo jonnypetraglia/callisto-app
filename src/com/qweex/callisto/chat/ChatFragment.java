@@ -1,6 +1,9 @@
 package com.qweex.callisto.chat;
 
+import android.app.IntentService;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,8 @@ import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 
 public class ChatFragment extends CallistoFragment {
+
+    String TAG = "Callisto:chat:ChatFragment";
 
     View layout;
 
@@ -35,6 +40,17 @@ public class ChatFragment extends CallistoFragment {
         */
         show();
         return layout;
+    }
+
+    public void connect(String nickname, String username, String real_name, String password) {
+        Log.v(TAG, "starting service");
+        Intent i = new Intent(master, IrcService.class);
+        i.putExtra("nickname", nickname);
+        i.putExtra("username", username);
+        i.putExtra("real_name", real_name);
+        i.putExtra("password", password);
+        master.startService(i);
+        Log.v(TAG, "started service");
     }
 
     @Override

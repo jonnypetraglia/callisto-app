@@ -11,14 +11,28 @@ public class IrcService extends IntentService {
 
     String TAG = "Callisto:chat:IrcService";
 
+    public static IrcService instance;
+
     private IrcConnection ircConnection;
     private IrcServiceAdapter ircConnectionAdapter;
-    private Channel jupiterbroadcasting, jupiterdev, jupiterops, qweex;
+    private Channel jupiterbroadcasting, jupiterdev, jupitergaming, jupiterops, qweex;
     private User nickServ;
 
     public IrcService() {
         super("Callisto/IRC");
         Log.v(TAG, "Constructor");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        instance = null;
     }
 
     @Override
@@ -52,11 +66,10 @@ public class IrcService extends IntentService {
             if(password!=null && password.length()>1)
                 nickServ.sendMessage("identify " + password);
             jupiterbroadcasting = ircConnection.createChannel("#jupiterbroadcasting");
+            jupitergaming = ircConnection.createChannel("#jupitergaming");
             jupiterdev = ircConnection.createChannel("#jupiterdev");
             jupiterops = ircConnection.createChannel("#jupiterops");
             qweex = ircConnection.createChannel("#qweex");
-            qweex.join();
-            qweex.sendMessage("Butts, notbryant");
             Log.i(TAG, " connected? " + ircConnection.isConnected());
 
         } catch (IOException e) {
