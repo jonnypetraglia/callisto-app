@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -68,15 +67,15 @@ public class MasterActivity extends ActionBarActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.master);
-        Resources resources = getResources();
+        ResCache.resources = getResources();
         SplashFragment splashFragment = (SplashFragment) getCurrentFragment();
 
         // Load the Navigation Drawer
-        String[] navbarTexts = getResources().getStringArray(R.array.navigation_drawer_items);
-        TypedArray navbariconStrings = getResources().obtainTypedArray(R.array.navigation_drawer_icons);
+        String[] navbarTexts = ResCache.resources.getStringArray(R.array.navigation_drawer_items);
+        TypedArray navbariconStrings = ResCache.resources.obtainTypedArray(R.array.navigation_drawer_icons);
         Drawable[] navbarIcons = new Drawable[navbariconStrings.length()];
         for(int i=0; i<navbariconStrings.length(); ++i)
-            navbarIcons[i] = resources.getDrawable(navbariconStrings.getResourceId(i, -1));
+            navbarIcons[i] = ResCache.resources.getDrawable(navbariconStrings.getResourceId(i, -1));
 
         // Create the drawer stuffs
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,9 +201,9 @@ public class MasterActivity extends ActionBarActivity {
                     //frag = liveFragment
                     break;
                 case 3: //Chat
-                    //if(loggedIn)
+                    if(IrcService.instance!=null)
                         frag = chatFragment;
-                    //else
+                    else
                         frag = loginFragment;
                     break;
                 case 4: //Schedule
@@ -265,7 +264,7 @@ public class MasterActivity extends ActionBarActivity {
     TextView createExtraDrawerItem(int text, int drawable) {
         TextView tv = (TextView) getLayoutInflater().inflate(R.layout.nav_entry, null);
         tv.setText(text);
-        tv.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(drawable), null, null, null);
+        tv.setCompoundDrawablesWithIntrinsicBounds(ResCache.resources.getDrawable(drawable), null, null, null);
         tv.setClickable(true);
         return tv;
     }

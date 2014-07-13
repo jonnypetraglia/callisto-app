@@ -36,9 +36,11 @@ public class ChatListAdapter extends ArrayAdapter<IrcMessage> {
 
         IrcMessage ircMessage = messages.get(pos);
 
-        TextView title = (TextView) v.findViewById(android.R.id.text1),
-                 message  = (TextView) v.findViewById(android.R.id.text2);
+        TextView time = (TextView) v.findViewById(android.R.id.text1),
+                 title = (TextView) v.findViewById(android.R.id.title),
+                 message  = (TextView) v.findViewById(android.R.id.message);
 
+        time.setText(ircMessage.getTime());
         title.setText(ircMessage.getTitle());
         message.setText(ircMessage.getMessage());
 

@@ -1,17 +1,22 @@
 package com.qweex.callisto.chat;
 
 import android.util.Log;
+import com.qweex.callisto.R;
+import com.qweex.callisto.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
+/** Extension of sIRC that handles the IRC events, parses them, and passes them on to ChatFragment.
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
 public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     String TAG = "Callisto:chat_tab:IrcServiceAdapter";
 
-    ChatFragment chatFragment;
+    ChatFragment chat;
 
     public IrcServiceAdapter(ChatFragment chatFragment) {
-        this.chatFragment = chatFragment;
+        this.chat = chatFragment;
     }
 
 
@@ -22,22 +27,41 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onConnect(IrcConnection irc) {
         super.onConnect(irc);
-        appendServerMessage(irc, "Connected to " + irc.getServer().getAddress());
-        Log.i(TAG, "onConnect");
+        chat.receive(irc, new IrcMessage(
+                ResCache.str(R.string.connected, irc.getServer().getAddress()),
+                null,
+                IrcMessage.Type.CONNECTION
+        ), false);
     }
 
     @Override
     public void onDisconnect(IrcConnection irc) {
         super.onDisconnect(irc);
-        appendServerMessage(irc, "Disconnected from " + irc.getServer().getAddress());
-        Log.i(TAG, "onDisconnect");
+        chat.receive(irc, new IrcMessage(
+                ResCache.str(R.string.disconnected),
+                null,
+                IrcMessage.Type.CONNECTION
+        ), false);
     }
 
     @Override
     public void onNotice(IrcConnection irc, User sender, String message) {
         super.onNotice(irc, sender, message);
-        appendServerMessage(irc, sender, message, IrcMessage.Type.NOTICE);
-        Log.i(TAG, "onNotice2: " + message);
+        chat.receive(irc, new IrcMessage(
+                ResCache.str(R.string.notice, getNickOrMe(sender)),
+                message,
+                IrcMessage.Type.NOTICE
+        ), true);
+    }
+
+    @Override
+    public void onMotd(IrcConnection irc, String motd) {
+        super.onMotd(irc, motd);
+        chat.receive(irc, new IrcMessage(
+                null,
+                motd,
+                IrcMessage.Type.MOTD
+        ), false);
     }
 
 
@@ -48,15 +72,21 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onAction(IrcConnection irc, User sender, String action) {
         super.onAction(irc, sender, action);
-        //TODO
-        Log.i(TAG, "onAction2: " + action);
+        chat.receive(sender, new IrcMessage(
+                sender.getNick(),
+                action,
+                IrcMessage.Type.ACTION
+        ));
     }
 
     @Override
     public void onPrivateMessage(IrcConnection irc, User sender, String message) {
         super.onPrivateMessage(irc, sender, message);
-        //TODO
-        Log.i(TAG, "onPrivateMessage: " + message);
+        chat.receive(sender, new IrcMessage(
+                getNickOrMe(sender),
+                message,
+                IrcMessage.Type.MESSAGE
+        ));
     }
 
 
@@ -67,15 +97,21 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onAction(IrcConnection irc, User sender, Channel target, String action) {
         super.onAction(irc, sender, target, action);
-        //TODO
-        Log.i(TAG, "onAction1: " + action);
+        chat.receive(target, new IrcMessage(
+                getNickOrMe(sender),
+                action,
+                IrcMessage.Type.ACTION
+        ));
     }
 
     @Override
     public void onMessage(IrcConnection irc, User sender, Channel target, String message) {
         super.onMessage(irc, sender, target, message);
-        //TODO
-        Log.i(TAG, "onMessage: " + sender.getNick() + " - " + message);
+        chat.receive(target, new IrcMessage(
+                getNickOrMe(sender),
+                message,
+                IrcMessage.Type.MESSAGE
+        ));
     }
 
 
@@ -86,51 +122,62 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onTopic(IrcConnection irc, Channel channel, User sender, String topic) {
         super.onTopic(irc, channel, sender, topic);
-        //TODO
-        Log.i(TAG, "onTopic: " + topic);
+        chat.receive(channel, new IrcMessage(
+                null,
+                "*** " + ResCache.str(R.string.topic, topic, sender.getNick()),
+                IrcMessage.Type.ACTION
+        ));
     }
 
     @Override
     public void onJoin(IrcConnection irc, Channel channel, User user) {
         super.onJoin(irc, channel, user);
-        //TODO
-        Log.i(TAG, "onJoin: " + user.getNick());
+        chat.receive(channel, new IrcMessage(
+                null,
+                " *** " + ResCache.str(R.string.join, getNickOrMe(user), user.getHostName()),
+                IrcMessage.Type.JOIN
+        ));
     }
 
     @Override
     public void onKick(IrcConnection irc, Channel channel, User sender, User user, String message) {
         super.onKick(irc, channel, sender, user, message);
-        //TODO
-        Log.i(TAG, "onKick: " + user.getNick());
-    }
-
-    @Override
-    public void onMotd(IrcConnection irc, String motd) {
-        super.onMotd(irc, motd);
-        //TODO
-        Log.i(TAG, "onMotd: " + motd);
-    }
-
-    @Override
-    public void onNotice(IrcConnection irc, User sender, Channel target, String message) {
-        super.onNotice(irc, sender, target, message);
-        //TODO
-        Log.i(TAG, "onNotice1: " + message);
+        chat.receive(channel, new IrcMessage(
+                null,
+                " *** " + ResCache.str(R.string.kick, getNickOrMe(sender), getNickOrMe(user), message),
+                IrcMessage.Type.KICK
+        ));
     }
 
     @Override
     public void onPart(IrcConnection irc, Channel channel, User user, String message) {
         super.onPart(irc, channel, user, message);
-        //TODO
-        Log.i(TAG, "onPart: " + user.getNick() + " [[ " + message);
+        chat.receive(channel, new IrcMessage(
+                null,
+                " *** " + ResCache.str(R.string.part, getNickOrMe(user), message),
+                IrcMessage.Type.KICK
+        ));
     }
 
     // More adequately onChannelMode
     @Override
     public void onMode(IrcConnection irc, Channel channel, User sender, String mode) {
         super.onMode(irc, channel, sender, mode);
-        //TODO
-        Log.i(TAG, "onMode: " + mode);
+        chat.receive(channel, new IrcMessage(
+                null,
+                " *** " + ResCache.str(R.string.mode, getNickOrMe(sender), mode),
+                IrcMessage.Type.KICK
+        ));
+    }
+
+    @Override
+    public void onNotice(IrcConnection irc, User sender, Channel target, String message) {
+        super.onNotice(irc, sender, target, message);
+        chat.receive(target, new IrcMessage(
+                ResCache.str(R.string.notice, sender.getNick()),
+                message,
+                IrcMessage.Type.NOTICE
+        ));
     }
 
 
@@ -141,70 +188,61 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onFounder(IrcConnection irc, Channel channel, User sender, User user) {
         super.onFounder(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, true);
-        Log.i(TAG, "onFounder: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, true);
     }
 
     @Override
     public void onDeFounder(IrcConnection irc, Channel channel, User sender, User user) {
         super.onDeFounder(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, false);
-        Log.i(TAG, "onDeFounder: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, false);
     }
 
     @Override
     public void onAdmin(IrcConnection irc, Channel channel, User sender, User user) {
         super.onAdmin(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, true);
-        Log.i(TAG, "onAdmin: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, true);
     }
 
     @Override
     public void onDeAdmin(IrcConnection irc, Channel channel, User sender, User user) {
         super.onDeAdmin(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, false);
-        Log.i(TAG, "onDeAdmin: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, false);
     }
 
     @Override
     public void onOp(IrcConnection irc, Channel channel, User sender, User user) {
         super.onOp(irc, channel, sender, user);
-        Log.i(TAG, "onOp: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.OP, true);
     }
 
     @Override
     public void onDeOp(IrcConnection irc, Channel channel, User sender, User user) {
         super.onDeOp(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.OP, false);
-        Log.i(TAG, "onDeOp: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.OP, false);
     }
 
     @Override
     public void onHalfop(IrcConnection irc, Channel channel, User sender, User user) {
         super.onHalfop(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, true);
-        Log.i(TAG, "onHalfop: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, true);
     }
 
     @Override
     public void onDeHalfop(IrcConnection irc, Channel channel, User sender, User user) {
         super.onDeHalfop(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, false);
-        Log.i(TAG, "onDeHalfop: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, false);
     }
 
     @Override
     public void onVoice(IrcConnection irc, Channel channel, User sender, User user) {
         super.onVoice(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, true);
-        Log.i(TAG, "onVoice: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, true);
     }
 
     @Override
     public void onDeVoice(IrcConnection irc, Channel channel, User sender, User user) {
         super.onDeVoice(irc, channel, sender, user);
-        appendModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, false);
-        Log.i(TAG, "onDeVoice: " + user.getNick());
+        handleModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, false);
     }
 
 
@@ -216,14 +254,14 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onNick(IrcConnection irc, User oldUser, User newUser) {
         super.onNick(irc, oldUser, newUser);
         //TODO // Need to check every active channel if it applies
-        Log.i(TAG, "onNick: " + oldUser.getNick() + "->" + newUser.getNick());
+        
     }
 
     @Override
     public void onQuit(IrcConnection irc, User user, String message) {
         super.onQuit(irc, user, message);
         //TODO // Need to check every active channel if it applies
-        Log.i(TAG, "onQui: " + user.getNick() + " [[ " + message);
+        
     }
 
     //////////////////////////////////////////////////////////
@@ -234,7 +272,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onCtcpReply(IrcConnection irc, User sender, String command, String message) {
         super.onCtcpReply(irc, sender, command, message);
         //TODO
-        Log.i(TAG, "onCtcpReply: " + command + " " + message);
+        
     }
 
 
@@ -242,40 +280,17 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onInvite(IrcConnection irc, User sender, User user, Channel channel) {
         super.onInvite(irc, sender, user, channel);
         //TODO
-        Log.i(TAG, "onInvite: " + user.getNick());
+        
     }
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /////////// Generalized Functions that are reused ///////////
-
-    void appendServerMessage(IrcConnection ircConnection, String msg) {
-        Log.d(TAG, "appendServerMessage: " + msg);
-
-        chatFragment.receive(ircConnection, new IrcMessage(
-                msg,
-                null,
-                IrcMessage.Type.CONNECTION
-        ), false);
-    }
-
-    void appendServerMessage(IrcConnection ircConnection, User user, String msg, IrcMessage.Type type) {
-        Log.d(TAG, "appendServerMessage: " + msg + " by " + user.getNick());
-
-        chatFragment.receive(ircConnection, new IrcMessage(
-                type + " by " + user.getNick(),
-                msg,
-                IrcMessage.Type.CONNECTION
-        ), true);
-    }
+    //////////////////////////////////////////////////////////////
+    ////////////////////////// Non-sIRC //////////////////////////
+    //////////////////////////////////////////////////////////////
 
 
     // Mode Change
-    void appendModeChange(Channel channel, User setBy, User setTarget, IrcMessage.UserMode mode, boolean given) {
+    public void handleModeChange(Channel channel, User setBy, User setTarget, IrcMessage.UserMode mode, boolean given) {
         String verb = "set";
         if(!given)
             verb = "unset";
@@ -283,10 +298,16 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
 
         Log.d(TAG, msg);
 
-        chatFragment.receive(channel, new IrcMessage(
+        chat.receive(channel, new IrcMessage(
                 msg,
                 null,
                 IrcMessage.Type.MODE
         ));
+    }
+
+    String getNickOrMe(User user) {
+        if(user.isUs())
+            return ResCache.str(R.string.you);
+        return user.getNick();
     }
 }

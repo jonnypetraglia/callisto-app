@@ -21,6 +21,7 @@ public class IrcService extends IntentService {
 
     private IrcConnection ircConnection;
     private User nickServ;
+    public User me;
 
     public IrcService() {
         super("Callisto/IRC");
@@ -53,8 +54,9 @@ public class IrcService extends IntentService {
         String[] channel_names = intent.getStringArrayExtra("channels");
 
 
-        // Set up the adapter
+        // Set up the connection
         ircConnection = new IrcConnection("irc.geekshed.net");
+
 
         ircConnection.setNick(nickname);
         if(username!=null && username.length()>0) {
@@ -69,27 +71,29 @@ public class IrcService extends IntentService {
         ircConnection.addServerListener(chatFragment.ircConnectionAdapter);
 
         try {
-            ircConnection.connect();
             chatFragment.createTab(ircConnection);
+            Log.i(TAG, "Connecting to server...");
+            ircConnection.connect();
             nickServ = ircConnection.createUser("nickserv");
+
             if(password!=null && password.length()>1)
                 nickServ.sendMessage("identify " + password);
             // Join the channels
-            for(String channel : channel_names) {
-                Channel c = ircConnection.createChannel(channel);
-                c.join();
-                chatFragment.createTab(c);
+            for(String channel_name : channel_names) {
+                Channel channel = ircConnection.createChannel(channel_name);
+                chatFragment.createTab(channel);
                 Log.i(TAG, "Connecting to  " + channel);
+                channel.join();
             }
 
             Log.i(TAG, "--connected? " + ircConnection.isConnected());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            chatFragment.handleError(e);
         } catch (NickNameException e) {
-            e.printStackTrace();
+            chatFragment.handleError(e);
         } catch (PasswordException e) {
-            e.printStackTrace();
+            chatFragment.handleError(e);
         }
     }
 }

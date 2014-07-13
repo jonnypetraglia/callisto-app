@@ -16,6 +16,7 @@ import com.qweex.callisto.R;
 import com.sorcix.sirc.Channel;
 
 import java.util.ArrayList;
+import java.util.Queue;
 
 public abstract class TabFragment extends CallistoFragment {
     String TAG = "Callisto:chat:TabFragment";
@@ -24,11 +25,13 @@ public abstract class TabFragment extends CallistoFragment {
     ListView listView;
     EditText inputField;
     ArrayList<IrcMessage> messages = new ArrayList<IrcMessage>();
+    ChatListAdapter chatListAdapter;
 
     /** Constructor; supplies MasterActivity reference. */
     public TabFragment(MasterActivity master) {
         super(master);
         Log.v(TAG, "()");
+        chatListAdapter = new ChatListAdapter(master, R.layout.irc_line, messages);
     }
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
@@ -44,9 +47,11 @@ public abstract class TabFragment extends CallistoFragment {
         if(layout==null) {
             Log.v(TAG, "onCreateView");
             layout = (RelativeLayout) inflater.inflate(R.layout.chat_tab, null);
-            listView = (ListView) layout.findViewById(android.R.id.list);
-            inputField = (EditText) layout.findViewById(android.R.id.edit);
 
+            listView = (ListView) layout.findViewById(android.R.id.list);
+            listView.setAdapter(chatListAdapter);
+
+            inputField = (EditText) layout.findViewById(android.R.id.edit);
             inputField.setOnEditorActionListener(sendMessage);
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
@@ -76,7 +81,16 @@ public abstract class TabFragment extends CallistoFragment {
 
     abstract void send(String msg);
 
-    void append(IrcMessage m) {
-        messages.add(m);
+    synchronized public void append(final Queue<IrcMessage> queue) {
+        master.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            if(queue!=null)
+                while(!queue.isEmpty()) {
+                    messages.add(queue.poll());
+                    chatListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 }

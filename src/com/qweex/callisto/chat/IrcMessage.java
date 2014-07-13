@@ -1,10 +1,15 @@
 package com.qweex.callisto.chat;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class IrcMessage
 {
-    public enum Type {ACTION, MODE, CONNECTION, NOTICE}
+    static SimpleDateFormat sdfTime = new SimpleDateFormat("'['HH:mm']'");
+
+    // Note that Type is ONLY FOR COLORING. All other typing and whatnot should be handled by sirc. That's why I chose it.
+    public enum Type {ACTION, MODE, CONNECTION, NOTICE, MOTD, MESSAGE, TOPIC, JOIN, KICK, PART}
 
     public enum UserMode {FOUNDER, ADMIN, OP, HALFOP, VOICE}
 
@@ -13,16 +18,22 @@ public class IrcMessage
     Type type;
 
 
-    public IrcMessage(String title, String message, Type type)
+    public IrcMessage(String title, String message, Type type) {
+        this(title, message, type, null);
+    }
+
+    public IrcMessage(String title, String message, Type type, Date time)
     {
         this.title = title;
         this.message = message;
         this.type = type;
-        timestamp = Calendar.getInstance();
+        this.timestamp = Calendar.getInstance();
+        if(time!=null)
+            this.timestamp.setTime(time);
     }
 
     public CharSequence getTime() {
-        return timestamp.toString();
+        return sdfTime.format(timestamp.getTime());
     }
 
     public CharSequence getTitle() {
@@ -31,5 +42,10 @@ public class IrcMessage
 
     public CharSequence getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return title + ": " + message;
     }
 }

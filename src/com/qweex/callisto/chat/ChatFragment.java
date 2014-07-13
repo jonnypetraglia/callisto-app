@@ -10,29 +10,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
+import com.qweex.callisto.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class ChatFragment extends CallistoFragment implements ActionBar.TabListener {
+/** Houses & manages the TabFragments.
+ * @author      Jon Petraglia <notbryant@gmail.com>
+ */
+public class ChatFragment extends CallistoFragment {
 
-    String TAG = "Callisto:chat_tab:ChatFragment";
+    String TAG = "Callisto:chat:ChatFragment";
 
-    HashMap<String, TabFragment> tabFragments = new HashMap<String, TabFragment>();
+    /** Adapter that manages receiving the messages directly from the sirc library. */
+    IrcServiceAdapter ircConnectionAdapter;
 
-    HashMap<IrcConnection, ServerTabFragment> serverTabFragments = new HashMap<IrcConnection, ServerTabFragment>();
-    HashMap<Channel, ChannelTabFragment> channelTabFragments = new HashMap<Channel, ChannelTabFragment>();
-    HashMap<User, UserTabFragment> userTabFragments = new HashMap<User, UserTabFragment>();
-
-    public IrcServiceAdapter ircConnectionAdapter;
-
+    /** Views. VIEWS! */
     RelativeLayout layout;
     ListView listview;
+
+    /** Lists of fragments */
+    HashMap<IrcConnection, TabAndQueue> serverTabs = new HashMap<IrcConnection, TabAndQueue>();
+    HashMap<Channel, TabAndQueue> channelTabs = new HashMap<Channel, TabAndQueue>();
+    HashMap<User, TabAndQueue> userTabs = new HashMap<User, TabAndQueue>();
+
 
     /** Constructor; supplies MasterActivity reference. */
     public ChatFragment(MasterActivity master) {
@@ -54,9 +63,6 @@ public class ChatFragment extends CallistoFragment implements ActionBar.TabListe
             layout = (RelativeLayout) inflater.inflate(R.layout.chat_tab, null);
 
             listview = (ListView) layout.findViewById(android.R.id.list);
-
-            master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
@@ -88,6 +94,7 @@ public class ChatFragment extends CallistoFragment implements ActionBar.TabListe
     @Override
     public void show() {
         //TODO
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
     }
 
     @Override
@@ -95,76 +102,105 @@ public class ChatFragment extends CallistoFragment implements ActionBar.TabListe
         //TODO
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////// Create a tab ////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
     /** Create a server tab.
      * @param server The server to associate with the tab.
      */
-    public void createTab(IrcConnection server) {
+    public void createTab(final IrcConnection server) {
         Log.v(TAG, "Creating Server tab");
+        final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
+        serverTabs.put(server, new TabAndQueue(tabFragment));
 
-        ActionBar.Tab tab = master.getSupportActionBar().newTab();
-        tab.setText(server.getServer().getAddress());
-        master.getSupportActionBar().addTab(tab);
+        master.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG, "Creating Server tab on UI thread");
+                ActionBar.Tab tab = master.getSupportActionBar().newTab();
+                tab.setText(server.getServer().getAddress());
+                tab.setTag(server);
+                tab.setTabListener(new ChatTabListener(tabFragment));
+                master.getSupportActionBar().addTab(tab);
 
-        ServerTabFragment tabFragment = new ServerTabFragment(master, server);
-        tabFragments.put(server.getServer().getAddress(), tabFragment);
-        serverTabFragments.put(server, tabFragment);
+                // Check for any waiting messages that arrived before the GUI was ready
+                if(serverTabs.containsKey(server))
+                    serverTabs.get(server).notifyQueue();
+            }
+        });
     }
 
     /** Create a channel tab.
      * @param channel The channel to associate with the tab.
      */
-    public void createTab(Channel channel) {
+    public void createTab(final Channel channel) {
         Log.v(TAG, "Creating Channel tab");
+        final ChannelTabFragment tabFragment = new ChannelTabFragment(master, channel);
+        channelTabs.put(channel, new TabAndQueue(tabFragment));
 
-        ActionBar.Tab tab = master.getSupportActionBar().newTab();
-        tab.setText(channel.getName());
-        master.getSupportActionBar().addTab(tab);
+        master.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG, "Creating Channel tab on UI thread");
 
-        ChannelTabFragment tabFragment = new ChannelTabFragment(master, channel);
-        tabFragments.put(channel.getName(), tabFragment);
-        channelTabFragments.put(channel, tabFragment);
+                ActionBar.Tab tab = master.getSupportActionBar().newTab();
+                tab.setText(channel.getName());
+                tab.setTag(channel);
+                tab.setTabListener(new ChatTabListener(tabFragment));
+                master.getSupportActionBar().addTab(tab);
+
+                // Check for any waiting messages that arrived before the GUI was ready
+                if(channelTabs.containsKey(channel))
+                    channelTabs.get(channel).notifyQueue();
+            }
+        });
     }
 
     /** Create a user (private message) tab.
      * @param user The user object to associate with the tab.
      */
-    //TODO: What should this be stored under? Username? Nickname? WHAT?
-    public void createTab(User user) {
+    public void createTab(final User user) {
         Log.v(TAG, "Creating User tab");
+        final UserTabFragment tabFragment = new UserTabFragment(master, user);
+        userTabs.put(user, new TabAndQueue(tabFragment));
 
-        ActionBar.Tab tab = master.getSupportActionBar().newTab();
-        tab.setText(user.getNick());
-        tab.setTag(user.getHostName());
-        master.getSupportActionBar().addTab(tab);
+        master.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG, "Creating User tab on UI thread");
 
-        UserTabFragment tabFragment = new UserTabFragment(master, user);
-        tabFragments.put(user.getHostName(), tabFragment);
-        userTabFragments.put(user, tabFragment);
+                ActionBar.Tab tab = master.getSupportActionBar().newTab();
+                tab.setText(user.getNick());
+                tab.setTag(user);
+                tab.setTabListener(new ChatTabListener(tabFragment));
+                master.getSupportActionBar().addTab(tab);
+
+                // Check for any waiting messages that arrived before the GUI was ready
+                if(userTabs.containsKey(user))
+                    userTabs.get(user).notifyQueue();
+            }
+        });
+
+
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        TabFragment tabFragment = tabFragments.get(tab.getTag());
-        fragmentTransaction.replace(android.R.id.content, tabFragment);
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        //fragmentTransaction.remove(tabFragments.get(tab.getPosition()));
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////// Receiving messages & passing them on to their fragments //////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     /** Receive a message destined for a Server tab
-     * @param ircConnection The Server connection.
+     * @param server The Server connection.
      * @param ircMessage The message.
      * @param propogate Whether or not it should be propogated to channels.
      */
-    public void receive(IrcConnection ircConnection, IrcMessage ircMessage, boolean propogate) {
-        serverTabFragments.get(ircConnection).append(ircMessage);
+    public void receive(IrcConnection server, IrcMessage ircMessage, boolean propogate) {
+        Log.d(TAG, "Received");
+        Log.d(TAG, " comes from server: " + server.getServer().getAddress());
+        Log.d(TAG, " message is " + ircMessage.toString());
+
+        // Append to queue
+        serverTabs.get(server).enqueue(ircMessage);
 
         //TODO: Log here
     }
@@ -174,7 +210,12 @@ public class ChatFragment extends CallistoFragment implements ActionBar.TabListe
      * @param ircMessage The message.
      */
     public void receive(Channel channel, IrcMessage ircMessage) {
-        channelTabFragments.get(channel).append(ircMessage);
+        Log.d(TAG, "Received");
+        Log.d(TAG, " comes from channel: " + channel.getName());
+        Log.d(TAG, " message is " + ircMessage.toString());
+
+        // Append to queue
+        channelTabs.get(channel).enqueue(ircMessage);
 
         //TODO: Log here
     }
@@ -184,10 +225,68 @@ public class ChatFragment extends CallistoFragment implements ActionBar.TabListe
      * @param ircMessage The message.
      */
     public void receive(User user, IrcMessage ircMessage) {
-        //TODO: Create tab
+        Log.d(TAG, "Received");
+        Log.d(TAG, " comes from user: " + user.getNick());
+        Log.d(TAG, " message is " + ircMessage.toString());
 
-        userTabFragments.get(user).append(ircMessage);
+        //TODO: Create tab if it doesn't exist
+
+        // Append to queue
+        userTabs.get(user).enqueue(ircMessage);
 
         //TODO: Log here
+    }
+
+    public void handleError(Exception e) {
+        Log.e(TAG, "ERROR: " + e.toString());
+        e.printStackTrace();
+        Toast.makeText(master, e.getMessage(), Toast.LENGTH_SHORT);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////// Classes ///////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** Listener for when the Tab changes */
+    class ChatTabListener implements ActionBar.TabListener {
+        TabFragment mFragment;
+        public ChatTabListener(TabFragment fragment) {
+            mFragment = fragment;
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            ft.add(R.id.main_fragment, mFragment);
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            ft.remove(mFragment);
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Toast.makeText(master, "Reselected!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** A wrapper for Fragment + Queue, because sometimes messages are received before Fragments are initiated. */
+    public class TabAndQueue {
+        TabFragment tabFragment;
+        Queue<IrcMessage> msgQueue = new LinkedList<IrcMessage>();
+
+        public TabAndQueue(TabFragment tabFragment) {
+            this.tabFragment = tabFragment;
+        }
+
+        public void notifyQueue() {
+            tabFragment.append(msgQueue);
+        }
+
+        public void enqueue(IrcMessage msg) {
+            msgQueue.add(msg);
+            notifyQueue();
+        }
     }
 }
