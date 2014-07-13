@@ -15,17 +15,24 @@ import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 import com.sorcix.sirc.Channel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public abstract class TabFragment extends CallistoFragment {
     String TAG = "Callisto:chat:TabFragment";
+
+    /** Date format for the Log */
+    public static final SimpleDateFormat sdfLog = new SimpleDateFormat("yyyy-MM-dd");
+    public static final String LOG_SUBDIR = "logs";
 
     RelativeLayout layout;
     ListView listView;
     EditText inputField;
     ArrayList<IrcMessage> messages = new ArrayList<IrcMessage>();
     ChatListAdapter chatListAdapter;
+    private Queue<IrcMessage> msgQueue = new LinkedList<IrcMessage>();
 
     /** Constructor; supplies MasterActivity reference. */
     public TabFragment(MasterActivity master) {
@@ -78,19 +85,27 @@ public abstract class TabFragment extends CallistoFragment {
         }
     };
 
+    // Run on NOT UI THREAD
+    synchronized public void receive(IrcMessage ircMessage) {
+        msgQueue.add(ircMessage);
+        notifyQueue();
+        log(ircMessage);
+    }
 
-    abstract void send(String msg);
-
-    synchronized public void append(final Queue<IrcMessage> queue) {
+    synchronized public void notifyQueue() {
         master.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            if(queue!=null)
-                while(!queue.isEmpty()) {
-                    messages.add(queue.poll());
+                if(msgQueue==null)
+                    return;
+                while(!msgQueue.isEmpty()) {
+                    messages.add(msgQueue.poll());
                     chatListAdapter.notifyDataSetChanged();
                 }
             }
         });
     }
+
+    abstract void send(String msg);
+    abstract void log(IrcMessage msg);
 }

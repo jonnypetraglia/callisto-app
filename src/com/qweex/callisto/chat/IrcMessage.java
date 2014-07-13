@@ -32,6 +32,10 @@ public class IrcMessage
             this.timestamp.setTime(time);
     }
 
+    public Date getRawDate() {
+        return timestamp.getTime();
+    }
+
     public CharSequence getTime() {
         return sdfTime.format(timestamp.getTime());
     }
@@ -46,6 +50,8 @@ public class IrcMessage
 
     @Override
     public String toString() {
-        return title + ": " + message;
+        return getTime() +
+                (getTitle()!=null ? (" " + getTitle()) : "") +
+                (getMessage()!=null ? (" " + getMessage()) : "");
     }
 }

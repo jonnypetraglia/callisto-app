@@ -14,14 +14,11 @@ import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /** Houses & manages the TabFragments.
  * @author      Jon Petraglia <notbryant@gmail.com>
@@ -38,10 +35,9 @@ public class ChatFragment extends CallistoFragment {
     ListView listview;
 
     /** Lists of fragments */
-    HashMap<IrcConnection, TabAndQueue> serverTabs = new HashMap<IrcConnection, TabAndQueue>();
-    HashMap<Channel, TabAndQueue> channelTabs = new HashMap<Channel, TabAndQueue>();
-    HashMap<User, TabAndQueue> userTabs = new HashMap<User, TabAndQueue>();
-
+    HashMap<IrcConnection, ServerTabFragment> serverTabs = new HashMap<IrcConnection, ServerTabFragment>();
+    HashMap<Channel, ChannelTabFragment> channelTabs = new HashMap<Channel, ChannelTabFragment>();
+    HashMap<User, UserTabFragment> userTabs = new HashMap<User, UserTabFragment>();
 
     /** Constructor; supplies MasterActivity reference. */
     public ChatFragment(MasterActivity master) {
@@ -112,14 +108,14 @@ public class ChatFragment extends CallistoFragment {
     public void createTab(final IrcConnection server) {
         Log.v(TAG, "Creating Server tab");
         final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
-        serverTabs.put(server, new TabAndQueue(tabFragment));
+        serverTabs.put(server, tabFragment);
 
         master.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.v(TAG, "Creating Server tab on UI thread");
                 ActionBar.Tab tab = master.getSupportActionBar().newTab();
-                tab.setText(server.getServer().getAddress());
+                tab.setText(server.getServerAddress());
                 tab.setTag(server);
                 tab.setTabListener(new ChatTabListener(tabFragment));
                 master.getSupportActionBar().addTab(tab);
@@ -137,7 +133,7 @@ public class ChatFragment extends CallistoFragment {
     public void createTab(final Channel channel) {
         Log.v(TAG, "Creating Channel tab");
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, channel);
-        channelTabs.put(channel, new TabAndQueue(tabFragment));
+        channelTabs.put(channel, tabFragment);
 
         master.runOnUiThread(new Runnable() {
             @Override
@@ -163,7 +159,7 @@ public class ChatFragment extends CallistoFragment {
     public void createTab(final User user) {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, user);
-        userTabs.put(user, new TabAndQueue(tabFragment));
+        userTabs.put(user, tabFragment);
 
         master.runOnUiThread(new Runnable() {
             @Override
@@ -199,10 +195,7 @@ public class ChatFragment extends CallistoFragment {
         Log.d(TAG, " comes from server: " + server.getServer().getAddress());
         Log.d(TAG, " message is " + ircMessage.toString());
 
-        // Append to queue
-        serverTabs.get(server).enqueue(ircMessage);
-
-        //TODO: Log here
+        serverTabs.get(server).receive(ircMessage);
     }
 
     /** Receive a message destined for a Server tab
@@ -214,10 +207,7 @@ public class ChatFragment extends CallistoFragment {
         Log.d(TAG, " comes from channel: " + channel.getName());
         Log.d(TAG, " message is " + ircMessage.toString());
 
-        // Append to queue
-        channelTabs.get(channel).enqueue(ircMessage);
-
-        //TODO: Log here
+        channelTabs.get(channel).receive(ircMessage);
     }
 
     /** Receive a message destined for a Server tab
@@ -229,12 +219,8 @@ public class ChatFragment extends CallistoFragment {
         Log.d(TAG, " comes from user: " + user.getNick());
         Log.d(TAG, " message is " + ircMessage.toString());
 
-        //TODO: Create tab if it doesn't exist
-
-        // Append to queue
-        userTabs.get(user).enqueue(ircMessage);
-
-        //TODO: Log here
+        //TODO: Create tab if it doesn't exist ???
+        userTabs.get(user).receive(ircMessage);
     }
 
     public void handleError(Exception e) {
@@ -268,25 +254,6 @@ public class ChatFragment extends CallistoFragment {
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
             Toast.makeText(master, "Reselected!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /** A wrapper for Fragment + Queue, because sometimes messages are received before Fragments are initiated. */
-    public class TabAndQueue {
-        TabFragment tabFragment;
-        Queue<IrcMessage> msgQueue = new LinkedList<IrcMessage>();
-
-        public TabAndQueue(TabFragment tabFragment) {
-            this.tabFragment = tabFragment;
-        }
-
-        public void notifyQueue() {
-            tabFragment.append(msgQueue);
-        }
-
-        public void enqueue(IrcMessage msg) {
-            msgQueue.add(msg);
-            notifyQueue();
         }
     }
 }
