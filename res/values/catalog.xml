@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_episodes">No episodes to display</string>
+    <string name="update">Update</string>
+    <string name="update_all">Update All</string>
+    <string name="hide_watched">Hide Watched</string>
+    <string name="show_watched">Show Watched</string>
+    <string name="mark_all">Mark All</string>
+
+    <string name="download">Download</string>
+    <string name="stream">Stream</string>
+    <string name="enqueue_stream">Enqueue Stream</string>
+    <string name="share">Share</string>
+    <string name="web_link">Web link</string>
+    <string name="mark">Mark</string>
+    <string name="unmark">Unmark</string>
+
+    <string name="reloading">Reloading</string>
+
+
+    <color name="catalog_row_pb">#333333</color>
+    <color name="catalog_row_pb_bg">@android:color/transparent</color>
+</resources>

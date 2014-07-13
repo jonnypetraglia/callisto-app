@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Callisto</string>
+    <string name="qweex_donation">com.qweex.donation</string>
+
+
     <color name="ltgray">#ffcccccc</color>
-    <color name="nav_top">#703070</color>
-    <color name="nav_bottom">#703070</color>
-    <color name="drawer_bg">#111111</color>
 
     <color name="logo_color1">#194c76</color>
     <color name="logo_color2">#706f6f</color>
@@ -11,9 +12,6 @@
 
     <color name="qweex">#6cb700</color>
     <color name="qweex_grey">#333333</color>
-
-    <color name="catalog_row_pb">#333333</color>
-    <color name="catalog_row_pb_bg">@android:color/transparent</color>
 
     <color name="text_main">#333333</color>
     <color name="text_muted">#666666</color>

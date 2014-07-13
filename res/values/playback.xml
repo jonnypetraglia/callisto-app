@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="forward">Forward</string>
+    <string name="next">Next</string>
+    <string name="queue">Queue</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nickname">Nickname</string>
+    <string name="username">Username</string>
+    <string name="real_name">Real Name</string>
+    <string name="connect">Connect</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Advanced</string>
+    <string name="a_nickname_is_required">A nickname is required.</string>
+    <string name="remember_names">Remember Names</string>
+    <string name="remember_password">Remember Password</string>
+    <string name="nickserv_password">NickServ Password</string>
+
+
+    <!-- Strings that will be fetched and formatted -->
+    <string name="connected">Connected to %%s</string>
+    <string name="disconnected">Disconnected</string>
+
+    <string name="join">%%s has joined (%%s)</string>
+    <string name="kick">%%s was kicked by %%s (%%s)</string>
+    <string name="part">%%s has left (%%s)</string>
+    <string name="mode">%%s has left (%%s)</string>
+
+    <string name="notice">Notice from %%s:</string>
+    <string name="topic">Topic: %%s (set by %%s)</string>
+
+    <string name="you">You</string>
+    <string name="server">Server</string>
+    <string name="channels">Channels</string>
+    <string name="users">Users</string>
+
+</resources>

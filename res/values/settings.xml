@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reset_colors_title">Confirm</string>
+    <string name="reset_colors_message">Are you sure you want to reset the IRC colors to their default values?</string>
+</resources>
