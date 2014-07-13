@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.widget.*;
 import com.qweex.callisto.catalog.CatalogFragment;
 import com.qweex.callisto.catalog.playback.PlaybackFragment;
 import com.qweex.callisto.chat.ChatFragment;
+import com.qweex.callisto.chat.IrcService;
 import com.qweex.callisto.chat.LoginFragment;
 import com.qweex.callisto.contact.ContactFragment;
 

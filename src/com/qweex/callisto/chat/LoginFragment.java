@@ -1,6 +1,7 @@
 package com.qweex.callisto.chat;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import com.qweex.callisto.R;
 
 public class LoginFragment extends CallistoFragment {
 
-    String TAG = "Callisto:chat:LoginFragment";
+    String TAG = "Callisto:chat_tab:LoginFragment";
 
     RelativeLayout layout;
     final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password}; //TODO: This comes later, R.id.remember_names, R.id.remember_password};
@@ -89,7 +90,9 @@ public class LoginFragment extends CallistoFragment {
             String real_name = ((TextView)layout.findViewById(R.id.real_name)).getText().toString();
             String password = ((TextView)layout.findViewById(R.id.nickserv_password)).getText().toString();
 
-            master.chatFragment.connect(nickname, username, real_name, password);
+            Log.d(TAG, "Logging in from form");
+            master.chatFragment.connect(nickname, username, real_name, password,
+                    new String[]{"#qweex"});
             master.pushFragment(master.chatFragment, false);
         }
     };
