@@ -32,10 +32,11 @@ public class MultiChooserDialog {
         this.statuses = new HashMap<String, Boolean>();
         for(String item : items)
             this.statuses.put(item, false);
-        for(String item : selected) {
-            Log.d("Callisto", "selected: " + item);
-            this.statuses.put(item, true);
-        }
+        if(selected!=null)
+            for(String item : selected) {
+                Log.d("Callisto", "selected: " + item);
+                this.statuses.put(item, true);
+            }
 
         // Create the ListView
         listview = new ListView(context);

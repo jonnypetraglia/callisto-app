@@ -33,6 +33,7 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
     /** Constructor; supplies MasterActivity reference. */
     public LoginFragment(MasterActivity master) {
         super(master);
+        channelsToJoin = new String[] { "#qweex" };
     }
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
@@ -61,6 +62,8 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
                 }
             });
 
+            layout.findViewById(R.id.connect).setEnabled(channelsToJoin.length>0);
+
             layout.findViewById(R.id.select_channels).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -68,8 +71,6 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
                 }
             });
 
-
-            onChosen(new String[] { "#qweex" });
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
@@ -126,7 +127,8 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
 
     @Override
     public void onChosen(String[] selected) {
-        layout.findViewById(R.id.connect).setEnabled(selected!=null && selected.length>0);
-        channelsToJoin = selected;
+        if(selected!=null)
+            channelsToJoin = selected;
+        layout.findViewById(R.id.connect).setEnabled(channelsToJoin.length>0);
     }
 }
