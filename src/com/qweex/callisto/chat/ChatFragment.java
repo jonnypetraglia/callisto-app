@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
+import com.qweex.callisto.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
@@ -110,20 +111,7 @@ public class ChatFragment extends CallistoFragment {
         final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
         serverTabs.put(server, tabFragment);
 
-        master.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.v(TAG, "Creating Server tab on UI thread");
-                ActionBar.Tab tab = master.getSupportActionBar().newTab();
-                tab.setText(server.getServerAddress());
-                tab.setTag(server);
-                tab.setTabListener(new ChatTabListener(tabFragment));
-                master.getSupportActionBar().addTab(tab);
-
-                // Check for any waiting messages that arrived before the GUI was ready
-                serverTabs.get(server).notifyQueue();
-            }
-        });
+        _createTab(tabFragment, server.getServerAddress(), server);
     }
 
     /** Create a channel tab.
@@ -134,21 +122,7 @@ public class ChatFragment extends CallistoFragment {
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
-        master.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.v(TAG, "Creating Channel tab on UI thread");
-
-                ActionBar.Tab tab = master.getSupportActionBar().newTab();
-                tab.setText(channel.getName());
-                tab.setTag(channel);
-                tab.setTabListener(new ChatTabListener(tabFragment));
-                master.getSupportActionBar().addTab(tab);
-
-                // Check for any waiting messages that arrived before the GUI was readys
-                channelTabs.get(channel).notifyQueue();
-            }
-        });
+        _createTab(tabFragment, channel.getName(), channel);
     }
 
     /** Create a user (private message) tab.
@@ -158,24 +132,32 @@ public class ChatFragment extends CallistoFragment {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
+        _createTab(tabFragment, user.getNick(), user);
+    }
 
+
+    private void _createTab(final TabFragment fragment, final String tabText, final Object tabTag) {
         master.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.v(TAG, "Creating User tab on UI thread");
 
+                fragment.receive(new IrcMessage(
+                        ResCache.str(R.string.connecting),
+                        null,
+                        IrcMessage.Type.CONNECTION
+                ));
+
                 ActionBar.Tab tab = master.getSupportActionBar().newTab();
-                tab.setText(user.getNick());
-                tab.setTag(user);
-                tab.setTabListener(new ChatTabListener(tabFragment));
+                tab.setText(tabText);
+                tab.setTag(tabTag);
+                tab.setTabListener(new ChatTabListener(fragment));
                 master.getSupportActionBar().addTab(tab);
 
                 // Check for any waiting messages that arrived before the GUI was ready
-                userTabs.get(user).notifyQueue();
+                fragment.notifyQueue();
             }
         });
-
-
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,10 +208,14 @@ public class ChatFragment extends CallistoFragment {
         userTabs.get(user).receive(ircMessage);
     }
 
-    public void handleError(Exception e) {
+    public void handleError(IrcConnection ircConnection, Exception e) {
         Log.e(TAG, "ERROR: " + e.toString());
         e.printStackTrace();
-        Toast.makeText(master, e.getMessage(), Toast.LENGTH_SHORT);
+        serverTabs.get(ircConnection).receive(new IrcMessage(
+                ResCache.str(R.string.error),
+                e.toString(),
+                IrcMessage.Type.FATAL
+        ));
     }
 
 

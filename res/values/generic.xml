@@ -3,6 +3,8 @@
     <string name="app_name">Callisto</string>
     <string name="qweex_donation">com.qweex.donation</string>
 
+    <string name="error">Error</string>
+
 
     <color name="ltgray">#ffcccccc</color>
 

@@ -14,6 +14,7 @@
 
 
     <!-- Strings that will be fetched and formatted -->
+    <string name="connecting">Connecting</string>
     <string name="connected" formatted="false">Connected to %s</string>
     <string name="disconnected">Disconnected</string>
 
