@@ -18,18 +18,21 @@ public class UserTabFragment extends TabFragment {
     String TAG = super.TAG + ":User";
 
     User user;
+    IrcConnection server;
 
-    public UserTabFragment(MasterActivity master, User user) {
+
+    public UserTabFragment(MasterActivity master, IrcConnection server, User user) {
         super(master);
         Log.v(TAG, "Creating User Fragment");
         this.user = user;
+        this.server = server;
     }
 
     @Override
     void send(String msg) {
         user.sendMessage(msg);
         receive(new IrcMessage(
-                user.getNick(),
+                server.getClient().getNick(),
                 msg,
                 IrcMessage.Type.MESSAGE
         ));

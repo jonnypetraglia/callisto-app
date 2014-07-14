@@ -18,6 +18,7 @@
     <string name="disconnected">Disconnected</string>
 
     <string name="join" formatted="false">%s has joined</string>
+    <string name="join_me" formatted="false">You have joined</string>
     <string name="kick" formatted="false">%s was kicked by %s (%s)</string>
     <string name="part" formatted="false">%s has left (%s)</string>
     <string name="mode" formatted="false">%s has left (%s)</string>

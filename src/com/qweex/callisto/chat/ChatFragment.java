@@ -129,9 +129,9 @@ public class ChatFragment extends CallistoFragment {
     /** Create a channel tab.
      * @param channel The channel to associate with the tab.
      */
-    public void createTab(final Channel channel) {
+    public void createTab(IrcConnection server, final Channel channel) {
         Log.v(TAG, "Creating Channel tab");
-        final ChannelTabFragment tabFragment = new ChannelTabFragment(master, channel);
+        final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
         master.runOnUiThread(new Runnable() {
@@ -154,9 +154,9 @@ public class ChatFragment extends CallistoFragment {
     /** Create a user (private message) tab.
      * @param user The user object to associate with the tab.
      */
-    public void createTab(final User user) {
+    public void createTab(IrcConnection server, final User user) {
         Log.v(TAG, "Creating User tab");
-        final UserTabFragment tabFragment = new UserTabFragment(master, user);
+        final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
 
         master.runOnUiThread(new Runnable() {

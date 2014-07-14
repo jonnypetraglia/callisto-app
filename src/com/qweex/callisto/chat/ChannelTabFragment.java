@@ -8,6 +8,7 @@ import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 import com.qweex.callisto.ResCache;
 import com.sorcix.sirc.Channel;
+import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
 import java.io.File;
@@ -18,18 +19,20 @@ public class ChannelTabFragment extends TabFragment {
     String TAG = super.TAG + ":Channel";
 
     Channel channel;
+    IrcConnection server;
 
-    public ChannelTabFragment(MasterActivity master, Channel channel) {
+    public ChannelTabFragment(MasterActivity master, IrcConnection server, Channel channel) {
         super(master);
         Log.v(TAG, "Creating Channel Fragment");
         this.channel = channel;
+        this.server = server;
     }
 
     @Override
     void send(String msg) {
         channel.sendMessage(msg);
         receive(new IrcMessage(
-                channel.getUs().getNick(),
+                server.getClient().getNick(),
                 msg,
                 IrcMessage.Type.MESSAGE
         ));

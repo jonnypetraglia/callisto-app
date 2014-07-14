@@ -126,7 +126,7 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
 
     @Override
     public void onChosen(String[] selected) {
-        layout.findViewById(R.id.connect).setEnabled(selected.length>0);
+        layout.findViewById(R.id.connect).setEnabled(selected!=null && selected.length>0);
         channelsToJoin = selected;
     }
 }
