@@ -87,15 +87,20 @@ public abstract class TabFragment extends CallistoFragment {
     };
 
     // Run on NOT UI THREAD
-    synchronized public void receive(IrcMessage ircMessage) {
-        IrcMessage[] messageSplit = ircMessage.splitByNewline();
+    synchronized public void receive(final IrcMessage ircMessage) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                IrcMessage[] messageSplit = ircMessage.splitByNewline();
 
-        Log.d(TAG, ">>>Received '" + ircMessage.toString() + "'");
+                Log.d(TAG, ">>>Received '" + ircMessage.toString() + "'");
 
-        Collections.addAll(msgQueue, messageSplit);
+                Collections.addAll(msgQueue, messageSplit);
 
-        notifyQueue();
-        log(ircMessage);
+                notifyQueue();
+                //log(ircMessage);
+            }
+        }).start();
     }
 
     synchronized public void notifyQueue() {

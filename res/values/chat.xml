@@ -47,7 +47,7 @@
 
     <integer name="text_size">16</integer>
 
-    <color name="chat_connection">#9c0</color>
+    <color name="chat_connection">#333333</color>
     <color name="chat_bg">#ffffff</color>
     <color name="chat_text">#000000</color>
     <color name="chat_time">#666666</color>

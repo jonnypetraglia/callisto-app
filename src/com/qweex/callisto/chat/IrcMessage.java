@@ -31,7 +31,7 @@ public class IrcMessage
 
     public enum UserMode {FOUNDER, ADMIN, OP, HALFOP, VOICE}
 
-    SpannableString title = null, message = null;
+    String title = null, message = null;
     Calendar timestamp;
     Type type;
 
@@ -42,10 +42,8 @@ public class IrcMessage
 
     public IrcMessage(String title, String message, Type type, Date time)
     {
-        if(title!=null)
-            this.title = new SpannableString(title);
-        if(message!=null)
-            this.message = new SpannableString(message);
+        this.title = title;
+        this.message = message;
         this.type = type;
         this.timestamp = Calendar.getInstance();
         if(time!=null)
@@ -135,7 +133,7 @@ public class IrcMessage
         IrcMessage[] result = new IrcMessage[lines.length];
 
         for(int i=0; i<lines.length; ++i)
-            result[i] = new IrcMessage(title.toString(), lines[i], type);
+            result[i] = new IrcMessage(title == null ? null : title.toString(), lines[i], type);
 
         return result;
     }
