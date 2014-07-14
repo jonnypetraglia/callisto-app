@@ -44,6 +44,12 @@ public class ChatListAdapter extends ArrayAdapter<IrcMessage> {
         title.setText(ircMessage.getTitle());
         message.setText(ircMessage.getMessage());
 
+        //TODO Set colors by preference
+        time.setTextColor(ircMessage.getTimeColor());
+        title.setTextColor(ircMessage.getTitleColor());
+        message.setTextColor(ircMessage.getMessageColor());
+        message.setLinkTextColor(ircMessage.getLinkColors());
+
         return(v);
     }
 }

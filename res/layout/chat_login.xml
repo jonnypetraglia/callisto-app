@@ -64,11 +64,20 @@
             android:visibility="gone"
             android:layout_alignLeft="@+id/nickserv_password"/>
 
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_channels"
+            android:id="@+id/select_channels"
+            android:layout_below="@+id/remember_password"
+            android:layout_alignRight="@+id/nick"
+            android:layout_alignLeft="@+id/nick" android:visibility="gone"/>
+
     <View
             android:id="@+id/line"
             android:layout_width="250dp"
             android:layout_height="2dp"
-            android:layout_below="@+id/remember_password"
+            android:layout_below="@+id/select_channels"
             android:background="#c0c0c0" android:layout_centerHorizontal="true" android:layout_margin="5dp"/>
 
     <Button

@@ -82,7 +82,7 @@ public class IrcService extends IntentService {
             for(String channel_name : channel_names) {
                 Channel channel = ircConnection.createChannel(channel_name);
                 chatFragment.createTab(channel);
-                Log.i(TAG, "Connecting to  " + channel);
+                Log.i(TAG, "Joining  " + channel);
                 channel.join();
             }
 

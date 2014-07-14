@@ -9,6 +9,7 @@ import java.util.HashMap;
  * @author      Jon Petraglia <notbryant@gmail.com>
  * */
 public class ResCache {
+    static String TAG = "Callisto:TAG";
 
     public static Resources resources;
     static HashMap<Integer, String> strings = new HashMap<Integer, String>();
@@ -17,8 +18,8 @@ public class ResCache {
 
     static public String str(Integer stringId, Object... args) {
         if(!strings.containsKey(stringId))
-            strings.put(stringId, resources.getString(stringId, args));
-        return strings.get(stringId);
+            strings.put(stringId, resources.getString(stringId));
+        return String.format(strings.get(stringId), args);
     }
 
     static public Drawable draw(Integer drawId) {

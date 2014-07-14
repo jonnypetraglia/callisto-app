@@ -132,9 +132,11 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onJoin(IrcConnection irc, Channel channel, User user) {
         super.onJoin(irc, channel, user);
+        if(user.isUs())
+            return;
         chat.receive(channel, new IrcMessage(
                 null,
-                " *** " + ResCache.str(R.string.join, getNickOrMe(user), user.getHostName()),
+                " *** " + ResCache.str(R.string.join, user.getNick()),
                 IrcMessage.Type.JOIN
         ));
     }

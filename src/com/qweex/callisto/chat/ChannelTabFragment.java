@@ -28,6 +28,11 @@ public class ChannelTabFragment extends TabFragment {
     @Override
     void send(String msg) {
         channel.sendMessage(msg);
+        receive(new IrcMessage(
+                channel.getUs().getNick(),
+                msg,
+                IrcMessage.Type.MESSAGE
+        ));
     }
 
     @Override

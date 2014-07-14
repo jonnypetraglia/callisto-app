@@ -12,13 +12,23 @@ import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
+import com.qweex.callisto.ResCache;
+import com.qweex.utils.MultiChooserDialog;
 
-public class LoginFragment extends CallistoFragment {
+public class LoginFragment extends CallistoFragment implements MultiChooserDialog.OnChosen {
 
     String TAG = "Callisto:chat_tab:LoginFragment";
 
     RelativeLayout layout;
-    final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password}; //TODO: This comes later, R.id.remember_names, R.id.remember_password};
+    final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password, R.id.select_channels}; //TODO: This comes later, R.id.remember_names, R.id.remember_password};
+    String[] channelsToJoin;
+    String[] availableChannels = new String[] {
+            "#jupiterbroadcasting",
+            "#jupiterdev",
+            "#jupitergaming",
+            "#jupiterops",
+            "#qweex"
+    };
 
     /** Constructor; supplies MasterActivity reference. */
     public LoginFragment(MasterActivity master) {
@@ -51,6 +61,15 @@ public class LoginFragment extends CallistoFragment {
                 }
             });
 
+            layout.findViewById(R.id.select_channels).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new MultiChooserDialog(master, ResCache.str(R.string.select_channels), LoginFragment.this, availableChannels, channelsToJoin);
+                }
+            });
+
+
+            onChosen(new String[] { "#qweex" });
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
@@ -91,8 +110,7 @@ public class LoginFragment extends CallistoFragment {
             String password = ((TextView)layout.findViewById(R.id.nickserv_password)).getText().toString();
 
             Log.d(TAG, "Logging in from form");
-            master.chatFragment.connect(nickname, username, real_name, password,
-                    new String[]{"#qweex"});
+            master.chatFragment.connect(nickname, username, real_name, password, channelsToJoin);
             master.pushFragment(master.chatFragment, false);
         }
     };
@@ -104,5 +122,11 @@ public class LoginFragment extends CallistoFragment {
 
     @Override
     public void hide() {
+    }
+
+    @Override
+    public void onChosen(String[] selected) {
+        layout.findViewById(R.id.connect).setEnabled(selected.length>0);
+        channelsToJoin = selected;
     }
 }

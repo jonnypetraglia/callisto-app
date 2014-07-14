@@ -10,23 +10,43 @@
     <string name="remember_names">Remember Names</string>
     <string name="remember_password">Remember Password</string>
     <string name="nickserv_password">NickServ Password</string>
+    <string name="select_channels">Select Channels</string>
 
 
     <!-- Strings that will be fetched and formatted -->
-    <string name="connected">Connected to %%s</string>
+    <string name="connected" formatted="false">Connected to %s</string>
     <string name="disconnected">Disconnected</string>
 
-    <string name="join">%%s has joined (%%s)</string>
-    <string name="kick">%%s was kicked by %%s (%%s)</string>
-    <string name="part">%%s has left (%%s)</string>
-    <string name="mode">%%s has left (%%s)</string>
+    <string name="join" formatted="false">%s has joined</string>
+    <string name="kick" formatted="false">%s was kicked by %s (%s)</string>
+    <string name="part" formatted="false">%s has left (%s)</string>
+    <string name="mode" formatted="false">%s has left (%s)</string>
 
-    <string name="notice">Notice from %%s:</string>
-    <string name="topic">Topic: %%s (set by %%s)</string>
+    <string name="notice" formatted="false">Notice from %s:</string>
+    <string name="topic" formatted="false">Topic: %s (set by %s)</string>
 
     <string name="you">You</string>
     <string name="server">Server</string>
     <string name="channels">Channels</string>
     <string name="users">Users</string>
 
+
+    <color name="chat_connection">#9c0</color>
+    <color name="chat_bg">#ffffff</color>
+    <color name="chat_text">#000000</color>
+    <color name="chat_time">#666666</color>
+    <color name="chat_nick_me">#FFF5EE</color>
+    <color name="chat_action">#9400D3</color>
+    <color name="chat_topic">#B8860B</color>
+    <color name="chat_notice">@color/chat_topic</color>
+    <color name="chat_mode">@color/chat_topic</color>
+    <color name="chat_motd">@color/chat_topic</color>
+    <color name="chat_join">#0000FF</color>
+    <color name="chat_nick">@color/chat_join</color>
+    <color name="chat_part">@color/chat_join</color>
+    <color name="chat_quit">@color/chat_join</color>
+    <color name="chat_kick">@color/chat_join</color>
+    <color name="chat_mention">#F08080</color>
+    <color name="chat_link">#0000EE</color>
+    <color name="chat_error">#800000</color>
 </resources>

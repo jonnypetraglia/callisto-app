@@ -121,8 +121,7 @@ public class ChatFragment extends CallistoFragment {
                 master.getSupportActionBar().addTab(tab);
 
                 // Check for any waiting messages that arrived before the GUI was ready
-                if(serverTabs.containsKey(server))
-                    serverTabs.get(server).notifyQueue();
+                serverTabs.get(server).notifyQueue();
             }
         });
     }
@@ -146,9 +145,8 @@ public class ChatFragment extends CallistoFragment {
                 tab.setTabListener(new ChatTabListener(tabFragment));
                 master.getSupportActionBar().addTab(tab);
 
-                // Check for any waiting messages that arrived before the GUI was ready
-                if(channelTabs.containsKey(channel))
-                    channelTabs.get(channel).notifyQueue();
+                // Check for any waiting messages that arrived before the GUI was readys
+                channelTabs.get(channel).notifyQueue();
             }
         });
     }
@@ -173,8 +171,7 @@ public class ChatFragment extends CallistoFragment {
                 master.getSupportActionBar().addTab(tab);
 
                 // Check for any waiting messages that arrived before the GUI was ready
-                if(userTabs.containsKey(user))
-                    userTabs.get(user).notifyQueue();
+                userTabs.get(user).notifyQueue();
             }
         });
 

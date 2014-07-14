@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.sorcix.sirc.Channel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public abstract class TabFragment extends CallistoFragment {
     public TabFragment(MasterActivity master) {
         super(master);
         Log.v(TAG, "()");
-        chatListAdapter = new ChatListAdapter(master, R.layout.irc_line, messages);
+        chatListAdapter = new ChatListAdapter(master, R.layout.chat_line, messages);
     }
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
@@ -79,9 +78,10 @@ public abstract class TabFragment extends CallistoFragment {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             String msg = v.getText().toString();
-            Log.v(TAG, "Sending Message");
+            v.setText("");
+            Log.v(TAG, "Sending Message " +  msg);
             send(msg);
-            return false;
+            return true;
         }
     };
 
