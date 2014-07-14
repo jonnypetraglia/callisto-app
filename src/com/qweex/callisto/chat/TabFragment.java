@@ -16,6 +16,7 @@ import com.qweex.callisto.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -87,7 +88,10 @@ public abstract class TabFragment extends CallistoFragment {
 
     // Run on NOT UI THREAD
     synchronized public void receive(IrcMessage ircMessage) {
-        msgQueue.add(ircMessage);
+        IrcMessage[] messageSplit = ircMessage.splitByNewline();
+
+        Collections.addAll(msgQueue, messageSplit);
+
         notifyQueue();
         log(ircMessage);
     }

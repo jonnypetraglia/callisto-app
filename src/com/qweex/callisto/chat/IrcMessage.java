@@ -2,6 +2,7 @@ package com.qweex.callisto.chat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.text.SpannableString;
 import com.qweex.callisto.R;
 import com.qweex.callisto.ResCache;
 
@@ -16,6 +17,8 @@ public class IrcMessage
     // Note that Type is ONLY FOR COLORING. All other typing and whatnot should be handled by sirc. That's why I chose it.
     public enum Type {  ACTION,
                         CONNECTION,
+                        ERROR,
+                        FATAL,
                         JOIN,
                         KICK,
                         MESSAGE,
@@ -28,7 +31,7 @@ public class IrcMessage
 
     public enum UserMode {FOUNDER, ADMIN, OP, HALFOP, VOICE}
 
-    CharSequence title, message;
+    SpannableString title = null, message = null;
     Calendar timestamp;
     Type type;
 
@@ -39,8 +42,10 @@ public class IrcMessage
 
     public IrcMessage(String title, String message, Type type, Date time)
     {
-        this.title = title;
-        this.message = message;
+        if(title!=null)
+            this.title = new SpannableString(title);
+        if(message!=null)
+            this.message = new SpannableString(message);
         this.type = type;
         this.timestamp = Calendar.getInstance();
         if(time!=null)
@@ -119,6 +124,20 @@ public class IrcMessage
                         0xFF000000 + ResCache.clr(R.color.chat_link),
                 }
         );
+    }
+
+    public IrcMessage[] splitByNewline() {
+
+        if(message==null)
+            return new IrcMessage[] {this};
+
+        String[] lines = message.toString().split("\n");
+        IrcMessage[] result = new IrcMessage[lines.length];
+
+        for(int i=0; i<lines.length; ++i)
+            result[i] = new IrcMessage(title.toString(), lines[i], type);
+
+        return result;
     }
 
     @Override

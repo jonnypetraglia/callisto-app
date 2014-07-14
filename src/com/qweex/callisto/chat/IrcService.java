@@ -89,11 +89,11 @@ public class IrcService extends IntentService {
             Log.i(TAG, "--connected? " + ircConnection.isConnected());
 
         } catch (IOException e) {
-            chatFragment.handleError(e);
+            chatFragment.handleError(ircConnection, e);
         } catch (NickNameException e) {
-            chatFragment.handleError(e);
+            chatFragment.handleError(ircConnection, e);
         } catch (PasswordException e) {
-            chatFragment.handleError(e);
+            chatFragment.handleError(ircConnection, e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.qweex.callisto.chat;
 
+import android.text.TextUtils;
 import android.util.Log;
 import com.qweex.callisto.R;
 import com.qweex.callisto.ResCache;
@@ -10,12 +11,12 @@ import com.sorcix.sirc.User;
 /** Extension of sIRC that handles the IRC events, parses them, and passes them on to ChatFragment.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
-public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
-    String TAG = "Callisto:chat_tab:IrcServiceAdapter";
+public class IrcServiceListener extends com.sorcix.sirc.IrcAdaptor {
+    String TAG = "Callisto:chat_tab:IrcServiceListener";
 
     ChatFragment chat;
 
-    public IrcServiceAdapter(ChatFragment chatFragment) {
+    public IrcServiceListener(ChatFragment chatFragment) {
         this.chat = chatFragment;
     }
 
@@ -28,7 +29,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onConnect(IrcConnection irc) {
         super.onConnect(irc);
         chat.receive(irc, new IrcMessage(
-                ResCache.str(R.string.connected, irc.getServer().getAddress()),
+                ResCache.str(R.string.connected),
                 null,
                 IrcMessage.Type.CONNECTION
         ), false);
@@ -48,7 +49,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onNotice(IrcConnection irc, User sender, String message) {
         super.onNotice(irc, sender, message);
         chat.receive(irc, new IrcMessage(
-                ResCache.str(R.string.notice, getNickOrMe(sender)),
+                ResCache.str(R.string.notice, sender.getNick()),
                 message,
                 IrcMessage.Type.NOTICE
         ), true);
@@ -83,7 +84,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onPrivateMessage(IrcConnection irc, User sender, String message) {
         super.onPrivateMessage(irc, sender, message);
         chat.receive(sender, new IrcMessage(
-                getNickOrMe(sender),
+                sender.getNick(),
                 message,
                 IrcMessage.Type.MESSAGE
         ));
@@ -98,7 +99,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onAction(IrcConnection irc, User sender, Channel target, String action) {
         super.onAction(irc, sender, target, action);
         chat.receive(target, new IrcMessage(
-                getNickOrMe(sender),
+                sender.getNick(),
                 action,
                 IrcMessage.Type.ACTION
         ));
@@ -108,7 +109,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     public void onMessage(IrcConnection irc, User sender, Channel target, String message) {
         super.onMessage(irc, sender, target, message);
         chat.receive(target, new IrcMessage(
-                getNickOrMe(sender),
+                sender.getNick(),
                 message,
                 IrcMessage.Type.MESSAGE
         ));
@@ -147,9 +148,18 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onKick(IrcConnection irc, Channel channel, User sender, User user, String message) {
         super.onKick(irc, channel, sender, user, message);
+
+        String msg;
+        if(sender.isUs())
+            msg = ResCache.str(R.string.kick_me_active, user.getNick(), message);
+        else if(user.isUs())
+            msg = ResCache.str(R.string.kick_me_passive, sender.getNick(), message);
+        else
+            msg = ResCache.str(R.string.kick, sender.getNick(), user.getNick(), message);
+
         chat.receive(channel, new IrcMessage(
                 null,
-                " *** " + ResCache.str(R.string.kick, getNickOrMe(sender), getNickOrMe(user), message),
+                " *** " + msg,
                 IrcMessage.Type.KICK
         ));
     }
@@ -157,9 +167,16 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onPart(IrcConnection irc, Channel channel, User user, String message) {
         super.onPart(irc, channel, user, message);
+
+        String msg;
+        if(user.isUs())
+            msg = ResCache.str(R.string.part_me, message);
+        else
+            msg = ResCache.str(R.string.part, user.getNick(),message);
+
         chat.receive(channel, new IrcMessage(
                 null,
-                " *** " + ResCache.str(R.string.part, getNickOrMe(user), message),
+                " *** " + msg,
                 IrcMessage.Type.KICK
         ));
     }
@@ -168,9 +185,15 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
     @Override
     public void onMode(IrcConnection irc, Channel channel, User sender, String mode) {
         super.onMode(irc, channel, sender, mode);
+        String msg;
+        if(sender.isUs())
+            msg = ResCache.str(R.string.mode_channel_me, sender.getNick(), mode);
+        else
+            msg = ResCache.str(R.string.mode_channel, sender.getNick(), mode);
+
         chat.receive(channel, new IrcMessage(
                 null,
-                " *** " + ResCache.str(R.string.mode, getNickOrMe(sender), mode),
+                " *** " + msg,
                 IrcMessage.Type.KICK
         ));
     }
@@ -296,10 +319,24 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
 
     // Mode Change
     public void handleModeChange(Channel channel, User setBy, User setTarget, IrcMessage.UserMode mode, boolean given) {
-        String verb = "set";
-        if(!given)
-            verb = "unset";
-        String msg = setBy.getNick() + " " + verb + " mode " + mode + " on " + setTarget.getNick();
+        String msg;
+        String modeString = mode.toString();
+        modeString = modeString.charAt(0) + modeString.substring(1).toLowerCase();
+        if(given) {
+            if(setBy.isUs())
+                msg = ResCache.str(R.string.mode_set_me_active, modeString, setTarget.getNick());
+            else if(setTarget.isUs())
+                msg = ResCache.str(R.string.mode_set_me_passive, setBy.getNick(), modeString);
+            else
+                msg = ResCache.str(R.string.mode_set, setBy.getNick(), modeString, setTarget.getNick());
+        } else {
+            if(setBy.isUs())
+                msg = ResCache.str(R.string.mode_unset_me_active, modeString, setTarget.getNick());
+            else if(setTarget.isUs())
+                msg = ResCache.str(R.string.mode_unset_me_passive, setBy.getNick(), modeString);
+            else
+                msg = ResCache.str(R.string.mode_unset, setBy.getNick(), modeString, setTarget.getNick());
+        }
 
         Log.d(TAG, msg);
 
@@ -308,11 +345,5 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
                 null,
                 IrcMessage.Type.MODE
         ));
-    }
-
-    String getNickOrMe(User user) {
-        if(user.isUs())
-            return ResCache.str(R.string.you);
-        return user.getNick();
     }
 }

@@ -170,10 +170,6 @@ public class ChatFragment extends CallistoFragment {
      * @param propogate Whether or not it should be propogated to channels.
      */
     public void receive(IrcConnection server, IrcMessage ircMessage, boolean propogate) {
-        Log.d(TAG, "Received");
-        Log.d(TAG, " comes from server: " + server.getServer().getAddress());
-        Log.d(TAG, " message is " + ircMessage.toString());
-
         if(propogate) {
             for(Channel c : channelTabs.keySet())
                 channelTabs.get(c).receive(ircMessage);
@@ -188,10 +184,6 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(Channel channel, IrcMessage ircMessage) {
-        Log.d(TAG, "Received");
-        Log.d(TAG, " comes from channel: " + channel.getName());
-        Log.d(TAG, " message is " + ircMessage.toString());
-
         channelTabs.get(channel).receive(ircMessage);
     }
 
@@ -200,10 +192,6 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(User user, IrcMessage ircMessage) {
-        Log.d(TAG, "Received");
-        Log.d(TAG, " comes from user: " + user.getNick());
-        Log.d(TAG, " message is " + ircMessage.toString());
-
         //TODO: Create tab if it doesn't exist ???
         userTabs.get(user).receive(ircMessage);
     }
