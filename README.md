@@ -3,22 +3,6 @@
 Callisto is a fan-made app for JupiterBroadcasting.
 
 
-## Differences in v2 ##
-
-Version 1 of Callisto was my very first Android app. As a result, much of it was more "Can I do this?" rather than having a vision and fulfilling it. Version 2 is going to be a complete re-write with some recycled code from v1.
-
-Here are the main differences planned for v2:
-
- * _More modern_. v1 was aimed at all versions of Android and was thus limited in many ways. v2 is (currently) aimed at running on 2.3+, which still covers the majority of the market but will allow much easier and cleaner implementations of many features. It also means aiming for a better featureset over a smaller disk footprint.
- * _More organized_. Since v1 was kind of put together as I went, the code was rather muddled. It lacked organization and clarity and I myself frequently got lost trying to remember what did what.
- * _Cleaner UI_. In addition to adhering to the modern Android UX practices, v2 will remove a lot of buggy interfaces that simply did not work in v1.
- * _Less deprecated_. My goal this time is to have _zero_ warnings when compiling the project.
- * _Less centralized_. I'm planning on introducing features in v2 to keep me from being a choking point for events such as JB releasing a new show.
- * _Less buggy_. I'm hoping that -as a result of everything above- the code will be much more pure and have far fewer bugs.
- * _RFC'ed IRC_. My plan is to _eventually_ bring v2 to a fully spec'd IRC client rather than plugging in parts that I myself find useful. Mind you, this is a long term goal.
- * _Cleaner, proper IRC_. Time for IRC to be a legit Android service. Time to clean it up so it's not a 2,000 line file. Time to possibly change IRC libraries, or fork one.
-
-
 ## Getting going ##
 
 I use [Intellij](http://www.jetbrains.com/idea/). It is free and somewhat open source. You can use whatever the hell you want but don't expect me to help get you up and running.
@@ -64,40 +48,6 @@ This list of technologies is where the project stands _currently_ in v2; because
  * [android-smart-image-view](https://github.com/loopj/android-smart-image-view) is a small little tool to easily set ImageViews to internet resources asyncronously.
  * [HockeyApp](http://hockeyapp.net/features/) is a beta distribution & testing service. I'm still trying it out.
 
-
-## General Architecture ##
-
-The nice thing about v2 of Callisto is that it is very compartmentalized. Ideally, each fragment should function more or less completely independent of each other.
-
-- **catalog**: Used for fetching the back catalog, i.e. the podcatcher portion of the app.
-  - **playback/queue**: TBA
-- **live**: Used for the live streaming.
-- **chat**: Used for the IRC portion of the app.
-- **schedule**: Used to pull in the calendar feed & set alarms for upcoming shows.
-- **contact**: Used for the JB Wufoo contact form.
-- **donate**: Used for donations for JB (Currently Paypal, eventually Patreon.)
-- **settings**: Settings for the app.
-- **about**: An about page for the app, listing version# for the app & release changelog and whatnot.
-
-
-Each package will have it's own fragment that is inherited from **CallistoFragment**, which is just an abstract class with some niceties like a reference back to the Master Activity.
-They will also have, obviously, other classes and possibly subpackages.
-
-**MasterActivitity** is the...well, the master activity. It is the through which all fragments are served. It is essentially just a shell to facilitate moving between fragments.
-
-**DatabaseConnector** is the class used, internally, to access the database (i.e. it handles it being created, upgraded, and contains the SqliteDatabase variable).
-To actually do anything with the database, files called **DatabaseMates** are available per package. (DatabaseMates interally call the DatabaseConnector.)
-This keeps DatabaseConnector from growing unseemingly large and keeps with the idea of separation of features by package.
-
-**SplashFragment** is a fragment to show upon opening the app for the first time. Because the new JB logo is sexy.
-
-
-There is a class called **PRIVATE** filled with things that I don't want to check into the repo, things like API keys and whatnot.
-There should be no logic in there, and if there ever is, I will try to comment on why I put it in PRIVATE on a case-by-case basis.
-
-### Database schema ###
-
-TBA
 
 ### License ###
 
