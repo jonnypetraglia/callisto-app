@@ -29,7 +29,7 @@ public class ChatFragment extends CallistoFragment {
     String TAG = "Callisto:chat:ChatFragment";
 
     /** Adapter that manages receiving the messages directly from the sirc library. */
-    IrcServiceAdapter ircConnectionAdapter;
+    IrcServiceListener ircConnectionAdapter;
 
     /** Views. VIEWS! */
     RelativeLayout layout;
@@ -43,7 +43,7 @@ public class ChatFragment extends CallistoFragment {
     /** Constructor; supplies MasterActivity reference. */
     public ChatFragment(MasterActivity master) {
         super(master);
-        ircConnectionAdapter = new IrcServiceAdapter(this);
+        ircConnectionAdapter = new IrcServiceListener(this);
     }
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
@@ -111,6 +111,12 @@ public class ChatFragment extends CallistoFragment {
         final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
         serverTabs.put(server, tabFragment);
 
+        tabFragment.receive(new IrcMessage(
+                ResCache.str(R.string.connecting, server.getServerAddress()),
+                null,
+                IrcMessage.Type.CONNECTION
+        ));
+
         _createTab(tabFragment, server.getServerAddress(), server);
     }
 
@@ -141,12 +147,6 @@ public class ChatFragment extends CallistoFragment {
             @Override
             public void run() {
                 Log.v(TAG, "Creating User tab on UI thread");
-
-                fragment.receive(new IrcMessage(
-                        ResCache.str(R.string.connecting),
-                        null,
-                        IrcMessage.Type.CONNECTION
-                ));
 
                 ActionBar.Tab tab = master.getSupportActionBar().newTab();
                 tab.setText(tabText);
@@ -184,7 +184,13 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(Channel channel, IrcMessage ircMessage) {
-        channelTabs.get(channel).receive(ircMessage);
+        try {
+            channelTabs.get(channel).receive(ircMessage);
+        } catch(NullPointerException npe) {
+            Log.w(TAG, "Received message from a channel I'm not in.");
+            createTab(IrcService.instance.getConnection(), channel);
+            channelTabs.get(channel).receive(ircMessage);
+        }
     }
 
     /** Receive a message destined for a Server tab
@@ -192,8 +198,13 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(User user, IrcMessage ircMessage) {
-        //TODO: Create tab if it doesn't exist ???
-        userTabs.get(user).receive(ircMessage);
+        try {
+            userTabs.get(user).receive(ircMessage);
+        } catch(NullPointerException npe) {
+            Log.i(TAG, "Received message from user: " + user.getNick());
+            createTab(IrcService.instance.getConnection(), user);
+            userTabs.get(user).receive(ircMessage);
+        }
     }
 
     public void handleError(IrcConnection ircConnection, Exception e) {

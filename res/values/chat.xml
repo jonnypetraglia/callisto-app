@@ -14,20 +14,33 @@
 
 
     <!-- Strings that will be fetched and formatted -->
-    <string name="connecting">Connecting</string>
-    <string name="connected" formatted="false">Connected to %s</string>
+    <string name="connecting" formatted="false">Connecting to %s</string>
+    <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
 
     <string name="join" formatted="false">%s has joined</string>
     <string name="join_me" formatted="false">You have joined</string>
-    <string name="kick" formatted="false">%s was kicked by %s (%s)</string>
-    <string name="part" formatted="false">%s has left (%s)</string>
-    <string name="mode" formatted="false">%s has left (%s)</string>
 
-    <string name="notice" formatted="false">Notice from %s:</string>
+    <string name="kick" formatted="false">%s was kicked by %s (%s)</string>
+    <string name="kick_me_active" formatted="false">You have kicked %s (%s)</string>
+    <string name="kick_me_passive" formatted="false">%s has kicked you (%s)</string>
+
+    <string name="part" formatted="false">%s has left (%s)</string>
+    <string name="part_me" formatted="false">You have left (%s)</string>
+
+    <string name="mode_channel" formatted="false">%s sets channel mode %s</string>
+    <string name="mode_channel_me" formatted="false">You set channel mode %s</string>
+
+    <string name="mode_set" formatted="false">%s gave role %s to %s</string>
+    <string name="mode_unset" formatted="false">%s took role %s from %s</string>
+    <string name="mode_set_me_active" formatted="false">You gave role %s to %s</string>
+    <string name="mode_unset_me_active" formatted="false">You took role %s from %s</string>
+    <string name="mode_set_me_passive" formatted="false">%s gave role %s to you</string>
+    <string name="mode_unset_me_passive" formatted="false">%s took role %s from you</string>
+
+    <string name="notice" formatted="false">Notice (%s)</string>
     <string name="topic" formatted="false">Topic: %s (set by %s)</string>
 
-    <string name="you">You</string>
     <string name="server">Server</string>
     <string name="channels">Channels</string>
     <string name="users">Users</string>

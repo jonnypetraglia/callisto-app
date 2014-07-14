@@ -96,4 +96,8 @@ public class IrcService extends IntentService {
             chatFragment.handleError(ircConnection, e);
         }
     }
+
+    public IrcConnection getConnection() {
+        return ircConnection;
+    }
 }
