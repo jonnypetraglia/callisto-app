@@ -15,7 +15,9 @@
             android:layout_alignParentLeft="true"
             android:textSize="10sp"
             android:singleLine="false"
-            android:layout_centerVertical="true" android:layout_alignParentTop="true"/>
+            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
+            android:paddingRight="5dp"/>
 
     <TextView
             android:id="@android:id/title"
@@ -24,8 +26,10 @@
             android:color="@color/text_main"
             android:textStyle="bold"
             android:autoLink="web|email"
-            android:layout_centerVertical="true" android:layout_toRightOf="@android:id/text1"
-            android:layout_alignParentTop="true"/>
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@android:id/text1"
+            android:layout_alignParentTop="true"
+            android:paddingRight="5dp"/>
 
     <TextView
             android:id="@android:id/message"
@@ -34,7 +38,9 @@
             android:color="@color/text_main"
             android:autoLink="web|email"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" android:gravity="left" android:layout_toRightOf="@android:id/title"/>
+            android:layout_alignParentRight="true"
+            android:gravity="left"
+            android:layout_toRightOf="@android:id/title"/>
 
 
 </RelativeLayout>

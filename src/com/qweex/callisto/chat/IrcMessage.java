@@ -127,4 +127,8 @@ public class IrcMessage
                 (getTitle()!=null ? (" " + getTitle()) : "") +
                 (getMessage()!=null ? (" " + getMessage()) : "");
     }
+
+    static public int getTextSize() {
+        return ResCache.inte(R.integer.text_size);
+    }
 }

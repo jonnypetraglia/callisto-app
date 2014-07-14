@@ -1,6 +1,7 @@
 package com.qweex.callisto.chat;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,11 @@ public class ChatListAdapter extends ArrayAdapter<IrcMessage> {
         title.setTextColor(ircMessage.getTitleColor());
         message.setTextColor(ircMessage.getMessageColor());
         message.setLinkTextColor(ircMessage.getLinkColors());
+
+        //TODO Set size by preference
+        time.setTextSize(TypedValue.COMPLEX_UNIT_SP, (float)(IrcMessage.getTextSize() * 0.8));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, IrcMessage.getTextSize());
+        message.setTextSize(TypedValue.COMPLEX_UNIT_SP, IrcMessage.getTextSize());
 
         return(v);
     }
