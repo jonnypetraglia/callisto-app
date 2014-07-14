@@ -192,6 +192,12 @@ public class ChatFragment extends CallistoFragment {
         Log.d(TAG, " comes from server: " + server.getServer().getAddress());
         Log.d(TAG, " message is " + ircMessage.toString());
 
+        if(propogate) {
+            for(Channel c : channelTabs.keySet())
+                channelTabs.get(c).receive(ircMessage);
+            for(User u : userTabs.keySet())
+                userTabs.get(u).receive(ircMessage);
+        }
         serverTabs.get(server).receive(ircMessage);
     }
 

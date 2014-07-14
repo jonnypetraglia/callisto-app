@@ -41,7 +41,7 @@ public class IrcServiceAdapter extends com.sorcix.sirc.IrcAdaptor {
                 ResCache.str(R.string.disconnected),
                 null,
                 IrcMessage.Type.CONNECTION
-        ), false);
+        ), true);
     }
 
     @Override
