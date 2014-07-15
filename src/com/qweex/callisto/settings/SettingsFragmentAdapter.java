@@ -46,6 +46,8 @@ public class SettingsFragmentAdapter extends BaseAdapter {
             ((CheckBox)(v.findViewById(android.R.id.checkbox))).setChecked(check.isChecked());
         }
 
+        v.setEnabled(pref.isEnabled());
+
         return v;
     }
 

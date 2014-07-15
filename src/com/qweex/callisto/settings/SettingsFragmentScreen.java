@@ -1,8 +1,10 @@
 package com.qweex.callisto.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -23,23 +25,21 @@ public class SettingsFragmentScreen extends Preference {
     AttributeSet myAttributes;
 
     List<Preference> preferences = new ArrayList<Preference>();
-    Map<Preference, AttributeSet> prefAttributes = new HashMap<Preference, AttributeSet>();
+    Map<Preference, SettingsAttributes> prefAttributes = new HashMap<Preference, SettingsAttributes>();
 
     SettingsFragmentScreen parent;
 
     ListView listview;
     SettingsFragmentAdapter adapter;
 
-    final String ANDROIDNS = "http://schemas.android.com/apk/res/android";
-
     public SettingsFragmentScreen(Context context, AttributeSet attrs, SettingsFragmentScreen parent) {
         super(context, attrs);
         this.myAttributes = attrs;
         this.parent = parent;
-
     }
 
-    public SettingsFragmentScreen addChild(Preference child, AttributeSet childAttrs) {
+    public SettingsFragmentScreen addChild(Preference child, SettingsAttributes childAttrs) {
+        Log.v(TAG, "Adding child: " + child.getKey() + " | " + childAttrs);
         preferences.add(child);
         prefAttributes.put(child, childAttrs);
         return this;
@@ -47,7 +47,7 @@ public class SettingsFragmentScreen extends Preference {
 
     public List<Preference> getPreferences() { return preferences; }
 
-    public AttributeSet getAttributes(Preference p) { return prefAttributes.get(p); }
+    public SettingsAttributes getAttributes(Preference p) { return prefAttributes.get(p); }
 
     public AttributeSet getMyAttributes() { return myAttributes; }
 
@@ -55,27 +55,32 @@ public class SettingsFragmentScreen extends Preference {
 
     public ListView getListView() {
         if(listview==null) {
+
+            Log.v(TAG, "Restoring Preference Values");
             for(Preference preference : preferences) {
                 // Restore the value from the persisted state
-                String defaultValue = prefAttributes.get(preference).getAttributeValue(ANDROIDNS, "defaultValue");
-                Log.v(TAG, "Restoring preference " + preference.getKey() + "value: " + defaultValue);
+                SettingsAttributes attrs = prefAttributes.get(preference);
+                String defaultValue = attrs.get("defaultValue");
+                Log.v(TAG, ":Restoring preference " + preference.getKey() + " defaultValue: " + defaultValue);
+
 
                 if(preference instanceof CheckBoxPreference) {
-                    boolean restoredValue = preference.getSharedPreferences().getBoolean(preference.getKey(), Boolean.parseBoolean(defaultValue));
-                    ((CheckBoxPreference) preference).setChecked(restoredValue);
-                    setCheckPreference((CheckBoxPreference) preference, restoredValue, null);
+                    boolean trueDefaultValue = defaultValue!=null && Boolean.parseBoolean(defaultValue);
+                    boolean restoredValue = getSharedPreferences().getBoolean(preference.getKey(), trueDefaultValue);
+                    CheckBoxPreference check = ((CheckBoxPreference) preference);
+                    check.setChecked(restoredValue);
+                    setDependentPreferencesEnabled(check);
                 }
-
             }
 
+            Log.v(TAG, "Creating ListView");
             listview = new ListView(getContext());
             listview.setBackgroundColor(ResCache.clr(com.qweex.callisto.R.color.settings_background));
 
-            listview.setOnItemClickListener(onItemClickListener);
-
             adapter = new SettingsFragmentAdapter(getContext(), this);
-
             listview.setAdapter(adapter);
+
+            listview.setOnItemClickListener(onItemClickListener);
         }
         return listview;
     }
@@ -85,6 +90,8 @@ public class SettingsFragmentScreen extends Preference {
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if(!view.isEnabled())
+                return;
             Preference preference = preferences.get(position);
 
             boolean eventHandled = preference.getOnPreferenceClickListener()!=null && preference.getOnPreferenceClickListener().onPreferenceClick(preference);
@@ -99,20 +106,19 @@ public class SettingsFragmentScreen extends Preference {
     void setCheckPreference(CheckBoxPreference check, boolean newValue, View view) {
         check.setChecked(newValue);
 
-        setDependentPreferencesEnabled(check, check.isChecked());
-
         if(view!=null)
             ((CheckBox)view.findViewById(android.R.id.checkbox)).setChecked(check.isChecked());
 
         Log.v(TAG, "Writing new pref value: " + check.isChecked());
-        check.getSharedPreferences().edit().putBoolean(check.getKey(), check.isChecked()).commit();
+        getSharedPreferences().edit().putBoolean(check.getKey(), check.isChecked()).commit();
+        setDependentPreferencesEnabled(check);
     }
 
 
     // Handles dependencies
     void setDependentPreferencesEnabled(Preference pref) {
 
-        Object value = pref.getSharedPreferences().getAll().get(pref.getKey());
+        Object value = getSharedPreferences().getAll().get(pref.getKey());
         boolean enabled = value!=null;
         if(enabled && value instanceof Boolean)
             enabled = (Boolean) value;
@@ -140,16 +146,37 @@ public class SettingsFragmentScreen extends Preference {
     }
 
     void setViewAndChildrenEnabled(View view, boolean enabled) {
-        view.setClickable(enabled);
+        Log.v(TAG, " -- View " + view.getClass() + " is being set to " + enabled);
+        view.setEnabled(enabled);
         if(!(view instanceof ViewGroup))
             return;
+
         ViewGroup viewGroup = (ViewGroup) view;
-        for(int j=0; j<viewGroup.getChildCount(); j++) {
-            View subView = viewGroup.getChildAt(j);
-            Log.v(TAG, " -- View " + subView.getClass() + " is being set to " + enabled);
-            subView.setEnabled(enabled);
-            subView.setClickable(enabled);
-            setViewAndChildrenEnabled(subView, enabled);
+        for(int j=0; j<viewGroup.getChildCount(); j++)
+            setViewAndChildrenEnabled(viewGroup.getChildAt(j), enabled);
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext());
+    }
+
+    public static class SettingsAttributes {
+        Map<String, String> attrs = new HashMap<String, String>();
+
+        public SettingsAttributes(AttributeSet attrs) {
+            for(int i=0; i<attrs.getAttributeCount(); i++) {
+                this.attrs.put(
+                        attrs.getAttributeName(i),
+                        attrs.getAttributeValue(i)
+                );
+            }
+        }
+
+        public String get(String name) {
+            if(attrs.containsKey(name))
+                return attrs.get(name);
+            return null;
         }
     }
 }

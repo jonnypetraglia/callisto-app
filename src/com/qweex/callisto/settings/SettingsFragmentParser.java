@@ -7,6 +7,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -16,17 +17,18 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SettingsFragmentParser {
 
+    String TAG = "Callisto:settings:SettingsFragmentsParser";
+
     Activity mActivity;
+
+    final static public String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 
     public SettingsFragmentParser(Activity activity) {
         mActivity = activity;
     }
 
     public SettingsFragmentScreen loadPreferencesFromResource(int resid) {
-
-        // Classes that can be parsed
-        ListPreference a;
-        CheckBoxPreference b;
+        SettingsFragmentScreen res;
 
         XmlResourceParser parser = null;
         try {
@@ -37,7 +39,7 @@ public class SettingsFragmentParser {
                     && type != XmlPullParser.START_TAG) {
                 // Parse next until start tag is found
             }
-            return parsePreferenceScreen(parser, null);
+            res = parsePreferenceScreen(parser, null);
 
         } catch (XmlPullParserException e) {
             throw new RuntimeException("Error parsing headers", e);
@@ -57,6 +59,7 @@ public class SettingsFragmentParser {
             if (parser != null)
                 parser.close();
         }
+        return res;
     }
 
     private SettingsFragmentScreen parsePreferenceScreen(XmlPullParser parser, SettingsFragmentScreen parent)
@@ -86,6 +89,8 @@ public class SettingsFragmentParser {
             nodeName = parser.getName();
 
             AttributeSet newPrefAttrs = Xml.asAttributeSet(parser);
+            String x = newPrefAttrs.getAttributeValue(ANDROIDNS, "defaultValue");
+            Log.v(TAG, "::default value for new is " + x);
 
             Preference newPreference;
             if("PreferenceScreen".equals(nodeName))
@@ -114,7 +119,7 @@ public class SettingsFragmentParser {
                 }
 
             }
-            result.addChild(newPreference, newPrefAttrs);
+            result.addChild(newPreference, new SettingsFragmentScreen.SettingsAttributes(newPrefAttrs));
         }
 
         return result;
