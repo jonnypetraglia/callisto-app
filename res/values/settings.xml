@@ -19,6 +19,8 @@
     <string name="play_on_replug">Play on re-plug</string>
     <string name="play_on_replug_desc">Resume playback when headphone jack is plugged back in</string>
 
+    <string name="current_value">Current value</string>
+
     <integer-array name="irc_ports">
         <item>6667</item>
         <item>6660</item>

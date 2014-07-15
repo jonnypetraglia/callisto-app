@@ -1,8 +1,12 @@
 package com.qweex.callisto.settings;
 
+import android.R;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -10,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import com.qweex.callisto.ResCache;
@@ -31,6 +36,7 @@ public class SettingsFragmentScreen extends Preference {
 
     ListView listview;
     SettingsFragmentAdapter adapter;
+    Dialog listPreferenceDialog;
 
     public SettingsFragmentScreen(Context context, AttributeSet attrs, SettingsFragmentScreen parent) {
         super(context, attrs);
@@ -55,22 +61,27 @@ public class SettingsFragmentScreen extends Preference {
 
     public ListView getListView() {
         if(listview==null) {
-
             Log.v(TAG, "Restoring Preference Values");
             for(Preference preference : preferences) {
-                // Restore the value from the persisted state
                 SettingsAttributes attrs = prefAttributes.get(preference);
                 String defaultValue = attrs.get("defaultValue");
                 Log.v(TAG, ":Restoring preference " + preference.getKey() + " defaultValue: " + defaultValue);
 
 
                 if(preference instanceof CheckBoxPreference) {
-                    boolean trueDefaultValue = defaultValue!=null && Boolean.parseBoolean(defaultValue);
+                    boolean trueDefaultValue = false;
+                    if(defaultValue!=null)
+                        trueDefaultValue = Boolean.parseBoolean(defaultValue);
                     boolean restoredValue = getSharedPreferences().getBoolean(preference.getKey(), trueDefaultValue);
                     CheckBoxPreference check = ((CheckBoxPreference) preference);
                     check.setChecked(restoredValue);
-                    setDependentPreferencesEnabled(check);
+                } else
+                if(preference instanceof ListPreference) {
+                    String restoredValue = getSharedPreferences().getString(preference.getKey(), defaultValue);
+                    ListPreference list = ((ListPreference) preference);
+                    list.setValue(restoredValue);
                 }
+                setDependentPreferencesEnabled(preference);
             }
 
             Log.v(TAG, "Creating ListView");
@@ -99,8 +110,44 @@ public class SettingsFragmentScreen extends Preference {
 
             if(preference.getClass() == CheckBoxPreference.class)
                 setCheckPreference((CheckBoxPreference) preference, !((CheckBoxPreference) preference).isChecked(), view);
+
+            if(preference.getClass() == ListPreference.class)
+                showListPreference((ListPreference) preference, view);
         }
     };
+
+    void showListPreference(final ListPreference list, final View listviewView) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        ListView lv = new ListView(builder.getContext());
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(builder.getContext(), R.layout.simple_list_item_1, list.getEntries());
+        lv.setAdapter(adapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setListPreference(list, list.getEntryValues()[position].toString(), listviewView);
+                listPreferenceDialog.dismiss();
+            }
+        });
+
+        builder.setTitle(list.getTitle());
+
+        if(list.getEntry()!=null)
+            builder.setMessage(ResCache.str(com.qweex.callisto.R.string.current_value) + ": " + list.getEntry());
+        builder.setView(lv);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        listPreferenceDialog = builder.show();
+    }
+
+    void setListPreference(ListPreference list, String newValue, View view) {
+        list.setValue(newValue);
+
+        //TODO: Update view?
+
+        getSharedPreferences().edit().putString(list.getKey(), list.getValue()).commit();
+        setDependentPreferencesEnabled(list);
+    }
 
 
     void setCheckPreference(CheckBoxPreference check, boolean newValue, View view) {
