@@ -1,5 +1,6 @@
 package com.qweex.callisto;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
@@ -16,6 +17,7 @@ public class ResCache {
     static HashMap<Integer, Drawable> drawables = new HashMap<Integer, Drawable>();
     static HashMap<Integer, Integer> colors = new HashMap<Integer, Integer>();
     static HashMap<Integer, Integer> integers = new HashMap<Integer, Integer>();
+    static HashMap<Integer, ColorStateList> colorStateLists = new HashMap<Integer, ColorStateList>();
 
     static public String str(Integer stringId, Object... args) {
         if(!strings.containsKey(stringId))
@@ -33,6 +35,12 @@ public class ResCache {
         if(!colors.containsKey(clrId))
             colors.put(clrId, resources.getColor(clrId));
         return colors.get(clrId);
+    }
+
+    static public ColorStateList clrs(Integer clrsId) {
+        if(!colorStateLists.containsKey(clrsId))
+            colorStateLists.put(clrsId, resources.getColorStateList(clrsId));
+        return colorStateLists.get(clrsId);
     }
 
     static public Integer inte(Integer intId) {

@@ -18,5 +18,6 @@
     <color name="text_main">#333333</color>
     <color name="text_muted">#666666</color>
     <color name="text_pressed">#eeeeee</color>
+    <color name="text_disabled">#888888</color>
     <color name="text_error">@android:color/holo_red_dark</color>
 </resources>

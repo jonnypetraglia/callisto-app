@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="fill_parent"
+              android:padding="10dp"
+              android:layout_height="fill_parent">
+
+    <TextView android:id="@android:id/title"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_weight="1.0"
+              android:singleLine="true"
+              android:paddingLeft="5dp"
+              android:layout_gravity="center_vertical"
+              android:textSize="20sp"/>
+    <include android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             layout="@layout/smaller_preference_check" android:id="@android:id/checkbox"
+             android:layout_gravity="center_horizontal|bottom"/>
+
+
+</LinearLayout>

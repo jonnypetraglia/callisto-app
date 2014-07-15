@@ -21,6 +21,7 @@ import com.qweex.callisto.chat.IrcService;
 import com.qweex.callisto.chat.LoginFragment;
 import com.qweex.callisto.contact.ContactFragment;
 
+import com.qweex.callisto.settings.SettingsFragment;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
@@ -50,7 +51,7 @@ public class MasterActivity extends ActionBarActivity {
     //private ScheduleFragment scheduleFragment;
     private ContactFragment contactFragment;
     //private DonateFragment donateFragment;
-    //private SettingsFragment settingsFragment;
+    private SettingsFragment settingsFragment;
 
     /** Reference to the Active fragment. */
     private Fragment activeFragment;
@@ -123,13 +124,13 @@ public class MasterActivity extends ActionBarActivity {
         // Create each of the fragments
         playbackFragment = new PlaybackFragment(this);
         catalogFragment = new CatalogFragment(this);
-        //liveFragment = new LiveFragment(databaseConnector);
+        //liveFragment = new LiveFragment(this);
         chatFragment = new ChatFragment(this);
         loginFragment = new LoginFragment(this);
-        //scheduleFragment = new ScheduleFragment(databaseConnector);
+        //scheduleFragment = new ScheduleFragment(this);
         contactFragment = new ContactFragment(this);
-        //donateFragment = new DonateFragment(databaseConnector);
-        //settingsFragment = new SettingsFragment();
+        //donateFragment = new DonateFragment(this);
+        settingsFragment = new SettingsFragment(this);
 
         // HockeyApp
         checkForUpdates();
@@ -216,7 +217,7 @@ public class MasterActivity extends ActionBarActivity {
                     //frag = donateFragment;
                     break;
                 case 7: //Settings
-                    //frag = settingsFragment;
+                    frag = settingsFragment;
                     break;
                 default:
                     //TODO: WTF
