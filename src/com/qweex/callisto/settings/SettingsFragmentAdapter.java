@@ -2,23 +2,22 @@ package com.qweex.callisto.settings;
 
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import com.qweex.callisto.ResCache;
 
-import java.util.List;
 
-public class SettingsFragmentAdapter extends ArrayAdapter<Preference> {
-    List<Preference> preferences;
+public class SettingsFragmentAdapter extends BaseAdapter {
+    SettingsFragmentScreen screen;
 
-    public SettingsFragmentAdapter(Context context, List<Preference> objects) {
-        super(context, android.R.layout.simple_list_item_1, objects);
-        preferences = objects;
+    public SettingsFragmentAdapter(Context context, SettingsFragmentScreen screen) {
+        this.screen = screen;
     }
 
 
@@ -31,7 +30,7 @@ public class SettingsFragmentAdapter extends ArrayAdapter<Preference> {
     @Override
     public View getView(int pos, View v, ViewGroup parent)
     {
-        Preference pref = preferences.get(pos);
+        Preference pref = screen.getPreferences().get(pos);
         v = pref.getView(v, parent);
 
         v.setBackgroundResource(com.qweex.callisto.R.drawable.sel_logo1);
@@ -51,7 +50,22 @@ public class SettingsFragmentAdapter extends ArrayAdapter<Preference> {
     }
 
     @Override
-    public boolean isEnabled(int position) {
-        return getItem(position).isEnabled();
+    public boolean isEmpty() {
+        return getCount()==0;
+    }
+
+    @Override
+    public int getCount() {
+        return screen.getPreferences().size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return screen.getPreferences().get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 }
