@@ -3,19 +3,14 @@ package com.qweex.callisto.settings;
 import android.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
+import android.preference.*;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.ListView;
+import android.widget.*;
 import com.qweex.callisto.ResCache;
 
 import java.util.ArrayList;
@@ -35,7 +30,7 @@ public class SettingsFragmentScreen extends Preference {
 
     ListView listview;
     SettingsFragmentAdapter adapter;
-    Dialog listPreferenceDialog;
+    Dialog listPreferenceDialog, editPreferenceDialog;
     SettingsFragment fragment;
 
 
@@ -85,6 +80,11 @@ public class SettingsFragmentScreen extends Preference {
                     ListPreference list = ((ListPreference) preference);
                     list.setValue(restoredValue);
                 } else
+                if(preference instanceof EditTextPreference) {
+                    String restoredValue = getSharedPreferences().getString(preference.getKey(), defaultValue);
+                    EditTextPreference edit = ((EditTextPreference) preference);
+                    edit.setText(restoredValue);
+                } else
                 if(preference instanceof SettingsFragmentScreen) {
                     //Pass
                 } else {
@@ -126,6 +126,9 @@ public class SettingsFragmentScreen extends Preference {
             if(preference.getClass() == ListPreference.class)
                 showListPreference((ListPreference) preference, view);
             else
+            if(preference.getClass() == EditTextPreference.class)
+                showEditPreference((EditTextPreference) preference, view);
+            else
             if(preference.getClass() == SettingsFragmentScreen.class)
                 fragment.openChild((SettingsFragmentScreen) preference);
         }
@@ -155,13 +158,49 @@ public class SettingsFragmentScreen extends Preference {
         listPreferenceDialog = builder.show();
     }
 
+    void showEditPreference(final EditTextPreference edit, final View listviewView) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        final EditText editText = new EditText(builder.getContext());
+
+        builder.setTitle(edit.getTitle());
+
+        if(edit.getText()!=null)
+            builder.setMessage(ResCache.str(com.qweex.callisto.R.string.current_value) + ": " + edit.getText());
+        builder.setView(editText);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setEditPreference(edit, editText.getText().toString(), listviewView);
+                editPreferenceDialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        editPreferenceDialog = builder.show();
+    }
+
     void setListPreference(ListPreference list, String newValue, View view) {
         list.setValue(newValue);
 
         //TODO: Update view?
 
+        Log.v(TAG, "Writing new pref value: " + list.getValue());
         getSharedPreferences().edit().putString(list.getKey(), list.getValue()).commit();
         setDependentPreferencesEnabled(list);
+    }
+
+    void setEditPreference(EditTextPreference edit, String newValue, View view) {
+        edit.setText(newValue);
+
+        //TODO: Update view?
+
+        Log.v(TAG, "Writing new pref value: " + newValue);
+
+        getSharedPreferences().edit().putString(edit.getKey(), edit.getText()).commit();
+        setDependentPreferencesEnabled(edit);
     }
 
 

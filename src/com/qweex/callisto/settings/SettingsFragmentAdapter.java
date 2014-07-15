@@ -13,6 +13,8 @@ import com.qweex.callisto.ResCache;
 
 
 public class SettingsFragmentAdapter extends BaseAdapter {
+    String TAG = "Callisto:settings:SettingsFragmentsAdapter";
+
     SettingsFragmentScreen screen;
 
     public SettingsFragmentAdapter(Context context, SettingsFragmentScreen screen) {
