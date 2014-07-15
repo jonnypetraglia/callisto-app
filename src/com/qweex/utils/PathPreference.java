@@ -7,6 +7,8 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 //http://www.codeproject.com/Articles/547636/Android-Ready-to-use-simple-directory-chooser-dial
 public class PathPreference extends Preference implements Preference.OnPreferenceClickListener,
@@ -39,13 +41,9 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
             mDefaultPath = attrs.getAttributeValue(androidns, "defaultValue");
         else
             mDefaultPath = "/mnt/sdcard";
-    }
-
-    @Override
-    protected void onSetInitialValue(boolean restoreValue, Object defaultValue)
-    {
-        mDefaultPath = restoreValue ? getPath() : (String) defaultValue;
-        setSummary(mDefaultPath);
+        getPath();
+        Log.d("PathPreference", "Loaded value is: " + mPath);
+        setSummary(mPath);
     }
 
     public String getPath()
@@ -62,10 +60,12 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
-        mView = view;
-        setSummary(getPath());
+    public View getView(View v, ViewGroup parent) {
+        Log.d("PathPreference", "Getting view & value is: " + mPath);
+        v = super.getView(v, parent);
+        ((TextView)v.findViewById(android.R.id.title)).setText(getTitle());
+        ((TextView)v.findViewById(android.R.id.summary)).setText(getSummary());
+        return v;
     }
 
     @Override

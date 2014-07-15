@@ -2,7 +2,6 @@ package com.qweex.callisto.settings;
 
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.view.View;
