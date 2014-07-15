@@ -130,7 +130,7 @@ public class MasterActivity extends ActionBarActivity {
         //scheduleFragment = new ScheduleFragment(this);
         contactFragment = new ContactFragment(this);
         //donateFragment = new DonateFragment(this);
-        settingsFragment = new SettingsFragment(this);
+        settingsFragment = new SettingsFragment(this, null);
 
         // HockeyApp
         checkForUpdates();

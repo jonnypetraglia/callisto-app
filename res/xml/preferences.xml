@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="Preferences">
+    android:title="@string/general">
 
-    <!--
     <com.qweex.utils.PathPreference
         android:key="storage_path"
         prefix="/mnt/sdcard"
         android:defaultValue="callisto"
         />
-    -->
     <ListPreference
         android:title="@string/live_audio_quality"
         android:key="live_url"

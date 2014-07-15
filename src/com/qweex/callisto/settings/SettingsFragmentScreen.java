@@ -3,7 +3,6 @@ package com.qweex.callisto.settings;
 import android.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -86,8 +85,10 @@ public class SettingsFragmentScreen extends Preference {
                 } else
                 if(preference instanceof SettingsFragmentScreen) {
                     //Pass
-                } else
-                    throw new RuntimeException("Unknown preference type: " + preference.getClass().getName());
+                } else {
+                    Log.v(TAG, "Custom preference type passed in: " + preference.getClass().getName());
+                    Log.v(TAG, "Hopefully the custom class implements a click listener");
+                }
 
                 setDependentPreferencesEnabled(preference);
             }
@@ -190,7 +191,7 @@ public class SettingsFragmentScreen extends Preference {
 
         for(int i=0; i<preferences.size(); i++) {
             Preference testPref = preferences.get(i);
-            if(pref.getKey().equals(testPref.getDependency())) {
+            if(pref.getKey()!=null && pref.getKey().equals(testPref.getDependency())) {
                 Log.v(TAG, " - Preference " + testPref.getKey() + " is a dependency");
                 testPref.setEnabled(enabled);
 

@@ -19,9 +19,10 @@ public class SettingsFragment extends CallistoFragment {
     SettingsFragmentScreen screen;
 
     /** Constructor; supplies MasterActivity reference. */
-    public SettingsFragment(MasterActivity master) {
+    public SettingsFragment(MasterActivity master, SettingsFragmentScreen screen) {
         super(master);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(master);
+        this.screen = screen;
     }
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
@@ -36,10 +37,11 @@ public class SettingsFragment extends CallistoFragment {
     {
         if(screen==null) {
             SettingsFragmentParser parser = new SettingsFragmentParser(this);
-            screen = parser.loadPreferencesFromResource(R.xml.preferences);
-            Log.v(TAG, "Loaded preferences: " + screen.getPreferences().size());
+            this.screen = parser.loadPreferencesFromResource(R.xml.preferences);
+            Log.v(TAG, "Loaded preferences: " + this.screen.getPreferences().size());
         } else {
-            ((ViewGroup)screen.getListView().getParent()).removeView(screen.getListView());
+            if(screen.getListView().getParent()!=null)
+                ((ViewGroup)screen.getListView().getParent()).removeView(screen.getListView());
         }
         show();
         return screen.getListView();
@@ -47,15 +49,18 @@ public class SettingsFragment extends CallistoFragment {
 
     @Override
     public void show() {
-        master.getSupportActionBar().setTitle(screen.getTitle());
+        master.getSupportActionBar().setTitle(com.qweex.callisto.R.string.settings);
+        master.getSupportActionBar().setSubtitle(screen.getTitle());
+        master.drawerToggle.setDrawerIndicatorEnabled(screen.getParent()==null);
     }
 
     @Override
     public void hide() {
+        master.drawerToggle.setDrawerIndicatorEnabled(screen.getParent()!=null);
     }
 
     public void openChild(SettingsFragmentScreen childScreen) {
-        SettingsFragment child = new SettingsFragment(master);
+        SettingsFragment child = new SettingsFragment(master, childScreen);
 
         master.pushFragment(child, true);
     }
