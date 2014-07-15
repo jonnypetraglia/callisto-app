@@ -1,8 +1,11 @@
 package com.qweex.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 //http://www.codeproject.com/Articles/547636/Android-Ready-to-use-simple-directory-chooser-dial
@@ -77,12 +80,21 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
     @Override
     public void onDirectoryChosen(String chosenDir)
     {
+
+        Log.v("PathPreference", "Chose dir: " + chosenDir);
         persistString(chosenDir);
         mPath = chosenDir;
         setSummary(chosenDir);
-        System.out.println(chosenDir + "!!!");
+
+        getSharedPreferences().edit().putString(getKey(), mPath).commit();
+
         try {
             getOnPreferenceChangeListener().onPreferenceChange(this, mPath);
         } catch (NullPointerException e) {}
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext());
     }
 }

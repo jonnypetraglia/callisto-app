@@ -4,6 +4,7 @@
     android:title="@string/general">
 
     <com.qweex.utils.PathPreference
+        android:title="@string/storage_path"
         android:key="storage_path"
         prefix="/mnt/sdcard"
         android:defaultValue="callisto"

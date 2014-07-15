@@ -11,6 +11,19 @@ import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 
+/**
+ * General guide to using this shit:
+ *   - Create a filled Screen by either of the following two methods:
+ *     - Inflate from XML (pass null to the 'screen' argument in the constructor)
+ *     - Create manually via
+ *       - newScreen = new SettingsFragmentScreen()
+ *       - newScreen.add(new Preference(...))
+ *       - new SettingsFragment(activity, newScreen);
+ *   - The following native Preferences are supported: (Preference, CheckBoxPreference, ListPreference)
+ *   - Writing a custom fragment means you have to take care of the clickListener and all that, either inside the Fragment or inside this class.
+ *   - openChild() is called when a sub-fragment is selected. Easiest thing to do: create a new SettingsFragment with the passed in Screen & push it on the stack.
+ */
+
 public class SettingsFragment extends CallistoFragment {
 
     String TAG = "Callisto:settings:SettingsFragment";

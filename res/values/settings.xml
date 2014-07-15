@@ -21,6 +21,7 @@
 
     <string name="current_value">Current value</string>
     <string name="general">General</string>
+    <string name="storage_path">Storage path</string>
 
     <integer-array name="irc_ports">
         <item>6667</item>

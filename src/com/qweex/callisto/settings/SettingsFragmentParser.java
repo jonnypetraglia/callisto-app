@@ -89,8 +89,6 @@ public class SettingsFragmentParser {
             nodeName = parser.getName();
 
             AttributeSet newPrefAttrs = Xml.asAttributeSet(parser);
-            String x = newPrefAttrs.getAttributeValue(ANDROIDNS, "defaultValue");
-            Log.v(TAG, "::default value for new is " + x);
 
             Preference newPreference;
             if("PreferenceScreen".equals(nodeName))

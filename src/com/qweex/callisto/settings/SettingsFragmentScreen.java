@@ -47,6 +47,8 @@ public class SettingsFragmentScreen extends Preference {
     }
 
     public SettingsFragmentScreen addChild(Preference child, SettingsAttributes childAttrs) {
+        if(listview!=null)
+            throw new IllegalStateException("Attempted to add child after ListView has been created.");
         Log.v(TAG, "Adding child: " + child.getKey() + " | " + childAttrs);
         preferences.add(child);
         prefAttributes.put(child, childAttrs);
@@ -86,6 +88,7 @@ public class SettingsFragmentScreen extends Preference {
                 if(preference instanceof SettingsFragmentScreen) {
                     //Pass
                 } else {
+                    preference.setOnPreferenceChangeListener(customPreferenceChangeListener);
                     Log.v(TAG, "Custom preference type passed in: " + preference.getClass().getName());
                     Log.v(TAG, "Hopefully the custom class implements a click listener");
                 }
@@ -214,6 +217,16 @@ public class SettingsFragmentScreen extends Preference {
         for(int j=0; j<viewGroup.getChildCount(); j++)
             setViewAndChildrenEnabled(viewGroup.getChildAt(j), enabled);
     }
+
+    OnPreferenceChangeListener customPreferenceChangeListener = new OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            int index = preferences.indexOf(preference);
+            adapter.getView(index, listview.getChildAt(index), listview);
+            //adapter.notifyDataSetChanged();
+            return false;
+        }
+    };
 
     @Override
     public SharedPreferences getSharedPreferences() {
