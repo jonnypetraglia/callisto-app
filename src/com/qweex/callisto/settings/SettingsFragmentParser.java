@@ -19,12 +19,12 @@ public class SettingsFragmentParser {
 
     String TAG = "Callisto:settings:SettingsFragmentsParser";
 
-    Activity mActivity;
+    SettingsFragment fragment;
 
     final static public String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 
-    public SettingsFragmentParser(Activity activity) {
-        mActivity = activity;
+    public SettingsFragmentParser(SettingsFragment fragment) {
+        this.fragment = fragment;
     }
 
     public SettingsFragmentScreen loadPreferencesFromResource(int resid) {
@@ -32,7 +32,7 @@ public class SettingsFragmentParser {
 
         XmlResourceParser parser = null;
         try {
-            parser = mActivity.getResources().getXml(resid);
+            parser = fragment.getActivity().getResources().getXml(resid);
 
             int type;
             while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
@@ -74,7 +74,7 @@ public class SettingsFragmentParser {
         }
 
         AttributeSet screenAttrs = Xml.asAttributeSet(parser);
-        SettingsFragmentScreen result = new SettingsFragmentScreen(mActivity, screenAttrs, parent);
+        SettingsFragmentScreen result = new SettingsFragmentScreen(fragment, screenAttrs, parent);
 
 
 
@@ -103,7 +103,7 @@ public class SettingsFragmentParser {
                             Context.class,
                             AttributeSet.class
                     ).newInstance(
-                            mActivity,
+                            fragment.getActivity(),
                             newPrefAttrs
                     );
                 } catch(ClassNotFoundException cnf) {
@@ -113,7 +113,7 @@ public class SettingsFragmentParser {
                             Context.class,
                             AttributeSet.class
                     ).newInstance(
-                            mActivity,
+                            fragment.getActivity(),
                             newPrefAttrs
                     );
                 }

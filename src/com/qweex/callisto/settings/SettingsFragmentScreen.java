@@ -37,9 +37,12 @@ public class SettingsFragmentScreen extends Preference {
     ListView listview;
     SettingsFragmentAdapter adapter;
     Dialog listPreferenceDialog;
+    SettingsFragment fragment;
 
-    public SettingsFragmentScreen(Context context, AttributeSet attrs, SettingsFragmentScreen parent) {
-        super(context, attrs);
+
+    public SettingsFragmentScreen(SettingsFragment fragment, AttributeSet attrs, SettingsFragmentScreen parent) {
+        super(fragment.getActivity(), attrs);
+        this.fragment = fragment;
         this.myAttributes = attrs;
         this.parent = parent;
     }
@@ -80,7 +83,12 @@ public class SettingsFragmentScreen extends Preference {
                     String restoredValue = getSharedPreferences().getString(preference.getKey(), defaultValue);
                     ListPreference list = ((ListPreference) preference);
                     list.setValue(restoredValue);
-                }
+                } else
+                if(preference instanceof SettingsFragmentScreen) {
+                    //Pass
+                } else
+                    throw new RuntimeException("Unknown preference type: " + preference.getClass().getName());
+
                 setDependentPreferencesEnabled(preference);
             }
 
@@ -110,9 +118,12 @@ public class SettingsFragmentScreen extends Preference {
 
             if(preference.getClass() == CheckBoxPreference.class)
                 setCheckPreference((CheckBoxPreference) preference, !((CheckBoxPreference) preference).isChecked(), view);
-
+            else
             if(preference.getClass() == ListPreference.class)
                 showListPreference((ListPreference) preference, view);
+            else
+            if(preference.getClass() == SettingsFragmentScreen.class)
+                fragment.openChild((SettingsFragmentScreen) preference);
         }
     };
 

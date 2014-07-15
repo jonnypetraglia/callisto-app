@@ -35,7 +35,7 @@ public class SettingsFragment extends CallistoFragment {
                              Bundle savedInstanceState)
     {
         if(screen==null) {
-            SettingsFragmentParser parser = new SettingsFragmentParser(master);
+            SettingsFragmentParser parser = new SettingsFragmentParser(this);
             screen = parser.loadPreferencesFromResource(R.xml.preferences);
             Log.v(TAG, "Loaded preferences: " + screen.getPreferences().size());
         } else {
@@ -47,9 +47,16 @@ public class SettingsFragment extends CallistoFragment {
 
     @Override
     public void show() {
+        master.getSupportActionBar().setTitle(screen.getTitle());
     }
 
     @Override
     public void hide() {
+    }
+
+    public void openChild(SettingsFragmentScreen childScreen) {
+        SettingsFragment child = new SettingsFragment(master);
+
+        master.pushFragment(child, true);
     }
 }

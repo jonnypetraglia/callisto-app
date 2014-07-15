@@ -3,11 +3,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Preferences">
 
+    <!--
     <com.qweex.utils.PathPreference
         android:key="storage_path"
         prefix="/mnt/sdcard"
         android:defaultValue="callisto"
         />
+    -->
     <ListPreference
         android:title="@string/live_audio_quality"
         android:key="live_url"
@@ -30,9 +32,8 @@
         android:dependency="pause_unplugged"
         />
 
-    <!--
     <PreferenceScreen android:title="@string/chat" >
-
+        <!--
         <ListPreference
                 android:title="@string/port"
                 android:summary="@string/port_default"
@@ -90,9 +91,8 @@
             <Preference
                 android:key="reset_colors" android:title="@string/reset_colors"/>
         </PreferenceCategory>
-
+        -->
     </PreferenceScreen>
-    -->
 
 
 </PreferenceScreen>
