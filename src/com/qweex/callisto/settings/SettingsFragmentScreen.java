@@ -87,7 +87,12 @@ public class SettingsFragmentScreen extends Preference {
                 } else
                 if(preference instanceof SettingsFragmentScreen) {
                     //Pass
+                } else
+                if(preference instanceof PreferenceCategory) {
+                    //Pass
                 } else {
+                    //((SettingsFragmentInit)preference).restoreInitialValue(defaultValue);
+
                     preference.setOnPreferenceChangeListener(customPreferenceChangeListener);
                     Log.v(TAG, "Custom preference type passed in: " + preference.getClass().getName());
                     Log.v(TAG, "Hopefully the custom class implements a click listener");
@@ -221,24 +226,29 @@ public class SettingsFragmentScreen extends Preference {
 
         Object value = getSharedPreferences().getAll().get(pref.getKey());
         boolean enabled = value!=null;
-        if(enabled && value instanceof Boolean)
-            enabled = (Boolean) value;
-
+        //if(enabled && value instanceof Boolean)
+        //    enabled = (Boolean) value;
 
         setDependentPreferencesEnabled(pref, enabled);
     }
 
     void setDependentPreferencesEnabled(Preference pref, boolean enabled) {
+        if(pref.getKey()==null)
+            return;
+
+        if(pref.shouldDisableDependents())
+            enabled = !enabled;
+
         Log.v(TAG, "Setting dependency statuses of " + pref.getKey() + ": " + enabled);
 
         for(int i=0; i<preferences.size(); i++) {
             Preference testPref = preferences.get(i);
-            if(pref.getKey()!=null && pref.getKey().equals(testPref.getDependency())) {
+            if(pref.getKey().equals(testPref.getDependency())) {
                 Log.v(TAG, " - Preference " + testPref.getKey() + " is a dependency");
                 testPref.setEnabled(enabled);
 
                 if(listview!=null && i>=listview.getFirstVisiblePosition() && i<=listview.getLastVisiblePosition()) {
-                    setViewAndChildrenEnabled(listview.getChildAt(i), enabled);
+                    setViewAndChildrenEnabled(listview.getChildAt(i-listview.getFirstVisiblePosition()), enabled);
                 }
 
                 setDependentPreferencesEnabled(testPref, enabled);
@@ -247,6 +257,8 @@ public class SettingsFragmentScreen extends Preference {
     }
 
     void setViewAndChildrenEnabled(View view, boolean enabled) {
+        if(view==null)
+            return;
         Log.v(TAG, " -- View " + view.getClass() + " is being set to " + enabled);
         view.setEnabled(enabled);
         if(!(view instanceof ViewGroup))

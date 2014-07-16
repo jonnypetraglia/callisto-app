@@ -41,9 +41,11 @@ public class ColorPickerPreference
 		Preference.OnPreferenceClickListener,
 		ColorPickerDialog.OnColorChangedListener {
 
+    private static final String androidns = "http://schemas.android.com/apk/res/android";
+
 	View mView;
 	ColorPickerDialog mDialog;
-	private int mValue = Color.BLACK;
+	private int mValue, mDefault = Color.BLACK;
 	private float mDensity = 0;
 	private boolean mAlphaSliderEnabled = false;
 	private boolean mHexValueEnabled = false;
@@ -79,8 +81,16 @@ public class ColorPickerPreference
 		if (attrs != null) {
 			mAlphaSliderEnabled = attrs.getAttributeBooleanValue(null, "alphaSlider", false);
 			mHexValueEnabled = attrs.getAttributeBooleanValue(null, "hexValue", false);
+            mDefault = attrs.getAttributeIntValue(androidns, "defaultValue", mDefault);
 		}
+
+        onSetInitialValue(true, mDefault);
+        setPreviewColor();
 	}
+
+    public int getColor() {
+        return mValue;
+    }
 
 	@Override
 	protected void onBindView(View view) {

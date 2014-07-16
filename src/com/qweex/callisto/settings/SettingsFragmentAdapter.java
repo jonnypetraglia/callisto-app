@@ -2,12 +2,10 @@ package com.qweex.callisto.settings;
 
 
 import android.content.Context;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import com.qweex.callisto.ResCache;
 
@@ -42,7 +40,7 @@ public class SettingsFragmentAdapter extends BaseAdapter {
         if(summary!=null)
             ((TextView)summary).setTextColor(ResCache.clrs(com.qweex.callisto.R.color.text_muted_selector));
 
-        v.setEnabled(pref.isEnabled());
+        v.setEnabled(pref.getShouldDisableView());
 
         return v;
     }
