@@ -17,7 +17,7 @@
 package net.margaritov.preference.colorpicker;
 
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
@@ -25,7 +25,9 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,27 +67,23 @@ public class ColorPickerPreference
 		init(context, attrs);
 	}
 
-	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
-		return a.getColor(index, Color.BLACK);
-	}
-
-	@Override
-	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		onColorChanged(restoreValue ? getPersistedInt(mValue) : (Integer) defaultValue);
-	}
-
 	private void init(Context context, AttributeSet attrs) {
 		mDensity = getContext().getResources().getDisplayMetrics().density;
 		setOnPreferenceClickListener(this);
 		if (attrs != null) {
 			mAlphaSliderEnabled = attrs.getAttributeBooleanValue(null, "alphaSlider", false);
 			mHexValueEnabled = attrs.getAttributeBooleanValue(null, "hexValue", false);
-            mDefault = attrs.getAttributeIntValue(androidns, "defaultValue", mDefault);
+            int resId = attrs.getAttributeResourceValue(androidns, "defaultValue", 0);
+            if(resId!=0)
+                mDefault = context.getResources().getColor(resId);
+            else
+                mDefault = attrs.getAttributeIntValue(androidns, "defaultValue", mDefault);
 		}
 
-        onSetInitialValue(true, mDefault);
+        Log.d("ColorPicker", getKey() + "=" + mDefault + "?");
+        mValue = getSharedPreferences().getInt(getKey(), mDefault);
         setPreviewColor();
+        Log.d("ColorPicker", getKey() + "=" + mValue + "!");
 	}
 
     public int getColor() {
@@ -144,10 +142,12 @@ public class ColorPickerPreference
 
 	@Override
 	public void onColorChanged(int color) {
-		if (isPersistent()) {
-			persistInt(color);
-		}
+		//if (isPersistent())
+			//persistInt(color);
+
+        Log.d("ColorPicker", "Saving color: " + color);
 		mValue = color;
+        getSharedPreferences().edit().putInt(getKey(), mValue).commit();
 		setPreviewColor();
 		try {
 			getOnPreferenceChangeListener().onPreferenceChange(this, color);
@@ -157,11 +157,11 @@ public class ColorPickerPreference
 	}
 
 	public boolean onPreferenceClick(Preference preference) {
-		showDialog(null);
+		showDialog();
 		return false;
 	}
 	
-	protected void showDialog(Bundle state) {
+	protected void showDialog() {
 		mDialog = new ColorPickerDialog(getContext(), mValue);
 		mDialog.setOnColorChangedListener(this);
 		if (mAlphaSliderEnabled) {
@@ -169,9 +169,6 @@ public class ColorPickerPreference
 		}
 		if (mHexValueEnabled) {
 			mDialog.setHexValueEnabled(true);
-		}
-		if (state != null) {
-			mDialog.onRestoreInstanceState(state);
 		}
 		mDialog.show();
 	}
@@ -263,60 +260,9 @@ public class ColorPickerPreference
 
 		return Color.parseColor(argb);
 	}
-    
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        final Parcelable superState = super.onSaveInstanceState();
-        if (mDialog == null || !mDialog.isShowing()) {
-            return superState;
-        }
-
-        final SavedState myState = new SavedState(superState);
-        myState.dialogBundle = mDialog.onSaveInstanceState();
-        return myState;
-    }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state == null || !(state instanceof SavedState)) {
-            // Didn't save state for us in onSaveInstanceState
-            super.onRestoreInstanceState(state);
-            return;
-        }
-
-        SavedState myState = (SavedState) state;
-        super.onRestoreInstanceState(myState.getSuperState());
-        showDialog(myState.dialogBundle);
-    }
-
-    private static class SavedState extends BaseSavedState {
-        Bundle dialogBundle;
-        
-        public SavedState(Parcel source) {
-            super(source);
-            dialogBundle = source.readBundle();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeBundle(dialogBundle);
-        }
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-        
-        @SuppressWarnings("unused")
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
+    public SharedPreferences getSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext());
     }
 }
