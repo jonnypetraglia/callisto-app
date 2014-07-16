@@ -11,7 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.qweex.callisto.ResCache;
+import com.qweex.callisto.PrefCache;
+import com.qweex.utils.ResCache;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,7 +104,7 @@ public class SettingsFragmentScreen extends Preference {
 
             Log.v(TAG, "Creating ListView");
             listview = new ListView(getContext());
-            listview.setBackgroundColor(ResCache.clr(com.qweex.callisto.R.color.chat_bg));
+            listview.setBackgroundColor(PrefCache.clr("chat_color_background", com.qweex.callisto.R.color.chat_bg));
 
             adapter = new SettingsFragmentAdapter(getContext(), this);
             listview.setAdapter(adapter);
@@ -273,8 +274,8 @@ public class SettingsFragmentScreen extends Preference {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             int index = preferences.indexOf(preference);
-            adapter.getView(index, listview.getChildAt(index), listview);
-            //adapter.notifyDataSetChanged();
+            //adapter.getView(index, listview.getChildAt(index - listview.getFirstVisiblePosition()), listview);
+            adapter.notifyDataSetChanged();
             return false;
         }
     };

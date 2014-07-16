@@ -2,9 +2,9 @@ package com.qweex.callisto.chat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.text.SpannableString;
+import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,9 +24,12 @@ public class IrcMessage
                         MESSAGE,
                         MOTD,
                         MODE,
+                        NICK,
                         NOTICE,
                         PART,
-                        TOPIC
+                        QUIT,
+                        TOPIC,
+                        SEND
                      }
 
     public enum UserMode {FOUNDER, ADMIN, OP, HALFOP, VOICE}
@@ -67,15 +70,15 @@ public class IrcMessage
     }
 
     public int getTimeColor() {
-        return ResCache.clr(R.color.chat_time);
+        return PrefCache.clr("chat_color_time", R.color.chat_time);
     }
 
     public int getTitleColor() {
         switch(type) {
+            case SEND:
+                return PrefCache.clr("chat_color_nick_me", R.color.chat_nick_me);
             case MESSAGE:
-                //if(title==me)
-                    //return ResCache.clr(R.color.chat_nick_me);
-                return ResCache.clr(R.color.chat_nick);
+                return PrefCache.clr("chat_color_nick", R.color.chat_nick);
             default:
                 return getMessageColor();
         }
@@ -84,27 +87,29 @@ public class IrcMessage
     public int getMessageColor() {
         switch(type) {
             case ACTION:
-                return ResCache.clr(R.color.chat_action);
+                return PrefCache.clr("chat_color_action", R.color.chat_action);
             case CONNECTION:
-                return ResCache.clr(R.color.chat_connection);
+                return PrefCache.clr("chat_color_connection", R.color.chat_connection);
             case JOIN:
-                return ResCache.clr(R.color.chat_join);
+                return PrefCache.clr("chat_color_join", R.color.chat_join);
             case KICK:
-                return ResCache.clr(R.color.chat_kick);
-            case MOTD:
-                return ResCache.clr(R.color.chat_motd);
+                return PrefCache.clr("chat_color_kick", R.color.chat_kick);
             case MODE:
-                return ResCache.clr(R.color.chat_mode);
+                return PrefCache.clr("chat_color_mode", R.color.chat_mode);
+            case NICK:
+                return PrefCache.clr("chat_color_nick_change", R.color.chat_nick);
             case NOTICE:
-                return ResCache.clr(R.color.chat_notice);
+                return PrefCache.clr("chat_color_notice", R.color.chat_notice);
             case PART:
-                return ResCache.clr(R.color.chat_part);
+            case QUIT:
+                return PrefCache.clr("chat_color_quit", R.color.chat_quit);
             case TOPIC:
-                return ResCache.clr(R.color.chat_topic);
+            case MOTD:
+                return PrefCache.clr("chat_color_topic", R.color.chat_topic);
 
             case MESSAGE:
             default:
-                return ResCache.clr(R.color.chat_text);
+                return PrefCache.clr("chat_color_text", R.color.chat_text);
         }
     }
 
@@ -118,8 +123,8 @@ public class IrcMessage
                 },
                 new int [] {
                         Color.BLUE,
-                        0xFF000000 + ResCache.clr(R.color.chat_link),
-                        0xFF000000 + ResCache.clr(R.color.chat_link),
+                        0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link),
+                        0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link),
                 }
         );
     }
@@ -146,6 +151,6 @@ public class IrcMessage
     }
 
     static public int getTextSize() {
-        return ResCache.inte(R.integer.chat_text_size);
+        return PrefCache.inte("chat_text_size", R.integer.chat_text_size);
     }
 }

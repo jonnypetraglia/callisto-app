@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
@@ -31,10 +31,14 @@ public class UserTabFragment extends TabFragment {
     @Override
     void send(String msg) {
         user.sendMessage(msg);
+
+        if(user.getNick().toLowerCase().equals("nickserv") && msg.startsWith("identify "))
+            msg = "identify ******";
+
         receive(new IrcMessage(
                 server.getClient().getNick(),
                 msg,
-                IrcMessage.Type.MESSAGE
+                IrcMessage.Type.SEND
         ));
     }
 

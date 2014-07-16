@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 import com.sorcix.sirc.IrcConnection;
 
 import java.io.File;

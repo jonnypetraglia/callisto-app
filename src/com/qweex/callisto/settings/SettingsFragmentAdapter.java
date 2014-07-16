@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 
 
 public class SettingsFragmentAdapter extends BaseAdapter {

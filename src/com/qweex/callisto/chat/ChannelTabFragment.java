@@ -6,10 +6,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
-import com.sorcix.sirc.User;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,7 +33,7 @@ public class ChannelTabFragment extends TabFragment {
         receive(new IrcMessage(
                 server.getClient().getNick(),
                 msg,
-                IrcMessage.Type.MESSAGE
+                IrcMessage.Type.SEND
         ));
     }
 

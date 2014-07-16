@@ -51,7 +51,7 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
         if(mPath==null)
             try {
                 if(isPersistent()) {
-                    mPath = getPersistedString(mDefaultPath);
+                    mPath = getSharedPreferences().getString(getKey(), mDefaultPath);
                 }
             } catch (ClassCastException e) {
                 mPath = mDefaultPath;
@@ -82,7 +82,6 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
     {
 
         Log.v("PathPreference", "Chose dir: " + chosenDir);
-        persistString(chosenDir);
         mPath = chosenDir;
         setSummary(chosenDir);
 

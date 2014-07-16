@@ -1,4 +1,4 @@
-package com.qweex.callisto;
+package com.qweex.utils;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -10,14 +10,14 @@ import java.util.HashMap;
  * @author      Jon Petraglia <notbryant@gmail.com>
  * */
 public class ResCache {
-    static String TAG = "Callisto:TAG";
+    static String TAG = "Callisto:ResCache:TAG";
 
     public static Resources resources;
-    static HashMap<Integer, String> strings = new HashMap<Integer, String>();
-    static HashMap<Integer, Drawable> drawables = new HashMap<Integer, Drawable>();
-    static HashMap<Integer, Integer> colors = new HashMap<Integer, Integer>();
-    static HashMap<Integer, Integer> integers = new HashMap<Integer, Integer>();
-    static HashMap<Integer, ColorStateList> colorStateLists = new HashMap<Integer, ColorStateList>();
+    protected static HashMap<Integer, String> strings = new HashMap<Integer, String>();
+    protected static HashMap<Integer, Drawable> drawables = new HashMap<Integer, Drawable>();
+    protected static HashMap<Integer, Integer> colors = new HashMap<Integer, Integer>();
+    protected static HashMap<Integer, Integer> integers = new HashMap<Integer, Integer>();
+    protected static HashMap<Integer, ColorStateList> colorStateLists = new HashMap<Integer, ColorStateList>();
 
     static public String str(Integer stringId, Object... args) {
         if(!strings.containsKey(stringId))

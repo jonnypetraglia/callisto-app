@@ -2,7 +2,7 @@ package com.qweex.callisto.chat;
 
 import android.util.Log;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 import com.sorcix.sirc.*;
 
 /** Extension of sIRC that handles the IRC events, parses them, and passes them on to ChatFragment.
@@ -28,7 +28,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
                 ResCache.str(R.string.convo_connected),
                 null,
                 IrcMessage.Type.CONNECTION
-        ), false);
+        ), true);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         chat.receive(channel, new IrcMessage(
                 null,
                 " *** " + msg,
-                IrcMessage.Type.KICK
+                IrcMessage.Type.PART
         ));
     }
 
@@ -256,14 +256,32 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onNick(IrcConnection irc, User oldUser, User newUser) {
-        //TODO // Need to check every active channel if it applies
-        
+        String msg;
+        if(newUser.isUs())
+            msg = ResCache.str(R.string.convo_nick_me, newUser.getNick());
+        else
+            msg = ResCache.str(R.string.convo_nick, oldUser.getNick(), newUser.getNick());
+
+        chat.receive(irc, new IrcMessage(
+                msg,
+                null,
+                IrcMessage.Type.NICK
+        ), true);
     }
 
     @Override
     public void onQuit(IrcConnection irc, User user, String message) {
-        //TODO // Need to check every active channel if it applies
-        
+        String msg;
+        if(user.isUs())
+            msg = ResCache.str(R.string.convo_quit_me, message);
+        else
+            msg = ResCache.str(R.string.convo_quit, user.getNick(), message);
+
+        chat.receive(irc, new IrcMessage(
+                msg,
+                null,
+                IrcMessage.Type.QUIT
+        ), true);
     }
 
     //////////////////////////////////////////////////////////

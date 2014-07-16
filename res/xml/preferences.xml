@@ -106,7 +106,6 @@
                                 android:summary="@string/nick_colors_desc"
                                 android:defaultValue="true"
                                 android:disableDependentsState="true"
-                                android:dependency="chat_irssi"
                                 android:widgetLayout="@layout/smaller_preference_check"/>
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
@@ -121,28 +120,43 @@
                     android:title="@string/nick_me"
                     android:defaultValue="@color/chat_nick_me"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_text"
                     android:title="@string/text"
                     android:defaultValue="@color/chat_text"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_background"
                     android:title="@string/background"
                     android:defaultValue="@color/chat_bg"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
+
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                    android:key="chat_color_time"
+                    android:title="@string/timestamp"
+                    android:defaultValue="@color/chat_time"
+                    alphaSlider="false" hexValue="true"
+                    android:dependency="chat_time"
+                    />
+
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                    android:key="chat_color_connection"
+                    android:title="@string/connection"
+                    android:defaultValue="@color/chat_connection"
+                    alphaSlider="false" hexValue="true"
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_mention"
                     android:title="@string/mention"
                     android:defaultValue="@color/chat_mention"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
@@ -150,63 +164,56 @@
                     android:title="@string/action"
                     android:defaultValue="@color/chat_action"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_nick_change"
                     android:title="@string/nick_change"
                     android:defaultValue="@color/chat_nick"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_topic"
                     android:title="@string/topic"
                     android:defaultValue="@color/chat_topic"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_link"
                     android:title="@string/link"
                     android:defaultValue="@color/chat_link"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_join"
                     android:title="@string/join"
                     android:defaultValue="@color/chat_join"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
-
-            <net.margaritov.preference.colorpicker.ColorPickerPreference
-                    android:key="chat_color_part"
-                    android:title="@string/part"
-                    android:defaultValue="@color/chat_part"
-                    alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_quit"
-                    android:title="@string/quit"
+                    android:title="@string/part_quit"
                     android:defaultValue="@color/chat_quit"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_kick"
                     android:title="@string/kick"
                     android:defaultValue="@color/chat_kick"
                     alphaSlider="false" hexValue="true"
-                    android:dependency="chat_irssi"/>
+                    />
 
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                 android:key="chat_color_error"
                 android:title="@string/error"
                 android:defaultValue="@color/chat_error"
                 alphaSlider="false" hexValue="true"
-                android:dependency="chat_irssi"/>
+                />
 
             <Preference
                 android:key="reset_colors"

@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
-import com.qweex.callisto.ResCache;
+import com.qweex.utils.ResCache;
 import com.sorcix.sirc.Channel;
 import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;

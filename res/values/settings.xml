@@ -55,14 +55,15 @@
     <string name="nick_me">My nick</string>
     <string name="text">Text</string>
     <string name="background">Background</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="connection">Connection</string>
     <string name="mention">Mention</string>
     <string name="action">Action</string>
     <string name="nick_change">Nick change</string>
     <string name="topic">Topic</string>
     <string name="link">Link</string>
     <string name="join">Join</string>
-    <string name="part">Part</string>
-    <string name="quit">Quit</string>
+    <string name="part_quit">Part / Quit</string>
     <string name="kick">Kick</string>
 
     <string name="reset_colors">Reset Default Colors</string>

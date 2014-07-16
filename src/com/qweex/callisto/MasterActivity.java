@@ -21,6 +21,7 @@ import com.qweex.callisto.chat.LoginFragment;
 import com.qweex.callisto.contact.ContactFragment;
 
 import com.qweex.callisto.settings.SettingsFragment;
+import com.qweex.utils.ResCache;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
