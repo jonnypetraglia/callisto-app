@@ -93,6 +93,8 @@ public class SettingsFragmentParser {
             Preference newPreference;
             if("PreferenceScreen".equals(nodeName))
                 newPreference = parsePreferenceScreen(parser, result);
+            //else if("PreferenceCategory".equals(nodeName))
+            //    newPreference = parsePreferenceScreen(parser, result);
             else {
                 try {
                     Class<?> nodeClass = Class.forName(nodeName);

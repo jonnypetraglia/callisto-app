@@ -146,6 +146,6 @@ public class IrcMessage
     }
 
     static public int getTextSize() {
-        return ResCache.inte(R.integer.text_size);
+        return ResCache.inte(R.integer.chat_text_size);
     }
 }

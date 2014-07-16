@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="reset_colors_title">Confirm</string>
-    <string name="reset_colors_message">Are you sure you want to reset the IRC colors to their default values?</string>
 
+    <!--********************* General *********************-->
 
-    <string name="live_audio_quality">Live audio quality</string>
+    <string name="general">General</string>
+    <string name="storage_path">Storage path</string>
+
     <string-array name="live_quality">
         <item>Low (64kbps)</item>
         <item>High (128kbps)</item>
     </string-array>
-    <string-array name="live_sources">
-        <item>http://jbradio.out.airtime.pro:8000/jbradio_b</item>
-        <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
-    </string-array>
+
+    <string name="live_audio_quality">Live audio quality</string>
 
     <string name="pause_on_unplug">Pause on unplug</string>
     <string name="pause_on_unplug_desc">Pause playback when headphone jack is unplugged</string>
     <string name="play_on_replug">Play on re-plug</string>
     <string name="play_on_replug_desc">Resume playback when headphone jack is plugged back in</string>
 
-    <string name="current_value">Current value</string>
-    <string name="general">General</string>
-    <string name="storage_path">Storage path</string>
+    <!--********************* Chat *********************-->
 
     <string name="port">Port</string>
+
 
     <string name="quit_msg">Quit msg</string>
     <string name="quit_msg_desc">(Optional) Message to be shown when you leave</string>
@@ -48,16 +46,39 @@
     <string name="vibrate_on_every">Vibrate on EVERY mention</string>
     <string name="vibrate_on_every_desc">When anyone mentions you at all</string>
 
+
+    <string name="colors">Colors</string>
+
     <string name="nick_colors">Use nick colors</string>
     <string name="nick_colors_desc">Generate a color for each nick.</string>
-
-    <string name="other_nick_color">Other Nick Color</string>
+    <string name="nick_them">Other nicks</string>
+    <string name="nick_me">My nick</string>
+    <string name="text">Text</string>
+    <string name="background">Background</string>
+    <string name="mention">Mention</string>
+    <string name="action">Action</string>
+    <string name="nick_change">Nick change</string>
+    <string name="topic">Topic</string>
+    <string name="link">Link</string>
+    <string name="join">Join</string>
+    <string name="part">Part</string>
+    <string name="quit">Quit</string>
+    <string name="kick">Kick</string>
 
     <string name="reset_colors">Reset Default Colors</string>
+    <string name="reset_colors_title">Confirm</string>
+    <string name="reset_colors_message">Are you sure you want to reset the IRC colors to their default values?</string>
 
 
-    <string name="port_default">6667</string>
-    <string-array name="irc_ports">
+    <!--********************* Etc *********************-->
+    <string name="current_value">Current value</string>
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="press_color_to_apply">Press color to apply</string>
+
+
+    <!--********************* Settings Values *********************-->
+
+    <string-array name="chat_ports">
         <item>6667</item>
         <item>6660</item>
         <item>6661</item>
@@ -74,9 +95,10 @@
         <item>1755</item>
     </string-array>
 
-    <color name="settings_background">@android:color/white</color>
-    <color name="settings_background_TEST">@android:color/holo_red_dark</color>
-    <color name="settings_title">@color/text_main_selector</color>
-    <color name="settings_summary">@color/text_muted</color>
+
+    <string-array name="live_sources">
+        <item>http://jbradio.out.airtime.pro:8000/jbradio_b</item>
+        <item>http://jbradio.out.airtime.pro:8000/jbradio_a</item>
+    </string-array>
 
 </resources>

@@ -1,6 +1,5 @@
 package com.qweex.callisto.chat;
 
-import android.text.TextUtils;
 import android.util.Log;
 import com.qweex.callisto.R;
 import com.qweex.callisto.ResCache;
@@ -26,7 +25,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     @Override
     public void onConnect(IrcConnection irc) {
         chat.receive(irc, new IrcMessage(
-                ResCache.str(R.string.connected),
+                ResCache.str(R.string.convo_connected),
                 null,
                 IrcMessage.Type.CONNECTION
         ), false);
@@ -35,7 +34,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     @Override
     public void onDisconnect(IrcConnection irc) {
         chat.receive(irc, new IrcMessage(
-                ResCache.str(R.string.disconnected),
+                ResCache.str(R.string.convo_disconnected),
                 null,
                 IrcMessage.Type.CONNECTION
         ), true);
@@ -44,7 +43,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     @Override
     public void onNotice(IrcConnection irc, User sender, String message) {
         chat.receive(irc, new IrcMessage(
-                ResCache.str(R.string.notice, sender.getNick()),
+                ResCache.str(R.string.convo_notice, sender.getNick()),
                 message,
                 IrcMessage.Type.NOTICE
         ), true);
@@ -114,7 +113,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     public void onTopic(IrcConnection irc, Channel channel, User sender, String topic) {
 
         Log.d(TAG, "Topic set by " + sender);
-        String msg = ResCache.str(R.string.topic, topic, sender==null ? "unknown" : sender.getNick());
+        String msg = ResCache.str(R.string.convo_topic, topic, sender==null ? "unknown" : sender.getNick());
 
         IrcMessage imsg = new IrcMessage(
                 null,
@@ -128,9 +127,9 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     public void onJoin(IrcConnection irc, Channel channel, User user) {
         String msg;
         if(user.isUs())
-            msg = " *** " + ResCache.str(R.string.join_me);
+            msg = " *** " + ResCache.str(R.string.convo_join_me);
         else
-            msg = " *** " + ResCache.str(R.string.join, user.getNick());
+            msg = " *** " + ResCache.str(R.string.convo_join, user.getNick());
         chat.receive(channel, new IrcMessage(
                 null,
                 msg,
@@ -142,11 +141,11 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     public void onKick(IrcConnection irc, Channel channel, User sender, User user, String message) {
         String msg;
         if(sender.isUs())
-            msg = ResCache.str(R.string.kick_me_active, user.getNick(), message);
+            msg = ResCache.str(R.string.convo_kick_me_active, user.getNick(), message);
         else if(user.isUs())
-            msg = ResCache.str(R.string.kick_me_passive, sender.getNick(), message);
+            msg = ResCache.str(R.string.convo_kick_me_passive, sender.getNick(), message);
         else
-            msg = ResCache.str(R.string.kick, sender.getNick(), user.getNick(), message);
+            msg = ResCache.str(R.string.convo_kick, sender.getNick(), user.getNick(), message);
 
         chat.receive(channel, new IrcMessage(
                 null,
@@ -159,9 +158,9 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     public void onPart(IrcConnection irc, Channel channel, User user, String message) {
         String msg;
         if(user.isUs())
-            msg = ResCache.str(R.string.part_me, message);
+            msg = ResCache.str(R.string.convo_part_me, message);
         else
-            msg = ResCache.str(R.string.part, user.getNick(),message);
+            msg = ResCache.str(R.string.convo_part, user.getNick(),message);
 
         chat.receive(channel, new IrcMessage(
                 null,
@@ -175,9 +174,9 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     public void onMode(IrcConnection irc, Channel channel, User sender, String mode) {
         String msg;
         if(sender.isUs())
-            msg = ResCache.str(R.string.mode_channel_me, sender.getNick(), mode);
+            msg = ResCache.str(R.string.convo_mode_channel_me, sender.getNick(), mode);
         else
-            msg = ResCache.str(R.string.mode_channel, sender.getNick(), mode);
+            msg = ResCache.str(R.string.convo_mode_channel, sender.getNick(), mode);
 
         chat.receive(channel, new IrcMessage(
                 null,
@@ -189,7 +188,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
     @Override
     public void onNotice(IrcConnection irc, User sender, Channel target, String message) {
         chat.receive(target, new IrcMessage(
-                ResCache.str(R.string.notice, sender.getNick()),
+                ResCache.str(R.string.convo_notice, sender.getNick()),
                 message,
                 IrcMessage.Type.NOTICE
         ));
@@ -297,18 +296,18 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         modeString = modeString.charAt(0) + modeString.substring(1).toLowerCase();
         if(given) {
             if(setBy.isUs())
-                msg = ResCache.str(R.string.mode_set_me_active, modeString, setTarget.getNick());
+                msg = ResCache.str(R.string.convo_mode_set_me_active, modeString, setTarget.getNick());
             else if(setTarget.isUs())
-                msg = ResCache.str(R.string.mode_set_me_passive, setBy.getNick(), modeString);
+                msg = ResCache.str(R.string.convo_mode_set_me_passive, setBy.getNick(), modeString);
             else
-                msg = ResCache.str(R.string.mode_set, setBy.getNick(), modeString, setTarget.getNick());
+                msg = ResCache.str(R.string.convo_mode_set, setBy.getNick(), modeString, setTarget.getNick());
         } else {
             if(setBy.isUs())
-                msg = ResCache.str(R.string.mode_unset_me_active, modeString, setTarget.getNick());
+                msg = ResCache.str(R.string.convo_mode_unset_me_active, modeString, setTarget.getNick());
             else if(setTarget.isUs())
-                msg = ResCache.str(R.string.mode_unset_me_passive, setBy.getNick(), modeString);
+                msg = ResCache.str(R.string.convo_mode_unset_me_passive, setBy.getNick(), modeString);
             else
-                msg = ResCache.str(R.string.mode_unset, setBy.getNick(), modeString, setTarget.getNick());
+                msg = ResCache.str(R.string.convo_mode_unset, setBy.getNick(), modeString, setTarget.getNick());
         }
 
         Log.d(TAG, msg);

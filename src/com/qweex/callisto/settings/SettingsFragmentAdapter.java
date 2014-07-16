@@ -32,7 +32,7 @@ public class SettingsFragmentAdapter extends BaseAdapter {
     public View getView(int pos, View v, ViewGroup parent)
     {
         Preference pref = screen.getPreferences().get(pos);
-        v = pref.getView(v, parent);
+        v = pref.getView(null, parent);
 
         v.setBackgroundResource(com.qweex.callisto.R.drawable.sel_logo1);
         View title = v.findViewById(android.R.id.title),
@@ -41,11 +41,6 @@ public class SettingsFragmentAdapter extends BaseAdapter {
             ((TextView)title).setTextColor(ResCache.clrs(com.qweex.callisto.R.color.text_main_selector));
         if(summary!=null)
             ((TextView)summary).setTextColor(ResCache.clrs(com.qweex.callisto.R.color.text_muted_selector));
-
-        if(pref.getClass() == CheckBoxPreference.class) {
-            CheckBoxPreference check = (CheckBoxPreference) pref;
-            ((CheckBox)(v.findViewById(android.R.id.checkbox))).setChecked(check.isChecked());
-        }
 
         v.setEnabled(pref.isEnabled());
 

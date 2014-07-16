@@ -112,7 +112,7 @@ public class ChatFragment extends CallistoFragment {
         serverTabs.put(server, tabFragment);
 
         tabFragment.receive(new IrcMessage(
-                ResCache.str(R.string.connecting, server.getServerAddress()),
+                ResCache.str(R.string.convo_connecting, server.getServerAddress()),
                 null,
                 IrcMessage.Type.CONNECTION
         ));
