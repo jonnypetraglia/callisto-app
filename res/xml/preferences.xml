@@ -48,11 +48,26 @@
             android:defaultValue="@string/chat_port"
             />
 
-        <EditTextPreference android:key="chat_nick"
+        <EditTextPreference android:key="chat_nickname"
                             android:title="@string/nickname"/>
 
-        <EditTextPreference android:key="chat_pass"
+        <EditTextPreference android:key="chat_username"
+                            android:title="@string/username"/>
+
+        <EditTextPreference android:key="chat_real_name"
+                            android:title="@string/real_name"/>
+
+        <EditTextPreference android:key="chat_nickserv_password"
                             android:title="@string/nickserv_password" />
+
+        <CheckBoxPreference android:key="chat_remember_names"
+                            android:title="@string/remember_names"
+                            android:widgetLayout="@layout/smaller_preference_check"/>
+
+        <CheckBoxPreference android:key="chat_remember_password"
+                            android:title="@string/remember_password"
+                            android:widgetLayout="@layout/smaller_preference_check"
+                            android:dependency="chat_remember_names"/>
 
         <EditTextPreference android:key="chat_quit"
                             android:title="@string/quit_msg"

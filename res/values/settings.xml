@@ -24,7 +24,7 @@
 
 
     <string name="quit_msg">Quit msg</string>
-    <string name="quit_msg_desc">(Optional) Message to be shown when you leave</string>
+    <string name="quit_msg_desc">Message to be shown when you leave</string>
 
     <string name="show_timestamps">Show Timestamps</string>
 

@@ -35,8 +35,8 @@
     <string name="convo_quit" formatted="false">%s has quit (%s)</string>
     <string name="convo_quit_me" formatted="false">You have quit (%s)</string>
 
-    <string name="convo_nick" formatted="false">%s changed his nick to %s</string>
-    <string name="convo_nick_me" formatted="false">You changed your nick to %s</string>
+    <string name="convo_nick" formatted="false">%s is now known as %s</string>
+    <string name="convo_nick_me" formatted="false">You are now known as %s</string>
 
     <string name="convo_mode_channel" formatted="false">%s sets channel mode %s</string>
     <string name="convo_mode_channel_me" formatted="false">You set channel mode %s</string>
@@ -67,8 +67,8 @@
     <color name="chat_bg">#ffffff</color>
     <color name="chat_text">#000000</color>
     <color name="chat_time">#666666</color>
-    <color name="chat_nick_them">#333333</color>
-    <color name="chat_nick_me">#FFF5EE</color>
+    <color name="chat_nick_them">#555555</color>
+    <color name="chat_nick_me">#99cc00</color>
     <color name="chat_action">#9400D3</color>
     <color name="chat_topic">#B8860B</color>
     <color name="chat_notice">@color/chat_topic</color>
