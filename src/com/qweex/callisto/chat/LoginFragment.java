@@ -16,17 +16,13 @@ import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
-import com.qweex.callisto.catalog.ShowInfo;
 import com.qweex.utils.ResCache;
 import com.qweex.utils.MultiChooserDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 public class LoginFragment extends CallistoFragment implements MultiChooserDialog.OnChosen {

@@ -3,14 +3,10 @@ package com.qweex.callisto.chat;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
-import com.qweex.callisto.MasterActivity;
 import com.sorcix.sirc.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class IrcService extends IntentService {
 

@@ -1,13 +1,9 @@
 package com.qweex.callisto.settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

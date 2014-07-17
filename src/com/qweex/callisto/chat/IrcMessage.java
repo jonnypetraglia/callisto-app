@@ -4,7 +4,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
-import com.qweex.utils.ResCache;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
