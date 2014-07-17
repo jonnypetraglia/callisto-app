@@ -3,6 +3,7 @@ package com.qweex.callisto;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -69,6 +70,7 @@ public class MasterActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.master);
         ResCache.resources = getResources();
+        PrefCache.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SplashFragment splashFragment = (SplashFragment) getCurrentFragment();
 
         // Load the Navigation Drawer

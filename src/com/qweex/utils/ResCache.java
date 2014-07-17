@@ -17,6 +17,7 @@ public class ResCache {
     protected static HashMap<Integer, Drawable> drawables = new HashMap<Integer, Drawable>();
     protected static HashMap<Integer, Integer> colors = new HashMap<Integer, Integer>();
     protected static HashMap<Integer, Integer> integers = new HashMap<Integer, Integer>();
+    protected static HashMap<Integer, Boolean> booleans = new HashMap<Integer, Boolean>();
     protected static HashMap<Integer, ColorStateList> colorStateLists = new HashMap<Integer, ColorStateList>();
 
     static public String str(Integer stringId, Object... args) {
@@ -47,5 +48,11 @@ public class ResCache {
         if(!integers.containsKey(intId))
             integers.put(intId, resources.getColor(intId));
         return integers.get(intId);
+    }
+
+    static public Boolean bool(Integer boolId) {
+        if(!booleans.containsKey(boolId))
+            booleans.put(boolId, resources.getBoolean(boolId));
+        return booleans.get(boolId);
     }
 }

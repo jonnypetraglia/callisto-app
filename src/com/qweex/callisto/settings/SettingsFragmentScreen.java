@@ -104,7 +104,7 @@ public class SettingsFragmentScreen extends Preference {
 
             Log.v(TAG, "Creating ListView");
             listview = new ListView(getContext());
-            listview.setBackgroundColor(PrefCache.clr("chat_color_background", com.qweex.callisto.R.color.chat_bg));
+            listview.setBackgroundColor(PrefCache.clr("chat_color_background", com.qweex.callisto.R.color.chat_bg, 0));
 
             adapter = new SettingsFragmentAdapter(getContext(), this);
             listview.setAdapter(adapter);

@@ -1,6 +1,8 @@
 package com.qweex.callisto.chat;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
+import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
 import com.qweex.utils.ResCache;
 import com.qweex.utils.MultiChooserDialog;
@@ -20,7 +23,7 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
     String TAG = "Callisto:chat_tab:LoginFragment";
 
     RelativeLayout layout;
-    final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password, R.id.select_channels}; //TODO: This comes later, R.id.remember_names, R.id.remember_password};
+    final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password, R.id.select_channels, R.id.remember_names, R.id.remember_password};
     String[] channelsToJoin;
     String[] availableChannels = new String[] {
             "#jupiterbroadcasting",
@@ -71,6 +74,22 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
                 }
             });
 
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(master);
+
+            String nick = PrefCache.str("chat_nickname", null, null),
+                   username = PrefCache.str("chat_username", null, null),
+                   real_name = PrefCache.str("chat_real_name", null, null),
+                   nickserv_pass = PrefCache.str("chat_nickserv_password", null, null);
+            boolean remember_names = PrefCache.bool("chat_remember_names", null, true),
+                    remember_password = PrefCache.bool("chat_remember_names", null, remember_names);
+
+            ((TextView)layout.findViewById(R.id.nick)).setText(nick);
+            ((TextView)layout.findViewById(R.id.username)).setText(username);
+            ((TextView)layout.findViewById(R.id.real_name)).setText(real_name);
+            ((TextView)layout.findViewById(R.id.nickserv_password)).setText(nickserv_pass);
+            ((CheckBox)layout.findViewById(R.id.remember_names)).setChecked(remember_names);
+            ((CheckBox)layout.findViewById(R.id.remember_password)).setChecked(remember_password);
+
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
@@ -109,6 +128,28 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
             String username = ((TextView)layout.findViewById(R.id.username)).getText().toString();
             String real_name = ((TextView)layout.findViewById(R.id.real_name)).getText().toString();
             String password = ((TextView)layout.findViewById(R.id.nickserv_password)).getText().toString();
+
+            boolean remember_names = ((CheckBox)layout.findViewById(R.id.remember_names)).isChecked(),
+                    remember_password = ((CheckBox)layout.findViewById(R.id.remember_password)).isChecked();
+
+            PrefCache.updateBool("chat_remember_names", remember_names);
+            PrefCache.updateBool("chat_remember_password", remember_password);
+            PrefCache.updateStr("chat_username", username);
+            if(remember_names) {
+                PrefCache.updateStr("chat_nickname", nickname);
+                PrefCache.updateStr("chat_username", username);
+                PrefCache.updateStr("chat_real_name", real_name);
+                if(remember_password)
+                    PrefCache.updateStr("chat_nickserv_password", username);
+                else
+                    PrefCache.rm("chat_nickserv_password");
+
+            } else {
+                PrefCache.rm("chat_nickname");
+                PrefCache.rm("chat_username");
+                PrefCache.rm("chat_real_name");
+                PrefCache.rm("chat_nickserv_password");
+            }
 
             Log.d(TAG, "Logging in from form");
             master.chatFragment.connect(nickname, username, real_name, password, channelsToJoin);
