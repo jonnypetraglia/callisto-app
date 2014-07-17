@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /** Resource accessor that also caches the results for quicker future access.
@@ -32,7 +32,7 @@ public class ResCache {
 
     static public Set<String> strSet(Integer arrId) {
         if(!stringSets.containsKey(arrId))
-            stringSets.put(arrId, new HashSet<String>(Arrays.asList(resources.getStringArray(arrId))));
+            stringSets.put(arrId, new LinkedHashSet<String>(Arrays.asList(resources.getStringArray(arrId))));
         return stringSets.get(arrId);
     }
 

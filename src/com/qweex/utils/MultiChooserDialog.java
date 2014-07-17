@@ -10,7 +10,6 @@ import android.widget.*;
 import com.qweex.callisto.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -19,14 +18,17 @@ public class MultiChooserDialog {
     OnChosen callback;
 
     HashMap<String, Boolean> statuses;
+    AlertDialog dialog;
+    boolean atLeastOne;
 
-    public MultiChooserDialog(Context context, String dialogTitle, OnChosen callback, String[] items) {
-        this(context, dialogTitle, callback, items, null);
+    public MultiChooserDialog(Context context, String dialogTitle, OnChosen callback, boolean atLeastOne, String[] items) {
+        this(context, dialogTitle, callback, atLeastOne, items, null);
     }
 
     // Constructor
-    public MultiChooserDialog(Context context, String dialogTitle, OnChosen callback, String[] items, String[] selected) {
+    public MultiChooserDialog(Context context, String dialogTitle, OnChosen callback, boolean atLeastOne, String[] items, String[] selected) {
         this.callback = callback;
+        this.atLeastOne = atLeastOne;
 
         // Load Items & Statuses
         this.statuses = new HashMap<String, Boolean>();
@@ -61,7 +63,8 @@ public class MultiChooserDialog {
         builder.setPositiveButton(android.R.string.ok, ok);
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.setOnCancelListener(cancel);
-        builder.show();
+        dialog = builder.show();
+        updateButton();
     }
 
 
@@ -94,9 +97,22 @@ public class MultiChooserDialog {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             statuses.put(buttonView.getText().toString(), isChecked);
+            updateButton();
         }
     };
 
+    void updateButton() {
+        if(!atLeastOne)
+            return;
+
+        for(Boolean b : statuses.values()) {
+            if(b) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                return;
+            }
+        }
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    }
 
 
     class ChooserAdapter extends ArrayAdapter<String> {

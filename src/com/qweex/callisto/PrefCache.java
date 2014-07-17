@@ -5,10 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import com.qweex.utils.ResCache;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class PrefCache {
 
@@ -39,7 +36,7 @@ public class PrefCache {
         Set<String> val;
         if(!stringSets.containsKey(prefKey)) {
             if(arrId==null)
-                val = sharedPreferences.getStringSet(prefKey, new HashSet<String>(Arrays.asList(def)));
+                val = sharedPreferences.getStringSet(prefKey, new LinkedHashSet<String>(Arrays.asList(def)));
             else
                 val = sharedPreferences.getStringSet(prefKey, ResCache.strSet(arrId));
             stringSets.put(prefKey, val);

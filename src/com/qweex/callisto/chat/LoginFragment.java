@@ -75,7 +75,7 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
             layout.findViewById(R.id.select_channels).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new MultiChooserDialog(master, ResCache.str(R.string.select_channels), LoginFragment.this, availableChannels, channelsToJoin);
+                    new MultiChooserDialog(master, ResCache.str(R.string.select_channels), LoginFragment.this, true, availableChannels, channelsToJoin);
                 }
             });
 
