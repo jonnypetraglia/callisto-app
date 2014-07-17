@@ -3,11 +3,13 @@ package com.qweex.callisto;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import com.qweex.utils.ResCache;
 
 import java.util.*;
 
 public class PrefCache {
+    static String TAG = "Callisto:PrefCache";
 
     public static SharedPreferences sharedPreferences;
 
@@ -81,23 +83,62 @@ public class PrefCache {
     }
 
     static public void updateStr(String prefKey, String newVal) {
+        Log.d(TAG, "Updating value: " + prefKey + "=" + newVal);
         sharedPreferences.edit().putString(prefKey, newVal).commit();
         strings.put(prefKey, newVal);
     }
 
+    static public void updateStrSet(String prefKey, Set<String> newVal) {
+        sharedPreferences.edit().putStringSet(prefKey, newVal).commit();
+        stringSets.put(prefKey, newVal);
+    }
+
     static public void updateClr(String prefKey, int newVal) {
+        Log.d(TAG, "Updating value: " + prefKey + "=" + newVal);
         sharedPreferences.edit().putInt(prefKey, newVal).commit();
         colors.put(prefKey, newVal);
     }
 
     static public void updateInt(String prefKey, int newVal) {
+        Log.d(TAG, "Updating value: " + prefKey + "=" + newVal);
         sharedPreferences.edit().putInt(prefKey, newVal).commit();
         integers.put(prefKey, newVal);
     }
 
     static public void updateBool(String prefKey, boolean newVal) {
+        Log.d(TAG, "Updating value: " + prefKey + "=" + newVal);
         sharedPreferences.edit().putBoolean(prefKey, newVal).commit();
         booleans.put(prefKey, newVal);
+    }
+
+    static public void update(String prefKey, Object newVal) {
+        if(newVal instanceof String) {
+            updateStr(prefKey, (String)newVal);
+            return;
+        }
+        if(newVal instanceof String[]) {
+            //noinspection ConstantConditions
+            updateStrSet(prefKey, new LinkedHashSet<String>(Arrays.asList((String[])newVal)));
+            return;
+        }
+        if(newVal instanceof Set) {
+            //noinspection unchecked
+            updateStrSet(prefKey, (Set<String>) newVal);
+            return;
+        }
+        if(newVal instanceof Boolean) {
+            updateBool(prefKey, (Boolean) newVal);
+            return;
+        }
+        if(newVal instanceof Integer) {
+            if(colors.containsKey(prefKey))
+                updateClr(prefKey, (Integer) newVal);
+            else
+                updateInt(prefKey, (Integer) newVal);
+            return;
+        }
+
+        Log.e(TAG, "ERROR unknown type: " + newVal.getClass());
     }
 
     static public void rm(String... prefKeys) {

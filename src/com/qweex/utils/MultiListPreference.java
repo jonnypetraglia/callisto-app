@@ -98,6 +98,8 @@ public class MultiListPreference extends Preference implements Preference.OnPref
         for(String s : chosen)
             set.add(s);
         getSharedPreferences().edit().putStringSet(getKey(), set).commit();
+        if(getOnPreferenceChangeListener()!=null)
+            getOnPreferenceChangeListener().onPreferenceChange(this, selected);
     }
 
     @Override

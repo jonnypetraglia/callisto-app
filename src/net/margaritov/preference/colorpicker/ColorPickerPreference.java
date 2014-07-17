@@ -154,11 +154,8 @@ public class ColorPickerPreference
 		mValue = color;
         getSharedPreferences().edit().putInt(getKey(), mValue).commit();
 		setPreviewColor();
-		try {
+		if(getOnPreferenceChangeListener()!=null)
 			getOnPreferenceChangeListener().onPreferenceChange(this, color);
-		} catch (NullPointerException e) {
-
-		}
 	}
 
 	public boolean onPreferenceClick(Preference preference) {

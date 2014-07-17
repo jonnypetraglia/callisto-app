@@ -113,10 +113,9 @@ public class SettingsFragmentScreen extends Preference {
                     //Pass
                 } else {
                     //((SettingsFragmentInit)preference).restoreInitialValue(defaultValue);
-
-                    preference.setOnPreferenceChangeListener(customPreferenceChangeListener);
                     Log.v(TAG, "Custom preference type passed in: " + preference.getClass().getName());
                     Log.v(TAG, "Hopefully the custom class implements a click listener");
+                    preference.setOnPreferenceChangeListener(customPreferenceChangeListener);
                 }
 
                 setDependentPreferencesEnabled(preference);
@@ -216,6 +215,7 @@ public class SettingsFragmentScreen extends Preference {
         Log.v(TAG, "Writing new pref value: " + list.getValue());
         getSharedPreferences().edit().putString(list.getKey(), list.getValue()).commit();
         setDependentPreferencesEnabled(list);
+        PrefCache.updateStr(list.getKey(), newValue);
     }
 
     void setEditPreference(EditTextPreference edit, String newValue, View view) {
@@ -225,8 +225,9 @@ public class SettingsFragmentScreen extends Preference {
 
         Log.v(TAG, "Writing new pref value: " + newValue);
 
-        getSharedPreferences().edit().putString(edit.getKey(), edit.getText()).commit();
+        PrefCache.updateStr(edit.getKey(), newValue);
         setDependentPreferencesEnabled(edit);
+
     }
 
 
@@ -236,8 +237,7 @@ public class SettingsFragmentScreen extends Preference {
         if(view!=null)
             ((CheckBox)view.findViewById(android.R.id.checkbox)).setChecked(check.isChecked());
 
-        Log.v(TAG, "Writing new pref value: " + check.isChecked());
-        getSharedPreferences().edit().putBoolean(check.getKey(), check.isChecked()).commit();
+        PrefCache.updateBool(check.getKey(), newValue);
         setDependentPreferencesEnabled(check);
     }
 
@@ -293,9 +293,11 @@ public class SettingsFragmentScreen extends Preference {
     OnPreferenceChangeListener customPreferenceChangeListener = new OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            int index = preferences.indexOf(preference);
+            //int index = preferences.indexOf(preference);
             //adapter.getView(index, listview.getChildAt(index - listview.getFirstVisiblePosition()), listview);
             adapter.notifyDataSetChanged();
+            PrefCache.update(preference.getKey(), newValue); // This is not kosher
+
             return false;
         }
     };

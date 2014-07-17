@@ -87,9 +87,8 @@ public class PathPreference extends Preference implements Preference.OnPreferenc
 
         getSharedPreferences().edit().putString(getKey(), mPath).commit();
 
-        try {
+        if(getOnPreferenceChangeListener()!=null)
             getOnPreferenceChangeListener().onPreferenceChange(this, mPath);
-        } catch (NullPointerException e) {}
     }
 
     @Override
