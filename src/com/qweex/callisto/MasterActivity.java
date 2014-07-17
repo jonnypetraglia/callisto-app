@@ -1,5 +1,6 @@
 package com.qweex.callisto;
 
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -156,6 +157,22 @@ public class MasterActivity extends ActionBarActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
+    }
+
+    /** Called when either the activity is created or a notification is clicked.
+     * @param intent May contain data from notification.
+     */
+    @Override
+    public void onNewIntent(Intent intent){
+        Bundle extras = intent.getExtras();
+        if(extras == null)
+            return;
+
+        switch(extras.getInt("fragment")) {
+            case CHAT_ID:
+                pushFragment(chatFragment, false);
+                chatFragment.focusTab(extras.getString("tabTag"));
+        }
     }
 
 

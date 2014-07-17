@@ -133,7 +133,7 @@ public class ChatFragment extends CallistoFragment {
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
-        _createTab(tabFragment, channel.getName(), channel);
+        _createTab(tabFragment, server.getServerAddress() + ":" + channel.getName(), channel);
     }
 
     /** Create a user (private message) tab.
@@ -143,7 +143,7 @@ public class ChatFragment extends CallistoFragment {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
-        _createTab(tabFragment, user.getNick(), user);
+        _createTab(tabFragment, server.getServerAddress() + ":" + user.getHostName(), user);
     }
 
 
@@ -191,7 +191,7 @@ public class ChatFragment extends CallistoFragment {
      */
     public void receive(IrcConnection server, Channel channel, IrcMessage ircMessage) {
         try {
-            detectMention(server, ircMessage);
+            detectMention(server, ircMessage, server.getServerAddress() + ":" + channel.getName());
             channelTabs.get(channel).receive(ircMessage);
         } catch(NullPointerException npe) {
             Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
@@ -230,13 +230,32 @@ public class ChatFragment extends CallistoFragment {
         mentionParsers.put(irc, Pattern.compile("(^|[^a-zA-Z0-9\\[\\]{}\\^`|])" + irc.getClient().getNick() + "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)"));
     }
 
-    public void detectMention(IrcConnection irc, IrcMessage msg, String sourceHash) {
+    public void detectMention(IrcConnection irc, IrcMessage msg, String tabTag) {
         if(msg.getMessage()==null || !mentionParsers.get(irc).matcher(msg.getMessage()).find())
             return;
         int pos = msg.getMessage().indexOf(irc.getClient().getNick());
         if(pos==-1) //safety net
             return;
-        IrcService.instance.handleMention(msg, sourceHash);
+        IrcService.instance.handleMention(msg, tabTag);
+    }
+
+    /** Selects a tab that has been specified from a bundle (e.g. a notification) where passing Objects is impossible.
+     *
+     * NOTE: DOES NOT HANDLE SERVER. i.e. there could be two channels on two different servers with the same name and it could
+     * bring up the wrong one.
+     *
+     * @param tabTag the same Tag used for the AB Tab. e.g. <serverAddress>:<channelName>
+     */
+    public void focusTab(String tabTag) {
+
+        ActionBar abar = master.getSupportActionBar();
+        for(int i=0; i<abar.getTabCount(); ++i)
+            if(abar.getTabAt(i).getTag().equals(tabTag)) {
+                abar.getTabAt(i).select();
+                return;
+            }
+
+        Log.w(TAG, "Unable to find TabFragment: " + tabTag);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,17 +271,16 @@ public class ChatFragment extends CallistoFragment {
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.add(R.id.main_fragment, mFragment);
+            ft.replace(R.id.main_fragment, mFragment);
         }
 
         @Override
         public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            ft.remove(mFragment);
+            //ft.remove(mFragment);
         }
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            Toast.makeText(master, "Reselected!", Toast.LENGTH_SHORT).show();
         }
     }
 }

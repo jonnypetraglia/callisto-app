@@ -121,7 +121,7 @@ public class IrcService extends IntentService {
         }
     }
 
-    public void handleMention(IrcMessage msg, String sourceHash) {
+    public void handleMention(IrcMessage msg, String tabTag) {
 
         NotificationCompat.Builder mentionNotifyBuilder = new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.ic_action_dialog);
@@ -149,7 +149,7 @@ public class IrcService extends IntentService {
         // Set intent info
         Intent notificationIntent = new Intent(this, MasterActivity.class);
         notificationIntent.putExtra("fragment", MasterActivity.CHAT_ID);
-        notificationIntent.putExtra("source", sourceHash);
+        notificationIntent.putExtra("tabTag", tabTag);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         mentionNotifyBuilder.setContentIntent(contentIntent);
 
