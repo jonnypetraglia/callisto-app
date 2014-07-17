@@ -77,7 +77,7 @@ public class SettingsFragment extends CallistoFragment {
 
     @Override
     public void hide() {
-        master.drawerToggle.setDrawerIndicatorEnabled(screen.getParent()!=null);
+        master.drawerToggle.setDrawerIndicatorEnabled(true);
     }
 
     public void openChild(SettingsFragmentScreen childScreen) {

@@ -67,8 +67,6 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
                 }
             });
 
-            layout.findViewById(R.id.connect).setEnabled(channelsToJoin.length>0);
-
             layout.findViewById(R.id.select_channels).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -79,6 +77,29 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
         } else {
             ((ViewGroup)layout.getParent()).removeView(layout);
         }
+
+        Set<String> channs = PrefCache.strSet("chat_channels", R.array.chat_channels_default, null);
+        channelsToJoin = channs.toArray(new String[channs.size()]);
+        layout.findViewById(R.id.connect).setEnabled(channelsToJoin.length>0);
+
+        String nick = PrefCache.str("chat_nickname", null, null),
+                username = PrefCache.str("chat_username", null, null),
+                real_name = PrefCache.str("chat_real_name", null, null),
+                nickserv_pass = PrefCache.str("chat_nickserv_password", null, null);
+        boolean remember_names = PrefCache.bool("chat_remember_names", null, true),
+                remember_password = PrefCache.bool("chat_remember_names", null, remember_names);
+
+        Log.v(TAG, "Retrieved nick is: " + nick);
+
+        ((TextView)layout.findViewById(R.id.nick)).setText(nick);
+        ((TextView)layout.findViewById(R.id.username)).setText(username);
+        ((TextView)layout.findViewById(R.id.real_name)).setText(real_name);
+        ((TextView)layout.findViewById(R.id.nickserv_password)).setText(nickserv_pass);
+        ((CheckBox)layout.findViewById(R.id.remember_names)).setChecked(remember_names);
+        ((CheckBox)layout.findViewById(R.id.remember_password)).setChecked(remember_password);
+
+        Log.v(TAG, "Retrieved nick was: " + ((TextView)layout.findViewById(R.id.nick)).getText());
+
         show();
         return layout;
     }
@@ -177,23 +198,6 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
     @Override
     public void show() {
         master.getSupportActionBar().setTitle(R.string.chat);
-
-        Set<String> channs = PrefCache.strSet("chat_channels", R.array.chat_channels_default, null);
-        channelsToJoin = channs.toArray(new String[channs.size()]);
-
-        String nick = PrefCache.str("chat_nickname", null, null),
-                username = PrefCache.str("chat_username", null, null),
-                real_name = PrefCache.str("chat_real_name", null, null),
-                nickserv_pass = PrefCache.str("chat_nickserv_password", null, null);
-        boolean remember_names = PrefCache.bool("chat_remember_names", null, true),
-                remember_password = PrefCache.bool("chat_remember_names", null, remember_names);
-
-        ((TextView)layout.findViewById(R.id.nick)).setText(nick);
-        ((TextView)layout.findViewById(R.id.username)).setText(username);
-        ((TextView)layout.findViewById(R.id.real_name)).setText(real_name);
-        ((TextView)layout.findViewById(R.id.nickserv_password)).setText(nickserv_pass);
-        ((CheckBox)layout.findViewById(R.id.remember_names)).setChecked(remember_names);
-        ((CheckBox)layout.findViewById(R.id.remember_password)).setChecked(remember_password);
     }
 
     @Override

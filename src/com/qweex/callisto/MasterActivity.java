@@ -62,7 +62,6 @@ public class MasterActivity extends ActionBarActivity {
     private CatalogFragment catalogFragment;
     //private LiveFragment liveFragment;
     public ChatFragment chatFragment;
-    private LoginFragment loginFragment;
     //private ScheduleFragment scheduleFragment;
     private ContactFragment contactFragment;
     //private DonateFragment donateFragment;
@@ -142,7 +141,6 @@ public class MasterActivity extends ActionBarActivity {
         catalogFragment = new CatalogFragment(this);
         //liveFragment = new LiveFragment(this);
         chatFragment = new ChatFragment(this);
-        loginFragment = new LoginFragment(this);
         //scheduleFragment = new ScheduleFragment(this);
         contactFragment = new ContactFragment(this);
         //donateFragment = new DonateFragment(this);
@@ -238,7 +236,7 @@ public class MasterActivity extends ActionBarActivity {
                     if(IrcService.instance!=null)
                         frag = chatFragment;
                     else
-                        frag = loginFragment;
+                        frag = new LoginFragment(MasterActivity.this);
                     break;
                 case SCHEDULE_ID:
                     //frag = scheduleFragment;
