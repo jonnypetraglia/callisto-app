@@ -39,7 +39,6 @@ public class MultiListPreference extends Preference implements Preference.OnPref
 
         int entriesId = attrs.getAttributeResourceValue(androidns, "entries", 0),
             valuesId = attrs.getAttributeResourceValue(androidns, "entryValues", 0);
-        int defaultId = attrs.getAttributeResourceValue(androidns, "defaultValue", 0);
         if(entriesId==0 || valuesId==0)
             return die();
 
@@ -49,6 +48,7 @@ public class MultiListPreference extends Preference implements Preference.OnPref
             return die();
 
 
+        int defaultId = attrs.getAttributeResourceValue(androidns, "defaultValue", 0);
         if(defaultId!=0)
             defaultValue = context.getResources().getStringArray(defaultId);
 
@@ -75,13 +75,14 @@ public class MultiListPreference extends Preference implements Preference.OnPref
         this.values = values;
     }
 
-    public void setDefaultValue(String[] defaultValue) {
+    public void setDefault(String[] defaultValue) {
         this.defaultValue = defaultValue;
     }
 
     public String[] getChosen() {
         if(this.chosen==null) {
-            Set<String> chosen = getSharedPreferences().getStringSet(getKey(), new LinkedHashSet<String>(Arrays.asList(defaultValue)));
+            Set<String> defaultAsList = new LinkedHashSet<String>(Arrays.asList(defaultValue));
+            Set<String> chosen = getSharedPreferences().getStringSet(getKey(), defaultAsList);
             this.chosen = chosen.toArray(new String[chosen.size()]);
         }
         return chosen;
@@ -89,6 +90,9 @@ public class MultiListPreference extends Preference implements Preference.OnPref
 
     @Override
     public void onChosen(String[] selected) {
+
+        if(selected==null)
+            return;
         chosen = selected;
         LinkedHashSet<String> set = new LinkedHashSet<String>();
         for(String s : chosen)

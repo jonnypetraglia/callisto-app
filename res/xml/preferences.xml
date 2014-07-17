@@ -77,11 +77,6 @@
                             android:title="@string/show_timestamps"
                             android:widgetLayout="@layout/smaller_preference_check"/>
 
-        <CheckBoxPreference android:key="chat_modes"
-                            android:title="@string/show_modes"
-                            android:summary="@string/show_modes_desc"
-                            android:widgetLayout="@layout/smaller_preference_check"/>
-
         <EditTextPreference android:key="chat_max_scrollback"
                             android:title="@string/max_scrollback"
                             android:summary="@string/max_scrollback_desc"

@@ -12,6 +12,9 @@ import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 import com.qweex.callisto.chat.LoginFragment;
 import com.qweex.utils.MultiListPreference;
+import com.qweex.utils.ResCache;
+
+import java.util.Set;
 
 /**
  * General guide to using this shit:
@@ -89,12 +92,14 @@ public class SettingsFragment extends CallistoFragment {
 
         MultiListPreference channelsPreference = new MultiListPreference(master);
 
+        channelsPreference.setKey("chat_channels");
         channelsPreference.setTitle("Channels to autojoin");
         channelsPreference.setAtLeastOne(true);
 
         channelsPreference.setEntryValues(LoginFragment.getAvailableChannels(master), LoginFragment.getAvailableChannels(master));
 
-        channelsPreference.setDefaultValue(new String[]{});
+        Set<String> set = ResCache.strSet(R.array.chat_channels_default);
+        channelsPreference.setDefault(set.toArray(new String[set.size()]));
         channelsPreference.getChosen();
 
 
