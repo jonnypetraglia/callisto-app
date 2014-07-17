@@ -234,7 +234,7 @@ public class DirectoryChooserDialog
         titleLayout.setOrientation(LinearLayout.VERTICAL);
 
         m_titleView = new TextView(m_context);
-        m_titleView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        m_titleView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         m_titleView.setTextAppearance(m_context, android.R.style.TextAppearance_Large);
         m_titleView.setTextColor( m_context.getResources().getColor(android.R.color.white) );
         m_titleView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);

@@ -256,6 +256,7 @@ public class RssUpdater extends AsyncTask<Void, Object, Void>
 
 
     @Override
+    @SuppressWarnings("unchecked") //Only called deterministically by publishProgress on line 244.
     protected void onProgressUpdate(Object... data) {
         ShowInfo showInfo = (ShowInfo) data[0];
         LinkedList<Episode> episodes = (LinkedList<Episode>) data[1];
