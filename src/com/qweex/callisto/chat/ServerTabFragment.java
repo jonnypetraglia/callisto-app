@@ -20,13 +20,10 @@ public class ServerTabFragment extends TabFragment{
 
     IrcConnection server = null;
 
-    public Pattern mentionPattern;
-
     public ServerTabFragment(MasterActivity master, IrcConnection server) {
         super(master);
         Log.v(TAG, "Creating Server Fragment");
         this.server = server;
-        updateMentionPattern();
     }
 
     @Override
@@ -57,20 +54,5 @@ public class ServerTabFragment extends TabFragment{
             Log.e(TAG, "Failed to write to log file: " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-    }
-
-    public void updateMentionPattern() {
-        //Stole these from nirc; https://github.com/cjstewart88/nirc/blob/master/public/javascripts/client.js
-        mentionPattern = Pattern.compile("(^|[^a-zA-Z0-9\\[\\]{}\\^`|])" + server.getClient().getNick() + "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)");
-    }
-
-    public int findMention(String msg) {
-        if(msg==null || !mentionPattern.matcher(msg).find())
-            return -1;
-        return msg.indexOf(server.getClient().getNick());
-    }
-
-    public User getUs() {
-        return server.getClient();
     }
 }

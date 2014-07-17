@@ -18,20 +18,20 @@ public class ChannelTabFragment extends TabFragment {
     String TAG = super.TAG + ":Channel";
 
     Channel channel;
-    ServerTabFragment serverTab;
+    IrcConnection server;
 
-    public ChannelTabFragment(MasterActivity master, ServerTabFragment serverTab, Channel channel) {
+    public ChannelTabFragment(MasterActivity master, IrcConnection server, Channel channel) {
         super(master);
         Log.v(TAG, "Creating Channel Fragment");
         this.channel = channel;
-        this.serverTab = serverTab;
+        this.server = server;
     }
 
     @Override
     void send(String msg) {
         channel.sendMessage(msg);
         receive(new IrcMessage(
-                serverTab.getUs().getNick(),
+                server.getClient().getNick(),
                 msg,
                 IrcMessage.Type.SEND
         ));
@@ -61,14 +61,5 @@ public class ChannelTabFragment extends TabFragment {
             Log.e(TAG, "Failed to write to log file: " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-    }
-
-
-    void detectMention(String msg) {
-        int pos = serverTab.findMention(msg);
-        if(pos==-1)
-            return;
-
-
     }
 }

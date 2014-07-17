@@ -65,7 +65,7 @@ public class IrcService extends IntentService {
         ircConnection.addServerListener(chatFragment.ircConnectionAdapter);
 
         try {
-            ServerTabFragment serverTab = chatFragment.createTab(ircConnection);
+            chatFragment.createTab(ircConnection);
             Log.i(TAG, "Connecting to server...");
             ircConnection.connect();
 
@@ -74,7 +74,7 @@ public class IrcService extends IntentService {
             // Join the channels
             for(String channel_name : channel_names) {
                 Channel channel = ircConnection.createChannel(channel_name);
-                chatFragment.createTab(serverTab, channel);
+                chatFragment.createTab(ircConnection, channel);
                 Log.i(TAG, "Joining  " + channel);
                 channel.join();
             }

@@ -20,6 +20,7 @@ import com.sorcix.sirc.IrcConnection;
 import com.sorcix.sirc.User;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /** Houses & manages the TabFragments.
  * @author      Jon Petraglia <notbryant@gmail.com>
@@ -39,6 +40,9 @@ public class ChatFragment extends CallistoFragment {
     HashMap<IrcConnection, ServerTabFragment> serverTabs = new HashMap<IrcConnection, ServerTabFragment>();
     HashMap<Channel, ChannelTabFragment> channelTabs = new HashMap<Channel, ChannelTabFragment>();
     HashMap<User, UserTabFragment> userTabs = new HashMap<User, UserTabFragment>();
+
+    /** Mention Parsers */
+    HashMap<IrcConnection, Pattern> mentionParsers = new HashMap<IrcConnection, Pattern>();
 
     /** Constructor; supplies MasterActivity reference. */
     public ChatFragment(MasterActivity master) {
@@ -106,10 +110,11 @@ public class ChatFragment extends CallistoFragment {
     /** Create a server tab.
      * @param server The server to associate with the tab.
      */
-    public ServerTabFragment createTab(final IrcConnection server) {
+    public void createTab(final IrcConnection server) {
         Log.v(TAG, "Creating Server tab");
         final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
         serverTabs.put(server, tabFragment);
+        updateMentionPattern(server);
 
         tabFragment.receive(new IrcMessage(
                 ResCache.str(R.string.convo_connecting, server.getServerAddress()),
@@ -118,30 +123,27 @@ public class ChatFragment extends CallistoFragment {
         ));
 
         _createTab(tabFragment, server.getServerAddress(), server);
-        return tabFragment;
     }
 
     /** Create a channel tab.
      * @param channel The channel to associate with the tab.
      */
-    public ChannelTabFragment createTab(ServerTabFragment server, final Channel channel) {
+    public void createTab(IrcConnection server, final Channel channel) {
         Log.v(TAG, "Creating Channel tab");
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
         _createTab(tabFragment, channel.getName(), channel);
-        return tabFragment;
     }
 
     /** Create a user (private message) tab.
      * @param user The user object to associate with the tab.
      */
-    public UserTabFragment createTab(ServerTabFragment server, final User user) {
+    public void createTab(IrcConnection server, final User user) {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
         _createTab(tabFragment, user.getNick(), user);
-        return tabFragment;
     }
 
 
@@ -182,8 +184,9 @@ public class ChatFragment extends CallistoFragment {
             serverTabs.get(server).receive(ircMessage);
     }
 
-    /** Receive a message destined for a Server tab
-     * @param channel The Server connection.
+    /** Receive a message destined for a Channel tab
+     * @param server The Server connection.
+     * @param channel The target Channel connection.
      * @param ircMessage The message.
      */
     public void receive(IrcConnection server, Channel channel, IrcMessage ircMessage) {
@@ -191,7 +194,7 @@ public class ChatFragment extends CallistoFragment {
             channelTabs.get(channel).receive(ircMessage);
         } catch(NullPointerException npe) {
             Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
-            //createTab(IrcService.instance.getConnection(), channel);
+            createTab(server, channel);
             channelTabs.get(channel).receive(ircMessage);
         }
     }
@@ -205,7 +208,7 @@ public class ChatFragment extends CallistoFragment {
             userTabs.get(user).receive(ircMessage);
         } catch(NullPointerException npe) {
             Log.i(TAG, "Received message from user: " + user.getNick());
-            //createTab(IrcService.instance.getConnection(), user);
+            createTab(server, user);
             userTabs.get(user).receive(ircMessage);
         }
     }
@@ -220,6 +223,17 @@ public class ChatFragment extends CallistoFragment {
         ));
     }
 
+
+    public void updateMentionPattern(IrcConnection irc) {
+        //Stole these from nirc; https://github.com/cjstewart88/nirc/blob/master/public/javascripts/client.js
+        mentionParsers.put(irc, Pattern.compile("(^|[^a-zA-Z0-9\\[\\]{}\\^`|])" + irc.getClient().getNick() + "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)"));
+    }
+
+    public int findMention(IrcConnection irc, String msg) {
+        if(msg==null || !mentionParsers.get(irc).matcher(msg).find())
+            return -1;
+        return msg.indexOf(irc.getClient().getNick());
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////// Classes ///////////////////////////////////////////
