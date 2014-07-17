@@ -191,6 +191,7 @@ public class ChatFragment extends CallistoFragment {
      */
     public void receive(IrcConnection server, Channel channel, IrcMessage ircMessage) {
         try {
+            detectMention(server, ircMessage);
             channelTabs.get(channel).receive(ircMessage);
         } catch(NullPointerException npe) {
             Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
@@ -199,7 +200,7 @@ public class ChatFragment extends CallistoFragment {
         }
     }
 
-    /** Receive a message destined for a Server tab
+    /** Receive a message destined for a User tab
      * @param user The user it is sent from.
      * @param ircMessage The message.
      */
@@ -229,10 +230,13 @@ public class ChatFragment extends CallistoFragment {
         mentionParsers.put(irc, Pattern.compile("(^|[^a-zA-Z0-9\\[\\]{}\\^`|])" + irc.getClient().getNick() + "([^a-zA-Z0-9\\[\\]{}\\^`|]|$)"));
     }
 
-    public int findMention(IrcConnection irc, String msg) {
-        if(msg==null || !mentionParsers.get(irc).matcher(msg).find())
-            return -1;
-        return msg.indexOf(irc.getClient().getNick());
+    public void detectMention(IrcConnection irc, IrcMessage msg, String sourceHash) {
+        if(msg.getMessage()==null || !mentionParsers.get(irc).matcher(msg.getMessage()).find())
+            return;
+        int pos = msg.getMessage().indexOf(irc.getClient().getNick());
+        if(pos==-1) //safety net
+            return;
+        IrcService.instance.handleMention(msg, sourceHash);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

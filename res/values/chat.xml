@@ -58,6 +58,11 @@
 
     <!--********************* ContentDescription *********************-->
 
+    <string name="notify_new_mention" formatted="false">1 other mentions</string>
+    <string name="notify_new_mentions" formatted="false">%s other mentions</string>
+
+    <!--********************* ContentDescription *********************-->
+
     <string name="server">Server</string>
     <string name="channels">Channels</string>
     <string name="users">Users</string>

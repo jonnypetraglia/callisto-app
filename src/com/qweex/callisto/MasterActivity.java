@@ -35,6 +35,15 @@ public class MasterActivity extends ActionBarActivity {
 
     String TAG = "Callisto:MainActivity";
 
+    /** IDs for the fragments; used for the Nav selection & notifications */
+    public final static int CATALOG_ID = 1,
+            LIVE_ID = 2,
+            CHAT_ID = 3,
+            SCHEDULE_ID = 4,
+            CONTACT_ID = 5,
+            DONATE_ID = 6,
+            SETTINGS_ID = 7;
+
     /** ActionBar/Drawer variables. */
     public DrawerLayout drawerLayout;
     private ListView drawerList;
@@ -189,6 +198,7 @@ public class MasterActivity extends ActionBarActivity {
         UpdateManager.register(this, PRIVATE.HOCKEY_APP_ID);
     }
 
+
     /** Called when an item is selected from the Nav spinner in the ActionBar. */
     AdapterView.OnItemClickListener navClickListener = new AdapterView.OnItemClickListener() {
 
@@ -197,28 +207,28 @@ public class MasterActivity extends ActionBarActivity {
             Fragment frag = null;
             Log.d(TAG, "Position: " + position);
             switch (position) {
-                case 1: //Catalog
+                case CATALOG_ID:
                     frag = catalogFragment;
                     break;
-                case 2: //Live
+                case LIVE_ID:
                     //frag = liveFragment
                     break;
-                case 3: //Chat
+                case CHAT_ID:
                     if(IrcService.instance!=null)
                         frag = chatFragment;
                     else
                         frag = loginFragment;
                     break;
-                case 4: //Schedule
+                case SCHEDULE_ID:
                     //frag = scheduleFragment;
                     break;
-                case 5: //Contact
+                case CONTACT_ID:
                     frag = contactFragment;
                     break;
-                case 6: //Donate
+                case DONATE_ID:
                     //frag = donateFragment;
                     break;
-                case 7: //Settings
+                case SETTINGS_ID:
                     frag = settingsFragment;
                     break;
                 default:

@@ -67,15 +67,15 @@ public class IrcMessage
         return timestamp.getTime();
     }
 
-    public CharSequence getTime() {
+    public String getTime() {
         return sdfTime.format(timestamp.getTime());
     }
 
-    public CharSequence getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    public CharSequence getMessage() {
+    public String getMessage() {
         return message;
     }
 
