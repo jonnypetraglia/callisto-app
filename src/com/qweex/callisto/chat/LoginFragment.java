@@ -1,5 +1,6 @@
 package com.qweex.callisto.chat;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,8 +16,18 @@ import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
+import com.qweex.callisto.catalog.ShowInfo;
 import com.qweex.utils.ResCache;
 import com.qweex.utils.MultiChooserDialog;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 
 public class LoginFragment extends CallistoFragment implements MultiChooserDialog.OnChosen {
 
@@ -25,19 +36,17 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
     RelativeLayout layout;
     final int[] advancedControls = new int[] {R.id.username, R.id.real_name, R.id.nickserv_password, R.id.select_channels, R.id.remember_names, R.id.remember_password};
     String[] channelsToJoin;
-    String[] availableChannels = new String[] {
-            "#jupiterbroadcasting",
-            "#jupiterdev",
-            "#jupitergaming",
-            "#jupiterops",
-            "#qweex"
-    };
+    static private String[] availableChannels = null;
 
     /** Constructor; supplies MasterActivity reference. */
     public LoginFragment(MasterActivity master) {
         super(master);
-        channelsToJoin = new String[] { "#qweex" };
+        getAvailableChannels(master);
+        // Read "Channels to Join" from preferences"
+        Set<String> channs = PrefCache.strSet("chat_channels", R.array.chat_channels_default, null);
+        channelsToJoin = channs.toArray(new String[channs.size()]);
     }
+
 
     /** Inherited method; called each time the fragment is attached to a FragmentActivity.
      * @param inflater Used for instantiating the fragment's view.
@@ -156,6 +165,37 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
             master.pushFragment(master.chatFragment, false);
         }
     };
+
+    /** Reads available channels from a JSON file onDemand; can also be called from other Classes to get channels. */
+    public static String[] getAvailableChannels(Activity master) {
+        if(availableChannels!=null)
+            return availableChannels;
+        InputStream is = null;
+        try {
+            is = master.getAssets().open("chat_channels.json");
+
+            JSONArray json = null;
+            try {
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                json = new JSONArray(new String(buffer, "UTF-8"));
+
+                availableChannels = new String[json.length()];
+                for(int i=0; i<json.length(); ++i)
+                    availableChannels[i] = json.getString(i);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return availableChannels;
+    }
 
     @Override
     public void show() {

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="chat_channels_default">
+        <item>#jupiterbroadcasting</item>
+    </string-array>
+
     <!--********************* Login screen *********************-->
 
     <string name="nickname">Nickname</string>
