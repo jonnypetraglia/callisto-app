@@ -67,7 +67,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onAction(IrcConnection irc, User sender, String action) {
-        chat.receive(sender, new IrcMessage(
+        chat.receive(irc, sender, new IrcMessage(
                 sender.getNick(),
                 action,
                 IrcMessage.Type.ACTION
@@ -76,7 +76,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onPrivateMessage(IrcConnection irc, User sender, String message) {
-        chat.receive(sender, new IrcMessage(
+        chat.receive(irc, sender, new IrcMessage(
                 sender.getNick(),
                 message,
                 IrcMessage.Type.MESSAGE
@@ -90,7 +90,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onAction(IrcConnection irc, User sender, Channel target, String action) {
-        chat.receive(target, new IrcMessage(
+        chat.receive(irc, target, new IrcMessage(
                 sender.getNick(),
                 action,
                 IrcMessage.Type.ACTION
@@ -99,7 +99,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onMessage(IrcConnection irc, User sender, Channel target, String message) {
-        chat.receive(target, new IrcMessage(
+        chat.receive(irc, target, new IrcMessage(
                 sender.getNick(),
                 message,
                 IrcMessage.Type.MESSAGE
@@ -122,7 +122,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
                 "*** " + msg,
                 IrcMessage.Type.ACTION
         );
-        chat.receive(channel, imsg);
+        chat.receive(irc, channel, imsg);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
             msg = " *** " + ResCache.str(R.string.convo_join_me);
         else
             msg = " *** " + ResCache.str(R.string.convo_join, user.getNick());
-        chat.receive(channel, new IrcMessage(
+        chat.receive(irc, channel, new IrcMessage(
                 null,
                 msg,
                 IrcMessage.Type.JOIN
@@ -149,7 +149,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         else
             msg = ResCache.str(R.string.convo_kick, sender.getNick(), user.getNick(), message);
 
-        chat.receive(channel, new IrcMessage(
+        chat.receive(irc, channel, new IrcMessage(
                 null,
                 " *** " + msg,
                 IrcMessage.Type.KICK
@@ -164,7 +164,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         else
             msg = ResCache.str(R.string.convo_part, user.getNick(),message);
 
-        chat.receive(channel, new IrcMessage(
+        chat.receive(irc, channel, new IrcMessage(
                 null,
                 " *** " + msg,
                 IrcMessage.Type.PART
@@ -180,7 +180,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         else
             msg = ResCache.str(R.string.convo_mode_channel, sender.getNick(), mode);
 
-        chat.receive(channel, new IrcMessage(
+        chat.receive(irc, channel, new IrcMessage(
                 null,
                 " *** " + msg,
                 IrcMessage.Type.KICK
@@ -189,7 +189,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onNotice(IrcConnection irc, User sender, Channel target, String message) {
-        chat.receive(target, new IrcMessage(
+        chat.receive(irc, target, new IrcMessage(
                 ResCache.str(R.string.convo_notice, sender.getNick()),
                 message,
                 IrcMessage.Type.NOTICE
@@ -203,52 +203,52 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
     @Override
     public void onFounder(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, true);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.FOUNDER, true);
     }
 
     @Override
     public void onDeFounder(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.FOUNDER, false);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.FOUNDER, false);
     }
 
     @Override
     public void onAdmin(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, true);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.ADMIN, true);
     }
 
     @Override
     public void onDeAdmin(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.ADMIN, false);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.ADMIN, false);
     }
 
     @Override
     public void onOp(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.OP, true);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.OP, true);
     }
 
     @Override
     public void onDeOp(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.OP, false);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.OP, false);
     }
 
     @Override
     public void onHalfop(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, true);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.HALFOP, true);
     }
 
     @Override
     public void onDeHalfop(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.HALFOP, false);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.HALFOP, false);
     }
 
     @Override
     public void onVoice(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, true);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.VOICE, true);
     }
 
     @Override
     public void onDeVoice(IrcConnection irc, Channel channel, User sender, User user) {
-        handleModeChange(channel, sender, user, IrcMessage.UserMode.VOICE, false);
+        handleModeChange(irc, channel, sender, user, IrcMessage.UserMode.VOICE, false);
     }
 
 
@@ -267,7 +267,8 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         chat.receive(irc, new IrcMessage(
                 msg,
                 null,
-                IrcMessage.Type.NICK
+                IrcMessage.Type.NICK,
+                oldUser
         ), true);
     }
 
@@ -282,7 +283,8 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
         chat.receive(irc, new IrcMessage(
                 msg,
                 null,
-                IrcMessage.Type.QUIT
+                IrcMessage.Type.QUIT,
+                user
         ), true);
     }
 
@@ -310,7 +312,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
 
     // Mode Change
-    public void handleModeChange(Channel channel, User setBy, User setTarget, IrcMessage.UserMode mode, boolean given) {
+    public void handleModeChange(IrcConnection irc, Channel channel, User setBy, User setTarget, IrcMessage.UserMode mode, boolean given) {
         String msg;
         String modeString = mode.toString();
         modeString = modeString.charAt(0) + modeString.substring(1).toLowerCase();
@@ -332,7 +334,7 @@ public class IrcServiceListener implements ServerListener, MessageListener, Mode
 
         Log.d(TAG, msg);
 
-        chat.receive(channel, new IrcMessage(
+        chat.receive(irc, channel, new IrcMessage(
                 msg,
                 null,
                 IrcMessage.Type.MODE
