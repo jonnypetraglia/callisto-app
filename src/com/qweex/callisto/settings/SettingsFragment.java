@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.qweex.callisto.CallistoFragment;
 import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
+import com.qweex.callisto.chat.LoginFragment;
+import com.qweex.utils.MultiListPreference;
 
 /**
  * General guide to using this shit:
@@ -51,6 +53,9 @@ public class SettingsFragment extends CallistoFragment {
         if(screen==null) {
             SettingsFragmentParser parser = new SettingsFragmentParser(this);
             this.screen = parser.loadPreferencesFromResource(R.xml.preferences);
+
+            createChannelsPreference();
+
             Log.v(TAG, "Loaded preferences: " + this.screen.getPreferences().size());
         } else {
             if(screen.getListView().getParent()!=null)
@@ -76,5 +81,23 @@ public class SettingsFragment extends CallistoFragment {
         SettingsFragment child = new SettingsFragment(master, childScreen);
 
         master.pushFragment(child, true);
+    }
+
+
+    private void createChannelsPreference() {
+        SettingsFragmentScreen chatScreen = (SettingsFragmentScreen) this.screen.getPreference("chat_screen");
+
+        MultiListPreference channelsPreference = new MultiListPreference(master);
+
+        channelsPreference.setTitle("Channels to autojoin");
+        channelsPreference.setAtLeastOne(true);
+
+        channelsPreference.setEntryValues(LoginFragment.getAvailableChannels(master), LoginFragment.getAvailableChannels(master));
+
+        channelsPreference.setDefaultValue(new String[]{});
+        channelsPreference.getChosen();
+
+
+        chatScreen.addChild(channelsPreference, null, 1);
     }
 }

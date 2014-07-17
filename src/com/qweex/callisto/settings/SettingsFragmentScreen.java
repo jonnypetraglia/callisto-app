@@ -25,6 +25,7 @@ public class SettingsFragmentScreen extends Preference {
     AttributeSet myAttributes;
 
     List<Preference> preferences = new ArrayList<Preference>();
+    HashMap<String, Preference> preferencesByKey = new HashMap<String, Preference>();
     Map<Preference, SettingsAttributes> prefAttributes = new HashMap<Preference, SettingsAttributes>();
 
     SettingsFragmentScreen parent;
@@ -43,15 +44,28 @@ public class SettingsFragmentScreen extends Preference {
     }
 
     public SettingsFragmentScreen addChild(Preference child, SettingsAttributes childAttrs) {
+        return addChild(child, childAttrs, preferences.size());
+    }
+
+    public SettingsFragmentScreen addChild(Preference child, SettingsAttributes childAttrs, int position) {
         if(listview!=null)
             throw new IllegalStateException("Attempted to add child after ListView has been created.");
-        Log.v(TAG, "Adding child: " + child.getKey() + " | " + childAttrs);
-        preferences.add(child);
+        Log.v(TAG, "Adding child: " + child.getKey() + " | " + childAttrs + " to position " + position);
+        preferences.add(position, child);
         prefAttributes.put(child, childAttrs);
+        if(child.getKey()!=null)
+            preferencesByKey.put(child.getKey(), child);
         return this;
     }
 
     public List<Preference> getPreferences() { return preferences; }
+
+    public Preference getPreference(String key) {
+        if(preferencesByKey.containsKey(key))
+            return preferencesByKey.get(key);
+        else
+            return null;
+    }
 
     public SettingsAttributes getAttributes(Preference p) { return prefAttributes.get(p); }
 
@@ -63,9 +77,15 @@ public class SettingsFragmentScreen extends Preference {
         if(listview==null) {
             Log.v(TAG, "Restoring Preference Values");
             for(Preference preference : preferences) {
-                SettingsAttributes attrs = prefAttributes.get(preference);
-                String defaultValue = attrs.get("defaultValue");
-                Log.v(TAG, ":Restoring preference " + preference.getKey() + " defaultValue: " + defaultValue);
+
+                String defaultValue;
+                try {
+                    SettingsAttributes attrs = prefAttributes.get(preference);
+                    defaultValue = attrs.get("defaultValue");
+                    Log.v(TAG, ":Restoring preference " + preference.getKey() + " defaultValue: " + defaultValue);
+                } catch(Exception e) {
+                    defaultValue = null;
+                }
 
 
                 if(preference instanceof CheckBoxPreference) {

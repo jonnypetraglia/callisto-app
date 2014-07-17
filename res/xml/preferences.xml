@@ -38,7 +38,7 @@
 
     <!--********************* Chat *********************-->
 
-    <PreferenceScreen android:title="@string/chat" >
+    <PreferenceScreen android:title="@string/chat" android:key="chat_screen" >
 
         <ListPreference
             android:title="@string/port"
