@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.qweex.callisto.MasterActivity;
@@ -41,7 +40,6 @@ public class IrcService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
     }
 
     @Override
@@ -55,6 +53,8 @@ public class IrcService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.v(TAG, "onHandleIntent");
+
+        instance = this;
 
         Bundle extras = intent.getExtras();
 
@@ -100,17 +100,20 @@ public class IrcService extends IntentService {
             Log.i(TAG, "--connected? " + ircConnection.isConnected());
 
 
+            Log.i(TAG, "Notification is going to be built");
             // Ongoing notification
             Intent notificationIntent = new Intent(this, MasterActivity.class);
             notificationIntent.putExtra("fragment", MasterActivity.CHAT_ID);
-            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+            Log.i(TAG, "Notification is being built..");
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setSmallIcon(R.drawable.ic_action_dialog)
                     .setContentIntent(contentIntent)
                     .setOngoing(true);
-            notificationManager =  (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(NOTIFY_ONGOING_ID, notificationBuilder.build());
+            Log.i(TAG, "Notification has been shown");
 
         } catch (IOException e) {
             chatFragment.handleError(ircConnection, e);

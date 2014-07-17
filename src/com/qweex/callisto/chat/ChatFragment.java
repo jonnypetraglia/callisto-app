@@ -122,7 +122,7 @@ public class ChatFragment extends CallistoFragment {
                 IrcMessage.Type.CONNECTION
         ));
 
-        _createTab(tabFragment, server.getServerAddress(), server);
+        _createTab(tabFragment, server.getServerAddress(), server.getServerAddress());
     }
 
     /** Create a channel tab.
@@ -133,7 +133,7 @@ public class ChatFragment extends CallistoFragment {
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
-        _createTab(tabFragment, server.getServerAddress() + ":" + channel.getName(), channel);
+        _createTab(tabFragment, channel.getName(), server.getServerAddress() + ":" + channel.getName());
     }
 
     /** Create a user (private message) tab.
@@ -143,11 +143,11 @@ public class ChatFragment extends CallistoFragment {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
-        _createTab(tabFragment, server.getServerAddress() + ":" + user.getHostName(), user);
+        _createTab(tabFragment, user.getNick(), server.getServerAddress() + ":" + user.getHostName());
     }
 
 
-    private void _createTab(final TabFragment fragment, final String tabText, final Object tabTag) {
+    private void _createTab(final TabFragment fragment, final String tabText, final String tabTag) {
         master.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -180,7 +180,8 @@ public class ChatFragment extends CallistoFragment {
                 channelTabs.get(c).receive(ircMessage);
             for(User u : userTabs.keySet())
                 userTabs.get(u).receive(ircMessage);
-        } else
+        }
+        if(ircMessage.propogationUser==null)
             serverTabs.get(server).receive(ircMessage);
     }
 
@@ -190,14 +191,12 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(IrcConnection server, Channel channel, IrcMessage ircMessage) {
-        try {
-            detectMention(server, ircMessage, server.getServerAddress() + ":" + channel.getName());
-            channelTabs.get(channel).receive(ircMessage);
-        } catch(NullPointerException npe) {
+        detectMention(server, ircMessage, server.getServerAddress() + ":" + channel.getName());
+        if(!channelTabs.containsKey(channel)) {
             Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
             createTab(server, channel);
-            channelTabs.get(channel).receive(ircMessage);
         }
+        channelTabs.get(channel).receive(ircMessage);
     }
 
     /** Receive a message destined for a User tab
@@ -205,13 +204,12 @@ public class ChatFragment extends CallistoFragment {
      * @param ircMessage The message.
      */
     public void receive(IrcConnection server, User user, IrcMessage ircMessage) {
-        try {
-            userTabs.get(user).receive(ircMessage);
-        } catch(NullPointerException npe) {
-            Log.i(TAG, "Received message from user: " + user.getNick());
+        detectMention(server, ircMessage, server.getServerAddress() + ":" + user.getHostName());
+        if(!userTabs.containsKey(user)) {
+            Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
             createTab(server, user);
-            userTabs.get(user).receive(ircMessage);
         }
+        userTabs.get(user).receive(ircMessage);
     }
 
     public void handleError(IrcConnection ircConnection, Exception e) {
@@ -236,7 +234,13 @@ public class ChatFragment extends CallistoFragment {
         int pos = msg.getMessage().indexOf(irc.getClient().getNick());
         if(pos==-1) //safety net
             return;
-        IrcService.instance.handleMention(msg, tabTag);
+
+        Log.v(TAG, "Mention found: " + msg.toString());
+
+        if(IrcService.instance!=null)
+            IrcService.instance.handleMention(msg, tabTag);
+        else
+            Log.w(TAG," IrcServerice.instance is null. What the literal fuck.");
     }
 
     /** Selects a tab that has been specified from a bundle (e.g. a notification) where passing Objects is impossible.
