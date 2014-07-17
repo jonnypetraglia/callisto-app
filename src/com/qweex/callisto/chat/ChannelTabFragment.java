@@ -31,7 +31,7 @@ public class ChannelTabFragment extends TabFragment {
     void send(String msg) {
         channel.sendMessage(msg);
         receive(new IrcMessage(
-                channel.getUs().getNick(),
+                serverTab.getUs().getNick(),
                 msg,
                 IrcMessage.Type.SEND
         ));
@@ -61,5 +61,14 @@ public class ChannelTabFragment extends TabFragment {
             Log.e(TAG, "Failed to write to log file: " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+
+    void detectMention(String msg) {
+        int pos = serverTab.findMention(msg);
+        if(pos==-1)
+            return;
+
+
     }
 }
