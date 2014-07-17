@@ -18,20 +18,20 @@ public class ChannelTabFragment extends TabFragment {
     String TAG = super.TAG + ":Channel";
 
     Channel channel;
-    IrcConnection server;
+    ServerTabFragment serverTab;
 
-    public ChannelTabFragment(MasterActivity master, IrcConnection server, Channel channel) {
+    public ChannelTabFragment(MasterActivity master, ServerTabFragment serverTab, Channel channel) {
         super(master);
         Log.v(TAG, "Creating Channel Fragment");
         this.channel = channel;
-        this.server = server;
+        this.serverTab = serverTab;
     }
 
     @Override
     void send(String msg) {
         channel.sendMessage(msg);
         receive(new IrcMessage(
-                server.getClient().getNick(),
+                channel.getUs().getNick(),
                 msg,
                 IrcMessage.Type.SEND
         ));

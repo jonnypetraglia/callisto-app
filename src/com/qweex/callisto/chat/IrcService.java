@@ -16,8 +16,6 @@ public class IrcService extends IntentService {
     public static ChatFragment chatFragment;
 
     private IrcConnection ircConnection;
-    private User nickServ;
-    public User me;
 
     public IrcService() {
         super("Callisto/IRC");
@@ -67,17 +65,16 @@ public class IrcService extends IntentService {
         ircConnection.addServerListener(chatFragment.ircConnectionAdapter);
 
         try {
-            chatFragment.createTab(ircConnection);
+            ServerTabFragment serverTab = chatFragment.createTab(ircConnection);
             Log.i(TAG, "Connecting to server...");
             ircConnection.connect();
-            nickServ = ircConnection.createUser("nickserv");
 
             if(password!=null && password.length()>1)
-                nickServ.sendMessage("identify " + password);
+                ircConnection.createUser("nickserv").sendMessage("identify " + password);
             // Join the channels
             for(String channel_name : channel_names) {
                 Channel channel = ircConnection.createChannel(channel_name);
-                chatFragment.createTab(ircConnection, channel);
+                chatFragment.createTab(serverTab, channel);
                 Log.i(TAG, "Joining  " + channel);
                 channel.join();
             }

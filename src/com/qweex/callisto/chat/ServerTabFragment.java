@@ -8,6 +8,7 @@ import com.qweex.callisto.MasterActivity;
 import com.qweex.callisto.R;
 import com.qweex.utils.ResCache;
 import com.sorcix.sirc.IrcConnection;
+import com.sorcix.sirc.User;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -52,5 +53,9 @@ public class ServerTabFragment extends TabFragment{
             Log.e(TAG, "Failed to write to log file: " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    public User getUs() {
+        return server.getClient();
     }
 }

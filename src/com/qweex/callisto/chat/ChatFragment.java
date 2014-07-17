@@ -106,7 +106,7 @@ public class ChatFragment extends CallistoFragment {
     /** Create a server tab.
      * @param server The server to associate with the tab.
      */
-    public void createTab(final IrcConnection server) {
+    public ServerTabFragment createTab(final IrcConnection server) {
         Log.v(TAG, "Creating Server tab");
         final ServerTabFragment tabFragment = new ServerTabFragment(master, server);
         serverTabs.put(server, tabFragment);
@@ -118,27 +118,30 @@ public class ChatFragment extends CallistoFragment {
         ));
 
         _createTab(tabFragment, server.getServerAddress(), server);
+        return tabFragment;
     }
 
     /** Create a channel tab.
      * @param channel The channel to associate with the tab.
      */
-    public void createTab(IrcConnection server, final Channel channel) {
+    public ChannelTabFragment createTab(ServerTabFragment server, final Channel channel) {
         Log.v(TAG, "Creating Channel tab");
         final ChannelTabFragment tabFragment = new ChannelTabFragment(master, server, channel);
         channelTabs.put(channel, tabFragment);
 
         _createTab(tabFragment, channel.getName(), channel);
+        return tabFragment;
     }
 
     /** Create a user (private message) tab.
      * @param user The user object to associate with the tab.
      */
-    public void createTab(IrcConnection server, final User user) {
+    public UserTabFragment createTab(ServerTabFragment server, final User user) {
         Log.v(TAG, "Creating User tab");
         final UserTabFragment tabFragment = new UserTabFragment(master, server, user);
         userTabs.put(user, tabFragment);
         _createTab(tabFragment, user.getNick(), user);
+        return tabFragment;
     }
 
 
@@ -175,20 +178,20 @@ public class ChatFragment extends CallistoFragment {
                 channelTabs.get(c).receive(ircMessage);
             for(User u : userTabs.keySet())
                 userTabs.get(u).receive(ircMessage);
-        }
-        serverTabs.get(server).receive(ircMessage);
+        } else
+            serverTabs.get(server).receive(ircMessage);
     }
 
     /** Receive a message destined for a Server tab
      * @param channel The Server connection.
      * @param ircMessage The message.
      */
-    public void receive(Channel channel, IrcMessage ircMessage) {
+    public void receive(IrcConnection server, Channel channel, IrcMessage ircMessage) {
         try {
             channelTabs.get(channel).receive(ircMessage);
         } catch(NullPointerException npe) {
-            Log.w(TAG, "Received message from a channel I'm not in.");
-            createTab(IrcService.instance.getConnection(), channel);
+            Log.w(TAG, "Received message from a channel I'm not in. WTF do I do.");
+            //createTab(IrcService.instance.getConnection(), channel);
             channelTabs.get(channel).receive(ircMessage);
         }
     }
@@ -197,12 +200,12 @@ public class ChatFragment extends CallistoFragment {
      * @param user The user it is sent from.
      * @param ircMessage The message.
      */
-    public void receive(User user, IrcMessage ircMessage) {
+    public void receive(IrcConnection server, User user, IrcMessage ircMessage) {
         try {
             userTabs.get(user).receive(ircMessage);
         } catch(NullPointerException npe) {
             Log.i(TAG, "Received message from user: " + user.getNick());
-            createTab(IrcService.instance.getConnection(), user);
+            //createTab(IrcService.instance.getConnection(), user);
             userTabs.get(user).receive(ircMessage);
         }
     }
