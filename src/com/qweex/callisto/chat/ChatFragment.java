@@ -96,7 +96,7 @@ public class ChatFragment extends CallistoFragment {
 
     @Override
     public void hide() {
-        //TODO
+        master.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
