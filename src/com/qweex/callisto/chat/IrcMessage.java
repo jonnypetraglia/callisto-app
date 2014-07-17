@@ -4,6 +4,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
+import com.sorcix.sirc.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,16 +35,26 @@ public class IrcMessage
     public enum UserMode {FOUNDER, ADMIN, OP, HALFOP, VOICE}
 
     String title = null, message = null;
+    User propogationUser;
     Calendar timestamp;
     Type type;
 
 
     public IrcMessage(String title, String message, Type type) {
-        this(title, message, type, null);
+        this(title, message, type, null, null);
     }
 
-    public IrcMessage(String title, String message, Type type, Date time)
+    public IrcMessage(String title, String message, Type type, User propogationUser) {
+        this(title, message, type, null, propogationUser);
+    }
+
+    public IrcMessage(String title, String message, Type type, Date time) {
+        this(title, message, type, time, null);
+    }
+
+    public IrcMessage(String title, String message, Type type, Date time, User propogationUser)
     {
+        this.propogationUser = propogationUser;
         this.title = title;
         this.message = message;
         this.type = type;

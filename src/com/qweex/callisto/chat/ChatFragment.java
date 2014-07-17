@@ -173,7 +173,7 @@ public class ChatFragment extends CallistoFragment {
      * @param propogate Whether or not it should be propogated to channels.
      */
     public void receive(IrcConnection server, IrcMessage ircMessage, boolean propogate) {
-        if(propogate) {
+        if(ircMessage.propogationUser!=null || propogate) {
             for(Channel c : channelTabs.keySet())
                 channelTabs.get(c).receive(ircMessage);
             for(User u : userTabs.keySet())
