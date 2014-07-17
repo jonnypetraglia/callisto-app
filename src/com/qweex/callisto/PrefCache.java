@@ -5,13 +5,17 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import com.qweex.utils.ResCache;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PrefCache {
 
     public static SharedPreferences sharedPreferences;
 
     protected static HashMap<String, String> strings = new HashMap<String, String>();
+    protected static HashMap<String, Set<String>> stringSets = new HashMap<String, Set<String>>();
     protected static HashMap<String, Drawable> drawables = new HashMap<String, Drawable>();
     protected static HashMap<String, Integer> colors = new HashMap<String, Integer>();
     protected static HashMap<String, Integer> integers = new HashMap<String, Integer>();
@@ -29,6 +33,18 @@ public class PrefCache {
             strings.put(prefKey, val);
         }
         return strings.get(prefKey);
+    }
+
+    static public Set<String> strSet(String prefKey, Integer arrId, String[] def) {
+        Set<String> val;
+        if(!stringSets.containsKey(prefKey)) {
+            if(arrId==null)
+                val = sharedPreferences.getStringSet(prefKey, new HashSet<String>(Arrays.asList(def)));
+            else
+                val = sharedPreferences.getStringSet(prefKey, ResCache.strSet(arrId));
+            stringSets.put(prefKey, val);
+        }
+        return stringSets.get(prefKey);
     }
 
     static public Integer clr(String prefKey, Integer clrId, int def) {
