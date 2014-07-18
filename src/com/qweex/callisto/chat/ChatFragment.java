@@ -236,6 +236,7 @@ public class ChatFragment extends CallistoFragment {
             return;
 
         Log.v(TAG, "Mention found: " + msg.toString());
+        msg.mention = true;
 
         if(IrcService.instance!=null)
             IrcService.instance.handleMention(msg, tabTag);

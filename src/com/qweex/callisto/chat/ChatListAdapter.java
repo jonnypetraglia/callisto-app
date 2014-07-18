@@ -1,6 +1,7 @@
 package com.qweex.callisto.chat;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import java.util.List;
 
 public class ChatListAdapter extends ArrayAdapter<IrcMessage> {
+
+    String TAG = "Callisto:chat:ChatListAdapter";
 
     int layout_id;
     List<IrcMessage> messages;
@@ -53,6 +56,9 @@ public class ChatListAdapter extends ArrayAdapter<IrcMessage> {
         time.setTextSize(TypedValue.COMPLEX_UNIT_SP, (float)(IrcMessage.getTextSize() * 0.8));
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, IrcMessage.getTextSize());
         message.setTextSize(TypedValue.COMPLEX_UNIT_SP, IrcMessage.getTextSize());
+
+        int bg = ircMessage.getBackgroundColor().val();
+        v.setBackgroundColor(bg);
 
         return(v);
     }

@@ -3,6 +3,7 @@ package com.qweex.callisto.chat;
 import android.content.res.ColorStateList;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
+import com.qweex.utils.ResCache;
 import com.qweex.utils.ResCache.Color;
 import com.sorcix.sirc.User;
 
@@ -40,6 +41,7 @@ public class IrcMessage
     User propogationUser;
     Calendar timestamp;
     Type type;
+    boolean mention = false;
 
 
     public IrcMessage(String title, String message, Type type) {
@@ -128,6 +130,11 @@ public class IrcMessage
         }
     }
 
+    public IrcMessage setMention(boolean m) {
+        mention = m;
+        return this;
+    }
+
 
     public ColorStateList getLinkColors() {
         int linkClr = 0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link, null).val();
@@ -151,11 +158,11 @@ public class IrcMessage
         if(message==null)
             return new IrcMessage[] {this};
 
-        String[] lines = message.toString().split("\n");
+        String[] lines = message.split("\n");
         IrcMessage[] result = new IrcMessage[lines.length];
 
         for(int i=0; i<lines.length; ++i)
-            result[i] = new IrcMessage(title == null ? null : title.toString(), lines[i], type);
+            result[i] = new IrcMessage(title == null ? null : title.toString(), lines[i], type).setMention(mention);
 
         return result;
     }
@@ -169,6 +176,12 @@ public class IrcMessage
 
     static public int getTextSize() {
         return PrefCache.inte("chat_text_size", R.integer.chat_text_size, 0);
+    }
+
+    public Color getBackgroundColor() {
+        if(mention)
+            return PrefCache.clr("chat_mention", R.color.chat_mention, null);
+        return ResCache.clr(android.R.color.transparent);
     }
 
 

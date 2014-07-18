@@ -86,7 +86,7 @@
     <color name="chat_nick">@color/chat_join</color>
     <color name="chat_quit">@color/chat_join</color>
     <color name="chat_kick">@color/chat_join</color>
-    <color name="chat_mention">#F08080</color>
+    <color name="chat_mention">#FFA07A</color>
     <color name="chat_link">#0000EE</color>
     <color name="chat_error">#800000</color>
 

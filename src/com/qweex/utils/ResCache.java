@@ -78,7 +78,7 @@ public class ResCache {
         }
 
         public int val() {
-            if(val<0x01000000)
+            if(val<0x01000000 && val!=0x00000000)
                 return 0xff000000 + val;
             return val;
         }

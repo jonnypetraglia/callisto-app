@@ -93,7 +93,7 @@ public abstract class TabFragment extends CallistoFragment {
             public void run() {
                 IrcMessage[] messageSplit = ircMessage.splitByNewline();
 
-                Log.d(TAG, ">>>Received '" + ircMessage.toString() + "'");
+                Log.d(TAG, ">>>Received '" + ircMessage.toString() + "' [" + ircMessage.mention + "]");
 
                 Collections.addAll(msgQueue, messageSplit);
 
