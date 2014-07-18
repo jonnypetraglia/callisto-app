@@ -142,7 +142,7 @@
             <net.margaritov.preference.colorpicker.ColorPickerPreference
                     android:key="chat_color_background"
                     android:title="@string/background"
-                    android:defaultValue="@color/chat_bg"
+                    android:defaultValue="@color/chat_background"
                     alphaSlider="false" hexValue="true"
                     />
 

@@ -73,7 +73,7 @@
     <integer name="chat_text_size">16</integer>
 
     <color name="chat_connection">#333333</color>
-    <color name="chat_bg">#ffffff</color>
+    <color name="chat_background">#ffffff</color>
     <color name="chat_text">#000000</color>
     <color name="chat_time">#666666</color>
     <color name="chat_nick_them">#555555</color>
@@ -89,6 +89,17 @@
     <color name="chat_mention">#F08080</color>
     <color name="chat_link">#0000EE</color>
     <color name="chat_error">#800000</color>
+
+    <string-array name="chat_nick_colors">
+        <item>E90E7F</item>
+        <item>8E55E9</item>
+        <item>B30E0E</item>
+        <item>18B33C</item>
+        <item>58ADB3</item>
+        <item>9E54B3</item>
+        <item>0FB39A</item>
+        <item>3176B3</item>
+    </string-array>
 
     <string name="chat_port">6667</string>
     <string name="chat_scrollback">500</string>
