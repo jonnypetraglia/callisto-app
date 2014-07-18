@@ -2,7 +2,6 @@ package com.qweex.callisto.chat;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,8 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class LoginFragment extends CallistoFragment implements MultiChooserDialog.OnChosen {
@@ -157,6 +158,7 @@ public class LoginFragment extends CallistoFragment implements MultiChooserDialo
                 PrefCache.rm("chat_real_name");
                 PrefCache.rm("chat_nickserv_password");
             }
+            PrefCache.updateStrSet("chat_channels", new LinkedHashSet<String>(Arrays.asList(channelsToJoin)));
 
             Log.d(TAG, "Logging in from form");
             master.chatFragment.connect(nickname, username, real_name, password, channelsToJoin);

@@ -54,6 +54,8 @@ public class IrcService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.v(TAG, "onHandleIntent");
 
+        if(instance!=null)
+            return;
         instance = this;
 
         Bundle extras = intent.getExtras();

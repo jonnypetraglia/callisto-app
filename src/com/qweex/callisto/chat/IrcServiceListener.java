@@ -5,8 +5,6 @@ import com.qweex.callisto.R;
 import com.qweex.utils.ResCache;
 import com.sorcix.sirc.*;
 
-import java.util.regex.Pattern;
-
 /** Extension of sIRC that handles the IRC events, parses them, and passes them on to ChatFragment.
  * @author      Jon Petraglia <notbryant@gmail.com>
  */
