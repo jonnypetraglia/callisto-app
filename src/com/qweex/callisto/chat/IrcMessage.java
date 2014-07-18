@@ -1,14 +1,16 @@
 package com.qweex.callisto.chat;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import com.qweex.callisto.PrefCache;
 import com.qweex.callisto.R;
+import com.qweex.utils.ResCache.Color;
 import com.sorcix.sirc.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
+
 
 public class IrcMessage
 {
@@ -79,52 +81,57 @@ public class IrcMessage
         return message;
     }
 
-    public int getTimeColor() {
-        return PrefCache.clr("chat_color_time", R.color.chat_time, 0);
+    public Color getTimeColor() {
+        return PrefCache.clr("chat_color_time", R.color.chat_time, null);
     }
 
-    public int getTitleColor() {
+    public Color getTitleColor() {
         switch(type) {
             case SEND:
-                return PrefCache.clr("chat_color_nick_me", R.color.chat_nick_me, 0);
+                return PrefCache.clr("chat_color_nick_me", R.color.chat_nick_me, null);
             case MESSAGE:
-                return PrefCache.clr("chat_color_nick", R.color.chat_nick, 0);
+                if(PrefCache.bool("chat_colors", null, true))
+                    return colorForNick(getTitle());
+                else
+                    return PrefCache.clr("chat_color_nick", R.color.chat_nick, null);
             default:
                 return getMessageColor();
         }
     }
 
-    public int getMessageColor() {
+    public Color getMessageColor() {
         switch(type) {
             case ACTION:
-                return PrefCache.clr("chat_color_action", R.color.chat_action, 0);
+                return PrefCache.clr("chat_color_action", R.color.chat_action, null);
             case CONNECTION:
-                return PrefCache.clr("chat_color_connection", R.color.chat_connection, 0);
+                return PrefCache.clr("chat_color_connection", R.color.chat_connection, null);
             case JOIN:
-                return PrefCache.clr("chat_color_join", R.color.chat_join, 0);
+                return PrefCache.clr("chat_color_join", R.color.chat_join, null);
             case KICK:
-                return PrefCache.clr("chat_color_kick", R.color.chat_kick, 0);
+                return PrefCache.clr("chat_color_kick", R.color.chat_kick, null);
             case MODE:
-                return PrefCache.clr("chat_color_mode", R.color.chat_mode, 0);
+                return PrefCache.clr("chat_color_mode", R.color.chat_mode, null);
             case NICK:
-                return PrefCache.clr("chat_color_nick_change", R.color.chat_nick, 0);
+                return PrefCache.clr("chat_color_nick_change", R.color.chat_nick, null);
             case NOTICE:
-                return PrefCache.clr("chat_color_notice", R.color.chat_notice, 0);
+                return PrefCache.clr("chat_color_notice", R.color.chat_notice, null);
             case PART:
             case QUIT:
-                return PrefCache.clr("chat_color_quit", R.color.chat_quit, 0);
+                return PrefCache.clr("chat_color_quit", R.color.chat_quit, null);
             case TOPIC:
             case MOTD:
-                return PrefCache.clr("chat_color_topic", R.color.chat_topic, 0);
+                return PrefCache.clr("chat_color_topic", R.color.chat_topic, null);
 
             case MESSAGE:
             default:
-                return PrefCache.clr("chat_color_text", R.color.chat_text, 0);
+                return PrefCache.clr("chat_color_text", R.color.chat_text, null);
         }
     }
 
 
     public ColorStateList getLinkColors() {
+        int linkClr = 0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link, null).val();
+
         return new ColorStateList(
                 new int[][] {
                         new int[] { android.R.attr.state_pressed},
@@ -132,9 +139,9 @@ public class IrcMessage
                         new int[] {}
                 },
                 new int [] {
-                        Color.BLUE,
-                        0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link, 0),
-                        0xFF000000 + PrefCache.clr("chat_color_link", R.color.chat_link, 0),
+                        android.graphics.Color.BLUE,
+                        linkClr,
+                        linkClr
                 }
         );
     }
@@ -162,5 +169,19 @@ public class IrcMessage
 
     static public int getTextSize() {
         return PrefCache.inte("chat_text_size", R.integer.chat_text_size, 0);
+    }
+
+
+    Color colorForNick(String nickname)
+    {
+        int nickValue = 0;
+
+        for (int index = 0; index < nickname.length(); index++)
+        {
+            nickValue += nickname.charAt(index);
+        }
+        Set<Color> colorSet = PrefCache.clrSet("chat_nick_colors", R.array.chat_nick_colors, null);
+        Color[] nickColors = colorSet.toArray(new Color[colorSet.size()]);
+        return nickColors[nickValue % nickColors.length];
     }
 }

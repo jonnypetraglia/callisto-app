@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import com.qweex.utils.ResCache;
+import com.qweex.utils.ResCache.Color;
 
 import java.util.*;
 
@@ -16,7 +17,8 @@ public class PrefCache {
     protected static HashMap<String, String> strings = new HashMap<String, String>();
     protected static HashMap<String, Set<String>> stringSets = new HashMap<String, Set<String>>();
     protected static HashMap<String, Drawable> drawables = new HashMap<String, Drawable>();
-    protected static HashMap<String, Integer> colors = new HashMap<String, Integer>();
+    protected static HashMap<String, Color> colors = new HashMap<String, Color>();
+    protected static HashMap<String, Set<Color>> colorSets = new HashMap<String, Set<Color>>();
     protected static HashMap<String, Integer> integers = new HashMap<String, Integer>();
     protected static HashMap<String, Boolean> booleans = new HashMap<String, Boolean>();
     protected static HashMap<String, ColorStateList> colorStateLists = new HashMap<String, ColorStateList>();
@@ -46,14 +48,14 @@ public class PrefCache {
         return stringSets.get(prefKey);
     }
 
-    static public Integer clr(String prefKey, Integer clrId, int def) {
+    static public Color clr(String prefKey, Integer clrId, Color def) {
         int val;
         if(!colors.containsKey(prefKey)) {
             if(clrId==null)
-                val = sharedPreferences.getInt(prefKey, def);
+                val = sharedPreferences.getInt(prefKey, def.val());
             else
-                val = sharedPreferences.getInt(prefKey, ResCache.clr(clrId));
-            colors.put(prefKey, val);
+                val = sharedPreferences.getInt(prefKey, ResCache.clr(clrId).val());
+            colors.put(prefKey, new Color(val));
         }
         return colors.get(prefKey);
     }
@@ -68,6 +70,40 @@ public class PrefCache {
             integers.put(prefKey, val);
         }
         return integers.get(prefKey);
+    }
+
+    static public Set<Color> clrSet(String prefKey, Integer strId, Color[] def) {
+        Set<Color> val = new LinkedHashSet<Color>();
+        if(!colorSets.containsKey(prefKey)) {
+            Set<String> rawSet = sharedPreferences.getStringSet(prefKey, null);
+            if(rawSet==null) {
+            // No preference exists; load default
+
+                if(strId==null)
+                // Load default from the array provided
+                    val = new LinkedHashSet<Color>(Arrays.asList(def));
+                else {
+                // Load default from Resources
+                    rawSet = ResCache.strSet(R.array.chat_nick_colors);
+                    Log.v(TAG, "retrieving ClrSet rawSet: " + rawSet.size());
+                }
+            }
+
+            if(rawSet!=null) {
+            // If rawSet was set by either the preferences OR by the resources, parse them into ints.
+                for(String s : rawSet)
+                    try{
+                        val.add(new Color(s));
+                    } catch(Exception e){
+                        Log.e(TAG, "Error parsing into int: " + s);
+                    }
+            }
+
+            Log.v(TAG, "retrieving ClrSet val: " + val.size());
+
+            colorSets.put(prefKey, val);
+        }
+        return colorSets.get(prefKey);
     }
 
     static public Boolean bool(String prefKey, Integer boolId, boolean def) {
@@ -93,9 +129,19 @@ public class PrefCache {
         stringSets.put(prefKey, newVal);
     }
 
-    static public void updateClr(String prefKey, int newVal) {
+    static public void updateClrSet(String prefKey, Set<Color> newVal) {
+
+        Set<String> rawVal = new LinkedHashSet<String>();
+        for(Color i : newVal)
+            rawVal.add(i + "");
+
+        sharedPreferences.edit().putStringSet(prefKey, rawVal).commit();
+        colorSets.put(prefKey, newVal);
+    }
+
+    static public void updateClr(String prefKey, Color newVal) {
         Log.d(TAG, "Updating value: " + prefKey + "=" + newVal);
-        sharedPreferences.edit().putInt(prefKey, newVal).commit();
+        sharedPreferences.edit().putInt(prefKey, newVal.val()).commit();
         colors.put(prefKey, newVal);
     }
 
@@ -123,7 +169,11 @@ public class PrefCache {
         }
         if(newVal instanceof Set) {
             //noinspection unchecked
-            updateStrSet(prefKey, (Set<String>) newVal);
+            Object first = ((Set)newVal).iterator().next();
+            if(first.getClass().equals(String.class))
+                updateStrSet(prefKey, (Set<String>) newVal);
+            else if(first.getClass().equals(Color.class))
+                updateClrSet(prefKey, (Set<Color>) newVal);
             return;
         }
         if(newVal instanceof Boolean) {
@@ -131,10 +181,11 @@ public class PrefCache {
             return;
         }
         if(newVal instanceof Integer) {
-            if(colors.containsKey(prefKey))
-                updateClr(prefKey, (Integer) newVal);
-            else
-                updateInt(prefKey, (Integer) newVal);
+            updateInt(prefKey, (Integer) newVal);
+            return;
+        }
+        if(newVal instanceof Color) {
+            updateClr(prefKey, (Color) newVal);
             return;
         }
 

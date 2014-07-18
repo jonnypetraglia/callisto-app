@@ -19,7 +19,7 @@ public class ResCache {
     protected static HashMap<Integer, String> strings = new HashMap<Integer, String>();
     protected static HashMap<Integer, Set<String>> stringSets = new HashMap<Integer, Set<String>>();
     protected static HashMap<Integer, Drawable> drawables = new HashMap<Integer, Drawable>();
-    protected static HashMap<Integer, Integer> colors = new HashMap<Integer, Integer>();
+    protected static HashMap<Integer, Color> colors = new HashMap<Integer, Color>();
     protected static HashMap<Integer, Integer> integers = new HashMap<Integer, Integer>();
     protected static HashMap<Integer, Boolean> booleans = new HashMap<Integer, Boolean>();
     protected static HashMap<Integer, ColorStateList> colorStateLists = new HashMap<Integer, ColorStateList>();
@@ -42,9 +42,9 @@ public class ResCache {
         return drawables.get(drawId);
     }
 
-    static public Integer clr(Integer clrId) {
+    static public Color clr(Integer clrId) {
         if(!colors.containsKey(clrId))
-            colors.put(clrId, resources.getColor(clrId));
+            colors.put(clrId, new Color(resources.getColor(clrId)));
         return colors.get(clrId);
     }
 
@@ -64,5 +64,28 @@ public class ResCache {
         if(!booleans.containsKey(boolId))
             booleans.put(boolId, resources.getBoolean(boolId));
         return booleans.get(boolId);
+    }
+
+    public static class Color {
+        Integer val;
+
+        public Color(int value) {
+            val = value;
+        }
+
+        public Color(String string) throws NumberFormatException {
+            val = Integer.parseInt(string, 16);
+        }
+
+        public int val() {
+            if(val<0x01000000)
+                return 0xff000000 + val;
+            return val;
+        }
+
+        @Override
+        public String toString() {
+            return val + "";
+        }
     }
 }
