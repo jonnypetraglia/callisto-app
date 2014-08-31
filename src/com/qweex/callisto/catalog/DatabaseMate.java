@@ -39,7 +39,8 @@ public class DatabaseMate
                     "vidsize INTEGER, " +       //The size of the video file for an episode, in bytes
                     "new INTEGER, " +           //Whether or not the episode is new
                     "length INTEGER, " +        //The length of the episode
-                    "position INTEGER);";       //The last position, in seconds
+                    "position INTEGER, " +      //The last position, in seconds
+                    "queue INTEGER);";          //The position of the episode in the queue (if any)
 
     /** Constructor; sets teh DatabaseConnector reference.
      * @param dbc DatabaseConnector reference.
