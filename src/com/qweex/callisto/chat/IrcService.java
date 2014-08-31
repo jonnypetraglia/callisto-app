@@ -45,9 +45,12 @@ public class IrcService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        notificationManager.cancel(NOTIFY_ONGOING_ID);
-        notificationManager.cancel(NOTIFY_MENTION_ID);
+        if(notificationManager!=null) {
+            notificationManager.cancel(NOTIFY_ONGOING_ID);
+            notificationManager.cancel(NOTIFY_MENTION_ID);
+        }
         instance = null;
+        Log.d(TAG, "Creating service. " + IrcService.instance);
     }
 
     @Override
@@ -57,6 +60,7 @@ public class IrcService extends IntentService {
         if(instance!=null)
             return;
         instance = this;
+        Log.d(TAG, "Creating service! " + IrcService.instance);
 
         Bundle extras = intent.getExtras();
 
@@ -113,9 +117,12 @@ public class IrcService extends IntentService {
                     .setSmallIcon(R.drawable.ic_action_dialog)
                     .setContentIntent(contentIntent)
                     .setOngoing(true);
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(NOTIFY_ONGOING_ID, notificationBuilder.build());
+            Notification ongoing = notificationBuilder.build();
+            //notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            //notificationManager.notify(NOTIFY_ONGOING_ID, ongoing);
             Log.i(TAG, "Notification has been shown");
+
+            startForeground(NOTIFY_ONGOING_ID, ongoing);
 
         } catch (IOException e) {
             chatFragment.handleError(ircConnection, e);

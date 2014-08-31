@@ -233,6 +233,7 @@ public class MasterActivity extends ActionBarActivity {
                     //frag = liveFragment
                     break;
                 case CHAT_ID:
+                    Log.d(TAG, "Creating service? " + IrcService.instance);
                     if(IrcService.instance!=null)
                         frag = chatFragment;
                     else
