@@ -12,7 +12,7 @@ application and include them in the project's revision control.
 
 HOWEVER, this permission ONLY extends to the Callisto project. You are not licensed to download these icons from
 Callisto's source control with the intent to use them in your applications, whether open-source or proprietary. This
-includes forks of Callisto resulting in a new project. Any use of these icons outside the
+includes forks of Callisto resulting in a new project.
 
 
 The folks at Opollo were nice enough (and friendly enough to open-source!) to let me use these icons for Callisto.
