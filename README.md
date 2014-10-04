@@ -21,7 +21,7 @@ _Ideally_, all you should need to do is set the ANDROID_HOME Path Variable (Pref
 However, if Intellij is being stupid and not finding it, here are the steps I have to do every time I open the project.
 
 
-1. Import appcompat as a module (File > Import Module). Path is $ANDROID_HOMEZ$/extras/android/support/v7/appcompat. (Hit "Yes" if it says anything about "reusing".)
+1. Import appcompat as a module (File > Import Module). Path is $ANDROID_HOME$/extras/android/support/v7/appcompat. (Hit "Yes" if it says anything about "reusing".)
 
 2. Add module as lib for Callisto (in Project Structure > Modules, click the little '+' and choose "Module Dependency")
 

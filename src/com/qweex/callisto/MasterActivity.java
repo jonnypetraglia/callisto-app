@@ -124,6 +124,7 @@ public class MasterActivity extends ActionBarActivity {
         // Create the Playback header
         playbackDrawerItem = createExtraDrawerItem(R.string.playback, R.drawable.ic_action_headphones);
         drawerList.addHeaderView(wrapViewInFrame(playbackDrawerItem));
+        playbackDrawerItem.setOnClickListener(playbackClickListener);
 
 
 
@@ -264,6 +265,18 @@ public class MasterActivity extends ActionBarActivity {
             navSelected.setSelected(true);
 
             pushFragment(frag, false);
+        }
+    };
+
+    View.OnClickListener playbackClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(navSelected!=null)
+                navSelected.setSelected(false);
+            navSelected = (TextView) v;
+            navSelected.setSelected(true);
+
+            pushFragment(playbackFragment, false);
         }
     };
 
