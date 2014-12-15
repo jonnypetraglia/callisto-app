@@ -83,9 +83,9 @@
     </string-array>
 
     <string-array name="live_video_source">
-        <item>rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream</item>
-        <item>http://videocdn-us.geocdn.scaleengine.net/jblive-iphone/live/jblive.stream/playlist.m3u8</item>
-        <item>http://videocdn-us.geocdn.scaleengine.net:1935/jblive-iphone/live/jblive.stream/playlist.m3u8</item>
+        <item>rtsp://jblive.videocdn.scaleengine.net/jb-live/play/jblive.stream"</item>
+        <item>http://jblive.videocdn.scaleengine.net/jb-live/play/jblive.stream/playlist.m3u8"</item>
+        <item>http://jblive.videocdn.scaleengine.net:1935/jb-live/play/jblive.stream/playlist.m3u8"</item>
     </string-array>
 
     <string-array name="live_quality">
