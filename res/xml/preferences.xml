@@ -34,7 +34,7 @@
                 android:key="live_video"
                 android:entries="@array/live_video"
                 android:entryValues="@array/live_video_source"
-                android:defaultValue="rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream"
+                android:defaultValue="rtsp://jblive.videocdn.scaleengine.net/jb-live/play/jblive.stream
                 />
         <CheckBoxPreference
             android:title="@string/hide_notification_when_paused"
