@@ -366,7 +366,7 @@ public class Callisto extends Activity
             StaticBlob.liveDg.dismiss();
             if(StaticBlob.live_isPlaying && Live.live_player!=null)
                 Live.live_player.stop();
-            String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://videocdn-us.geocdn.scaleengine.net/jblive/live/jblive.stream");
+            String live_video = PreferenceManager.getDefaultSharedPreferences(v.getContext()).getString("video_url", "rtsp://jblive.videocdn.scaleengine.net/jb-live/play/jblive.stream");
             Intent intent= new Intent(v.getContext(), VideoActivity.class);
             intent.putExtra("uri", live_video);
             StaticBlob.playerInfo.update(v.getContext());
