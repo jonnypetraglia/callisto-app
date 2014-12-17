@@ -300,12 +300,12 @@ public class ContactForm extends Activity
             }
 
             Log.i(TAG, "Loading custom css");
-            final String res = result;
+            final String res = result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;");
             //Load the data into the webview
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    wv.loadDataWithBaseURL("http://wufoo.com", res.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
+                    wv.loadDataWithBaseURL("http://wufoo.com", res, "text/html", "utf-8", "about:blank");
                 }
             });
         }
