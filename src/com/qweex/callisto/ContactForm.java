@@ -300,8 +300,14 @@ public class ContactForm extends Activity
             }
 
             Log.i(TAG, "Loading custom css");
+            final String res = result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;");
             //Load the data into the webview
-            wv.loadDataWithBaseURL("http://wufoo.com", result.replaceAll("width:;", "width:100%;").replaceAll("height:;", "height:60%;"), "text/html", "utf-8", "about:blank");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    wv.loadDataWithBaseURL("http://wufoo.com", res, "text/html", "utf-8", "about:blank");
+                }
+            });
         }
 
         /** Pulls the values from the HTML fields and saves them to Preferences.
