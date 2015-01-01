@@ -119,6 +119,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 id = c.getLong(c.getColumnIndex("_id"));
                 identity = c.getLong(c.getColumnIndex("identity"));
                 isVideo = c.getInt(c.getColumnIndex("video"))>0;
+                c.close();
                 current = StaticBlob.databaseConnector.getOneEpisode(identity);
                 current.moveToFirst();
 
@@ -131,6 +132,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 Date = current.getString(current.getColumnIndex("date"));
                 Show = current.getString(current.getColumnIndex("show"));
                 Date = StaticBlob.sdfFile.format(StaticBlob.sdfRaw.parse(Date));
+                current.close();
 
                 //Getting target
                 Target = new File(StaticBlob.storage_path + File.separator + Show);
@@ -169,7 +171,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         this.context.getResources().getString(R.string.of) + " " + downloading_count)
                     .setContentText(Show + ": " + Title);
                 // Displays the progress bar for the first time.
-                mNotificationManager.notify(NOTIFICATION_ID,mBuilder.build() );
+                mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build() );
 
                 //Actually do the DLing
                 InputStream is = ucon.getInputStream();
@@ -213,7 +215,7 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 while (len != -1)
                 {
                     Cursor active = StaticBlob.databaseConnector.getActiveDownloads();
-                    if(StaticBlob.databaseConnector.getActiveDownloads().getCount()==0)
+                    if(active.getCount()==0)
                         canceled = true;
                     else
                     {
@@ -231,6 +233,8 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                         mNotificationManager.cancel(NOTIFICATION_ID);
                         return false;
                     }
+
+                    active.close();
 
                     try
                     {
@@ -312,13 +316,16 @@ public class DownloadTask extends AsyncTask<String, Object, Boolean>
                 }
 
                 Cursor active = StaticBlob.databaseConnector.getActiveDownloads();
-                if(StaticBlob.databaseConnector.getActiveDownloads().getCount()==0)
+                if(active.getCount()==0)
                     canceled = true;
                 else
                 {
                     active.moveToFirst();
                     canceled = active.getLong(active.getColumnIndex("identity"))!=identity;
                 }
+
+                active.close();
+
                 if(!canceled)
                 {
                     Log.i(TAG, "Trying to finish with " + Target.length() + "==" + TotalSize);
