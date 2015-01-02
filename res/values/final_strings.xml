@@ -15,14 +15,18 @@
 <resources>
     <string-array name="shows">
     <item>\u0020Active Shows</item>
+        <item>BSD Now</item>
 		<item>Coder Radio</item>
         <item>FauxShow</item>
+        <item>HowTo Linux</item>
 		<item>Linux Action Show</item>
         <item>Linux Unplugged</item>
         <item>Plan B</item>
 		<item>SciByte</item>
 		<item>TechSnap</item>
+        <item>Tech Talk Today</item>
 		<item>Unfilter</item>
+        <item>Women\'s Tech Radio</item>
 	<item>\u0020Inactive Shows </item>
         <item>Beer is Tasty</item>
         <item>In Depth Look</item>
@@ -36,14 +40,18 @@
     
     <string-array name="shows_audio">
 		<item>@null</item>
+        <item>http://feeds.feedburner.com/BsdNowMp3</item>
 		<item>http://feeds.feedburner.com/coderradiomp3</item>
         <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMP3.xml</item>
+        <item>http://feeds.feedburner.com/HowToLinuxMp3</item>
 		<item>http://feeds2.feedburner.com/TheLinuxActionShow</item>
         <item>http://feeds.feedburner.com/linuxunplugged</item>
         <item>http://feeds.feedburner.com/planbmp3</item>
 		<item>http://feeds.feedburner.com/scibyteaudio</item>
 		<item>http://feeds.feedburner.com/techsnapmp3</item>
+        <item>http://feedpress.me/t3mp3</item>
 		<item>http://www.jupiterbroadcasting.com/feeds/unfilterMP3.xml</item>
+        <item>http://feeds.feedburner.com/wtrmp3</item>
 		<item>@null</item>
         <item>http://www.jupiterbroadcasting.com/feeds/BeerisTasty-MP3.xml</item>
         <item>http://www.jupiterbroadcasting.com/feeds/indepthlookmp3.xml</item>
@@ -56,15 +64,19 @@
 	</string-array>
 	
     <string-array name="shows_video">
-		<item>@null</item>,
+		<item>@null</item>
+        <item>http://feeds.feedburner.com/BsdNowMobile</item>
 		<item>http://feeds.feedburner.com/coderradiovideo</item>
         <item>http://www.jupiterbroadcasting.com/feeds/FauxShowMobile.xml</item>
+        <item>http://feeds.feedburner.com/HowtoLinuxHd</item>
 		<item>http://feeds.feedburner.com/linuxactionshowipodvid</item>
         <item>http://feeds.feedburner.com/linuxunvid</item>
         <item>http://feeds.feedburner.com/PlanBVideo</item>
 		<item>http://feeds.feedburner.com/scibytemobile</item>
 		<item>http://feeds.feedburner.com/techsnapmobile</item>
+        <item>http://feedpress.me/t3mob</item>
 		<item>http://www.jupiterbroadcasting.com/feeds/unfilterMob.xml</item>
+        <item>http://feeds.feedburner.com/wtrmobile</item>
 		<item>@null</item>
         <item>http://feeds2.feedburner.com/BeerIsTasty</item>
         <item>http://www.jupiterbroadcasting.com/feeds/indepthlookmob.xml</item>

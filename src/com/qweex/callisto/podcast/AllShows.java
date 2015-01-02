@@ -424,7 +424,7 @@ public class AllShows extends Activity {
             {
                 f = new File(
                         StaticBlob.storage_path + File.separator +
-                        show + ext);
+                        show.replaceAll("'", "") + ext); //remove apostrophe character from file name (some shows names have it)
                 if(f.exists())
                 {
                     Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
