@@ -782,6 +782,6 @@ public class DatabaseConnector
 
     private String sanitize(String in)
     {
-        return in.replaceAll("'", "\\'");
+        return in.replaceAll("'", "''");
     }
 }
